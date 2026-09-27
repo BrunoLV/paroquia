@@ -92,11 +92,11 @@ class UpdateEventoAprovacaoExecutionFailureIntegrationTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(nonExistentEventoId);
         aprovacao.setTipoSolicitacao("EDICAO_EVENTO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
-        aprovacao.setSolicitantePapel("coordenador-pastoral-local");
+        aprovacao.setSolicitantePapel("coordenador");
         aprovacao.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
         aprovacao.setCorrelationId(aprovacaoId.toString());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
@@ -106,8 +106,8 @@ class UpdateEventoAprovacaoExecutionFailureIntegrationTest {
 
         // Approve -> execution fails (evento not found) -> 409 with deterministic code
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

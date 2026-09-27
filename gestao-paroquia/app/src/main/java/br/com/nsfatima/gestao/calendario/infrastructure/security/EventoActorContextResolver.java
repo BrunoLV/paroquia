@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.calendario.domain.policy.CompatibilidadePapelOrganizacionalPolicy;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -67,16 +68,44 @@ public class EventoActorContextResolver {
         if (principal instanceof UsuarioDetails usuarioDetails) {
             boolean isAdmin = usuarioDetails.getAuthorities().stream()
                     .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ADMIN") ||
-                            a.getAuthority().equals("ROLE_ADMIN"))
-                    || papelGlobalAuthorizationService.isGlobalByUsuarioId(usuarioDetails.getUsuarioId());
+                            a.getAuthority().equals("ROLE_ADMIN"));
 
             if (isAdmin) {
-                // Contexto sintético de escopo global — "CLERO" aqui é só um sentinel informativo (não é
-                // mais um TipoGrupo válido desde a track linguagem_ubiqua_dominio); o papel PAROCO já basta
-                // para todo bypass de autorização baseado em papel em EventoPatchAuthorizationService etc.
                 return new EventoActorContext(
                         authentication.getName(),
-                        PapelOrganizacional.PAROCO.storedValue(),
+                        PapelGlobal.ADMIN.storedValue(),
+                        "ADMIN",
+                        null,
+                        usuarioDetails.getUsuarioId(),
+                        null);
+            }
+
+            boolean isParoco = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_PAROCO") ||
+                            a.getAuthority().equals("ROLE_CLERO_PAROCO") ||
+                            a.getAuthority().equals("PAROCO") ||
+                            a.getAuthority().equals("ROLE_PAROCO"));
+
+            if (isParoco) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.PAROCO.storedValue(),
+                        "CLERO",
+                        null,
+                        usuarioDetails.getUsuarioId(),
+                        null);
+            }
+
+            boolean isVigario = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_VIGARIO") ||
+                            a.getAuthority().equals("ROLE_CLERO_VIGARIO") ||
+                            a.getAuthority().equals("VIGARIO") ||
+                            a.getAuthority().equals("ROLE_VIGARIO"));
+
+            if (isVigario) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.VIGARIO.storedValue(),
                         "CLERO",
                         null,
                         usuarioDetails.getUsuarioId(),
@@ -104,9 +133,43 @@ public class EventoActorContextResolver {
                 continue;
             }
 
-            String[] parts = raw.substring("ROLE_".length()).split("_", 2);
+            String stripped = raw.substring("ROLE_".length());
+            PapelGlobal directGlobal = PapelGlobal.fromStoredValue(stripped);
+            if (directGlobal != null) {
+                String defaultOrgType = switch (directGlobal) {
+                    case PAROCO, VIGARIO, DIACONO_PAROQUIAL, BISPO_DIOCESANO -> "CLERO";
+                    case ADMIN -> "ADMIN";
+                    case SECRETARIA_PAROQUIAL -> "SECRETARIA";
+                    default -> TipoGrupo.PASTORAL.name();
+                };
+                return new EventoActorContext(authentication.getName(), directGlobal.storedValue(), defaultOrgType, null, null, null);
+            }
+
+            PapelOrganizacional directPapel = PapelOrganizacional.fromStoredValue(stripped);
+            if (directPapel != null) {
+                String defaultOrgType = switch (directPapel) {
+                    case SECRETARIO_CONSELHO, MEMBRO_CONSELHO_PASTORAL, MEMBRO_CONSELHO_ECONOMICO -> TipoGrupo.CONSELHO.name();
+                    default -> TipoGrupo.PASTORAL.name();
+                };
+                return new EventoActorContext(authentication.getName(), directPapel.storedValue(), defaultOrgType, null, null, null);
+            }
+
+            String[] parts = stripped.split("_", 2);
             if (parts.length != 2) {
                 continue;
+            }
+
+            PapelGlobal globalPapel = PapelGlobal.fromStoredValue(parts[1]);
+            if (globalPapel != null) {
+                String orgType = "GLOBAL".equalsIgnoreCase(parts[0])
+                        ? (switch (globalPapel) {
+                            case PAROCO, VIGARIO, DIACONO_PAROQUIAL, BISPO_DIOCESANO -> "CLERO";
+                            case ADMIN -> "ADMIN";
+                            case SECRETARIA_PAROQUIAL -> "SECRETARIA";
+                            default -> TipoGrupo.PASTORAL.name();
+                        })
+                        : parts[0].toUpperCase(Locale.ROOT);
+                return new EventoActorContext(authentication.getName(), globalPapel.storedValue(), orgType, null, null, null);
             }
 
             String organizationType = parts[0].toUpperCase(Locale.ROOT);
@@ -118,7 +181,7 @@ public class EventoActorContextResolver {
 
         return new EventoActorContext(
                 authentication.getName(),
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(),
+                PapelOrganizacional.COORDENADOR.storedValue(),
                 TipoGrupo.PASTORAL.name(),
                 null,
                 UUID.fromString("00000000-0000-0000-0000-000000000001"),
@@ -127,9 +190,17 @@ public class EventoActorContextResolver {
 
     private boolean aceitaPapel(String tipoOrganizacao, String papelBruto) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(papelBruto);
-        TipoGrupo tipoGrupo = TipoGrupo.fromStoredValue(tipoOrganizacao);
+        if (papel == null) {
+            return false;
+        }
+        TipoGrupo tipoGrupo;
+        try {
+            tipoGrupo = TipoGrupo.fromStoredValue(tipoOrganizacao);
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
         String tipoNormalizado = tipoGrupo == null ? tipoOrganizacao : tipoGrupo.name();
-        return papel != null && compatibilidadePolicies.stream()
+        return compatibilidadePolicies.stream()
                 .anyMatch(policy -> policy.aceita(tipoNormalizado, papel));
     }
 }

@@ -65,7 +65,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +91,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
         assertThat(aprovacao.getTipoSolicitacao()).isEqualTo("EDICAO_EVENTO");
         assertThat(aprovacao.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
         assertThat(aprovacao.getActionPayloadJson()).contains("2027-06-02");
-        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador-pastoral-local");
+        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador");
         assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.PASTORAL);
 
         // Event should not be modified yet

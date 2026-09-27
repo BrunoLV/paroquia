@@ -81,7 +81,7 @@ class GrupoParoquialDynamicResolverIntegrationTest {
         m1.setFielId(coord.getFielId());
         m1.setGrupoParoquialId(org.getId());
         m1.setTipoGrupo(TipoGrupo.PASTORAL);
-        m1.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
+        m1.setPapel(PapelOrganizacional.COORDENADOR.storedValue());
         m1.setAtivo(true);
         vinculoRepository.save(m1);
 
@@ -90,7 +90,7 @@ class GrupoParoquialDynamicResolverIntegrationTest {
         m2.setFielId(vice.getFielId());
         m2.setGrupoParoquialId(org.getId());
         m2.setTipoGrupo(TipoGrupo.PASTORAL);
-        m2.setPapel("vice-coordenador-pastoral-local");
+        m2.setPapel("vice-coordenador");
         m2.setAtivo(true);
         vinculoRepository.save(m2);
 

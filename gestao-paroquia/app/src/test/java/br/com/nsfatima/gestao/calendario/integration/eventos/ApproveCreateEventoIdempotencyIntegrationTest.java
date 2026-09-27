@@ -67,7 +67,7 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(null);
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
@@ -77,8 +77,8 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
 
         // First approval attempt
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "status": "APROVADA", "observacao": "ok" }
@@ -90,8 +90,8 @@ class ApproveCreateEventoIdempotencyIntegrationTest {
 
         // Attempting to approve again must fail with APROVACAO_JA_DECIDIDA (409)
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "status": "APROVADA", "observacao": "duplicado" }

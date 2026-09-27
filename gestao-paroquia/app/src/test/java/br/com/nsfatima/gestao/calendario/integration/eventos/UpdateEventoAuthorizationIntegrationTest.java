@@ -45,7 +45,7 @@ class UpdateEventoAuthorizationIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Role", "voluntario-pastoral-local")
+                        .header("X-Actor-Role", "voluntario")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

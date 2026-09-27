@@ -8,7 +8,22 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] - 2026-09-27
+
 ### Adicionado
+- **Reestruturação Canônica de Permissionamento (Clean Slate Total):**
+  - Implementação estrita e ortogonal dos 14 papéis canônicos finais em 3 camadas:
+    - **Globais (IAM):** `ADMIN`, `BISPO_DIOCESANO`, `PAROCO`, `VIGARIO`, `DIACONO_PAROQUIAL`, `SECRETARIA_PAROQUIAL`, `FIEL`.
+    - **Conselhos (Colegiados Consultivos):** `SECRETARIO_CONSELHO`, `MEMBRO_CONSELHO_PASTORAL`, `MEMBRO_CONSELHO_ECONOMICO`.
+    - **Pastorais e Movimentos:** `COORDENADOR`, `SECRETARIO_GRUPO`, `MEMBRO_ATIVO`, `VOLUNTARIO`.
+  - Princípio da Proposição vs. Homologação canônica (Cân. 536 §2 e Cân. 537): conselhos e secretarias elaboram minutas e propostas; homologação deliberativa reservada exclusivamente ao `PAROCO`.
+  - Separação ontológica entre Ordem Sacramental e Ofício Canônico com provisão ativa (Cân. 515 §1 e 540 §1).
+  - Isolamento do papel técnico `ADMIN`: proibição estrita de homologar atas, aprovar eventos e fechar o ano paroquial.
+  - Atualização e unificação do contrato de permissões no frontend (`permissions.ts` e `permissions.test.ts`).
+  - Refatoração dos scripts DDL (`V004`, `V005`, `V010`) e bases de dados de testes (`seed-data.sql`, `security-fixtures.sql`).
+  - Atualização da Living Documentation em `docs/business-rules/` (`iam.md`, `conselho.md`, `aprovacao.md`, `membro.md`).
 - Skill universal `fluxo-desenvolvimento` em `.agents/skills/fluxo-desenvolvimento/SKILL.md` para orquestração de planejamento e execução de software.
 - Regra permanente de runtime em `.agents/rules/fluxo-desenvolvimento.md` aplicável a qualquer agente (Claude, Gemini, Antigravity, Cursor, Copilot).
 - Diretório `docs/business-rules/` com documentação canônica de regras e fluxos de negócio para os 15 Bounded Contexts da paróquia.

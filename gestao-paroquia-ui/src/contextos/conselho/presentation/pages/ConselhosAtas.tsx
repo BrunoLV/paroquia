@@ -33,6 +33,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
+import { isParoco } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '@/contextos/conselho/infrastructure/http/conselhos';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
@@ -63,10 +64,7 @@ export const ConselhosAtas: React.FC = () => {
   const [vetoDialogItem, setVetoDialogItem] = useState<CpcDecisao | null>(null);
   const [motivoVeto, setMotivoVeto] = useState('');
 
-  const canHomologate =
-    user?.roles?.some((r) =>
-      ['ADMIN', 'ROLE_ADMIN', 'PAROCO', 'ROLE_PAROCO', 'MESA_CPP', 'ROLE_MESA_CPP'].includes(r)
-    ) ?? false;
+  const canHomologate = isParoco(user);
 
   const { data: decisoes = [], isLoading } = useQuery({
     queryKey: ['cpcDecisoes', selectedComunidade, selectedStatus],

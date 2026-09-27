@@ -1,52 +1,41 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 /**
  * Implementação pura da política de autorização de cancelamento de eventos.
+ * Segue o princípio canônico de que apenas o Pároco cancela imediatamente e homologa
+ * aprovações de cancelamento, enquanto coordenações e secretarias solicitam no seu escopo.
  */
 public final class PadraoAutorizacaoCancelamentoEventoPolicy implements AutorizacaoCancelamentoEventoPolicy {
 
-    private static final Set<PapelOrganizacional> LEADERSHIP_ROLES = Set.of(
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.COORD_PASTORAL);
-
-    private static final Set<TipoGrupo> LOCAL_SCOPED_ORG_TYPES = Set.of(
-            TipoGrupo.PASTORAL);
-
     @Override
     public ModoRequisicaoCancelamento resolveRequestMode(
-            PapelOrganizacional papel,
-            TipoGrupo tipoGrupo,
+            String rawRole,
+            String rawTipoGrupo,
             UUID atorOrgId,
             UUID eventoOrgId) {
 
-        if (isConselhoLeadership(papel, tipoGrupo)
-                || papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return ModoRequisicaoCancelamento.IMEDIATO;
         }
 
-        if (papel == PapelOrganizacional.SECRETARIO) {
+        if (papelGlobal == PapelGlobal.VIGARIO || papelGlobal == PapelGlobal.SECRETARIA_PAROQUIAL) {
             return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
-        if (papel == PapelOrganizacional.VIGARIO) {
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        if (papelOrg == PapelOrganizacional.SECRETARIO_CONSELHO) {
             return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
-        if (isLocalLeadership(papel, tipoGrupo)) {
+        if (papelOrg == PapelOrganizacional.COORDENADOR) {
             if (atorOrgId == null) {
                 throw new OperacaoProibidaException("Usuário não pode cancelar eventos sem um escopo de organização");
             }
@@ -61,23 +50,11 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
     }
 
     @Override
-    public void assertCanDecideAprovacao(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        if (papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.ADMIN
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP
-                || isConselhoLeadership(papel, tipoGrupo)) {
+    public void assertCanDecideAprovacao(String rawRole, String rawTipoGrupo) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return;
         }
-        throw new OperacaoProibidaException("Usuário não tem permissão para decidir aprovações de evento");
-    }
-
-    private boolean isConselhoLeadership(PapelOrganizacional role, TipoGrupo organizationType) {
-        return organizationType == TipoGrupo.CONSELHO && LEADERSHIP_ROLES.contains(role);
-    }
-
-    private boolean isLocalLeadership(PapelOrganizacional role, TipoGrupo organizationType) {
-        return organizationType != null && LOCAL_SCOPED_ORG_TYPES.contains(organizationType)
-                && LEADERSHIP_ROLES.contains(role);
+        throw new OperacaoProibidaException("Apenas o Pároco possui autoridade canônica para decidir aprovações de cancelamento");
     }
 }

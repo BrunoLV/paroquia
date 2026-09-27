@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.sdd;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.application.service.EscopoUsuarioAuthorizationService;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +31,7 @@ class SddCenario3AcessoVigarioIntegrationTest {
         UUID matrizId = UUID.randomUUID();
 
         boolean canManageConselho = escopoUsuarioAuthorizationService.canManageOrganizationData(
-                PapelOrganizacional.VIGARIO,
+                "vigario",
                 TipoGrupo.CONSELHO,
                 conselhoId,
                 matrizId,
@@ -40,13 +39,21 @@ class SddCenario3AcessoVigarioIntegrationTest {
         );
 
         boolean canApproveEventsConselho = escopoUsuarioAuthorizationService.canApproveEvents(
-                PapelOrganizacional.VIGARIO,
+                "vigario",
+                TipoGrupo.CONSELHO,
+                conselhoId,
+                matrizId
+        );
+
+        boolean canApproveEventsParoco = escopoUsuarioAuthorizationService.canApproveEvents(
+                "paroco",
                 TipoGrupo.CONSELHO,
                 conselhoId,
                 matrizId
         );
 
         assertThat(canManageConselho).isTrue();
-        assertThat(canApproveEventsConselho).isTrue();
+        assertThat(canApproveEventsConselho).isFalse();
+        assertThat(canApproveEventsParoco).isTrue();
     }
 }

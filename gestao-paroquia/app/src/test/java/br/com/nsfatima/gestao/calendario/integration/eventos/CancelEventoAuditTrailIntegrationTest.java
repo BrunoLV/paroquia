@@ -49,7 +49,7 @@ class CancelEventoAuditTrailIntegrationTest {
         eventoJpaRepository.save(evento);
 
         String pendente = mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,8 +65,8 @@ class CancelEventoAuditTrailIntegrationTest {
                 .fromString(pendente.replaceAll(".*\\\"solicitacaoAprovacaoId\\\":\\\"([^\\\"]+)\\\".*", "$1"));
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -78,7 +78,7 @@ class CancelEventoAuditTrailIntegrationTest {
 
         verify(eventoAuditPublisher, atLeastOnce()).publishCancellationPendente(eq("joao.silva"),
                 eq(eventoId.toString()), eq(aprovacaoId.toString()), eq("Gerar trilha de pendente"));
-        verify(eventoAuditPublisher, atLeastOnce()).publishAprovacaoDecision(eq("ana.conselho"),
+        verify(eventoAuditPublisher, atLeastOnce()).publishAprovacaoDecision(eq("joao.silva"),
                 any(), eq("executado"), anyMap());
         verify(eventoAuditPublisher, atLeastOnce()).publish(eq("system"), eq("aprovacao-decisao-solicitacao"),
                 eq(aprovacaoId.toString()), eq("recebido"), anyMap());

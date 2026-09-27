@@ -22,6 +22,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLi
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
@@ -216,7 +217,7 @@ public class CriarEventoUseCase {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+        if (atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
             if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
                 throw new ViolacaoRegraNegocioException(
                         "Justificativa é obrigatória para operações submetidas pelo Secretário");
@@ -236,11 +237,9 @@ public class CriarEventoUseCase {
         ModoRequisicaoCriacao mode = authorizationService.resolveModoRequisicaoCriacao(actorContext,
                 request.grupoParoquialResponsavelId(), request.igrejaVinculoId());
 
-        boolean isParocoOuLiderancaGlobal = atorPapel == PapelOrganizacional.PAROCO
-                || atorPapel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || atorPapel == PapelOrganizacional.MESA_CPP;
+        boolean isParoco = PapelGlobal.PAROCO.storedValue().equals(actorContext.role());
 
-        if (!conflitos.isEmpty() && !decisaoPastoralImediata && !isParocoOuLiderancaGlobal) {
+        if (!conflitos.isEmpty() && !decisaoPastoralImediata && !isParoco) {
             mode = ModoRequisicaoCriacao.REQUER_APROVACAO;
         }
 

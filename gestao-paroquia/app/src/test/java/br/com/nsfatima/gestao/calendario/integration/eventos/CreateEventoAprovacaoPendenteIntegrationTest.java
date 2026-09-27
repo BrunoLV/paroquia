@@ -41,7 +41,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
 
         MvcResult result = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +65,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
         var aprovacao = aprovacaoJpaRepository.findById(UUID.fromString(aprovacaoIdStr)).orElseThrow();
         assertThat(aprovacao.getEventoId()).isNull();
         assertThat(aprovacao.getActionPayloadJson()).contains("Missa pendente de aprovacao");
-        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("secretario");
+        assertThat(aprovacao.getSolicitantePapel()).isEqualTo("secretario-conselho");
         assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.CONSELHO);
     }
 
@@ -73,7 +73,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
     void secretarioSemJustificativaDeveRetornar400() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
     void coordenadorPastoralRoleReturnsPendenteAprovacao() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)

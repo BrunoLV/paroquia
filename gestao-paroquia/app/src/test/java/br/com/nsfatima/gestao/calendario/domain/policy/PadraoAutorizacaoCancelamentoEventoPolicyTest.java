@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,19 +16,18 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
     private final UUID atorOrgId = UUID.randomUUID();
 
     @Test
-    @DisplayName("Pároco e liderança de conselho têm cancelamento imediato")
-    void deveRetornarModoImediatoParaParocoEConselho() {
-        assertThat(policy.resolveRequestMode(PapelOrganizacional.PAROCO, null, atorOrgId, atorOrgId))
+    @DisplayName("Pároco tem cancelamento imediato")
+    void deveRetornarModoImediatoParaParoco() {
+        assertThat(policy.resolveRequestMode("paroco", null, atorOrgId, atorOrgId))
                 .isEqualTo(ModoRequisicaoCancelamento.IMEDIATO);
-        assertThat(policy.resolveRequestMode(
-                PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO, atorOrgId, atorOrgId))
+        assertThat(policy.resolveRequestMode("bispo-diocesano", null, atorOrgId, atorOrgId))
                 .isEqualTo(ModoRequisicaoCancelamento.IMEDIATO);
     }
 
     @Test
     @DisplayName("Vigário requer aprovação para cancelamento")
     void deveRetornarRequerAprovacaoParaVigario() {
-        assertThat(policy.resolveRequestMode(PapelOrganizacional.VIGARIO, null, atorOrgId, atorOrgId))
+        assertThat(policy.resolveRequestMode("vigario", null, atorOrgId, atorOrgId))
                 .isEqualTo(ModoRequisicaoCancelamento.REQUER_APROVACAO);
     }
 
@@ -39,24 +36,25 @@ class PadraoAutorizacaoCancelamentoEventoPolicyTest {
     void deveValidarLiderancaLocal() {
         UUID outraOrgId = UUID.randomUUID();
         assertThat(policy.resolveRequestMode(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, atorOrgId))
+                "coordenador", "PASTORAL", atorOrgId, atorOrgId))
                 .isEqualTo(ModoRequisicaoCancelamento.REQUER_APROVACAO);
 
         assertThatThrownBy(() -> policy.resolveRequestMode(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL, atorOrgId, outraOrgId))
+                "coordenador", "PASTORAL", atorOrgId, outraOrgId))
                 .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
-    @DisplayName("Apenas Pároco e liderança de conselho podem decidir aprovações de evento")
+    @DisplayName("Apenas Pároco pode decidir aprovações de cancelamento de evento")
     void deveValidarDecisaoDeAprovacao() {
-        assertThatCode(() -> policy.assertCanDecideAprovacao(PapelOrganizacional.PAROCO, null))
-                .doesNotThrowAnyException();
-        assertThatCode(() -> policy.assertCanDecideAprovacao(PapelOrganizacional.PRESIDENTE_CPC, TipoGrupo.CONSELHO))
+        assertThatCode(() -> policy.assertCanDecideAprovacao("paroco", null))
                 .doesNotThrowAnyException();
 
+        assertThatThrownBy(() -> policy.assertCanDecideAprovacao("secretario-conselho", "CONSELHO"))
+                .isInstanceOf(OperacaoProibidaException.class);
+
         assertThatThrownBy(() -> policy.assertCanDecideAprovacao(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, TipoGrupo.PASTORAL))
+                "coordenador", "PASTORAL"))
                 .isInstanceOf(OperacaoProibidaException.class);
     }
 }

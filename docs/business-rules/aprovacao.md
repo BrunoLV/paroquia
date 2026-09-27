@@ -1,37 +1,34 @@
 # Regras de Negócio e Fluxos: Módulo Aprovações (`aprovacao`)
 
-O módulo de Aprovações centraliza a governança decisória da paróquia sobre alterações de agenda, eventos extraordinários e projetos, estabelecendo esteiras de deliberação por níveis de alçada e criticidade.
+O módulo de Aprovações centraliza a governança decisória da paróquia sobre alterações de agenda, eventos extraordinários e projetos, estabelecendo esteiras de deliberação por níveis de alçada e criticidade sob autoridade canônica do Pároco.
 
 ---
 
 ## 1. Visão Geral e Propósito
-Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial ocorra sem a anuência das autoridades competentes (Pároco, Vigários Paroquiais ou Conselho Pastoral/Econômico).
+Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial ocorra sem a deliberação formal da autoridade competente (Pároco ou Bispo Diocesano), transformando propostas em atos aprovados.
 
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`SolicitacaoAprovacao` (Raiz de Agregado):** Identificada por `SolicitacaoAprovacaoId`. Armazena o tipo de solicitação, o identificador do recurso alvo (evento, projeto), o solicitante (`UsuarioId`), a data de submissão, a justificativa e o histórico de decisões.
+- **`SolicitacaoAprovacao` (Raiz de Agregado):** Identificada por `SolicitacaoAprovacaoId`. Armazena o tipo de solicitação, o recurso alvo, solicitante (`UsuarioId`), justificativa formal e histórico de decisões.
 - **`TipoSolicitacao` (Enum):** `CRIACAO_EVENTO`, `EDICAO_EVENTO`, `CANCELAMENTO_EVENTO`, `CRIACAO_PROJETO`, `ALOCACAO_EXTRAORDINARIA`.
 - **`StatusAprovacao` (Enum):** `PENDENTE`, `APROVADO`, `REJEITADO`, `CANCELADO_PELO_SOLICITANTE`.
-- **`NivelCriticidade` (Enum):** `BAIXA`, `MEDIA`, `ALTA`, `URGENTE`.
-- **`DecisaoAprovacao` (Value Object):** Decisão tomada (`APROVAR` ou `REJEITAR`), aprovador (`UsuarioId`), justificativa formal e timestamp UTC.
+- **`AprovadorPapel` (Enum):** `PAROCO` (única alçada ordinária canônica homologatória).
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-APR-01: Alçadas de Decisão
-- Solicitações de eventos litúrgicos (missas solenes, festas de padroeiro) exigem aprovação exclusiva de clérigo com papel `PAROCO` ou `VIGARIO`.
-- Solicitações pastorais comuns podem ser aprovadas pelo Secretário Paroquial ou Coordenador Geral caso delegado expressamente pelo Pároco.
+### RN-APR-01: Alçada Canônica Exclusiva do Pároco
+- A decisão final e homologação de solicitações é **competência privativa do Pároco** (`AprovadorPapel.PAROCO` / `ROLE_GLOBAL_PAROCO`).
+- Conselhos pastorais e coordenadores de pastoral podem propor, redigir e solicitar aprovação, mas **não possuem voto deliberativo** nem podem aprovar solicitações na esteira.
+- O perfil `ADMIN` é estritamente bloqueado de tomar decisões de aprovação eclesial.
 
 ### RN-APR-02: Justificativa Mandatória na Rejeição
-- Toda recusa ou rejeição de solicitação **DEVE OBRIGATORIAMENTE conter parecer/justificativa textual**, indicando o motivo canônico, pastoral ou de infraestrutura que fundamentou a negativa.
+- Toda recusa ou rejeição de solicitação **DEVE conter parecer textual fundamentado**, indicando os motivos pastorais, litúrgicos ou de planejamento.
 
 ### RN-APR-03: Fila de Urgência Baseada em Proximidade
-- Solicitações cuja data de início do evento esteja a menos de 48 horas da data atual recebem a classificação `URGENTE`, recebendo destaque prioritário visual no topo das esteiras do painel e do módulo.
-
-### RN-APR-04: Apresentação Sintética no Painel (Dashboard)
-- Na tela principal do Painel (`dashboard`), o quadro de Aprovações Pendentes deve exibir **apenas o agrupamento de quantidades por tipo de solicitação** (com ícone semântico, rótulo e badge numérico) e o botão direto para o módulo de aprovações, sem detalhes individuais para manter a densidade visual limpa.
+- Solicitações cuja data de início do evento esteja a menos de 48 horas recebem classificação `URGENTE`, com destaque visual no topo das esteiras.
 
 ---
 
@@ -40,26 +37,25 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Solicitante as Solicitante (Líder)
+    actor Propositor as Coordenador / Secretário Conselho
     participant Modulo as Módulo Aprovação
-    actor Aprovador as Pároco / Secretário
+    actor Paroco as Pároco (Autoridade Canônica)
     participant Evento as Módulo Calendário
 
-    Solicitante->>Modulo: Submeter solicitação (evento/projeto)
-    Modulo->>Modulo: Classificar criticidade e calcular urgência
-    Modulo->>Aprovador: Notificar pendência na esteira
+    Propositor->>Modulo: Submeter proposta (evento/projeto/cancelamento)
+    Modulo->>Modulo: Classificar criticidade e gerar pendência (HTTP 202)
+    Modulo->>Paroco: Notificar pendência na esteira
     alt Aprovado
-        Aprovador->>Modulo: Aprovar solicitação (com parecer opcional)
-        Modulo->>Evento: Notificar aprovação -> Atualizar para CONFIRMADO
+        Paroco->>Modulo: Homologar / Aprovar
+        Modulo->>Evento: Atualizar evento para CONFIRMADO
     else Rejeitado
-        Aprovador->>Modulo: Rejeitar solicitação (com justificativa obrigatória)
-        Modulo->>Evento: Notificar recusa -> Atualizar para REJEITADO
+        Paroco->>Modulo: Rejeitar com justificativa formal
+        Modulo->>Evento: Manter status anterior / Rejeitar
     end
 ```
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`calendario`:** Mudança de estado do evento (`CONFIRMADO`, `REJEITADO`, `CANCELADO`).
-- **`projeto`:** Validação de solicitações de criação de novos projetos ou ampliação de orçamento/escopo.
-- **`iam`:** Verificação estrita das permissões de autorização do usuário aprovador.
+- **`calendario`:** Mudança de estado do evento (`CONFIRMADO`, `PENDENTE`, `CANCELADO`).
+- **`iam`:** Verificação estrita de que apenas o Pároco decide aprovações.

@@ -52,8 +52,8 @@ class EventoProjetoLinkIntegrationTest {
     void deveVincularEventoParaProjetoDentroPeriodo() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -74,8 +74,8 @@ class EventoProjetoLinkIntegrationTest {
     void deveFalhaQuandoEventoEForaProjetoPeriodo() throws Exception {
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -98,8 +98,8 @@ class EventoProjetoLinkIntegrationTest {
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -119,8 +119,8 @@ class EventoProjetoLinkIntegrationTest {
         // 1. Create event linked to project
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID().toString())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -137,8 +137,8 @@ class EventoProjetoLinkIntegrationTest {
         // 2. List with project filter
         mockMvc.perform(get("/api/v1/eventos")
                         .param("projetoId", projetoId.toString())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1))

@@ -92,7 +92,7 @@ public class CpcDecisaoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'PRESIDENTE_CPC', 'MESA_CPP', 'MEMBRO_CPC', 'MEMBRO_CPP')")
+    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO', 'CONSELHO_SECRETARIO_CONSELHO', 'CONSELHO_MEMBRO_CONSELHO_PASTORAL', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Registra uma nova ata ou decisão de conselho (padrão: PENDENTE_HOMOLOGACAO)")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Decisão registrada com sucesso",
@@ -106,8 +106,8 @@ public class CpcDecisaoController {
     }
 
     /**
-     * Homologa ou veta uma ata/decisão, restrito a Pároco, Admin ou Mesa CPP — a autoridade
-     * exclusiva que confere efeito oficial à decisão. Vetar sem informar o motivo é rejeitado
+     * Homologa ou veta uma ata/decisão, restrito exclusivamente ao Pároco — a autoridade
+     * canônica exclusiva que confere efeito oficial à decisão. Vetar sem informar o motivo é rejeitado
      * pela camada de aplicação ({@link HomologarCpcDecisaoUseCase}).
      *
      * @param id identificador da decisão a homologar/vetar
@@ -115,8 +115,8 @@ public class CpcDecisaoController {
      * @return a decisão já homologada/vetada
      */
     @PatchMapping("/{id}/homologacao")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'MESA_CPP')")
-    @Operation(summary = "Homologa ou veta uma ata/decisão de conselho (exclusivo para Pároco, Admin ou Mesa CPP)")
+    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO')")
+    @Operation(summary = "Homologa ou veta uma ata/decisão de conselho (exclusivo para o Pároco)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Decisão homologada ou vetada com sucesso",
                     content = @Content(schema = @Schema(implementation = CpcDecisaoResponse.class))),
