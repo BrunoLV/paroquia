@@ -1,8 +1,12 @@
-# Regras de Governança do Projeto Paróquia
+# Cursor Rules - Projeto Paróquia (.cursorrules)
 
-Todas as diretrizes de arquitetura, padrões de código (Java/React), regras de LGPD, políticas de qualidade e comandos de ferramentas estão centralizadas para garantir paridade entre todos os agentes de IA operando neste repositório.
+Você está atuando no monorepo do Projeto Paróquia.
 
-**Ação Obrigatória:**
-Antes de analisar código, propor soluções ou gerar qualquer arquivo, você DEVE LER o arquivo `AGENTS.md` localizado na raiz deste monorepo. Ele contém as instruções mandatórias que você precisa seguir.
-
-👉 **Leia `AGENTS.md` agora para carregar seu contexto operacional.**
+**Diretrizes Mandatórias:**
+1. Leia `AGENTS.md` na raiz para carregar todas as regras de Clean Architecture, Hexagonal, DDD, Java 25, React 19, MUI 9 e LGPD.
+2. Cumpra estritamente o fluxo permanente em `.agents/rules/fluxo-desenvolvimento.md`:
+   - No planejamento (Plan Mode): Consulte `docs/business-rules/<modulo>.md` e planeje branch e testes.
+   - Na execução: Branch via GitHub Flow a partir de `master` atualizada. Proibido codificar na master.
+   - Atualize obrigatoriamente `docs/business-rules/<modulo>.md` com qualquer alteração de regras.
+   - Questione o usuário sobre fechamento de versão e mantenha `CHANGELOG.md`.
+   - Commits em Conventional Commits e submissão via Pull Request para a `master`.

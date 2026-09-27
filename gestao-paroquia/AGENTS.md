@@ -11,6 +11,11 @@ Este documento define as regras Mandatórias, Invariantes e Diretrizes Técnicas
 * **Documentação Viva (*Living Documentation*):**
   * **Classes, Records e Interfaces:** Devem conter Javadoc conceitual explicando o **porquê** da regra de negócio (Linguagem Ubíqua) e as decisões de design (ex.: ADT, Strategy, OCP, LSP).
   * **Proibição de Comentários Triviais:** É expressamente proibido inserir comentários óbvios ou mecânicos (`// construtor`, `// getter`, `// injeta dependência`).
+* **Fluxo de Desenvolvimento Mandatório (`fluxo-desenvolvimento`):**
+  * Toda intervenção deve seguir o GitHub Flow (branch a partir de `master` atualizada).
+  * Obrigatório atualizar o arquivo do módulo correspondente em `docs/business-rules/<modulo>.md` com as novas regras ou alterações.
+  * Questionar sobre fechamento de versão ao término e atualizar `CHANGELOG.md` e `build.gradle.kts`.
+
 
 ---
 
