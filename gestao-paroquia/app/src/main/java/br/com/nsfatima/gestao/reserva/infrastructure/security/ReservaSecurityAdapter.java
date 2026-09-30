@@ -40,7 +40,7 @@ public class ReservaSecurityAdapter {
                 if (v.organizationId() != null) {
                     membros.add(v.organizationId());
                     String papel = v.role() != null ? v.role().toUpperCase() : "";
-                    if (papel.contains("COORD") || papel.contains("PRESIDENTE") || papel.contains("MESA")) {
+                    if ("COORDENADOR".equals(papel)) {
                         coords.add(v.organizationId());
                     }
                 }

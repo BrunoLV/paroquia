@@ -70,7 +70,7 @@ public class ListarGrupoParoquialMembrosUseCase {
         if (orgOpt.isPresent()) {
             var org = orgOpt.get();
             addDynamicMemberIfMissing(membros, org.getCoordenador(), "COORDENADOR");
-            addDynamicMemberIfMissing(membros, org.getViceCoordenador(), "VICE_COORDENADOR");
+            addDynamicMemberIfMissing(membros, org.getViceCoordenador(), "SECRETARIO_GRUPO");
         }
 
         return membros;

@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.patrimonio.application.service;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.patrimonio.domain.policy.AutorizacaoPatrimonioPolicy;
 import org.springframework.stereotype.Service;
 

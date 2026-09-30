@@ -31,11 +31,16 @@ Um projeto é automaticamente classificado como **Em Risco** (`emRisco === true`
 ### RN-PROJ-03: Conclusão Condicionada a Metas
 - Um projeto só pode transitar para o status `CONCLUIDO` se todas as suas etapas e metas obrigatórias estiverem registradas como concluídas ou se houver justificativa formal de dispensa aprovada pelo Pároco.
 
+### RN-PROJ-04: Alçada de Autorização de Projetos (`PadraoAutorizacaoProjetoPolicy`)
+- **`PAROCO` e `VIGARIO`:** Possuem alçada global paroquial para criar, editar e transicionar o ciclo de vida de projetos de qualquer pastoral ou comunidade.
+- **`COORDENADOR` e `SECRETARIO_GRUPO`:** Podem propor e gerir projetos estritamente vinculados à sua própria organização (`grupoParoquialResponsavelId` idêntico ao vínculo ativo).
+- **`ADMIN`:** Isolado na infraestrutura técnica; não possui alçada sobre projetos pastorais.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
-1. **Elaboração e Submissão:** Criação do plano do projeto e orçamento para homologação no CAEP/CPP.
-2. **Acompanhamento de Progresso:** Atualização de percentuais de avanço pelas lideranças.
+1. **Elaboração e Submissão:** Proposição do plano do projeto pelo `COORDENADOR` com parecer consultivo do Conselho (`MEMBRO_CONSELHO_PASTORAL` / `MEMBRO_CONSELHO_ECONOMICO`) e homologação pelo `PAROCO`.
+2. **Acompanhamento de Progresso:** Atualização de percentuais de avanço pelas coordenações (`COORDENADOR`).
 3. **Visão de Risco e Alertas:** Exibição sintética de distribuição por status e alertas visuais no painel paroquial.
 
 ---

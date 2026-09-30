@@ -72,7 +72,7 @@ class ApproveUpdateEventoIntegrationTest {
 
         // Step 2: PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,8 +95,8 @@ class ApproveUpdateEventoIntegrationTest {
 
         // Step 3: PATCH approve → update applied automatically
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -168,16 +168,16 @@ class ApproveUpdateEventoIntegrationTest {
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
-        aprovacao.setSolicitantePapel("coordenador-pastoral-local");
+        aprovacao.setSolicitantePapel("coordenador");
         aprovacao.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
         aprovacao.setCorrelationId(aprovacaoId.toString());
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

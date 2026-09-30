@@ -106,22 +106,33 @@ public class AdicionarVinculoUseCase {
             throw new AccessDeniedException("Not authenticated");
         }
 
-        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        boolean isParoco = auth.getAuthorities().stream().anyMatch(a ->
+                "ROLE_CLERO_PAROCO".equals(a.getAuthority())
+                        || "ROLE_PAROCO".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_PAROCO".equals(a.getAuthority())
+                        || "ROLE_BISPO_DIOCESANO".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority()));
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a ->
+                "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_GLOBAL_ADMIN".equals(a.getAuthority()));
         UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
-        boolean isGlobal = isAdmin
+        boolean isGlobal = isAdmin || isParoco
                 || (actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId));
 
-        // Regra de hierarquia: liderança de CONSELHO (colapsa os antigos CONSELHO_PASTORAL/CPP/CPC/
-        // CONSELHO_ECONOMICO — track linguagem_ubiqua_dominio) só pode ser definida por PAROCO ou ADMIN
+        if (papel == PapelOrganizacional.COORDENADOR
+                && !isParoco
+                && (isAdmin || actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId))) {
+            throw new AccessDeniedException(
+                    "Apenas o Pároco possui provisão canônica para definir coordenador");
+        }
+
+        // Regra de hierarquia: vinculação a CONSELHO só pode ser definida por PAROCO ou ADMIN
         if (tipo == TipoGrupo.CONSELHO
-                && (papel == PapelOrganizacional.PRESIDENTE_CPC
-                || papel == PapelOrganizacional.MESA_CPP
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORD_PASTORAL)) {
+                && (papel == PapelOrganizacional.SECRETARIO_CONSELHO
+                || papel == PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL
+                || papel == PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO)) {
             if (!isGlobal) {
                 throw new AccessDeniedException(
-                        "Apenas o Pároco ou Admin podem definir coordenador e vice do Conselho");
+                        "Apenas o Pároco ou Admin podem definir membros e secretários do Conselho");
             }
         }
 
@@ -146,11 +157,7 @@ public class AdicionarVinculoUseCase {
         }
 
         // Regra de unicidade: organizações só podem ter 1 coordenador ativo por vez, por contexto de igreja
-        boolean isPapelCoordenador = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORD_MOVIMENTO
-                || papel == PapelOrganizacional.COORD_PASTORAL
-                || papel == PapelOrganizacional.PRESIDENTE_CPC;
+        boolean isPapelCoordenador = papel == PapelOrganizacional.COORDENADOR;
 
         if (isPapelCoordenador) {
             Optional<MembroGrupoEntity> existing;
@@ -167,9 +174,8 @@ public class AdicionarVinculoUseCase {
                 old.setAtivo(false);
                 vinculoRepository.save(old);
 
-                // Transição: rebaixar coordenador anterior para papel de membro
-                String papelRebaixado =
-                        tipo == TipoGrupo.MOVIMENTO ? "MEMBRO_MOVIMENTO" : "VOLUNTARIO_PASTORAL_LOCAL";
+                // Transição: rebaixar coordenador anterior para papel de membro ativo
+                String papelRebaixado = PapelOrganizacional.MEMBRO_ATIVO.name();
                 var membroAnteriorOpt = vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(
                         old.getFielId(), grupoParoquialId, papelRebaixado, igrejaVinculoId);
                 if (membroAnteriorOpt.isPresent()) {

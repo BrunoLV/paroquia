@@ -35,7 +35,7 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
             return ModoRequisicaoCancelamento.REQUER_APROVACAO;
         }
 
-        if (papelOrg == PapelOrganizacional.COORDENADOR) {
+        if (papelOrg == PapelOrganizacional.COORDENADOR || papelOrg == PapelOrganizacional.SECRETARIO_GRUPO) {
             if (atorOrgId == null) {
                 throw new OperacaoProibidaException("Usuário não pode cancelar eventos sem um escopo de organização");
             }

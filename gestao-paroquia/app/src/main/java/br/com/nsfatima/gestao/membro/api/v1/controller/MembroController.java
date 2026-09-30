@@ -81,7 +81,7 @@ public class MembroController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Cadastra um novo membro")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Membro vinculado com sucesso",
@@ -106,7 +106,7 @@ public class MembroController {
      * @return página de vínculos que atendem aos filtros informados
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Lista membros com filtros e paginação")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Página de membros recuperada com sucesso"),
@@ -129,7 +129,7 @@ public class MembroController {
      * @throws IllegalArgumentException se não houver vínculo com o {@code id} informado
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Obtém detalhes de um membro")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Membro recuperado com sucesso",
@@ -154,7 +154,7 @@ public class MembroController {
      *                                   organização já tiver outro vínculo ativo
      */
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Atualiza dados de um membro")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Membro atualizado com sucesso",
@@ -180,7 +180,7 @@ public class MembroController {
      */
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Ativa ou desativa um membro")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Status do membro alterado com sucesso"),
@@ -197,15 +197,13 @@ public class MembroController {
 
     /**
      * Promove um Fiel já membro ativo de uma organização a um papel de liderança, criando um login para ele
-     * se ainda não possuir um.
+     * se ainda não possuir um. Restrito à provisão canônica do Pároco.
      *
      * @param request dados da promoção
      * @return o vínculo atualizado e o {@code usuarioId} (existente ou recém-criado)
      */
     @PostMapping("/promover-coordenador")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CLERO_VIGARIO')"
-            + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO')"
-            + " or hasRole('GLOBAL_VIGARIO') or hasRole('GLOBAL_SECRETARIA_PAROQUIAL') or hasRole('CPP_MESA_CPP')")
+    @PreAuthorize("hasRole('PAROCO')")
     @Operation(summary = "Promove um Fiel membro a coordenador, criando login se necessário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Membro promovido a coordenador com sucesso",

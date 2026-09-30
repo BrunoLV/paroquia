@@ -216,8 +216,11 @@ public class CriarEventoUseCase {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
+        PapelGlobal atorGlobal = PapelGlobal.fromStoredValue(actorContext.role());
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
+        if (atorGlobal == PapelGlobal.SECRETARIA_PAROQUIAL
+                || atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO
+                || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
             if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
                 throw new ViolacaoRegraNegocioException(
                         "Justificativa é obrigatória para operações submetidas pelo Secretário");

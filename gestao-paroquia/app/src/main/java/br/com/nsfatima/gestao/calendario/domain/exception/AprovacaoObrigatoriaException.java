@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.calendario.domain.exception;
 /**
  * Lançada quando uma mudança de data ou um cancelamento de evento é executado sem
  * uma aprovação válida vinculada — a aprovação precisa existir, pertencer ao evento,
- * estar no status {@code APROVADA} e ter sido decidida por um papel autorizado
- * (Pároco, coordenador ou vice-coordenador de conselho).
+ * estar no status {@code APROVADA} e ter sido decidida pelo Pároco
+ * ({@code PAROCO}).
  */
 public class AprovacaoObrigatoriaException extends RuntimeException {
 

@@ -23,7 +23,7 @@ COMMENT ON COLUMN calendario.membro_grupo.id IS 'Identificador único do registr
 COMMENT ON COLUMN calendario.membro_grupo.fiel_id IS 'Identificador do registro relacionado por fiel no contexto de membro grupo.';
 COMMENT ON COLUMN calendario.membro_grupo.grupo_paroquial_id IS 'Identificador do registro relacionado por grupo paroquial no contexto de membro grupo.';
 COMMENT ON COLUMN calendario.membro_grupo.tipo_grupo IS 'Propriedade tipo grupo que caracteriza o registro de membro grupo.';
-COMMENT ON COLUMN calendario.membro_grupo.papel IS 'Propriedade papel que caracteriza o registro de membro grupo.';
+COMMENT ON COLUMN calendario.membro_grupo.papel IS 'Papel organizacional canônico no grupo (secretario-conselho, membro-conselho-pastoral, membro-conselho-economico, coordenador, secretario-grupo, membro-ativo, voluntario).';
 COMMENT ON COLUMN calendario.membro_grupo.igreja_vinculo_id IS 'Identificador do registro relacionado por igreja vinculo no contexto de membro grupo.';
 COMMENT ON COLUMN calendario.membro_grupo.data_entrada IS 'Data de negócio referente a entrada.';
 COMMENT ON COLUMN calendario.membro_grupo.ativo IS 'Indicador booleano de vigência operacional: ativo.';

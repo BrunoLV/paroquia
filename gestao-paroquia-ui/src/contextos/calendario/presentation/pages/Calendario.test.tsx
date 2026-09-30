@@ -21,7 +21,7 @@ vi.mock('@/shared/presentation/context/NotificationContext', () => ({
   }),
 }));
 
-const mockUser = { id: '1', name: 'Test User', username: 'testuser', roles: ['ADMIN'] };
+const mockUser = { id: '1', name: 'Test User', username: 'testuser', roles: ['PAROCO'] };
 
 const mockOrgs = [
   { id: 'org-1', nome: 'Pastoral da Juventude', tipo: 'PASTORAL', contato: null, ativo: true },

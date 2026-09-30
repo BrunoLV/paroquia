@@ -60,11 +60,9 @@ public class EventoPatchAuthorizationService {
      * @throws AccessDeniedException se o ator não tiver autoridade para decisão pastoral imediata
      */
     public void assertCanLiberarConflitoAgenda(EventoActorContext actorContext) {
-        PapelOrganizacional normalizedRole = actorContext != null
-                ? PapelOrganizacional.fromStoredValue(actorContext.role())
-                : null;
+        String rawRole = actorContext != null ? actorContext.role() : null;
 
-        boolean isAuthorized = policy.isLiberacaoConflitoPermitida(normalizedRole);
+        boolean isAuthorized = policy.isLiberacaoConflitoPermitida(rawRole);
 
         if (!isAuthorized) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -82,9 +80,7 @@ public class EventoPatchAuthorizationService {
     /**
      * Valida se o ator tem papel autorizado a criar eventos e se pode fazê-lo no
      * escopo de organização/igreja informado, e determina se a criação resultante
-     * deve ser aplicada imediatamente ou requer aprovação: Pároco e determinadas
-     * lideranças de conselho pastoral (Presidente CPC, Mesa CPP, Coordenador Global)
-     * criam imediatamente; os demais papéis autorizados requerem aprovação.
+     * deve ser aplicada imediatamente ou requer aprovação.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
      * @param grupoParoquialResponsavelId identificador da organização responsável pelo evento a ser criado
@@ -95,14 +91,14 @@ public class EventoPatchAuthorizationService {
     public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(EventoActorContext actorContext,
                                                       UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
 
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
+        String rawRole = actorContext.role();
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
-        if (!policy.isCreatorRole(normalizedRole)) {
+        if (!policy.isCreatorRole(rawRole)) {
             throw new AccessDeniedException("Usuário não tem permissão para esta operação de criação");
         }
 
-        boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
+        boolean escopoAutorizado = policy.isScopeExempt(rawRole) || actorContext.organizationId() == null
                 || matchesScope(actorContext, grupoParoquialResponsavelId, igrejaVinculoId)
                 || verificarVinculoUsuario(grupoParoquialResponsavelId, igrejaVinculoId, policy.creatorRoles());
 
@@ -111,7 +107,7 @@ public class EventoPatchAuthorizationService {
                     "Usuário não pode criar eventos fora do escopo da organização responsável");
         }
 
-        return policy.resolveModoRequisicaoCriacao(normalizedRole, normalizedOrgType);
+        return policy.resolveModoRequisicaoCriacao(rawRole, normalizedOrgType);
     }
 
     /**
@@ -128,12 +124,12 @@ public class EventoPatchAuthorizationService {
     public void assertCanEditGeneral(EventoActorContext actorContext,
                                      UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
 
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (!policy.isEditorRole(normalizedRole)) {
+        String rawRole = actorContext.role();
+        if (!policy.isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para esta operação de alteração");
         }
 
-        boolean escopoAutorizado = policy.isScopeExempt(normalizedRole) || actorContext.organizationId() == null
+        boolean escopoAutorizado = policy.isScopeExempt(rawRole) || actorContext.organizationId() == null
                 || matchesScope(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId)
                 || verificarVinculoUsuario(eventoGrupoParoquialResponsavelId,
                         eventIgrejaVinculoId, policy.editorRoles());
@@ -162,16 +158,14 @@ public class EventoPatchAuthorizationService {
 
     /**
      * Garante que o ator tem permissão para alterar a organização responsável por
-     * um evento — restrito ao Pároco e a determinadas lideranças de conselho
-     * pastoral (Presidente CPC, Mesa CPP, Coordenador Global).
+     * um evento — restrito ao Pároco.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @throws OperacaoProibidaException se o ator não for Pároco nem liderança de conselho pastoral autorizada
+     * @throws OperacaoProibidaException se o ator não for Pároco
      */
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
         TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
-        policy.assertCanChangeResponsibleOrganization(normalizedRole, normalizedOrgType);
+        policy.assertCanChangeResponsibleOrganization(actorContext.role(), normalizedOrgType);
     }
 
     private boolean matchesScope(EventoActorContext actorContext,

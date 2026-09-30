@@ -31,13 +31,19 @@ Assegurar que toda operação de criação, edição ou remoção de dados no ec
 ### RN-GOV-03: Timestamps Estritamente em UTC
 - Todas as datas e horas de auditoria e persistência no banco de dados devem ser armazenadas em UTC (`Instant`), convertendo para o fuso local da Paróquia (ex.: `America/Sao_Paulo`) exclusivamente na camada de apresentação/UI.
 
+### RN-GOV-04: Isolamento Canônico do Papel `ADMIN` e Trava do Ano Paroquial
+- O papel `ADMIN` é estritamente restrito à infraestrutura técnica, logs e segurança do sistema, sendo expressamente impedido de executar atos de governo eclesial (como homologar atas, aprovar eventos ou alterar o status do Ano Paroquial).
+- A abertura, fechamento ou arquivamento do Ano Paroquial (`AnoParoquialStatus`) é prerrogativa exclusiva de governo canônico do **`PAROCO`** (Cân. 515 §1 e Cân. 532), validada por `ConselhoOuParocoAutorizacaoAnoParoquialPolicy`.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
 1. **Auditoria Transacional:** Captura automática do contexto de segurança Spring Security (`SecurityContextHolder`) e persistência atômica.
-2. **Trilha de Auditoria:** Painel para o Pároco e Auditoria Diocesana inspecionarem quem realizou determinada alteração crítica.
+2. **Trilha de Auditoria:** Painel para o Pároco, Vigário, Conselho Econômico (`MEMBRO_CONSELHO_ECONOMICO`) e Auditoria Diocesana (`BISPO_DIOCESANO`) inspecionarem quem realizou determinada alteração crítica.
+3. **Gestão do Ciclo do Ano Paroquial:** Controle de abertura e trava de planejamento anual pelo `PAROCO`.
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
 - Todos os bounded contexts dependem de `BaseAuditableEntity` e da infraestrutura de governança.
+

@@ -21,9 +21,9 @@ class RbacOrganizationIntegrationTest {
 
     @Test
     void deveImporPapelCatalogPorGrupoParoquialTipo() {
-        assertTrue(aceita("CONSELHO", PapelOrganizacional.SECRETARIO));
-        assertFalse(aceita("CLERO", PapelOrganizacional.SECRETARIO));
-        assertTrue(aceita("PASTORAL", PapelOrganizacional.COORD_PASTORAL_LOCAL));
+        assertTrue(aceita("CONSELHO", PapelOrganizacional.SECRETARIO_CONSELHO));
+        assertFalse(aceita("CLERO", PapelOrganizacional.SECRETARIO_CONSELHO));
+        assertTrue(aceita("PASTORAL", PapelOrganizacional.COORDENADOR));
     }
 
     private boolean aceita(String tipo, PapelOrganizacional papel) {

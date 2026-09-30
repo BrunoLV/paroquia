@@ -73,7 +73,7 @@ public class FielController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CLERO_VIGARIO', 'CONSELHO_COORDENADOR', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Lista todos os Fiéis")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de fiéis recuperada com sucesso",
@@ -94,7 +94,7 @@ public class FielController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CLERO_VIGARIO', 'CONSELHO_COORDENADOR', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Obtém detalhes de um Fiel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fiel recuperado com sucesso",
@@ -119,7 +119,7 @@ public class FielController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CLERO_VIGARIO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Cadastra um novo Fiel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Fiel cadastrado com sucesso",
@@ -135,7 +135,7 @@ public class FielController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CLERO_VIGARIO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Atualiza um Fiel (substituição)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fiel atualizado com sucesso",
@@ -153,7 +153,7 @@ public class FielController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CLERO_VIGARIO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Atualiza um Fiel (parcial)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Campos do fiel atualizados com sucesso",
@@ -172,7 +172,7 @@ public class FielController {
 
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Ativa ou desativa um cadastro de Fiel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Status do fiel alterado com sucesso"),
@@ -194,7 +194,7 @@ public class FielController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Exclui logicamente um cadastro de Fiel")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Fiel inativado/excluído logicamente com sucesso"),

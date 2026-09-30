@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,8 +29,8 @@ import java.util.UUID;
 /**
  * Gerencia o cadastro das solenidades litúrgicas (datas fixas ou móveis do calendário eclesiástico,
  * como Natal, Páscoa e festas de guarda) que servem de base para o provisionamento anual de eventos
- * da Matriz e das Comunidades. A criação, atualização e remoção são restritas por papel do usuário,
- * verificado a partir do cabeçalho {@code X-User-Role}.
+ * da Matriz e das Comunidades. A criação, atualização e remoção são restritas ao Pároco via
+ * segurança declarativa {@code @PreAuthorize}.
  */
 @RestController
 @RequestMapping("/api/v1/solenidades-liturgicas")
@@ -86,14 +85,13 @@ public class SolenidadeLiturgicaController {
     }
 
     /**
-     * Cadastra uma nova solenidade litúrgica, sujeita à autorização por papel do usuário informado
-     * no cabeçalho {@code X-User-Role}.
+     * Cadastra uma nova solenidade litúrgica, restrita à autoridade canônica do Pároco.
      *
      * @param request dados da solenidade a ser criada
-     * @param userRole papel do usuário requisitante, usado para autorizar a operação
      * @return a solenidade litúrgica criada, com status HTTP 201
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO', 'PAROCO')")
     @Operation(summary = "Cadastra uma nova solenidade", description = "Cria uma nova solenidade litúrgica com base nos dados informados.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Solenidade criada com sucesso",
@@ -103,22 +101,20 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public ResponseEntity<SolenidadeLiturgicaResponseDTO> criar(
-            @RequestBody SolenidadeLiturgicaRequestDTO request,
-            @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
-        SolenidadeLiturgicaResponseDTO response = service.create(request, userRole);
+            @RequestBody SolenidadeLiturgicaRequestDTO request) {
+        SolenidadeLiturgicaResponseDTO response = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * Atualiza os dados de uma solenidade litúrgica existente, sujeita à autorização por papel do
-     * usuário informado no cabeçalho {@code X-User-Role}.
+     * Atualiza os dados de uma solenidade litúrgica existente, restrita à autoridade canônica do Pároco.
      *
      * @param id identificador da solenidade a ser atualizada
      * @param request novos dados da solenidade
-     * @param userRole papel do usuário requisitante, usado para autorizar a operação
      * @return a solenidade litúrgica atualizada
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO', 'PAROCO')")
     @Operation(summary = "Atualiza uma solenidade", description = "Atualiza os dados de uma solenidade litúrgica existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Solenidade atualizada com sucesso",
@@ -130,22 +126,20 @@ public class SolenidadeLiturgicaController {
     })
     public ResponseEntity<SolenidadeLiturgicaResponseDTO> atualizar(
             @Parameter(description = "Identificador único da solenidade") @PathVariable UUID id,
-            @RequestBody SolenidadeLiturgicaRequestDTO request,
-            @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
-        SolenidadeLiturgicaResponseDTO response = service.update(id, request, userRole);
+            @RequestBody SolenidadeLiturgicaRequestDTO request) {
+        SolenidadeLiturgicaResponseDTO response = service.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Remove uma solenidade litúrgica do cadastro, sujeita à autorização por papel do usuário
-     * informado no cabeçalho {@code X-User-Role}. Solenidades removidas deixam de ser consideradas
-     * no provisionamento anual de eventos.
+     * Remove uma solenidade litúrgica do cadastro, restrita à autoridade canônica do Pároco.
+     * Solenidades removidas deixam de ser consideradas no provisionamento anual de eventos.
      *
      * @param id identificador da solenidade a ser removida
-     * @param userRole papel do usuário requisitante, usado para autorizar a operação
      * @return {@code 204 No Content} após a remoção bem-sucedida
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO', 'PAROCO')")
     @Operation(summary = "Remove uma solenidade", description = "Remove uma solenidade litúrgica pelo identificador.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Solenidade removida com sucesso"),
@@ -154,9 +148,8 @@ public class SolenidadeLiturgicaController {
             @ApiResponse(responseCode = "404", description = "Solenidade não encontrada")
     })
     public ResponseEntity<Void> excluir(
-            @Parameter(description = "Identificador único da solenidade") @PathVariable UUID id,
-            @Parameter(description = "Papel do usuário requisitante") @RequestHeader(value = "X-User-Role", required = false) String userRole) {
-        service.delete(id, userRole);
+            @Parameter(description = "Identificador único da solenidade") @PathVariable UUID id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

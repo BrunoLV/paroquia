@@ -40,9 +40,9 @@ public class UsuarioAuthorizationService {
 
     /**
      * Garante que o ator autenticado pode gerenciar o usuário-alvo: passa livre se for admin global; caso
-     * contrário, exige que o ator seja coordenador (papel contendo "coordenador", "presidente" ou
-     * "mesa-diretora", normalizado) em pelo menos uma organização onde o usuário-alvo também possui vínculo
-     * ativo — ou seja, coordenador só gerencia membros da(s) própria(s) organização(ões).
+     * contrário, exige que o ator seja coordenador ({@code coordenador}) em pelo menos uma organização onde o
+     * usuário-alvo também possui vínculo ativo — ou seja, coordenador só gerencia membros da(s) própria(s)
+     * organização(ões).
      *
      * @param targetUserId identificador do usuário sobre o qual a ação será executada
      * @throws AccessDeniedException se não houver autenticação, se o ator não for admin nem coordenador, ou
@@ -118,7 +118,15 @@ public class UsuarioAuthorizationService {
 
     private boolean isAdmin(Authentication auth) {
         boolean adminPorAuthority = auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_ADMIN".equals(a.getAuthority())
+                        || "ROLE_PAROCO".equals(a.getAuthority())
+                        || "ROLE_CLERO_PAROCO".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_PAROCO".equals(a.getAuthority())
+                        || "ROLE_BISPO_DIOCESANO".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority())
+                        || "ROLE_SECRETARIA_PAROQUIAL".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_SECRETARIA_PAROQUIAL".equals(a.getAuthority()));
         if (adminPorAuthority) {
             return true;
         }

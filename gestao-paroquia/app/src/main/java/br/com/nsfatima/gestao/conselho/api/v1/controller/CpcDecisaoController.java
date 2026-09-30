@@ -84,7 +84,7 @@ public class CpcDecisaoController {
     /**
      * Registra uma nova ata/decisão de conselho, sempre nascendo como
      * {@link br.com.nsfatima.gestao.conselho.domain.model.StatusHomologacao#PENDENTE_HOMOLOGACAO}.
-     * Acessível a membros e presidência do CPC/CPP, além de Pároco e Admin — mas o registro
+     * Acessível a membros e secretários do CPC/CPP/CAE, além do Pároco — mas o registro
      * em si não aprova a decisão, apenas a documenta para posterior homologação.
      *
      * @param request dados da pauta/ata a registrar
@@ -92,7 +92,7 @@ public class CpcDecisaoController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO', 'CONSELHO_SECRETARIO_CONSELHO', 'CONSELHO_MEMBRO_CONSELHO_PASTORAL', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
+    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL', 'MEMBRO_CONSELHO_ECONOMICO')")
     @Operation(summary = "Registra uma nova ata ou decisão de conselho (padrão: PENDENTE_HOMOLOGACAO)")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Decisão registrada com sucesso",
@@ -115,7 +115,7 @@ public class CpcDecisaoController {
      * @return a decisão já homologada/vetada
      */
     @PatchMapping("/{id}/homologacao")
-    @PreAuthorize("hasAnyRole('CLERO_PAROCO', 'GLOBAL_PAROCO')")
+    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Homologa ou veta uma ata/decisão de conselho (exclusivo para o Pároco)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Decisão homologada ou vetada com sucesso",

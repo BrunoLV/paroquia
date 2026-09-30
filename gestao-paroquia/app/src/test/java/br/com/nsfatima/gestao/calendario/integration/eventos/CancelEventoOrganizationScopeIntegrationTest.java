@@ -40,7 +40,7 @@ class CancelEventoOrganizationScopeIntegrationTest {
         eventoJpaRepository.save(evento);
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)

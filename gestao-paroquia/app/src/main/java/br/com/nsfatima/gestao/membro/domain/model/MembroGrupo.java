@@ -62,12 +62,7 @@ public class MembroGrupo {
     }
 
     public final void atribuirPapel(PapelOrganizacional novoPapel) {
-        Objects.requireNonNull(novoPapel, "Papel do vínculo é obrigatório.");
-        if (novoPapel.isGlobal()) {
-            throw new IllegalArgumentException(
-                    "Papel " + novoPapel + " é global — atribua via AtribuirPapelGlobalUseCase, não MembroGrupo");
-        }
-        this.papel = novoPapel;
+        this.papel = Objects.requireNonNull(novoPapel, "Papel do vínculo é obrigatório.");
     }
 
     /** Reaponta os dados cadastrais do vínculo (fluxo de edição). */

@@ -37,7 +37,7 @@ import java.util.UUID;
  * <p><b>Regra de desvio para aprovação no cancelamento:</b> ao contrário de
  * {@link #iniciar} e {@link #concluir}, que aplicam a transição diretamente quando o ator está
  * autorizado, {@link #cancelar} verifica {@code ProjetoAuthorizationService#isAtorDeAltoNivel}.
- * Se o ator for de alto nível (ex.: PAROCO, ADMIN, coordenador de conselho pastoral), o
+ * Se o ator for de alto nível ({@code PAROCO} ou {@code BISPO_DIOCESANO}), o
  * cancelamento é aplicado imediatamente e os eventos vinculados são cancelados ou desvinculados
  * conforme {@code cancelarEventosVinculados}. Caso contrário — mesmo que o ator tenha permissão
  * para cancelar segundo {@code ProjetoAuthorizationService#assertCanCancel} — a mudança de
@@ -242,7 +242,7 @@ public class TransicionarProjetoUseCase {
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         if (!authorizationService.isAtorDeAltoNivel(actorContext)) {
             throw new OperacaoProibidaException(
-                    "Apenas ADMIN, PAROCO ou coordenadores do CONSELHO podem decidir solicitações de projeto");
+                    "Apenas o Pároco possui autoridade canônica para decidir solicitações de projeto");
         }
 
         req.setStatus(aprovado ? AprovacaoStatus.APROVADA : AprovacaoStatus.REPROVADA);

@@ -49,19 +49,20 @@ Permitir o planejamento, agendamento e execução de todas as atividades celebra
 ```mermaid
 stateDiagram-v2
     [*] --> Rascunho : Criar Evento
-    Rascunho --> PendenteAprovacao : Submeter Evento
-    PendenteAprovacao --> Confirmado : Aprovado (Pároco/Conselho)
-    PendenteAprovacao --> Rejeitado : Recusado (com justificativa)
-    Confirmado --> PendenteAprovacao : Solicitar Edição/Cancelamento
-    Confirmado --> Cancelado : Cancelar (Pároco)
+    Rascunho --> PendenteAprovacao : Submeter Evento (Coordenador/Conselho)
+    PendenteAprovacao --> Confirmado : Aprovado (Exclusivo Pároco)
+    PendenteAprovacao --> Rejeitado : Recusado pelo Pároco (com justificativa)
+    Confirmado --> PendenteAprovacao : Solicitar Edição/Cancelamento (Coordenador)
+    Confirmado --> Cancelado : Cancelar Direto (Pároco)
     Confirmado --> [*] : Evento Concluído
     Rejeitado --> [*]
     Cancelado --> [*]
 ```
 
-1. **Submissão de Evento por Líder Pastoral:** O líder submete evento -> Choque de horário é validado -> Evento entra em `PENDENTE_APROVACAO`.
-2. **Visualização:** Grade mensal com cores por categoria e alternância para lista corrida (agenda).
-3. **Exportação:** Exportação oficial de grade e celebrações em PowerPoint (PPTX), PDF e Word (DOCX).
+1. **Submissão de Evento por Coordenador (`COORDENADOR`) ou Conselho:** A liderança submete evento ou alteração sensível -> Choque de horário é validado -> Solicitação entra em `PENDENTE_APROVACAO` sob alçada decisória exclusiva do `PAROCO` (`AprovadorPapel.PAROCO`).
+2. **Gestão do Catálogo Litúrgico e Solenidades:** Exclusiva do `PAROCO` (governo litúrgico paroquial).
+3. **Visualização:** Grade mensal com cores por categoria e alternância para lista corrida (agenda).
+4. **Exportação:** Exportação oficial de grade e celebrações em PowerPoint (PPTX), PDF e Word (DOCX).
 
 ---
 

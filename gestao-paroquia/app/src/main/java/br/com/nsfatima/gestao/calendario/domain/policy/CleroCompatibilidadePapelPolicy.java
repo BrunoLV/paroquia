@@ -7,8 +7,6 @@ public final class CleroCompatibilidadePapelPolicy implements CompatibilidadePap
 
     @Override
     public boolean aceita(String tipoOrganizacao, PapelOrganizacional papel) {
-        return "CLERO".equalsIgnoreCase(tipoOrganizacao)
-                && (papel == PapelOrganizacional.PAROCO || papel == PapelOrganizacional.VIGARIO
-                || papel == PapelOrganizacional.PADRE || papel == PapelOrganizacional.DIACONO);
+        return false;
     }
 }

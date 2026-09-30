@@ -32,7 +32,7 @@ class AprovacoesDecisionExecutionContractTest {
     void approvedDecisionResponseContainsActionExecutionSchema() throws Exception {
         MvcResult pending = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -52,8 +52,8 @@ class AprovacoesDecisionExecutionContractTest {
                 .get("solicitacaoAprovacaoId").asString();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -73,7 +73,7 @@ class AprovacoesDecisionExecutionContractTest {
     void rejectedDecisionResponseContainsActionExecutionSchema() throws Exception {
         MvcResult pending = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,8 +93,8 @@ class AprovacoesDecisionExecutionContractTest {
                 .get("solicitacaoAprovacaoId").asString();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.policy.AutorizacaoEscopoUsuarioPolicy;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class EscopoUsuarioAuthorizationService {
     }
 
     public boolean canManageOrganizationData(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
@@ -30,7 +29,7 @@ public class EscopoUsuarioAuthorizationService {
     }
 
     public boolean canApproveEvents(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId) {
@@ -38,7 +37,7 @@ public class EscopoUsuarioAuthorizationService {
     }
 
     public boolean canAddObservation(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
@@ -46,12 +45,12 @@ public class EscopoUsuarioAuthorizationService {
         return policy.canAddObservation(userRole, userOrgType, userOrgId, targetOrgId, isParticipant);
     }
 
-    public boolean canViewPendenteEvents(PapelOrganizacional userRole) {
+    public boolean canViewPendenteEvents(String userRole) {
         return policy.canViewPendenteEvents(userRole);
     }
 
     public boolean hasTerritorialAccess(
-            PapelOrganizacional userRole,
+            String userRole,
             UUID userCommunityId,
             UUID targetCommunityId) {
         return policy.hasTerritorialAccess(userRole, userCommunityId, targetCommunityId);

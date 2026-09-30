@@ -108,7 +108,13 @@ describe('Configuracoes page', () => {
     });
   });
 
-  it('calls update status when Fechar Ano button is clicked by authorized user', async () => {
+  it('calls update status when Fechar Ano button is clicked by authorized user (PAROCO)', async () => {
+    mockCurrentUser = {
+      id: '1',
+      name: 'Pároco',
+      roles: ['PAROCO'],
+      organizations: [],
+    };
     const updateSpy = vi.spyOn(anosApi, 'updateAnoParoquialStatus').mockResolvedValueOnce({
       ano: 2026,
       status: 'FECHADO',
@@ -200,7 +206,7 @@ describe('Configuracoes page', () => {
     mockCurrentUser = {
       id: '2',
       name: 'Membro',
-      roles: ['ROLE_MEMBRO'],
+      roles: ['MEMBRO_ATIVO'],
       organizations: [],
     };
 

@@ -78,7 +78,7 @@ class CancelEventoAuditTrailIntegrationTest {
 
         verify(eventoAuditPublisher, atLeastOnce()).publishCancellationPendente(eq("joao.silva"),
                 eq(eventoId.toString()), eq(aprovacaoId.toString()), eq("Gerar trilha de pendente"));
-        verify(eventoAuditPublisher, atLeastOnce()).publishAprovacaoDecision(eq("joao.silva"),
+        verify(eventoAuditPublisher, atLeastOnce()).publishAprovacaoDecision(eq("ana.conselho"),
                 any(), eq("executado"), anyMap());
         verify(eventoAuditPublisher, atLeastOnce()).publish(eq("system"), eq("aprovacao-decisao-solicitacao"),
                 eq(aprovacaoId.toString()), eq("recebido"), anyMap());

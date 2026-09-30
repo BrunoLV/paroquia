@@ -65,8 +65,8 @@ class AuditoriaIntegradaIntegrationTest {
     void deveAuditarProjetoOperacoes() throws Exception {
         // 1. Create Project
         String createResponse = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
@@ -83,8 +83,8 @@ class AuditoriaIntegradaIntegrationTest {
 
         // 2. Patch Project
         mockMvc.perform(patch("/api/v1/projetos/{id}", projectId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nome\":\"Projeto Auditado Atualizado\"}"))
@@ -118,15 +118,15 @@ class AuditoriaIntegradaIntegrationTest {
         aprovacao.setId(approvalId);
         aprovacao.setEventoId(evento.getId());
         aprovacao.setTipoSolicitacao("ALTERACAO_HORARIO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setCorrelationId("decide-audit-test");
         aprovacaoRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", approvalId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"REPROVADA\",\"observacao\":\"Auditando decisao\"}"))

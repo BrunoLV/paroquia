@@ -15,10 +15,10 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
     private final UUID comunidadeBId = UUID.randomUUID();
 
     @Test
-    @DisplayName("Admin, Pároco e Vigário possuem acesso amplo de gestão")
-    void devePermitirAcessoAmploParaCleroEAdmin() {
+    @DisplayName("Pároco e Vigário possuem acesso amplo de gestão enquanto Admin é isolado")
+    void devePermitirAcessoAmploParaCleroEBloquearAdmin() {
         assertThat(policy.canManageOrganizationData(
-                "admin", TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
+                "admin", TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
         assertThat(policy.canManageOrganizationData(
                 "paroco", TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
         assertThat(policy.canManageOrganizationData(

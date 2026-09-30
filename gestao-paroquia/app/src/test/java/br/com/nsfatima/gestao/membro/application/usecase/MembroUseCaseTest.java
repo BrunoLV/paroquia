@@ -79,7 +79,7 @@ class MembroUseCaseTest {
         request = new MembroRequest(
                 fielId,
                 grupoParoquialId,
-                "MEMBRO_PASTORAL",
+                "MEMBRO_ATIVO",
                 LocalDate.now(),
                 null,
                 true
@@ -90,7 +90,7 @@ class MembroUseCaseTest {
         entity.setFielId(fielId);
         entity.setGrupoParoquialId(grupoParoquialId);
         entity.setTipoGrupo(TipoGrupo.PASTORAL);
-        entity.setPapel("MEMBRO_PASTORAL");
+        entity.setPapel("MEMBRO_ATIVO");
 
         response = new MembroResponse(
                 entity.getId(),
@@ -100,7 +100,7 @@ class MembroUseCaseTest {
                 "11999999999",
                 grupoParoquialId,
                 "Pastoral da Música",
-                "MEMBRO_PASTORAL",
+                "MEMBRO_ATIVO",
                 LocalDate.now(),
                 true,
                 null

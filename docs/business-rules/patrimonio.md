@@ -25,8 +25,8 @@ Prover inventário fidedigno de bens móveis e imóveis, alfaias, vasos sagrados
 ### RN-PAT-02: Termo de Responsabilidade e Custódia
 - Bens que saiam das dependências físicas da paróquia ou sejam alocados a pastorais específicas exigem emissão de termo de responsabilidade com identificação do fiel responsável.
 
-### RN-PAT-03: Bens Litúrgicos e Vasos Sagrados
-- Vasos sagrados (cálices, cibórios, custódias) e arte sacra possuem tratamento diferenciado com proibição estrita de baixa/descarte sem autorização expressa do Pároco e da Cúria Diocesana.
+### RN-PAT-03: Bens Litúrgicos, Alienação e Parecer do CAE (Cân. 537)
+- Vasos sagrados (cálices, cibórios, custódias), arte sacra e bens de grande porte possuem tratamento diferenciado: o Conselho de Assuntos Econômicos (`MEMBRO_CONSELHO_ECONOMICO`) emite parecer consultivo e auditoria patrimonial, cabendo exclusivamente ao **`PAROCO`** (com licença do **`BISPO_DIOCESANO`** quando exigido pelo direito universal/particular) a decisão executiva de alienação, manutenção extraordinária ou baixa.
 
 ### RN-PAT-04: Alocação Conflitante em Eventos
 - Um item patrimonial não pode ser alocado simultaneamente para dois eventos distintos que ocorram no mesmo horário.
@@ -34,13 +34,14 @@ Prover inventário fidedigno de bens móveis e imóveis, alfaias, vasos sagrados
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
-1. **Tombamento e Entrada de Ativos:** Registro com número patrimonial, fotos, nota fiscal e local de guarda.
+1. **Tombamento e Entrada de Ativos:** Registro com número patrimonial, fotos, nota fiscal e local de guarda pela `SECRETARIA_PAROQUIAL` ou `MEMBRO_CONSELHO_ECONOMICO`.
 2. **Alocação para Eventos:** Reserva de projetor, microfones ou mobiliário para eventos cadastrados no calendário.
-3. **Inventário Anual:** Conferência periódica de bens em cada comunidade com emissão de relatório patrimonial para prestação de contas ao CAEP e à Diocese.
+3. **Inventário Anual:** Conferência periódica de bens em cada comunidade com emissão de parecer pelo CAE (`MEMBRO_CONSELHO_ECONOMICO`) e homologação pelo `PAROCO` para prestação de contas à Diocese.
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
 - **`calendario`:** Reserva de equipamentos móveis durante o período de celebrações ou festas.
 - **`local`:** Vínculo de custódia e localização física de bens.
-- **`conselho`:** Relatórios de patrimônio submetidos ao CAEP para aprovação de contas.
+- **`conselho`:** Pareceres consultivos patrimoniais emitidos pelo CAE/CAEP para decisão final do `PAROCO`.
+

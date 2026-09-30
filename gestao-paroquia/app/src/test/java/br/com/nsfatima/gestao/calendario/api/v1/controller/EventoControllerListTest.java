@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.Ap
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ObservacaoEventoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
@@ -32,6 +33,9 @@ class EventoControllerListTest {
     private EventoJpaRepository eventoJpaRepository;
 
     @Autowired
+    private EventoRecorrenciaJpaRepository eventoRecorrenciaJpaRepository;
+
+    @Autowired
     private GrupoParoquialJpaRepository grupoParoquialJpaRepository;
 
     @Autowired
@@ -48,6 +52,13 @@ class EventoControllerListTest {
         observacaoEventoJpaRepository.deleteAll();
         aprovacaoJpaRepository.deleteAll();
         eventoEnvolvidoJpaRepository.deleteAll();
+        eventoJpaRepository.findAll().forEach(e -> {
+            if (e.getRecorrenciaId() != null) {
+                e.setRecorrenciaId(null);
+                eventoJpaRepository.save(e);
+            }
+        });
+        eventoRecorrenciaJpaRepository.deleteAll();
         eventoJpaRepository.deleteAll();
         UUID orgId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         if (!grupoParoquialJpaRepository.existsById(orgId)) {

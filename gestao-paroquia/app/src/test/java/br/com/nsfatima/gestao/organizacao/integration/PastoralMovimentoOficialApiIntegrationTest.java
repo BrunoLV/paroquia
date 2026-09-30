@@ -123,7 +123,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """, conselhoId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user("paroco").roles("PAROCO"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isConflict());
@@ -165,7 +165,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 """, conselhoId, officialId);
 
         mockMvc.perform(post("/api/v1/organizacoes")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user("paroco").roles("PAROCO"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isCreated())

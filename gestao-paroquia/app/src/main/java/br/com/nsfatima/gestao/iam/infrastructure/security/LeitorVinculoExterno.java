@@ -73,6 +73,7 @@ public class LeitorVinculoExterno {
         for (Vinculo vinculo : findVinculosAtivos(userId)) {
             if (organizationId == null || organizationId.equals(vinculo.organizationId())) {
                 roles.add(vinculo.authority());
+                roles.add(vinculo.scopedAuthority());
             }
         }
         return roles;
@@ -101,6 +102,8 @@ public class LeitorVinculoExterno {
                             WHEN ec.funcao = 'PAROCO' THEN 'paroco'
                             WHEN ec.funcao = 'ADMINISTRADOR_PAROQUIAL' THEN 'paroco'
                             WHEN ec.funcao = 'VIGARIO_PAROQUIAL' THEN 'vigario'
+                            WHEN ec.funcao = 'DIACONO_AUXILIAR' THEN 'diacono-paroquial'
+                            WHEN ec.funcao = 'EMERITO' THEN 'fiel'
                             ELSE LOWER(REPLACE(ec.funcao, '_', '-'))
                         END as papel
                         FROM calendario.encargos_clericais ec
@@ -154,14 +157,17 @@ public class LeitorVinculoExterno {
         }
 
         /**
-         * Constrói a authority Spring Security correspondente a este vínculo, no formato
-         * {@code ROLE_<TIPO_GRUPO_PAROQUIAL>_<PAPEL>} (ex.: {@code ROLE_COMUNIDADE_COORDENADOR}), normalizando
-         * espaços e hífens para underscore em maiúsculas — é assim que papéis por-organização se tornam
-         * comparáveis a {@code hasRole(...)}/{@code hasAuthority(...)} do Spring Security.
+         * Constrói as authorities Spring Security correspondentes a este vínculo, gerando primariamente
+         * o papel canônico puro {@code ROLE_<PAPEL>} (ex.: {@code ROLE_COORDENADOR}, {@code ROLE_SECRETARIO_CONSELHO})
+         * e, secundariamente, o papel escopado {@code ROLE_<TIPO_GRUPO>_<PAPEL>} para compatibilidade.
          *
-         * @return a authority no formato {@code ROLE_<TIPO>_<PAPEL>}
+         * @return a authority principal canônica no formato {@code ROLE_<PAPEL>}
          */
         public String authority() {
+            return "ROLE_" + normalize(role);
+        }
+
+        public String scopedAuthority() {
             return "ROLE_" + normalize(organizationType) + "_" + normalize(role);
         }
     }

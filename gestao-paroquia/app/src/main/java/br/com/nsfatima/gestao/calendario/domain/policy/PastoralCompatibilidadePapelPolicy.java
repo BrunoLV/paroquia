@@ -8,9 +8,10 @@ import java.util.Set;
 public final class PastoralCompatibilidadePapelPolicy implements CompatibilidadePapelOrganizacionalPolicy {
 
     private static final Set<PapelOrganizacional> PAPEIS_PERMITIDOS = Set.of(
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL, PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
-            PapelOrganizacional.MEMBRO_PASTORAL);
+            PapelOrganizacional.COORDENADOR,
+            PapelOrganizacional.SECRETARIO_GRUPO,
+            PapelOrganizacional.MEMBRO_ATIVO,
+            PapelOrganizacional.VOLUNTARIO);
 
     @Override
     public boolean aceita(String tipoOrganizacao, PapelOrganizacional papel) {

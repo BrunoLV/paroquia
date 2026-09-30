@@ -73,7 +73,7 @@ public class DioceseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Cadastra uma nova diocese", description = "Registra uma diocese com seus dados canônicos e civis.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Diocese criada com sucesso",
@@ -87,7 +87,7 @@ public class DioceseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Atualiza os dados de uma diocese", description = "Atualiza o cadastro de uma diocese existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Diocese atualizada com sucesso",
@@ -106,7 +106,7 @@ public class DioceseController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Exclui uma diocese", description = "Remove uma diocese pelo seu identificador único.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Diocese excluída com sucesso"),

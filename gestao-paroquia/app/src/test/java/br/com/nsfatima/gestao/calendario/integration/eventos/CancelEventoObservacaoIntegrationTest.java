@@ -53,15 +53,15 @@ class CancelEventoObservacaoIntegrationTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(eventoId);
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setMotivoCancelamentoSnapshot("Observacao de cancelamento aprovada");
         aprovacaoJpaRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

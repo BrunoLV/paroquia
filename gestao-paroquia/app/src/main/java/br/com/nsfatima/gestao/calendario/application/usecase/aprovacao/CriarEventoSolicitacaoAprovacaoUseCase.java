@@ -80,7 +80,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
-        entity.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
+        entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(request.inicio());
         entity.setJustificativa(justificativa != null ? justificativa : request.adicionadoExtraJustificativa());
@@ -144,7 +144,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
             filha.setSolicitanteId(context.actor());
             filha.setSolicitantePapel(context.role());
             filha.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
-            filha.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
+            filha.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
             filha.setCriadoEmUtc(Instant.now());
             filha.setDataOcorrenciaUtc(occStart);
             filha.setJustificativa(mestre.getJustificativa());

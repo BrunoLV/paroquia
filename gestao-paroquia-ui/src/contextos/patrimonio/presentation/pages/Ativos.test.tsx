@@ -84,11 +84,11 @@ describe('Ativos Page', () => {
     });
   };
 
-  const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+  const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
   const memberUser = {
     id: '2',
     name: 'Membro',
-    roles: ['ROLE_PASTORAL_MEMBRO'],
+    roles: ['ROLE_PASTORAL_MEMBRO_ATIVO'],
     organizations: [{ id: 'org-1', nome: 'Comunidade Santo Agostinho', tipo: 'COMUNIDADE', ativo: true }],
   };
   const coordenadorUser = {

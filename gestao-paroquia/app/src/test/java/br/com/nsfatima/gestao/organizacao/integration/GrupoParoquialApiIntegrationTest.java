@@ -82,7 +82,7 @@ class GrupoParoquialApiIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "PAROCO")
     void deveCriarERecuperarGrupoParoquial() throws Exception {
         String payload = String.format("""
                 {
@@ -118,8 +118,8 @@ class GrupoParoquialApiIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "CONSELHO_COORDENADOR")
-    void devePermitirCriarParaConselhoCoordenador() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void deveNegarCriarParaAdminTecnico() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral da Acolhida",
@@ -136,14 +136,12 @@ class GrupoParoquialApiIntegrationTest {
         mockMvc.perform(post("/api/v1/organizacoes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nome").value("Pastoral da Acolhida"))
-                .andExpect(jsonPath("$.coordenador").value("Carlos Coordenador"));
+                .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "USER")
-    void deveNegarCriarParaNaoAdmin() throws Exception {
+    void deveNegarCriarParaNaoParoco() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Tentativa",

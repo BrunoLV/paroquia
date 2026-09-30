@@ -83,7 +83,7 @@ public class AjusteCadastralController {
     }
 
     @GetMapping("/ajustes-cadastrais")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Lista solicitações de ajuste pendentes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pendências recuperada com sucesso",
@@ -97,7 +97,7 @@ public class AjusteCadastralController {
     }
 
     @GetMapping("/fieis/{fielId}/ajustes-cadastrais")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Lista solicitações pendentes de um fiel específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de pendências do fiel recuperada com sucesso",
@@ -113,7 +113,7 @@ public class AjusteCadastralController {
 
     @PostMapping("/ajustes-cadastrais/{id}/decidir")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
     @Operation(summary = "Decide uma solicitação de ajuste cadastral")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Decisão registrada com sucesso"),

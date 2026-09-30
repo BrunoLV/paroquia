@@ -15,11 +15,11 @@ class PadraoAutorizacaoProjetoPolicyTest {
     private final PadraoAutorizacaoProjetoPolicy policy = new PadraoAutorizacaoProjetoPolicy();
 
     @Test
-    @DisplayName("Pároco e Admin são sempre considerados atores de alto nível")
-    void deveReconhecerAltoNivelParaParocoEAdmin() {
+    @DisplayName("Pároco e Bispo Diocesano são considerados atores de alto nível; Admin é isolado")
+    void deveReconhecerAltoNivelParaParocoEBispoDiocesano() {
         assertThat(policy.isAtorDeAltoNivel("paroco", "PASTORAL")).isTrue();
-        assertThat(policy.isAtorDeAltoNivel("admin", null)).isTrue();
         assertThat(policy.isAtorDeAltoNivel("bispo-diocesano", null)).isTrue();
+        assertThat(policy.isAtorDeAltoNivel("admin", null)).isFalse();
         assertThat(policy.isAtorDeAltoNivel("coordenador", "PASTORAL")).isFalse();
         assertThat(policy.isAtorDeAltoNivel("membro-ativo", "PASTORAL")).isFalse();
     }
@@ -32,7 +32,7 @@ class PadraoAutorizacaoProjetoPolicyTest {
 
         assertThatCode(() -> policy.assertCanCreate("paroco", "PASTORAL", atorOrg, outraOrg))
                 .doesNotThrowAnyException();
-        assertThatCode(() -> policy.assertCanEdit("admin", null, atorOrg, outraOrg))
+        assertThatCode(() -> policy.assertCanEdit("bispo-diocesano", null, atorOrg, outraOrg))
                 .doesNotThrowAnyException();
     }
 

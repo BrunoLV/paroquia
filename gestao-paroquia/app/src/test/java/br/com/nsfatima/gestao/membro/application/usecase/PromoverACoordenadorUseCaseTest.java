@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
+import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
@@ -16,6 +17,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -77,7 +79,7 @@ class PromoverACoordenadorUseCaseTest {
         membro.setFielId(fielId);
         membro.setGrupoParoquialId(grupoParoquialId);
         membro.setTipoGrupo(TipoGrupo.PASTORAL);
-        membro.setPapel("VOLUNTARIO_PASTORAL_LOCAL");
+        membro.setPapel("VOLUNTARIO");
         membro.setAtivo(true);
         when(membroRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(fielId, grupoParoquialId))
                 .thenReturn(Optional.of(membro));
@@ -95,15 +97,15 @@ class PromoverACoordenadorUseCaseTest {
         when(papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)).thenReturn(isGlobal);
     }
 
-    private void authenticateAsMesaCpp() {
+    private void authenticateAsParoco() {
         var principal = new UsuarioDetails(actorId, "actor", "pass", true, "", List.of());
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_CPP_MESA_CPP"))));
+                        List.of(new SimpleGrantedAuthority("ROLE_CLERO_PAROCO"))));
     }
 
     private PromoverACoordenadorRequest request() {
-        return new PromoverACoordenadorRequest(fielId, grupoParoquialId, "COORD_PASTORAL_LOCAL", "maria.coord",
+        return new PromoverACoordenadorRequest(fielId, grupoParoquialId, "COORDENADOR", "maria.coord",
                 "senhaForte123");
     }
 
@@ -121,10 +123,10 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     @Test
-    void devePermitirQuandoAtorEhMesaCpp() {
-        authenticateAsMesaCpp();
-        when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(
-                new br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity()));
+    void devePermitirQuandoAtorEhParoco() {
+        authenticateAsParoco();
+        var usuarioExistente = new UsuarioEntity();
+        when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(usuarioExistente));
 
         var response = useCase.execute(request());
 
@@ -135,7 +137,7 @@ class PromoverACoordenadorUseCaseTest {
     void deveReutilizarUsuarioExistenteSemDuplicar() {
         authenticateAsGlobal(true);
         UUID usuarioExistenteId = UUID.randomUUID();
-        var usuarioExistente = new br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity();
+        var usuarioExistente = new UsuarioEntity();
         usuarioExistente.setId(usuarioExistenteId);
         usuarioExistente.setFielId(fielId);
         when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(usuarioExistente));
@@ -150,14 +152,14 @@ class PromoverACoordenadorUseCaseTest {
     @Test
     void deveAtualizarPapelDoVinculoESincronizarLideranca() {
         authenticateAsGlobal(true);
-        when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(
-                new br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity()));
+        var usuarioExistente = new UsuarioEntity();
+        when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(usuarioExistente));
 
         useCase.execute(request());
 
-        var captor = org.mockito.ArgumentCaptor.forClass(MembroGrupoEntity.class);
+        var captor = ArgumentCaptor.forClass(MembroGrupoEntity.class);
         verify(membroRepository).save(captor.capture());
-        assertThat(captor.getValue().getPapel()).isEqualTo("coord-pastoral-local");
+        assertThat(captor.getValue().getPapel()).isEqualTo("coordenador");
         verify(grupoParoquialRepository).save(any(GrupoParoquialEntity.class));
     }
 
@@ -209,7 +211,7 @@ class PromoverACoordenadorUseCaseTest {
 
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("global");
+                .hasMessageContaining("Papel inválido");
     }
 
     @Test
@@ -218,6 +220,20 @@ class PromoverACoordenadorUseCaseTest {
 
         assertThatThrownBy(() -> useCase.execute(request()))
                 .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void deveNegarQuandoAtorEhAdminMesmoComPapelGlobal() {
+        var principal = new UsuarioDetails(actorId, "admin", "pass", true, "", List.of());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(principal, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+                                new SimpleGrantedAuthority("ROLE_GLOBAL_ADMIN"))));
+        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)).thenReturn(true);
+
+        assertThatThrownBy(() -> useCase.execute(request()))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Apenas o Pároco possui provisão canônica");
     }
 
     @Test

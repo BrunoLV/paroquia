@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.organizacao.domain.policy;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
 import java.util.UUID;
@@ -11,29 +10,29 @@ import java.util.UUID;
 public interface AutorizacaoEscopoUsuarioPolicy {
 
     boolean canManageOrganizationData(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId);
 
     boolean canApproveEvents(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId);
 
     boolean canAddObservation(
-            PapelOrganizacional userRole,
+            String userRole,
             TipoGrupo userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant);
 
-    boolean canViewPendenteEvents(PapelOrganizacional userRole);
+    boolean canViewPendenteEvents(String userRole);
 
     boolean hasTerritorialAccess(
-            PapelOrganizacional userRole,
+            String userRole,
             UUID userCommunityId,
             UUID targetCommunityId);
 }

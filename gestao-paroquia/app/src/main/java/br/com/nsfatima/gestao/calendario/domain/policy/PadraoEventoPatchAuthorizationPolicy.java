@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
@@ -8,39 +9,28 @@ import java.util.Set;
 
 /**
  * Implementação pura da política de autorização de patch de eventos, sem frameworks ou I/O.
+ * Na governança canônica, somente o Pároco (ou Bispo Diocesano) cria eventos com efeito imediato,
+ * libera conflitos de agenda e altera a organização responsável; coordenadores e secretarias
+ * submetem solicitações sujeitas à homologação do Pároco.
  */
 public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAuthorizationPolicy {
 
+    private static final Set<PapelGlobal> GLOBAL_ACTOR_ROLES = Set.of(
+            PapelGlobal.PAROCO,
+            PapelGlobal.BISPO_DIOCESANO,
+            PapelGlobal.VIGARIO,
+            PapelGlobal.DIACONO_PAROQUIAL,
+            PapelGlobal.SECRETARIA_PAROQUIAL);
+
     private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
-            PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.COORD_PASTORAL,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.SECRETARIO,
-            PapelOrganizacional.PAROCO,
-            PapelOrganizacional.VIGARIO,
-            PapelOrganizacional.PADRE);
+            PapelOrganizacional.COORDENADOR,
+            PapelOrganizacional.SECRETARIO_CONSELHO,
+            PapelOrganizacional.SECRETARIO_GRUPO);
 
     private static final Set<PapelOrganizacional> ORG_CREATOR_ROLES = Set.of(
-            PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.COORD_PASTORAL,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.SECRETARIO,
-            PapelOrganizacional.PAROCO,
-            PapelOrganizacional.VIGARIO,
-            PapelOrganizacional.PADRE);
-
-    private static final Set<PapelOrganizacional> CONSELHO_CRIACAO_IMEDIATA = Set.of(
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL);
+            PapelOrganizacional.COORDENADOR,
+            PapelOrganizacional.SECRETARIO_CONSELHO,
+            PapelOrganizacional.SECRETARIO_GRUPO);
 
     @Override
     public Set<PapelOrganizacional> creatorRoles() {
@@ -53,55 +43,59 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
     }
 
     @Override
-    public boolean isCreatorRole(PapelOrganizacional papel) {
-        return ORG_CREATOR_ROLES.contains(papel);
-    }
-
-    @Override
-    public boolean isEditorRole(PapelOrganizacional papel) {
-        return ORG_EDITOR_ROLES.contains(papel);
-    }
-
-    @Override
-    public boolean isScopeExempt(PapelOrganizacional papel) {
-        return papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.SECRETARIO
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP;
-    }
-
-    @Override
-    public boolean isLiberacaoConflitoPermitida(PapelOrganizacional papel) {
-        return papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.ADMIN
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP;
-    }
-
-    @Override
-    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        if (papel == PapelOrganizacional.SECRETARIO) {
-            return ModoRequisicaoCriacao.REQUER_APROVACAO;
+    public boolean isCreatorRole(String rawRole) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal != null && GLOBAL_ACTOR_ROLES.contains(papelGlobal)) {
+            return true;
         }
-        if (papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP
-                || (tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel))) {
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        return papelOrg != null && ORG_CREATOR_ROLES.contains(papelOrg);
+    }
+
+    @Override
+    public boolean isEditorRole(String rawRole) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal != null && GLOBAL_ACTOR_ROLES.contains(papelGlobal)) {
+            return true;
+        }
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        return papelOrg != null && ORG_EDITOR_ROLES.contains(papelOrg);
+    }
+
+    @Override
+    public boolean isScopeExempt(String rawRole) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal == PapelGlobal.PAROCO
+                || papelGlobal == PapelGlobal.BISPO_DIOCESANO
+                || papelGlobal == PapelGlobal.VIGARIO
+                || papelGlobal == PapelGlobal.SECRETARIA_PAROQUIAL) {
+            return true;
+        }
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        return papelOrg == PapelOrganizacional.SECRETARIO_CONSELHO;
+    }
+
+    @Override
+    public boolean isLiberacaoConflitoPermitida(String rawRole) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        return papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO;
+    }
+
+    @Override
+    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoGrupo tipoGrupo) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return ModoRequisicaoCriacao.IMEDIATO;
         }
         return ModoRequisicaoCriacao.REQUER_APROVACAO;
     }
 
     @Override
-    public void assertCanChangeResponsibleOrganization(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        boolean conselhoCoordinator = (tipoGrupo == TipoGrupo.CONSELHO && CONSELHO_CRIACAO_IMEDIATA.contains(papel))
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.MESA_CPP;
-        boolean paroco = papel == PapelOrganizacional.PAROCO;
-
-        if (!conselhoCoordinator && !paroco) {
+    public void assertCanChangeResponsibleOrganization(String rawRole, TipoGrupo tipoGrupo) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal != PapelGlobal.PAROCO && papelGlobal != PapelGlobal.BISPO_DIOCESANO) {
             throw new OperacaoProibidaException(
-                    "Apenas coordenador de conselho ou pároco pode alterar a organização responsável");
+                    "Apenas o Pároco pode alterar a organização responsável pelo evento");
         }
     }
 }

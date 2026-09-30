@@ -43,8 +43,8 @@ class ProjetosContractTest {
     @Test
     void deveListarProjetos() throws Exception {
         mockMvc.perform(get("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", UUID.randomUUID().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").isString())
@@ -60,8 +60,8 @@ class ProjetosContractTest {
     void deveCriarProjeto() throws Exception {
         String orgId = UUID.randomUUID().toString();
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""

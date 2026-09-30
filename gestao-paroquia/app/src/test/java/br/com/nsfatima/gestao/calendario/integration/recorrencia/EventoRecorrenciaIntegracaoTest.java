@@ -43,11 +43,14 @@ class EventoRecorrenciaIntegracaoTest {
     @BeforeEach
     void setUp() {
         aprovacaoRepository.deleteAll();
-        // Eventos reference recorrencia, so we must nullify or delete in order.
-        // Due to circular dependency (evento -> recorrencia -> base_evento), 
-        // we use a native query to clear tables safely in H2.
-        eventoRepository.deleteAll();
+        eventoRepository.findAll().forEach(e -> {
+            if (e.getRecorrenciaId() != null) {
+                e.setRecorrenciaId(null);
+                eventoRepository.save(e);
+            }
+        });
         recorrenciaRepository.deleteAll();
+        eventoRepository.deleteAll();
     }
 
     @Test
@@ -94,7 +97,7 @@ class EventoRecorrenciaIntegracaoTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                        .header("X-Actor-Role", "coordenador-pastoral-global")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +157,7 @@ class EventoRecorrenciaIntegracaoTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", instanceId)
-                        .header("X-Actor-Role", "coordenador-pastoral-global")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)

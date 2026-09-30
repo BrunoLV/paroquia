@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.support;
 
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import jakarta.servlet.FilterChain;
@@ -51,18 +52,15 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
             return;
         }
 
-        String role = headerOrDefault(request, "X-Actor-Role", "coordenador-pastoral-local");
+        String role = headerOrDefault(request, "X-Actor-Role", "coordenador");
         String organizationType = headerOrDefault(request, "X-Actor-Org-Type", "PASTORAL");
         UUID organizationId = resolveOrganizationId(request.getHeader("X-Actor-Org-Id"));
         UUID igrejaVinculoId = resolveOrganizationId(request.getHeader("X-Actor-Igreja-Id"));
 
-        UsuarioDetails principal = new UsuarioDetails(
-                resolveUserId(role, organizationType),
-                resolveUsername(role, organizationType),
-                "{noop}senha123",
-                true,
-                null,
-                List.of(new LeitorVinculoExterno.Vinculo(
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(role);
+        List<LeitorVinculoExterno.Vinculo> vinculos = (papelGlobal != null && organizationId == null)
+                ? List.of()
+                : List.of(new LeitorVinculoExterno.Vinculo(
                         organizationId,
                         "GrupoParoquial",
                         organizationType,
@@ -71,7 +69,17 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
                         null,
                         true,
                         role,
-                        igrejaVinculoId)));
+                        igrejaVinculoId));
+        List<String> papeisGlobais = papelGlobal != null ? List.of(papelGlobal.storedValue()) : List.of();
+
+        UsuarioDetails principal = new UsuarioDetails(
+                resolveUserId(role, organizationType),
+                resolveUsername(role, organizationType),
+                "{noop}senha123",
+                true,
+                null,
+                vinculos,
+                papeisGlobais);
 
         UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.authenticated(
                 principal,
@@ -134,19 +142,17 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     private UUID resolveUserId(String role, String organizationType) {
         String normalizedRole = role == null ? "" : role.trim().toLowerCase();
         String normalizedType = organizationType == null ? "" : organizationType.trim().toLowerCase();
-        if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
+        if ("membro-ativo".equals(normalizedRole) || "voluntario".equals(normalizedRole)) {
             return UUID.fromString("00000000-0000-0000-0000-000000000003");
         }
-        if ("secretario".equals(normalizedRole)
-                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
+        if ("secretario-conselho".equals(normalizedRole)
+                || "secretaria-paroquial".equals(normalizedRole)
+                || "secretario-grupo".equals(normalizedRole)) {
             return UUID.fromString("00000000-0000-0000-0000-000000000002");
         }
-        if (("coordenador".equals(normalizedRole) ||
-                        "presidente-cpc".equals(normalizedRole)        || "mesa-diretora-cpp".equals(normalizedRole))
-               
-&& ("conselho".equals(normalizedType)
-                        || "cpc".equals(normalizedType)
-                        || "cpp".equals(normalizedType))) {
+        if ("paroco".equals(normalizedRole)
+                || (("coordenador".equals(normalizedRole) || "membro-conselho-pastoral".equals(normalizedRole))
+                        && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType)))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000004");
         }
         return UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -155,19 +161,17 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
     private String resolveUsername(String role, String organizationType) {
         String normalizedRole = role == null ? "" : role.trim().toLowerCase();
         String normalizedType = organizationType == null ? "" : organizationType.trim().toLowerCase();
-        if ("membro".equals(normalizedRole) || "voluntario-pastoral-local".equals(normalizedRole)) {
+        if ("membro-ativo".equals(normalizedRole) || "voluntario".equals(normalizedRole)) {
             return "pedro.membro";
         }
-        if ("secretario".equals(normalizedRole)
-                && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType))) {
+        if ("secretario-conselho".equals(normalizedRole)
+                || "secretaria-paroquial".equals(normalizedRole)
+                || "secretario-grupo".equals(normalizedRole)) {
             return "maria.secretaria";
         }
-        if (("coordenador".equals(normalizedRole) ||
-                        "presidente-cpc".equals(normalizedRole)        || "mesa-diretora-cpp".equals(normalizedRole))
-               
-&& ("conselho".equals(normalizedType)
-                        || "cpc".equals(normalizedType)
-                        || "cpp".equals(normalizedType))) {
+        if ("paroco".equals(normalizedRole)
+                || (("coordenador".equals(normalizedRole) || "membro-conselho-pastoral".equals(normalizedRole))
+                        && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType)))) {
             return "ana.conselho";
         }
         return "joao.silva";

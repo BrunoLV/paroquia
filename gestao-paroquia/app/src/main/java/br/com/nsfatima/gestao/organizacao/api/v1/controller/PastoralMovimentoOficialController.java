@@ -54,7 +54,7 @@ public class PastoralMovimentoOficialController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Cria uma nova pastoral ou movimento oficial", description = "Registra um novo item no catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Item criado com sucesso",
@@ -76,7 +76,7 @@ public class PastoralMovimentoOficialController {
      * @return o item atualizado
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Atualiza uma pastoral ou movimento oficial", description = "Altera os dados de um item no catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Item atualizado com sucesso",
@@ -102,7 +102,7 @@ public class PastoralMovimentoOficialController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Exclui uma pastoral ou movimento oficial", description = "Remove um item do catálogo oficial.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Item excluído com sucesso"),

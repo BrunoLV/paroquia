@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.calendario.application.service;
 import br.com.nsfatima.gestao.calendario.domain.policy.PadraoEventoPatchAuthorizationPolicy;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno.Vinculo;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -56,12 +57,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchId);
+                PapelOrganizacional.COORDENADOR.name(), churchId);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 churchId);
 
@@ -78,12 +79,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchA);
+                PapelOrganizacional.COORDENADOR.name(), churchA);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 churchA);
 
@@ -98,13 +99,13 @@ class EventoPatchAuthorizationServiceTest {
         UUID churchId = UUID.randomUUID();
 
         var vinculo = new Vinculo(orgId,
-                "Clero", "CLERO", null, null, null, true, PapelOrganizacional.PAROCO.name(),
+                "Clero", "CLERO", null, null, null, true, PapelGlobal.PAROCO.name(),
                 null);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.PAROCO.storedValue(), "CLERO", orgId, usuarioId, null);
+                PapelGlobal.PAROCO.storedValue(), "CLERO", orgId, usuarioId, null);
 
 
         assertDoesNotThrow(() -> service.assertCanCreate(actorContext, orgId, churchId));
@@ -114,7 +115,7 @@ class EventoPatchAuthorizationServiceTest {
     void devePermitirDecisaoPastoralImediataQuandoUsuarioEParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.PAROCO.storedValue(), "CLERO", UUID.randomUUID(), usuarioId,
+                PapelGlobal.PAROCO.storedValue(), "CLERO", UUID.randomUUID(), usuarioId,
                         null);
 
         assertDoesNotThrow(() -> service.assertCanLiberarConflitoAgenda(actorContext));
@@ -124,7 +125,7 @@ class EventoPatchAuthorizationServiceTest {
     void deveNegarDecisaoPastoralImediataQuandoUsuarioENaoParoco() {
         UUID usuarioId = UUID.randomUUID();
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.storedValue(), TipoGrupo.PASTORAL.name(),
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoGrupo.PASTORAL.name(),
                         UUID.randomUUID(), usuarioId, null);
 
         assertThrows(AccessDeniedException.class, () -> service.assertCanLiberarConflitoAgenda(actorContext));
@@ -137,12 +138,12 @@ class EventoPatchAuthorizationServiceTest {
 
         var vinculo = new Vinculo(orgId,
                 "Pastoral familiar", TipoGrupo.PASTORAL.name(), null, null, null, true,
-                PapelOrganizacional.COORD_PASTORAL_GLOBAL.name(), null);
+                PapelOrganizacional.COORDENADOR.name(), null);
 
         mockAuthentication(usuarioId, List.of(vinculo));
 
         var actorContext = new EventoActorContext("tester",
-                PapelOrganizacional.COORD_PASTORAL_GLOBAL.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoGrupo.PASTORAL.name(), orgId,
                         usuarioId,
                 null);
 

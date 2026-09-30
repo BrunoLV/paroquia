@@ -60,7 +60,7 @@ public class LocalController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Cria um novo local", description = "Registra um novo espaço físico para a paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Local criado com sucesso",
@@ -89,7 +89,7 @@ public class LocalController {
      * @return Dados atualizados do local
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Atualiza um local existente", description = "Altera os dados cadastrais e de capacidade de um local.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Local atualizado com sucesso",
@@ -123,7 +123,7 @@ public class LocalController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO', 'MEMBRO_CONSELHO_PASTORAL')")
     @Operation(summary = "Exclui um local", description = "Exclui logicamente um local sem eventos futuros agendados.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Local excluído com sucesso"),

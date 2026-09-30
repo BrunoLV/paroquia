@@ -41,7 +41,7 @@ describe('CadastroEventoModal', () => {
     jest.clearAllMocks();
     mockShowError.mockClear();
     mockedUseAuth.mockReturnValue({
-      user: { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }
+      user: { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] }
     });
   });
 
@@ -63,7 +63,7 @@ describe('CadastroEventoModal', () => {
     expect(cancelButton.querySelector('[data-testid="CloseIcon"]')).toBeInTheDocument();
   });
 
-  it('renders all organizations for ADMIN', async () => {
+  it('renders all organizations for PAROCO', async () => {
     render(<CadastroEventoModal {...defaultProps} />);
     
     const select = screen.getByLabelText(/organização responsável/i);
@@ -74,12 +74,12 @@ describe('CadastroEventoModal', () => {
     expect(within(listbox).getByText('Pastoral B')).toBeInTheDocument();
   });
 
-  it('restricts organizations for non-admin members', async () => {
+  it('restricts organizations for non-clergy members', async () => {
     mockedUseAuth.mockReturnValue({
       user: { 
         id: '2', 
         name: 'Member', 
-        roles: ['USER'], 
+        roles: ['COORDENADOR'], 
         organizations: [{ id: 'org-2', nome: 'Pastoral B' }] 
       }
     });
@@ -448,7 +448,7 @@ describe('CadastroEventoModal', () => {
 
   it('does not render decisao pastoral switch when user is NOT PAROCO', () => {
     mockedUseAuth.mockReturnValue({
-      user: { id: '2', name: 'Pastoral User', roles: ['COORD_PASTORAL_LOCAL'], organizations: [] }
+      user: { id: '2', name: 'Pastoral User', roles: ['COORDENADOR'], organizations: [] }
     });
 
     render(<CadastroEventoModal {...defaultProps} />);

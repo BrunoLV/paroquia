@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaExcept
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,13 +85,15 @@ public class EventoService {
     }
 
     private void assertCanView(EventoActorContext actorContext, UUID grupoParoquialResponsavelId) {
-        PapelOrganizacional role = PapelOrganizacional.fromStoredValue(actorContext.role());
+        PapelGlobal globalRole = PapelGlobal.fromStoredValue(actorContext.role());
         TipoGrupo orgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
 
-        // Clero (Paroco/Vigario) pode ver tudo — não tem mais TipoGrupo (virou UnidadeTerritorial /
-        // papel global, track linguagem_ubiqua_dominio), o papel já garante o acesso irrestrito
-        if (role == PapelOrganizacional.PAROCO || role == PapelOrganizacional.VIGARIO
-                || role == PapelOrganizacional.ADMIN) {
+        if (globalRole == PapelGlobal.PAROCO
+                || globalRole == PapelGlobal.BISPO_DIOCESANO
+                || globalRole == PapelGlobal.VIGARIO
+                || globalRole == PapelGlobal.DIACONO_PAROQUIAL
+                || globalRole == PapelGlobal.SECRETARIA_PAROQUIAL
+                || globalRole == PapelGlobal.ADMIN) {
             return;
         }
 

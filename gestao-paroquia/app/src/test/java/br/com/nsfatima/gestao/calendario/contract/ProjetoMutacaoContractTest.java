@@ -42,8 +42,8 @@ class ProjetoMutacaoContractTest {
     @Test
     void devePatchProjeto() throws Exception {
         mockMvc.perform(patch("/api/v1/projetos/{projetoId}", "00000000-0000-0000-0000-000000000001")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(

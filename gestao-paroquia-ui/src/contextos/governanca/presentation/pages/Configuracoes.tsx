@@ -733,20 +733,13 @@ export const Configuracoes = () => {
                     label="Papel"
                     onChange={(e) => setNewVinculoPapel(e.target.value)}
                   >
-                    <MenuItem value="COORD_PASTORAL_GLOBAL">Coordenador Pastoral Global</MenuItem>
-                    <MenuItem value="COORD_PASTORAL_LOCAL">Coordenador Pastoral Local</MenuItem>
-                    <MenuItem value="COORD_MOVIMENTO">Coordenador de Movimento</MenuItem>
-                    <MenuItem value="VOLUNTARIO_PASTORAL_LOCAL">Voluntário Pastoral Local</MenuItem>
-                    <MenuItem value="MEMBRO_MOVIMENTO">Membro de Movimento</MenuItem>
-                    <MenuItem value="PRESIDENTE_CPC">Presidente CPC</MenuItem>
-                    <MenuItem value="MEMBRO_CPC">Membro CPC</MenuItem>
-                    <MenuItem value="MESA_CPP">Mesa Diretora CPP</MenuItem>
-                    <MenuItem value="MEMBRO_CPP">Membro CPP</MenuItem>
-                    <MenuItem value="MEMBRO_CAE">Membro CAE</MenuItem>
-                    <MenuItem value="PAROCO">Pároco</MenuItem>
-                    <MenuItem value="VIGARIO">Vigário</MenuItem>
-                    <MenuItem value="PADRE">Padre</MenuItem>
-                    <MenuItem value="SECRETARIO">Secretário</MenuItem>
+                    <MenuItem value="COORDENADOR">Coordenador de Grupo/Pastoral</MenuItem>
+                    <MenuItem value="SECRETARIO_GRUPO">Secretário de Grupo/Pastoral</MenuItem>
+                    <MenuItem value="MEMBRO_ATIVO">Membro Ativo</MenuItem>
+                    <MenuItem value="VOLUNTARIO">Voluntário</MenuItem>
+                    <MenuItem value="SECRETARIO_CONSELHO">Secretário de Conselho</MenuItem>
+                    <MenuItem value="MEMBRO_CONSELHO_PASTORAL">Membro do Conselho Pastoral (CPP/CPC)</MenuItem>
+                    <MenuItem value="MEMBRO_CONSELHO_ECONOMICO">Membro do Conselho Econômico (CAE)</MenuItem>
                   </Select>
                 </FormControl>
 

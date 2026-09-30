@@ -10,11 +10,13 @@ import java.util.Locale;
  * {@link br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService}.
  */
 public enum PapelGlobal {
+    ADMIN("admin"),
     BISPO_DIOCESANO("bispo-diocesano"),
     PAROCO("paroco"),
     VIGARIO("vigario"),
-    ADMIN("admin"),
-    SECRETARIA_PAROQUIAL("secretaria-paroquial");
+    DIACONO_PAROQUIAL("diacono-paroquial"),
+    SECRETARIA_PAROQUIAL("secretaria-paroquial"),
+    FIEL("fiel");
 
     private final String storedCode;
 

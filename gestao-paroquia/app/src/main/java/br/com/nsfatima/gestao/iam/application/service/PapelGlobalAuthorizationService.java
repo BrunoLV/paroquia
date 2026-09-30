@@ -78,14 +78,14 @@ public class PapelGlobalAuthorizationService {
      * @return {@code true} se o Fiel tiver ao menos um papel global ativo
      */
     public boolean isGlobal(UUID fielId) {
-        return !papeisGlobaisDe(fielId).isEmpty();
+        return papeisGlobaisDe(fielId).stream().anyMatch(p -> p != PapelGlobal.FIEL);
     }
 
     /**
      * Verifica se o Clérigo informado tem encargo institucional com papel global ativo.
      */
     public boolean isGlobalClerigo(UUID clerigoId) {
-        return !papeisGlobaisDeClerigo(clerigoId).isEmpty();
+        return papeisGlobaisDeClerigo(clerigoId).stream().anyMatch(p -> p != PapelGlobal.FIEL);
     }
 
     /**

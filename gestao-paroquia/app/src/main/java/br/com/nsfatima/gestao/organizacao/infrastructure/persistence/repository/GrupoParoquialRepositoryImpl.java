@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 /**
  * Adaptador JPA de {@link GrupoParoquialRepository}. Além do CRUD básico sobre {@code GrupoParoquialEntity}, resolve
- * dinamicamente o nome de exibição de coordenador/vice-coordenador a partir dos vínculos de membro ativos
- * (papel contendo "coord"/"presidente"/"mesa" para coordenador, PAPEL_VICE para vice-coordenador), com fallback
+ * dinamicamente o nome de exibição de coordenador/apoio a partir dos vínculos de membro ativos
+ * (papel {@code coordenador} ou {@code secretario-grupo}/{@code secretario-conselho}), com fallback
  * para o texto livre gravado na própria organização quando nenhum vínculo correspondente é encontrado — e
  * calcula {@code hasDependencies} verificando tanto vínculos de membro quanto eventos associados, para que
  * {@code GrupoParoquialService} possa bloquear exclusões que deixariam referências órfãs.
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
 
     private static final String PAPEL_COORDENADOR = "coordenador";
-    private static final String PAPEL_VICE = "vice";
+    private static final String PAPEL_SECRETARIO = "secretario";
 
     private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
     private final MembroGrupoJpaRepository membroGrupoJpaRepository;
@@ -89,7 +89,7 @@ public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
 
     private GrupoParoquial toDomain(GrupoParoquialEntity entity) {
         String coordName = resolveRoleMemberName(entity.getId(), PAPEL_COORDENADOR, entity.getCoordenador());
-        String viceName = resolveRoleMemberName(entity.getId(), PAPEL_VICE, entity.getViceCoordenador());
+        String viceName = resolveRoleMemberName(entity.getId(), PAPEL_SECRETARIO, entity.getViceCoordenador());
 
         return new GrupoParoquial(
                 entity.getId(),
@@ -112,12 +112,10 @@ public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
                     }
                     String p = m.getPapel().toLowerCase();
                     if (PAPEL_COORDENADOR.equalsIgnoreCase(roleKeyword)) {
-                        return (p.contains("coord") || p.contains("coordenador")
-                                || p.contains("presidente") || p.contains("mesa"))
-                                && !p.contains(PAPEL_VICE);
+                        return "coordenador".equals(p);
                     }
-                    if (PAPEL_VICE.equalsIgnoreCase(roleKeyword)) {
-                        return p.contains(PAPEL_VICE);
+                    if (PAPEL_SECRETARIO.equalsIgnoreCase(roleKeyword)) {
+                        return p.startsWith(PAPEL_SECRETARIO);
                     }
                     return p.contains(roleKeyword.toLowerCase());
                 })

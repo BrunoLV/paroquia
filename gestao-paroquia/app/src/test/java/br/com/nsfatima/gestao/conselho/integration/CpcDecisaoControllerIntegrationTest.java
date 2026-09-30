@@ -24,7 +24,7 @@ class CpcDecisaoControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "SECRETARIO_CONSELHO")
     @DisplayName("Should create CPC decision as PENDENTE_HOMOLOGACAO")
     void createDecisao_asPendente() throws Exception {
         UUID comunidadeId = UUID.randomUUID();
@@ -44,7 +44,7 @@ class CpcDecisaoControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(roles = "PASTORAL_VOLUNTARIO_PASTORAL_LOCAL")
+    @WithMockUser(roles = "PASTORAL_VOLUNTARIO")
     @DisplayName("Non-authorized role should fail to homologate decision")
     void homologarDecisao_forbiddenForUnauthorizedRole() throws Exception {
         UUID decisaoId = UUID.randomUUID();

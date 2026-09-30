@@ -53,7 +53,7 @@ class ListarGrupoParoquialMembrosUseCaseTest {
         memberEntity.setGrupoParoquialId(orgId);
         memberEntity.setFielId(fielId);
         memberEntity.setTipoGrupo(TipoGrupo.PASTORAL);
-        memberEntity.setPapel("COORD_PASTORAL_LOCAL");
+        memberEntity.setPapel("coordenador");
         memberEntity.setAtivo(true);
 
         FielEntity fielEntity = new FielEntity();
@@ -69,6 +69,6 @@ class ListarGrupoParoquialMembrosUseCaseTest {
 
         assertThat(response).hasSize(1);
         assertThat(response.getFirst().fielNome()).isEqualTo("João da Silva");
-        assertThat(response.getFirst().papel()).isEqualTo("COORD_PASTORAL_LOCAL");
+        assertThat(response.getFirst().papel()).isEqualTo("coordenador");
     }
 }

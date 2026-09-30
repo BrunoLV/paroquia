@@ -7,6 +7,8 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
@@ -38,6 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -75,22 +78,22 @@ class MembroControllerIntegrationTest {
         orgId = org.getId();
     }
 
-    private Authentication getAdminAuth() {
-        UsuarioEntity adminUser = usuarioRepository.findByUsernameIgnoreCase("admin.test@paroquia.local")
+    private Authentication getParocoAuth() {
+        UsuarioEntity parocoUser = usuarioRepository.findByUsernameIgnoreCase("paroco.test@paroquia.local")
                 .orElseGet(() -> {
                     UsuarioEntity u = new UsuarioEntity();
                     u.setId(UUID.randomUUID());
-                    u.setUsername("admin.test@paroquia.local");
+                    u.setUsername("paroco.test@paroquia.local");
                     u.setPasswordHash("pass");
-                    u.setRoles("ROLE_ADMIN");
+                    u.setRoles("ROLE_CLERO_PAROCO,ROLE_GLOBAL_PAROCO");
                     u.setEnabled(true);
-                    u.setFielId(FielTestFixtures.criarFiel(fielRepository, "Admin Teste"));
+                    u.setFielId(FielTestFixtures.criarFiel(fielRepository, "Pároco Teste"));
                     return usuarioRepository.saveAndFlush(u);
                 });
 
         UsuarioDetails details = new UsuarioDetails(
-                adminUser.getId(), "admin", "pass", true, "ROLE_ADMIN",
-                List.of(new LeitorVinculoExterno.Vinculo(orgId, "PASTORAL", "coordenador")));
+                parocoUser.getId(), "paroco", "pass", true, "ROLE_CLERO_PAROCO,ROLE_GLOBAL_PAROCO",
+                List.of(new LeitorVinculoExterno.Vinculo(orgId, "CLERO", "paroco")));
 
         return UsernamePasswordAuthenticationToken.authenticated(details, null, details.getAuthorities());
     }
@@ -103,14 +106,14 @@ class MembroControllerIntegrationTest {
         MembroRequest request = new MembroRequest(
                 fielId,
                 orgId,
-                "MEMBRO_PASTORAL",
+                "MEMBRO_ATIVO",
                 LocalDate.now(),
                 null,
                 true
         );
 
         mockMvc.perform(post("/api/v1/membros")
-                        .with(authentication(getAdminAuth()))
+                        .with(authentication(getParocoAuth()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -130,7 +133,7 @@ class MembroControllerIntegrationTest {
         createMembro(FielTestFixtures.criarFiel(fielRepository, "Bob"));
 
         mockMvc.perform(get("/api/v1/membros")
-                        .with(authentication(getAdminAuth()))
+                        .with(authentication(getParocoAuth()))
                         .param("grupoParoquialId", orgId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -138,25 +141,25 @@ class MembroControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve negar acesso para usuário sem role ADMIN")
+    @DisplayName("Deve negar acesso para usuário sem role autorizada")
     @WithMockUser(roles = "USER")
-    void deveNegarAcessoSemRoleAdmin() throws Exception {
+    void deveNegarAcessoSemRoleAutorizada() throws Exception {
         mockMvc.perform(get("/api/v1/membros"))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario")
+    @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario mediante provisão do Pároco")
     void devePromoverFielACoordenadorCriandoUsuario() throws Exception {
         UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Carlos Promovido");
         createMembro(fielId);
 
-        var request = new br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest(
-                fielId, orgId, "coord-pastoral-local", "carlos.promovido", "senhaForte123");
+        var request = new PromoverACoordenadorRequest(
+                fielId, orgId, "coordenador", "carlos.promovido", "senhaForte123");
 
         mockMvc.perform(post("/api/v1/membros/promover-coordenador")
-                        .with(authentication(getAdminAuth()))
+                        .with(authentication(getParocoAuth()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -166,12 +169,12 @@ class MembroControllerIntegrationTest {
     }
 
     private void createMembro(UUID fielId) {
-        var entity = new br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity();
+        var entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
         entity.setGrupoParoquialId(orgId);
         entity.setTipoGrupo(TipoGrupo.PASTORAL);
-        entity.setPapel("MEMBRO_PASTORAL");
+        entity.setPapel("MEMBRO_ATIVO");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);
     }

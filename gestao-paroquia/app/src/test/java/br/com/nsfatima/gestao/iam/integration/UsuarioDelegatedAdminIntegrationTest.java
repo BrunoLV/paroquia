@@ -89,9 +89,9 @@ class UsuarioDelegatedAdminIntegrationTest {
         memberId = createUser("member");
         strangerId = createUser("stranger");
 
-        createVinculo(coordinatorId, orgId, "coordenador-pastoral-local");
-        createVinculo(memberId, orgId, "voluntario-pastoral-local");
-        createVinculo(strangerId, otherOrgId, "voluntario-pastoral-local");
+        createVinculo(coordinatorId, orgId, "coordenador");
+        createVinculo(memberId, orgId, "voluntario");
+        createVinculo(strangerId, otherOrgId, "voluntario");
     }
 
     private UUID createUser(String username) {
@@ -166,7 +166,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"grupoParoquialId\": \"" + orgId
-                                + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO_PASTORAL_LOCAL\""
+                                + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO\""
                                 + ", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isCreated());
     }
@@ -180,7 +180,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"grupoParoquialId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
-                                "\"VOLUNTARIO_PASTORAL_LOCAL\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
+                                "\"VOLUNTARIO\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isForbidden());
     }
 }

@@ -90,7 +90,7 @@ class GrupoParoquialDynamicResolverIntegrationTest {
         m2.setFielId(vice.getFielId());
         m2.setGrupoParoquialId(org.getId());
         m2.setTipoGrupo(TipoGrupo.PASTORAL);
-        m2.setPapel("vice-coordenador");
+        m2.setPapel(PapelOrganizacional.SECRETARIO_GRUPO.storedValue());
         m2.setAtivo(true);
         vinculoRepository.save(m2);
 

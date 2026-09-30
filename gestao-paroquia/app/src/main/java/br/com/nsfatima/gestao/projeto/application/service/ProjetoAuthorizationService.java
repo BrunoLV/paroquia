@@ -2,8 +2,6 @@ package br.com.nsfatima.gestao.projeto.application.service;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.projeto.domain.policy.AutorizacaoProjetoPolicy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,12 +28,12 @@ public class ProjetoAuthorizationService {
      * @param grupoParoquialResponsavelId organização alvo
      */
     public void assertCanCreate(EventoActorContext actorContext, UUID grupoParoquialResponsavelId) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
-
         try {
             policy.assertCanCreate(
-                    normalizedRole, normalizedOrgType, actorContext.organizationId(), grupoParoquialResponsavelId);
+                    actorContext.role(),
+                    actorContext.organizationType(),
+                    actorContext.organizationId(),
+                    grupoParoquialResponsavelId);
         } catch (OperacaoProibidaException e) {
             throw new AccessDeniedException(e.getMessage());
         }
@@ -48,10 +46,11 @@ public class ProjetoAuthorizationService {
      * @param projectGrupoParoquialResponsavelId organização dona do projeto
      */
     public void assertCanEdit(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
         policy.assertCanEdit(
-                normalizedRole, normalizedOrgType, actorContext.organizationId(), projectGrupoParoquialResponsavelId);
+                actorContext.role(),
+                actorContext.organizationType(),
+                actorContext.organizationId(),
+                projectGrupoParoquialResponsavelId);
     }
 
     /**
@@ -61,9 +60,7 @@ public class ProjetoAuthorizationService {
      * @return true se for ator de alto nível
      */
     public boolean isAtorDeAltoNivel(EventoActorContext actorContext) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
-        return policy.isAtorDeAltoNivel(normalizedRole, normalizedOrgType);
+        return policy.isAtorDeAltoNivel(actorContext.role(), actorContext.organizationType());
     }
 
     /**
@@ -73,10 +70,11 @@ public class ProjetoAuthorizationService {
      * @param projectGrupoParoquialResponsavelId organização dona do projeto
      */
     public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
         policy.assertCanStartOrConclude(
-                normalizedRole, normalizedOrgType, actorContext.organizationId(), projectGrupoParoquialResponsavelId);
+                actorContext.role(),
+                actorContext.organizationType(),
+                actorContext.organizationId(),
+                projectGrupoParoquialResponsavelId);
     }
 
     /**
@@ -86,9 +84,10 @@ public class ProjetoAuthorizationService {
      * @param projectGrupoParoquialResponsavelId organização dona do projeto
      */
     public void assertCanCancel(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
-        PapelOrganizacional normalizedRole = PapelOrganizacional.fromStoredValue(actorContext.role());
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
         policy.assertCanCancel(
-                normalizedRole, normalizedOrgType, actorContext.organizationId(), projectGrupoParoquialResponsavelId);
+                actorContext.role(),
+                actorContext.organizationType(),
+                actorContext.organizationId(),
+                projectGrupoParoquialResponsavelId);
     }
 }
