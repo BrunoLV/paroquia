@@ -21,6 +21,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "unidade_territorial", schema = "calendario")
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public class UnidadeTerritorialEntity extends BaseAuditableEntity {
 
     @Id
@@ -57,7 +58,7 @@ public class UnidadeTerritorialEntity extends BaseAuditableEntity {
     private boolean possuiSacrario = true;
 
     @Column(name = "possui_pia_batismal", nullable = false)
-    private boolean possuiPiaBatismal = false;
+    private boolean possuiPiaBatismal;
 
     @Column(name = "clerigo_responsavel_id")
     private UUID clerigoResponsavelId;

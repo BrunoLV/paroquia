@@ -22,6 +22,8 @@ import java.util.stream.Stream;
  */
 public class UsuarioDetails implements UserDetails {
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     private final UUID usuarioId;
     private final String username;
     private final String password;
@@ -78,7 +80,7 @@ public class UsuarioDetails implements UserDetails {
                 : Arrays.stream(roles.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r);
+                .map(r -> r.startsWith(ROLE_PREFIX) ? r : ROLE_PREFIX + r);
 
         Stream<String> vinculoRoles = this.vinculos.stream()
                 .flatMap(v -> Stream.of(v.authority(), v.scopedAuthority()));
@@ -87,7 +89,7 @@ public class UsuarioDetails implements UserDetails {
                 .filter(p -> p != null && !p.isBlank())
                 .flatMap(p -> {
                     String norm = p.trim().toUpperCase(Locale.ROOT).replace('-', '_');
-                    return Stream.of("ROLE_" + norm, "ROLE_GLOBAL_" + norm);
+                    return Stream.of(ROLE_PREFIX + norm, "ROLE_GLOBAL_" + norm);
                 });
 
         this.authorities = Stream.concat(Stream.concat(globalRoles, vinculoRoles), papelGlobalRoles)

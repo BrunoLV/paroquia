@@ -101,7 +101,9 @@ class LocalControllerIntegrationTest {
     @Test
     @DisplayName("Permitir POST/PUT/DELETE para ADMIN, Pároco, Secretaria e Conselho")
     void devePermitirMutacoesParaPerfisAutorizados() throws Exception {
-        String[] authorizedRoles = {"ADMIN", "PAROCO", "SECRETARIA_PAROQUIAL", "SECRETARIO_CONSELHO", "MEMBRO_CONSELHO_PASTORAL"};
+        String[] authorizedRoles = {
+                "ADMIN", "PAROCO", "SECRETARIA_PAROQUIAL", "SECRETARIO_CONSELHO", "MEMBRO_CONSELHO_PASTORAL"
+        };
 
         for (String role : authorizedRoles) {
             Authentication auth = getAuthForRole(role);

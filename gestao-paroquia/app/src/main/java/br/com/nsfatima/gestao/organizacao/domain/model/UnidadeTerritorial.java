@@ -10,6 +10,10 @@ import java.util.UUID;
  * Contém dados canônicos, civis, prediais e regulatórios.
  */
 public class UnidadeTerritorial {
+    private static final String MSG_ID_OBRIGATORIO = "ID da unidade é obrigatório.";
+    private static final String MSG_NOME_OBRIGATORIO = "Nome da unidade é obrigatório.";
+    private static final String MSG_TIPO_OBRIGATORIO = "Tipo da unidade é obrigatório.";
+
     private final UUID id;
     private String nome;
     private TipoUnidadeTerritorial tipo;
@@ -50,9 +54,9 @@ public class UnidadeTerritorial {
     /** Construtor para compatibilidade legada. */
     public UnidadeTerritorial(UUID id, String nome, TipoUnidadeTerritorial tipo, String contato,
                               boolean ativo, UUID parentId) {
-        this.id = Objects.requireNonNull(id, "ID da unidade é obrigatório.");
-        this.nome = Objects.requireNonNull(nome, "Nome da unidade é obrigatório.").trim();
-        this.tipo = Objects.requireNonNull(tipo, "Tipo da unidade é obrigatório.");
+        this.id = Objects.requireNonNull(id, MSG_ID_OBRIGATORIO);
+        this.nome = Objects.requireNonNull(nome, MSG_NOME_OBRIGATORIO).trim();
+        this.tipo = Objects.requireNonNull(tipo, MSG_TIPO_OBRIGATORIO);
         this.telefone = contato != null ? contato.trim() : null;
         this.ativo = ativo;
         this.parentId = parentId;
@@ -72,9 +76,9 @@ public class UnidadeTerritorial {
                               String avcbNumero, LocalDate avcbValidade, Integer lotacaoMaximaBombeiros,
                               String codigoConsumidorEnergia, String codigoConsumidorAgua,
                               String telefone, String email, EnderecoUnidade endereco) {
-        this.id = Objects.requireNonNull(id, "ID da unidade é obrigatório.");
-        this.nome = Objects.requireNonNull(nome, "Nome da unidade é obrigatório.").trim();
-        this.tipo = Objects.requireNonNull(tipo, "Tipo da unidade é obrigatório.");
+        this.id = Objects.requireNonNull(id, MSG_ID_OBRIGATORIO);
+        this.nome = Objects.requireNonNull(nome, MSG_NOME_OBRIGATORIO).trim();
+        this.tipo = Objects.requireNonNull(tipo, MSG_TIPO_OBRIGATORIO);
         this.ativo = ativo;
         this.parentId = parentId;
         this.padroeiro = padroeiro != null ? padroeiro.trim() : null;
@@ -112,8 +116,8 @@ public class UnidadeTerritorial {
                           String avcbNumero, LocalDate avcbValidade, Integer lotacaoMaximaBombeiros,
                           String codigoConsumidorEnergia, String codigoConsumidorAgua,
                           String telefone, String email, EnderecoUnidade endereco) {
-        this.nome = Objects.requireNonNull(nome, "Nome da unidade é obrigatório.").trim();
-        this.tipo = Objects.requireNonNull(tipo, "Tipo da unidade é obrigatório.");
+        this.nome = Objects.requireNonNull(nome, MSG_NOME_OBRIGATORIO).trim();
+        this.tipo = Objects.requireNonNull(tipo, MSG_TIPO_OBRIGATORIO);
         this.ativo = ativo;
         this.parentId = parentId;
         this.padroeiro = padroeiro != null ? padroeiro.trim() : null;
@@ -264,7 +268,7 @@ public class UnidadeTerritorial {
         return endereco;
     }
 
-    /** Retrocompatibilidade */
+    /** Retrocompatibilidade. */
     public String getContato() {
         return telefone != null ? telefone : email;
     }

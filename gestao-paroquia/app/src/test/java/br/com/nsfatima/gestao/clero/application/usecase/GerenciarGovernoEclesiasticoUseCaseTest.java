@@ -46,7 +46,8 @@ class GerenciarGovernoEclesiasticoUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GerenciarGovernoEclesiasticoUseCase(repository, dioceseRepository, clerigoRepository, auditLogService);
+        useCase = new GerenciarGovernoEclesiasticoUseCase(
+                repository, dioceseRepository, clerigoRepository, auditLogService);
     }
 
     @Test

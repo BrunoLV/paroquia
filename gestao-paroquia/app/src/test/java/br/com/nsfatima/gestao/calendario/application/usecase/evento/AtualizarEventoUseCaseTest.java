@@ -138,7 +138,8 @@ class AtualizarEventoUseCaseTest {
 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(actorContextResolver.resolveRequired())
-                .thenReturn(new EventoActorContext("secretaria-maria", "secretaria-paroquial", "PAROQUIA", null, null, null));
+                .thenReturn(new EventoActorContext(
+                        "secretaria-maria", "secretaria-paroquial", "PAROQUIA", null, null, null));
 
         assertThatThrownBy(() -> novoUseCase().execute(entity.getId(), request))
                 .isInstanceOf(ViolacaoRegraNegocioException.class)
@@ -154,7 +155,8 @@ class AtualizarEventoUseCaseTest {
                 null, null, null, null, null, null, null, null, null, null, null);
         stubHappyPathCollaborators(entity, request);
         when(actorContextResolver.resolveRequired())
-                .thenReturn(new EventoActorContext("secretaria-maria", "secretaria-paroquial", "PAROQUIA", null, null, null));
+                .thenReturn(new EventoActorContext(
+                        "secretaria-maria", "secretaria-paroquial", "PAROQUIA", null, null, null));
 
         novoUseCase().execute(entity.getId(), request);
 

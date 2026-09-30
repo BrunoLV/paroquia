@@ -152,7 +152,9 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
         }
         if ("paroco".equals(normalizedRole)
                 || (("coordenador".equals(normalizedRole) || "membro-conselho-pastoral".equals(normalizedRole))
-                        && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType)))) {
+                        && ("conselho".equals(normalizedType)
+                                || "cpc".equals(normalizedType)
+                                || "cpp".equals(normalizedType)))) {
             return UUID.fromString("00000000-0000-0000-0000-000000000004");
         }
         return UUID.fromString("00000000-0000-0000-0000-000000000001");
@@ -171,7 +173,9 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
         }
         if ("paroco".equals(normalizedRole)
                 || (("coordenador".equals(normalizedRole) || "membro-conselho-pastoral".equals(normalizedRole))
-                        && ("conselho".equals(normalizedType) || "cpc".equals(normalizedType) || "cpp".equals(normalizedType)))) {
+                        && ("conselho".equals(normalizedType)
+                                || "cpc".equals(normalizedType)
+                                || "cpp".equals(normalizedType)))) {
             return "ana.conselho";
         }
         return "joao.silva";

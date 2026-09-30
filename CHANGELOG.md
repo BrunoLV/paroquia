@@ -7,7 +7,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ---
 
 ## [Unreleased]
- 
+
+### Adicionado
+- **Configuração de Pre-Commit no Monorepo:**
+  - Criação do arquivo `.pre-commit-config.yaml` na raiz com hooks locais para execução automática de `checkstyleMain`, `checkstyleTest`, `pmdMain` e `pmdTest` no backend (`gestao-paroquia`) e typecheck (`npm run build`) no frontend (`gestao-paroquia-ui`).
+
+### Corrigido
+- **Conformidade Estática e Qualidade de Código (PMD e Checkstyle):**
+  - Eliminação de violações de `ExcessivePublicCount` e `RedundantFieldInitializer` em `UnidadeTerritorialEntity`.
+  - Resolução de violações de `LineLength`, `MultipleStringLiterals`, `WhitespaceAround` e `JavadocStyle` em casos de uso, resolvers de segurança, serviços e classes de teste de `calendario`, `clero`, `organizacao`, `iam` e `local`.
 ---
 
 ## [0.3.0] - 2026-09-30
