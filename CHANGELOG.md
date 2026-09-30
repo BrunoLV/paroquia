@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-30
+
 ### Adicionado
 - **Configuração de Pre-Commit no Monorepo:**
   - Criação do arquivo `.pre-commit-config.yaml` na raiz com hooks locais para execução automática de `checkstyleMain`, `checkstyleTest`, `pmdMain` e `pmdTest` no backend (`gestao-paroquia`) e typecheck (`npm run build`) no frontend (`gestao-paroquia-ui`).
