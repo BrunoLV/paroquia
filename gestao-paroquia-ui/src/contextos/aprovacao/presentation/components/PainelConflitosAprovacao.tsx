@@ -1,6 +1,5 @@
-import React from 'react';
+import type { FC } from 'react';
 import { Alert, Box, Card, Chip, Stack, Typography } from '@mui/material';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ChurchIcon from '@mui/icons-material/Church';
@@ -15,7 +14,7 @@ interface PainelConflitosAprovacaoProps {
  * Apresenta choques de espaço físico, ativos patrimoniais e sobreposições litúrgicas
  * de forma visual e estruturada para apoio à decisão do Conselho/Pároco.
  */
-const PainelConflitosAprovacao: React.FC<PainelConflitosAprovacaoProps> = ({ conflitosJson }) => {
+const PainelConflitosAprovacao: FC<PainelConflitosAprovacaoProps> = ({ conflitosJson }) => {
   if (!conflitosJson) {
     return null;
   }

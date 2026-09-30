@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useContext, useMemo, useState} from 'react';
+import {createContext, ReactNode, useContext, useMemo, useState} from 'react';
 import {PeriodoDashboard} from '@/shared/domain/types/types';
 
 interface DashboardFilterContextType {

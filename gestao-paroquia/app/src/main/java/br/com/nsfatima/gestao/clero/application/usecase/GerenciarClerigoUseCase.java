@@ -190,8 +190,12 @@ public class GerenciarClerigoUseCase {
         UUID unidadeSede = unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ).stream()
                 .findFirst()
                 .map(UnidadeTerritorialEntity::getId)
-                .or(() -> unidades.findAll().stream().filter(UnidadeTerritorialEntity::isAtivo).map(UnidadeTerritorialEntity::getId).findFirst())
-                .orElseThrow(() -> new IllegalStateException("A unidade territorial sede (MATRIZ) é obrigatória para atribuição de encargo."));
+                .or(() -> unidades.findAll().stream()
+                        .filter(UnidadeTerritorialEntity::isAtivo)
+                        .map(UnidadeTerritorialEntity::getId)
+                        .findFirst())
+                .orElseThrow(() -> new IllegalStateException(
+                        "A unidade territorial sede (MATRIZ) é obrigatória para atribuição de encargo."));
         EncargoClericalEntity encargo = new EncargoClericalEntity();
         encargo.setId(UUID.randomUUID());
         encargo.setClerigoId(clerigoId);

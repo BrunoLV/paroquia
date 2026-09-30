@@ -55,6 +55,7 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
         if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return;
         }
-        throw new OperacaoProibidaException("Apenas o Pároco possui autoridade canônica para decidir aprovações de cancelamento");
+        throw new OperacaoProibidaException(
+                "Apenas o Pároco possui autoridade canônica para decidir aprovações de cancelamento");
     }
 }

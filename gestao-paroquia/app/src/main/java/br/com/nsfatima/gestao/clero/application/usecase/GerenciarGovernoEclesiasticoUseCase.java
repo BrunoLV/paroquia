@@ -44,7 +44,8 @@ public class GerenciarGovernoEclesiasticoUseCase {
 
     public GovernoEclesiasticoResponse salvar(GovernoEclesiasticoRequest request) {
         DioceseEntity diocese = dioceseRepository.findById(request.dioceseId())
-                .orElseThrow(() -> new IllegalArgumentException("Diocese não encontrada com ID: " + request.dioceseId()));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Diocese não encontrada com ID: " + request.dioceseId()));
 
         if (request.parocoId() != null && !clerigoRepository.existsById(request.parocoId())) {
             throw new IllegalArgumentException("Clérigo não encontrado com ID: " + request.parocoId());

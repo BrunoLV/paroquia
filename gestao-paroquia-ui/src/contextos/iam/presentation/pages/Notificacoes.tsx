@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import LidaIcon from '@mui/icons-material/MarkEmailRead';
 import NovaIcon from '@mui/icons-material/MarkEmailUnread';
 import NotificacaoIcon from '@mui/icons-material/Notifications';

@@ -1,0 +1,21 @@
+# Pre-commit configuration for Monorepo Paróquia
+# Governa integridade de formatação e regras de qualidade (Checkstyle, PMD, TypeScript)
+default_install_hook_types: [pre-commit]
+default_stages: [pre-commit]
+
+repos:
+  - repo: local
+    hooks:
+      - id: backend-checkstyle-pmd
+        name: Backend Checkstyle & PMD (gestao-paroquia)
+        entry: bash -c 'cd gestao-paroquia && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest'
+        language: system
+        files: ^gestao-paroquia/app/src/.*\.java$
+        pass_filenames: false
+
+      - id: frontend-typecheck
+        name: Frontend TypeScript Typecheck (gestao-paroquia-ui)
+        entry: bash -c 'cd gestao-paroquia-ui && npm run build'
+        language: system
+        files: ^gestao-paroquia-ui/src/.*\.(ts|tsx)$
+        pass_filenames: false

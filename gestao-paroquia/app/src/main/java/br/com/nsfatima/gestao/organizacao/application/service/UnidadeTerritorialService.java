@@ -30,6 +30,8 @@ public class UnidadeTerritorialService {
     private static final String AUDIT_KEY_RESOURCE_ID = "resourceId";
     private static final String AUDIT_KEY_ACTION = "action";
     private static final String AUDIT_VALUE_UNIDADE_TERRITORIAL = "UNIDADE_TERRITORIAL";
+    private static final String MSG_MAE_NAO_ENCONTRADA = "Unidade territorial mãe não encontrada com ID: ";
+    private static final String MSG_MAE_NAO_ATIVA = "Unidade territorial mãe não está ativa.";
 
     private final UnidadeTerritorialJpaRepository repository;
     private final AuditoriaPersistenceService auditLogService;
@@ -56,9 +58,9 @@ public class UnidadeTerritorialService {
         if (request.parentId() != null) {
             var parent = repository.findById(request.parentId())
                     .orElseThrow(() -> new GrupoParoquialNegocioException(
-                            "Unidade territorial mãe não encontrada com ID: " + request.parentId()));
+                            MSG_MAE_NAO_ENCONTRADA + request.parentId()));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
+                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -84,9 +86,9 @@ public class UnidadeTerritorialService {
         if (parentId != null) {
             var parent = repository.findById(parentId)
                     .orElseThrow(() -> new GrupoParoquialNegocioException(
-                            "Unidade territorial mãe não encontrada com ID: " + parentId));
+                            MSG_MAE_NAO_ENCONTRADA + parentId));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
+                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -121,9 +123,9 @@ public class UnidadeTerritorialService {
             }
             var parent = repository.findById(request.parentId())
                     .orElseThrow(() -> new GrupoParoquialNegocioException(
-                            "Unidade territorial mãe não encontrada com ID: " + request.parentId()));
+                            MSG_MAE_NAO_ENCONTRADA + request.parentId()));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
+                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -152,9 +154,9 @@ public class UnidadeTerritorialService {
             }
             var parent = repository.findById(parentId)
                     .orElseThrow(() -> new GrupoParoquialNegocioException(
-                            "Unidade territorial mãe não encontrada com ID: " + parentId));
+                            MSG_MAE_NAO_ENCONTRADA + parentId));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException("Unidade territorial mãe não está ativa.");
+                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -187,7 +189,9 @@ public class UnidadeTerritorialService {
         entity.setDataFestaPadroeira(req.dataFestaPadroeira());
         entity.setDataDedicacaoAltar(req.dataDedicacaoAltar());
         entity.setPossuiSacrario(req.possuiSacrario() != null ? req.possuiSacrario() : true);
-        entity.setPossuiPiaBatismal(req.possuiPiaBatismal() != null ? req.possuiPiaBatismal() : (req.tipo() == TipoUnidadeTerritorial.MATRIZ));
+        entity.setPossuiPiaBatismal(req.possuiPiaBatismal() != null
+                ? req.possuiPiaBatismal()
+                : (req.tipo() == TipoUnidadeTerritorial.MATRIZ));
         entity.setClerigoResponsavelId(req.clerigoResponsavelId());
 
         // Fiscais e Jurídicos

@@ -140,10 +140,13 @@ public class SeedDataSqlIntegrityTest {
 
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
         assertTrue(diocesesCount != null && diocesesCount > 0, "Seed deve incluir dioceses cadastradas");
-        assertTrue(governoEclesiasticoCount != null && governoEclesiasticoCount > 0, "Seed deve incluir governo eclesiástico configurado");
+        assertTrue(governoEclesiasticoCount != null && governoEclesiasticoCount > 0,
+                "Seed deve incluir governo eclesiástico configurado");
         assertTrue(unidadesCount != null && unidadesCount > 0, "UnidadeTerritorial should be populated");
-        assertTrue(unidadesComPadroeiroCount != null && unidadesComPadroeiroCount >= 4, "Unidades territoriais devem possuir padroeiros configurados");
-        assertTrue(unidadesComAvcbCount != null && unidadesComAvcbCount >= 3, "Unidades territoriais devem possuir dados de bombeiros/AVCB");
+        assertTrue(unidadesComPadroeiroCount != null && unidadesComPadroeiroCount >= 4,
+                "Unidades territoriais devem possuir padroeiros configurados");
+        assertTrue(unidadesComAvcbCount != null && unidadesComAvcbCount >= 3,
+                "Unidades territoriais devem possuir dados de bombeiros/AVCB");
         assertTrue(locaisCount != null && locaisCount > 0, "Locais should be populated");
         assertTrue(eventosCount != null && eventosCount > 0, "Eventos should be populated");
         assertTrue(fieisAtivosCount != null && fieisAtivosCount > 0,

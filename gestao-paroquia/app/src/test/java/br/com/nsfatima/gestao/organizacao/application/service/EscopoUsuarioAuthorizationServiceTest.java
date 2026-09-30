@@ -169,8 +169,10 @@ class EscopoUsuarioAuthorizationServiceTest {
         @Test
         @DisplayName("Global clerical/pastoral roles have cross-community access")
         void globalRolesHaveCrossCommunityAccess() {
-            assertThat(service.hasTerritorialAccess(PapelGlobal.PAROCO.storedValue(), matrizId, comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelGlobal.VIGARIO.storedValue(), matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(
+                    PapelGlobal.PAROCO.storedValue(), matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(
+                    PapelGlobal.VIGARIO.storedValue(), matrizId, comunidadeBId)).isTrue();
             assertThat(service.hasTerritorialAccess(PapelGlobal.SECRETARIA_PAROQUIAL.storedValue(), matrizId,
                     comunidadeBId)).isTrue();
             assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORDENADOR.storedValue(), null,
@@ -186,8 +188,8 @@ class EscopoUsuarioAuthorizationServiceTest {
                     comunidadeBId)).isFalse();
             assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO.storedValue(), matrizId,
                     comunidadeBId)).isFalse();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(), matrizId,
-                    comunidadeBId)).isFalse();
+            assertThat(service.hasTerritorialAccess(
+                    PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(), matrizId, comunidadeBId)).isFalse();
         }
     }
 }

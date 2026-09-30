@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {
     Alert,
@@ -60,7 +60,7 @@ import {
 } from '@/contextos/iam/presentation/auth/permissions';
 import apiClient from '@/shared/infrastructure/http/client';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
-import {Organizacao, Projeto} from '@/shared/domain/types/types';
+import {Projeto} from '@/shared/domain/types/types';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '@/contextos/projeto/infrastructure/http/projetos';

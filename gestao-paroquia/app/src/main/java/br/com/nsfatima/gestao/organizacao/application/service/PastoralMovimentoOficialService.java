@@ -73,7 +73,7 @@ public class PastoralMovimentoOficialService {
      */
     @Transactional
     public void excluir(UUID id) {
-        PastoralMovimentoOficial oficial = repository.findById(id)
+        repository.findById(id)
                 .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         repository.delete(id);
     }

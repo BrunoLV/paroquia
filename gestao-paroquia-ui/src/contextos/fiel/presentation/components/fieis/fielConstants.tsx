@@ -1,7 +1,6 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import { CreateFielPayload, Endereco, Fiel, UpdateFielPayload } from '@/shared/domain/types/types';
-import { TipoRelacionamentoFamiliar } from '@/contextos/fiel/infrastructure/http/familiares';
 import { formatCep, formatCpf, formatDocumentoEstrangeiro, formatPhone, formatRg } from '@/shared/utils/masks';
 
 export const vazio = (): CreateFielPayload => ({
@@ -140,8 +139,8 @@ export const InfoField = ({
   icon,
 }: {
   label: string;
-  value?: React.ReactNode;
-  icon?: React.ReactNode;
+  value?: ReactNode;
+  icon?: ReactNode;
 }) => (
   <Paper
     variant="outlined"

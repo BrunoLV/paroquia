@@ -18,6 +18,11 @@ import java.util.UUID;
 @Transactional
 public class GerenciarDioceseUseCase {
 
+    private static final String AUDIT_ACTOR_ADMIN = "admin";
+    private static final String AUDIT_RESOURCE_DIOCESE = "diocese";
+    private static final String AUDIT_STATUS_SUCESSO = "sucesso";
+    private static final String AUDIT_KEY_DIOCESE_ID = "dioceseId";
+
     private final DioceseJpaRepository repository;
     private final AuditoriaPersistenceService auditLogService;
 
@@ -57,8 +62,8 @@ public class GerenciarDioceseUseCase {
         DioceseEntity entity = toEntity(domain);
         repository.save(entity);
 
-        auditLogService.log("admin", "criar-diocese", "diocese", "sucesso", Map.of(
-                "dioceseId", entity.getId(),
+        auditLogService.log(AUDIT_ACTOR_ADMIN, "criar-diocese", AUDIT_RESOURCE_DIOCESE, AUDIT_STATUS_SUCESSO, Map.of(
+                AUDIT_KEY_DIOCESE_ID, entity.getId(),
                 "nome", entity.getNome()
         ));
 
@@ -89,10 +94,16 @@ public class GerenciarDioceseUseCase {
         applyDomainToEntity(domain, entity);
         repository.save(entity);
 
-        auditLogService.log("admin", "atualizar-diocese", "diocese", "sucesso", Map.of(
-                "dioceseId", id,
-                "nome", entity.getNome()
-        ));
+        auditLogService.log(
+                AUDIT_ACTOR_ADMIN,
+                "atualizar-diocese",
+                AUDIT_RESOURCE_DIOCESE,
+                AUDIT_STATUS_SUCESSO,
+                Map.of(
+                        AUDIT_KEY_DIOCESE_ID, id,
+                        "nome", entity.getNome()
+                )
+        );
 
         return toResponse(entity);
     }
@@ -103,9 +114,13 @@ public class GerenciarDioceseUseCase {
 
         repository.delete(entity);
 
-        auditLogService.log("admin", "excluir-diocese", "diocese", "sucesso", Map.of(
-                "dioceseId", id
-        ));
+        auditLogService.log(
+                AUDIT_ACTOR_ADMIN,
+                "excluir-diocese",
+                AUDIT_RESOURCE_DIOCESE,
+                AUDIT_STATUS_SUCESSO,
+                Map.of(AUDIT_KEY_DIOCESE_ID, id)
+        );
     }
 
     private DioceseEntity toEntity(Diocese domain) {

@@ -67,6 +67,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
         assertThat(aprovacao.getActionPayloadJson()).contains("Missa pendente de aprovacao");
         assertThat(aprovacao.getSolicitantePapel()).isEqualTo("secretario-conselho");
         assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.CONSELHO);
+        assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);
     }
 
     @Test

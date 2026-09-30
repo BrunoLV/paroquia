@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -8,7 +8,6 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import BlockIcon from '@mui/icons-material/Block';
@@ -28,7 +27,7 @@ interface ReservaCancelarModalProps {
   isPendente?: boolean;
 }
 
-export const ReservaCancelarModal: React.FC<ReservaCancelarModalProps> = ({
+export const ReservaCancelarModal: FC<ReservaCancelarModalProps> = ({
   open,
   onClose,
   onConfirm,

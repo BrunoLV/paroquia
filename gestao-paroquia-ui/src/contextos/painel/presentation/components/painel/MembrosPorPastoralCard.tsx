@@ -1,12 +1,12 @@
-import React from 'react';
-import {Box, LinearProgress, Paper, Stack, Typography} from '@mui/material';
+import type { FC } from 'react';
+import {LinearProgress, Paper, Stack, Typography} from '@mui/material';
 import {GeneralSummary} from '@/shared/domain/types/types';
 
 interface MembrosPorPastoralCardProps {
   resumo?: GeneralSummary;
 }
 
-const MembrosPorPastoralCard: React.FC<MembrosPorPastoralCardProps> = ({resumo}) => {
+const MembrosPorPastoralCard: FC<MembrosPorPastoralCardProps> = ({resumo}) => {
   const engajados = resumo?.fieisEngajadosPastoral ?? 0;
   const semVinculo = resumo?.fieisSemVinculoPastoral ?? 0;
   const total = engajados + semVinculo;

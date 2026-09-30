@@ -43,7 +43,7 @@ import {getAtivos} from '@/contextos/patrimonio/infrastructure/http/ativos';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/shared/domain/types/types';
 import {getFormatoEventoLabel, getFormatoEventoIcon} from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
-import {formatarHorarioEvento, obterLabelTurno, METADADOS_TIPO_HORARIO} from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
+import {formatarHorarioEvento, obterLabelTurno} from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
 import {formatarResumoRecorrencia} from '@/contextos/calendario/presentation/utils/recorrenciaFormatUtils';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import {extractErrorMessage} from '@/shared/utils/errorUtils';
