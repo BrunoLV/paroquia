@@ -11,11 +11,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ### Adicionado
 - **Configuração de Pre-Commit no Monorepo:**
   - Criação do arquivo `.pre-commit-config.yaml` na raiz com hooks locais para execução automática de `checkstyleMain`, `checkstyleTest`, `pmdMain` e `pmdTest` no backend (`gestao-paroquia`) e typecheck (`npm run build`) no frontend (`gestao-paroquia-ui`).
+- **Detecção Estática de Código, Métodos e Tipos Não Utilizados:**
+  - Ativação das regras `UnusedLocalVariable` e `UnusedPrivateMethod` no PMD (`config/pmd/pmd.xml`) e módulo `UnusedLocalVariable` no Checkstyle (`config/checkstyle/checkstyle.xml`) no backend.
+  - Ativação de `"noUnusedLocals": true` no TypeScript (`tsconfig.json`) do frontend (`gestao-paroquia-ui`).
 
 ### Corrigido
-- **Conformidade Estática e Qualidade de Código (PMD e Checkstyle):**
+- **Conformidade Estática e Qualidade de Código (PMD, Checkstyle e TypeScript):**
   - Eliminação de violações de `ExcessivePublicCount` e `RedundantFieldInitializer` em `UnidadeTerritorialEntity`.
   - Resolução de violações de `LineLength`, `MultipleStringLiterals`, `WhitespaceAround` e `JavadocStyle` em casos de uso, resolvers de segurança, serviços e classes de teste de `calendario`, `clero`, `organizacao`, `iam` e `local`.
+  - Remoção de variáveis e métodos privados não utilizados em `PastoralMovimentoOficialService`, `CreateEventoAprovacaoPendenteIntegrationTest`, `GrupoParoquialApiIntegrationTest` e `PastoralMovimentoOficialApiIntegrationTest`.
+  - Limpeza integral de imports, tipos e variáveis não utilizados nos componentes e páginas do frontend.
 ---
 
 ## [0.3.0] - 2026-09-30

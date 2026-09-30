@@ -45,7 +45,6 @@ class GrupoParoquialApiIntegrationTest {
     @BeforeEach
     void setUp() {
         // Usar UUIDs estáticos compatíveis com o seed e atualizar seus tipos e parentIds
-        UUID cleroId = UUID.fromString("00000000-0000-0000-0000-0000000000dd");
         UUID matrizId = UUID.fromString("00000000-0000-0000-0000-000000000100");
         UUID conselhoIdVal = UUID.fromString("00000000-0000-0000-0000-0000000000cc");
 

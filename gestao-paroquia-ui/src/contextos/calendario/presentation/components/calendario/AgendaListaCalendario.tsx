@@ -38,7 +38,6 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
       {agendaEvents.map((evt, idx) => {
         const styleColors = getCategoryColor(evt.categoria);
         const start = new Date(evt.inicio);
-        const end = new Date(evt.fim);
         const isCancelado = evt.status?.toUpperCase() === 'CANCELADO';
         const isFalhaExecucao = evt.status?.toUpperCase() === 'FALHA_EXECUCAO';
         const isConflito = evt.estadoConflito?.toUpperCase() === 'PENDENTE';

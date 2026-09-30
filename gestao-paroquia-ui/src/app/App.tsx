@@ -1,4 +1,3 @@
-import React from 'react';
 import {BrowserRouter} from 'react-router-dom';
 import {QueryProvider} from '@/shared/presentation/context/QueryProvider';
 import {AuthProvider} from '@/contextos/iam/presentation/auth/AuthContext';

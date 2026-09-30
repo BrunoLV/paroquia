@@ -8,7 +8,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AddIcon from '@mui/icons-material/Add';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import { Evento } from '@/shared/domain/types/types';
@@ -51,7 +50,6 @@ export const TimelineDiaCalendario = ({
 
   const now = new Date();
   const currentHour = now.getHours();
-  const currentMinutes = now.getMinutes();
   const agoraTexto = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   // Segregação entre eventos de Dia Inteiro e eventos com horário marcado
@@ -78,7 +76,7 @@ export const TimelineDiaCalendario = ({
   }, [events]);
 
   // Cálculo da faixa de horas a exibir (07:00 às 22:00, expandindo se houver eventos mais cedo ou tarde)
-  const { startHour, endHour, hoursList } = useMemo(() => {
+  const { hoursList } = useMemo(() => {
     let minH = DEFAULT_START_HOUR;
     let maxH = DEFAULT_END_HOUR;
 

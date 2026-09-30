@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
+import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import apiClient from '@/shared/infrastructure/http/client';
 
 interface Organization {

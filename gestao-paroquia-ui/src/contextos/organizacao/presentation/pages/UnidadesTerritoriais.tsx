@@ -45,7 +45,7 @@ import { useNotification } from '@/shared/presentation/context/NotificationConte
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import { formatDateBr } from '@/shared/utils/masks';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
-import { UnidadeTerritorial, Diocese, GovernoEclesiastico } from '@/shared/domain/types/types';
+import { UnidadeTerritorial } from '@/shared/domain/types/types';
 import {
   getUnidadesTerritoriais,
   createUnidadeTerritorial,

@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  Box,
   Card,
   CardContent,
   FormControl,
@@ -12,7 +11,6 @@ import {
   Stack,
   Tab,
   Tabs,
-  Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -44,7 +42,6 @@ import {
   CriarReservaPayload,
   CriarReservaRecorrentePayload,
   ReservaDetalhe,
-  StatusReserva,
   TipoItemReserva,
 } from '@/shared/domain/types/types';
 import { ReservaFormData } from '@/contextos/reserva/presentation/schemas/reservaSchema';
@@ -56,7 +53,7 @@ import { ReservaDetalhesDrawer } from '@/contextos/reserva/presentation/componen
 import { ReservaCancelarModal } from '@/contextos/reserva/presentation/components/reservas/ReservaCancelarModal';
 import { ReservaDevolucaoModal } from '@/contextos/reserva/presentation/components/reservas/ReservaDevolucaoModal';
 
-const Reservas: React.FC = () => {
+const Reservas: FC = () => {
   const [tabIndex, setTabIndex] = useState(0); // 0: Tabela, 1: Calendário
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState<string>('TODOS');
@@ -69,7 +66,7 @@ const Reservas: React.FC = () => {
 
   // Drawers & Modais
   const [drawerFormOpen, setDrawerFormOpen] = useState(Boolean(stateLocation?.itemId));
-  const [preselectedTipo, setPreselectedTipo] = useState<TipoItemReserva | undefined>(stateLocation?.tipoItem);
+  const preselectedTipo = stateLocation?.tipoItem;
   const [preselectedItemId, setPreselectedItemId] = useState<string | undefined>(stateLocation?.itemId);
   const [detalhesReserva, setDetalhesReserva] = useState<ReservaDetalhe | null>(null);
   const [cancelarReservaAlvo, setCancelarReservaAlvo] = useState<ReservaDetalhe | null>(null);

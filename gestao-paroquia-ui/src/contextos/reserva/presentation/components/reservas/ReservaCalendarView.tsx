@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FC } from 'react';
 import {
   Box,
   Card,
@@ -6,7 +6,6 @@ import {
   Stack,
   Tooltip,
   Typography,
-  Dialog,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -14,14 +13,13 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import BuildIcon from '@mui/icons-material/Build';
 import IconActionButton from '@/shared/presentation/components/IconActionButton';
 import { ReservaDetalhe } from '@/shared/domain/types/types';
-import { getReservaStatusMeta } from '@/shared/utils/statusMeta/reservaStatus';
 
 interface ReservaCalendarViewProps {
   reservas: ReservaDetalhe[];
   onSelectReserva: (reserva: ReservaDetalhe) => void;
 }
 
-export const ReservaCalendarView: React.FC<ReservaCalendarViewProps> = ({
+export const ReservaCalendarView: FC<ReservaCalendarViewProps> = ({
   reservas,
   onSelectReserva,
 }) => {
@@ -128,7 +126,6 @@ export const ReservaCalendarView: React.FC<ReservaCalendarViewProps> = ({
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, overflowY: 'auto' }}>
                   {reservasDia.map((r) => {
-                    const meta = getReservaStatusMeta(r.status);
                     const horaInicio = new Date(r.dataHoraInicio).toLocaleTimeString('pt-BR', {
                       hour: '2-digit',
                       minute: '2-digit',
