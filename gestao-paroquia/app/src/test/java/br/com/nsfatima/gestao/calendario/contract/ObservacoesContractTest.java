@@ -73,7 +73,7 @@ class ObservacoesContractTest {
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", "00000000-0000-0000-0000-000000000001")
-                        .header("X-Actor-Role", "voluntario-pastoral-local")
+                        .header("X-Actor-Role", "voluntario")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"tipo\":\"nota\",\"conteudo\":\"Outra nota\"}"))

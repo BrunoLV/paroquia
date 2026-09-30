@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 import br.com.nsfatima.gestao.organizacao.domain.policy.PadraoAutorizacaoEscopoUsuarioPolicy;
@@ -30,67 +31,60 @@ class EscopoUsuarioAuthorizationServiceTest {
     class AdminAndCleroGeneralPermissions {
 
         @Test
-        @DisplayName("ADMIN has full global access for any action and target scope")
-        void adminHasFullAccess() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.ADMIN,
-                    TipoGrupo.PASTORAL, matrizId, matrizId, matrizId)).isTrue();
+        @DisplayName("ADMIN is barred from ecclesiastical governance and event approval")
+        void adminBarredFromEcclesiasticalGovernance() {
+            assertThat(service.canManageOrganizationData(PapelGlobal.ADMIN.storedValue(),
+                    TipoGrupo.PASTORAL, matrizId, matrizId, matrizId)).isFalse();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.ADMIN,
-                    TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isTrue();
+            assertThat(service.canManageOrganizationData(PapelGlobal.ADMIN.storedValue(),
+                    TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
 
-            assertThat(service.canApproveEvents(PapelOrganizacional.ADMIN,
-                    TipoGrupo.PASTORAL, matrizId, comunidadeBId)).isTrue();
-
+            assertThat(service.canApproveEvents(PapelGlobal.ADMIN.storedValue(),
+                    TipoGrupo.PASTORAL, matrizId, comunidadeBId)).isFalse();
         }
 
         @Test
-        @DisplayName("PAROCO and VIGARIO have full general management access")
-        void parocoAndVigarioHaveFullGeneralAccess() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.PAROCO,
+        @DisplayName("PAROCO and VIGARIO have general management access, only PAROCO approves events")
+        void parocoAndVigarioAccess() {
+            assertThat(service.canManageOrganizationData(PapelGlobal.PAROCO.storedValue(),
                     TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.VIGARIO,
+            assertThat(service.canManageOrganizationData(PapelGlobal.VIGARIO.storedValue(),
                     TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
-            assertThat(service.canApproveEvents(PapelOrganizacional.PAROCO,
+            assertThat(service.canApproveEvents(PapelGlobal.PAROCO.storedValue(),
                     TipoGrupo.CONSELHO, null, matrizId)).isTrue();
 
-            assertThat(service.canApproveEvents(PapelOrganizacional.VIGARIO,
-                    TipoGrupo.CONSELHO, null, comunidadeBId)).isTrue();
-
+            assertThat(service.canApproveEvents(PapelGlobal.VIGARIO.storedValue(),
+                    TipoGrupo.CONSELHO, null, comunidadeBId)).isFalse();
         }
     }
 
     @Nested
-    @DisplayName("Conselho Pastoral Leadership Scope Permissions")
+    @DisplayName("Conselho Pastoral Scope Permissions")
     class ConselhoPastoralScopePermissions {
 
         @Test
-        @DisplayName("Conselho Pastoral Coordinator can manage data within their own community")
-        void conselhoCoordinatorCommunityScope() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
+        @DisplayName("Conselho Pastoral Secretary can manage council minutes within their own council")
+        void conselhoSecretaryCommunityScope() {
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.SECRETARIO_CONSELHO.storedValue(),
                     TipoGrupo.CONSELHO, matrizId, matrizId, matrizId)).isTrue();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.MESA_CPP,
-                    TipoGrupo.CONSELHO, matrizId, pastoralMatrizId, matrizId)).isTrue();
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(),
+                    TipoGrupo.CONSELHO, matrizId, pastoralMatrizId, matrizId)).isFalse();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.SECRETARIO_CONSELHO.storedValue(),
                     TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
-
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoGrupo.CONSELHO, matrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
-
         }
 
         @Test
-        @DisplayName("Conselho Pastoral Coordinator can approve events in their community")
-        void conselhoCoordinatorCanApproveEventsInCommunity() {
-            assertThat(service.canApproveEvents(PapelOrganizacional.PRESIDENTE_CPC,
-                    TipoGrupo.CONSELHO, matrizId, matrizId)).isTrue();
+        @DisplayName("Conselho Pastoral members cannot directly approve events (consultative vote only)")
+        void conselhoMembersCannotApproveEvents() {
+            assertThat(service.canApproveEvents(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(),
+                    TipoGrupo.CONSELHO, matrizId, matrizId)).isFalse();
 
-            assertThat(service.canApproveEvents(PapelOrganizacional.PRESIDENTE_CPC,
+            assertThat(service.canApproveEvents(PapelOrganizacional.SECRETARIO_CONSELHO.storedValue(),
                     TipoGrupo.CONSELHO, matrizId, comunidadeBId)).isFalse();
-
         }
     }
 
@@ -99,78 +93,72 @@ class EscopoUsuarioAuthorizationServiceTest {
     class PastoralLeadershipScopePermissions {
 
         @Test
-        @DisplayName("Pastoral Coordinator can only manage data for their exact Pastoral/Movimento")
+        @DisplayName("Coordinator can only manage data for their exact Pastoral/Movimento")
         void pastoralCoordinatorExactPastoralScope() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORDENADOR.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_MOVIMENTO,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORDENADOR.storedValue(),
                     TipoGrupo.MOVIMENTO, pastoralMatrizId, pastoralMatrizId, matrizId)).isTrue();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORDENADOR.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, comunidadeBId)).isFalse();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.COORDENADOR.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, matrizId, matrizId)).isFalse();
-
         }
 
         @Test
-        @DisplayName("Pastoral Coordinator cannot directly approve events (requires Conselho/Paroco aprovacao)")
+        @DisplayName("Coordinator cannot directly approve events (requires Paroco aprovacao)")
         void pastoralCoordinatorCannotApproveEvents() {
-            assertThat(service.canApproveEvents(PapelOrganizacional.COORD_PASTORAL_LOCAL,
+            assertThat(service.canApproveEvents(PapelOrganizacional.COORDENADOR.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId)).isFalse();
-
         }
     }
 
     @Nested
-    @DisplayName("PADRE, SECRETARIO and VOLUNTARIO Scope Permissions")
+    @DisplayName("DIACONO_PAROQUIAL, SECRETARIO_CONSELHO and VOLUNTARIO Scope Permissions")
     class ReadOnlyAndMemberPermissions {
 
         @Test
-        @DisplayName("PADRE and SECRETARIO cannot perform general mutations, but can view and add observations")
-        void padreAndSecretarioPermissions() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.PADRE,
+        @DisplayName("DIACONO_PAROQUIAL and SECRETARIO_CONSELHO can view and add observations")
+        void diaconoAndSecretarioPermissions() {
+            assertThat(service.canManageOrganizationData(PapelGlobal.DIACONO_PAROQUIAL.storedValue(),
                     TipoGrupo.CONSELHO, null, matrizId, matrizId)).isFalse();
 
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.SECRETARIO,
-                    TipoGrupo.CONSELHO, matrizId, matrizId, matrizId)).isFalse();
-
-            assertThat(service.canAddObservation(PapelOrganizacional.PADRE,
+            assertThat(service.canAddObservation(PapelGlobal.DIACONO_PAROQUIAL.storedValue(),
                     TipoGrupo.CONSELHO, null, matrizId, false)).isTrue();
 
-            assertThat(service.canAddObservation(PapelOrganizacional.SECRETARIO,
+            assertThat(service.canAddObservation(PapelOrganizacional.SECRETARIO_CONSELHO.storedValue(),
                     TipoGrupo.CONSELHO, matrizId, comunidadeBId, false)).isTrue();
-
         }
 
         @Test
         @DisplayName("VOLUNTARIO can only add observations if event belongs to their pastoral or pastoral is participant")
         void membroAddObservationPermissions() {
-            assertThat(service.canManageOrganizationData(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+            assertThat(service.canManageOrganizationData(PapelOrganizacional.VOLUNTARIO.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, matrizId)).isFalse();
 
-            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralMatrizId, false)).isTrue();
 
-            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, comunidadeBId, true)).isTrue();
 
-            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+            assertThat(service.canAddObservation(PapelOrganizacional.VOLUNTARIO.storedValue(),
                     TipoGrupo.PASTORAL, pastoralMatrizId, pastoralComunidadeBId, false)).isFalse();
-
         }
 
         @Test
-        @DisplayName("VOLUNTARIO cannot view unapproved/pendente events")
+        @DisplayName("VOLUNTARIO and FIEL cannot view unapproved/pendente events")
         void membroCannotViewPendenteEvents() {
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL)).isFalse();
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.PADRE)).isTrue();
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.SECRETARIO)).isTrue();
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.COORD_PASTORAL_LOCAL)).isTrue();
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.PAROCO)).isTrue();
-            assertThat(service.canViewPendenteEvents(PapelOrganizacional.ADMIN)).isTrue();
+            assertThat(service.canViewPendenteEvents(PapelOrganizacional.VOLUNTARIO.storedValue())).isFalse();
+            assertThat(service.canViewPendenteEvents(PapelGlobal.FIEL.storedValue())).isFalse();
+            assertThat(service.canViewPendenteEvents(PapelGlobal.DIACONO_PAROQUIAL.storedValue())).isTrue();
+            assertThat(service.canViewPendenteEvents(PapelOrganizacional.SECRETARIO_CONSELHO.storedValue())).isTrue();
+            assertThat(service.canViewPendenteEvents(PapelOrganizacional.COORDENADOR.storedValue())).isTrue();
+            assertThat(service.canViewPendenteEvents(PapelGlobal.PAROCO.storedValue())).isTrue();
+            assertThat(service.canViewPendenteEvents(PapelGlobal.ADMIN.storedValue())).isTrue();
         }
     }
 
@@ -179,26 +167,26 @@ class EscopoUsuarioAuthorizationServiceTest {
     class TerritorialScopePermissions {
 
         @Test
-        @DisplayName("Global roles have cross-community access")
+        @DisplayName("Global clerical/pastoral roles have cross-community access")
         void globalRolesHaveCrossCommunityAccess() {
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.ADMIN, matrizId, comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PAROCO, matrizId, comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_GLOBAL, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelGlobal.PAROCO.storedValue(), matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelGlobal.VIGARIO.storedValue(), matrizId, comunidadeBId)).isTrue();
+            assertThat(service.hasTerritorialAccess(PapelGlobal.SECRETARIA_PAROQUIAL.storedValue(), matrizId,
                     comunidadeBId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_MOVIMENTO, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORDENADOR.storedValue(), null,
                     comunidadeBId)).isTrue();
         }
 
         @Test
-        @DisplayName("Local roles are restricted strictly to their community")
+        @DisplayName("Local organizational roles are restricted strictly to their community")
         void localRolesRestrictedToCommunity() {
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORDENADOR.storedValue(), matrizId,
                     matrizId)).isTrue();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORD_PASTORAL_LOCAL, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.COORDENADOR.storedValue(), matrizId,
                     comunidadeBId)).isFalse();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.VOLUNTARIO.storedValue(), matrizId,
                     comunidadeBId)).isFalse();
-            assertThat(service.hasTerritorialAccess(PapelOrganizacional.PRESIDENTE_CPC, matrizId,
+            assertThat(service.hasTerritorialAccess(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(), matrizId,
                     comunidadeBId)).isFalse();
         }
     }

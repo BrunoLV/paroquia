@@ -4,41 +4,37 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 class PapelOrganizacionalTest {
 
     @Test
-    @DisplayName("Should resolve all specific stored values")
-    void deveResolverTodosArmazenadoValoresIncludingAdmin() {
-        assertThat(PapelOrganizacional.fromStoredValue("admin")).isEqualTo(PapelOrganizacional.ADMIN);
-        assertThat(PapelOrganizacional.fromStoredValue("paroco")).isEqualTo(PapelOrganizacional.PAROCO);
-        assertThat(PapelOrganizacional.fromStoredValue("vigario")).isEqualTo(PapelOrganizacional.VIGARIO);
-        assertThat(PapelOrganizacional.fromStoredValue("coord-pastoral-global"))
-                .isEqualTo(PapelOrganizacional.COORD_PASTORAL_GLOBAL);
-        assertThat(PapelOrganizacional.fromStoredValue("coord-pastoral-local"))
-                .isEqualTo(PapelOrganizacional.COORD_PASTORAL_LOCAL);
-        assertThat(PapelOrganizacional.fromStoredValue("coord-movimento"))
-                .isEqualTo(PapelOrganizacional.COORD_MOVIMENTO);
-        assertThat(PapelOrganizacional.fromStoredValue("presidente-cpc"))
-                .isEqualTo(PapelOrganizacional.PRESIDENTE_CPC);
-        assertThat(PapelOrganizacional.fromStoredValue("membro-cpc"))
-                .isEqualTo(PapelOrganizacional.MEMBRO_CPC);
-        assertThat(PapelOrganizacional.fromStoredValue("membro-cpp"))
-                .isEqualTo(PapelOrganizacional.MEMBRO_CPP);
-        assertThat(PapelOrganizacional.fromStoredValue("mesa-cpp"))
-                .isEqualTo(PapelOrganizacional.MESA_CPP);
-        assertThat(PapelOrganizacional.fromStoredValue("voluntario-pastoral-local"))
-                .isEqualTo(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL);
-        assertThat(PapelOrganizacional.fromStoredValue("membro-movimento"))
-                .isEqualTo(PapelOrganizacional.MEMBRO_MOVIMENTO);
-        assertThat(PapelOrganizacional.fromStoredValue("padre")).isEqualTo(PapelOrganizacional.PADRE);
-        assertThat(PapelOrganizacional.fromStoredValue("secretario")).isEqualTo(PapelOrganizacional.SECRETARIO);
-        assertThat(PapelOrganizacional.COORD_PASTORAL_GLOBAL.getDescricao()).isEqualTo("Coordenador Pastoral Global");
+    @DisplayName("Should resolve all 7 canonical organizational stored values")
+    void deveResolverTodosArmazenadoValoresCanonicos() {
+        assertThat(PapelOrganizacional.fromStoredValue("secretario-conselho"))
+                .isEqualTo(PapelOrganizacional.SECRETARIO_CONSELHO);
+        assertThat(PapelOrganizacional.fromStoredValue("membro-conselho-pastoral"))
+                .isEqualTo(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL);
+        assertThat(PapelOrganizacional.fromStoredValue("membro-conselho-economico"))
+                .isEqualTo(PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO);
+        assertThat(PapelOrganizacional.fromStoredValue("coordenador"))
+                .isEqualTo(PapelOrganizacional.COORDENADOR);
+        assertThat(PapelOrganizacional.fromStoredValue("secretario-grupo"))
+                .isEqualTo(PapelOrganizacional.SECRETARIO_GRUPO);
+        assertThat(PapelOrganizacional.fromStoredValue("membro-ativo"))
+                .isEqualTo(PapelOrganizacional.MEMBRO_ATIVO);
+        assertThat(PapelOrganizacional.fromStoredValue("voluntario"))
+                .isEqualTo(PapelOrganizacional.VOLUNTARIO);
+        assertThat(PapelOrganizacional.COORDENADOR.getDescricao())
+                .isEqualTo("Coordenador");
     }
 
     @Test
-    @DisplayName("Should return null for generic or unknown stored values")
-    void deveRetornarNuloParaDesconhecidoOuGenericoArmazenadoValores() {
-        assertThat(PapelOrganizacional.fromStoredValue("coordenador")).isNull();
+    @DisplayName("Should return null for global or legacy/unknown stored values")
+    void deveRetornarNuloParaDesconhecidoOuLegadoArmazenadoValores() {
+        assertThat(PapelOrganizacional.fromStoredValue("admin")).isNull();
+        assertThat(PapelOrganizacional.fromStoredValue("paroco")).isNull();
+        assertThat(PapelOrganizacional.fromStoredValue("coord-pastoral-local")).isNull();
+        assertThat(PapelOrganizacional.fromStoredValue("presidente-cpc")).isNull();
         assertThat(PapelOrganizacional.fromStoredValue("vice-coordenador")).isNull();
         assertThat(PapelOrganizacional.fromStoredValue("membro")).isNull();
         assertThat(PapelOrganizacional.fromStoredValue("invalid")).isNull();

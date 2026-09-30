@@ -31,7 +31,7 @@ COMMENT ON TABLE calendario.aprovacoes IS 'Solicitações de aprovação vincula
 COMMENT ON COLUMN calendario.aprovacoes.id IS 'Identificador primário da solicitação de aprovação (UUID).';
 COMMENT ON COLUMN calendario.aprovacoes.evento_id IS 'Evento ao qual esta solicitação de aprovação se refere.';
 COMMENT ON COLUMN calendario.aprovacoes.tipo_solicitacao IS 'Natureza da solicitação (ex.: criação, alteração, cancelamento de evento).';
-COMMENT ON COLUMN calendario.aprovacoes.aprovador_papel IS 'Papel eclesiástico/administrativo com alçada para decidir a solicitação.';
+COMMENT ON COLUMN calendario.aprovacoes.aprovador_papel IS 'Alçada decisória canônica exclusiva para homologação da solicitação (PAROCO).';
 COMMENT ON COLUMN calendario.aprovacoes.status IS 'Estado da solicitação (pendente, aprovada, rejeitada etc.).';
 COMMENT ON COLUMN calendario.aprovacoes.criado_em_utc IS 'Data e hora de criação da solicitação.';
 COMMENT ON COLUMN calendario.aprovacoes.decidido_em_utc IS 'Data e hora em que a solicitação foi decidida (aprovada ou rejeitada).';

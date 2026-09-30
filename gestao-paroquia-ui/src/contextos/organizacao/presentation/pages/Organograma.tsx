@@ -97,16 +97,19 @@ const Organograma: React.FC = () => {
   const getRoleBadgeColor = (role: string) => {
     switch (role?.toUpperCase()) {
       case 'PAROCO':
+      case 'BISPO_DIOCESANO':
         return theme.palette.error.main;
       case 'VIGARIO':
-      case 'PADRE':
+      case 'DIACONO_PAROQUIAL':
         return theme.palette.warning.main;
       case 'COORDENADOR':
         return theme.palette.info.main;
-      case 'VICE_COORDENADOR':
-      case 'VICE-COORDENADOR':
+      case 'MEMBRO_CONSELHO_ECONOMICO':
+      case 'MEMBRO_CONSELHO_PASTORAL':
         return theme.palette.success.main;
-      case 'SECRETARIO':
+      case 'SECRETARIO_CONSELHO':
+      case 'SECRETARIO_GRUPO':
+      case 'SECRETARIA_PAROQUIAL':
         return theme.palette.secondary.main;
       default:
         return theme.palette.grey[600];

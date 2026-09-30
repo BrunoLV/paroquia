@@ -81,11 +81,14 @@ public class UsuarioDetails implements UserDetails {
                 .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r);
 
         Stream<String> vinculoRoles = this.vinculos.stream()
-                .map(LeitorVinculoExterno.Vinculo::authority);
+                .flatMap(v -> Stream.of(v.authority(), v.scopedAuthority()));
 
         Stream<String> papelGlobalRoles = (papeisGlobais == null ? List.<String>of() : papeisGlobais).stream()
                 .filter(p -> p != null && !p.isBlank())
-                .map(p -> "ROLE_GLOBAL_" + p.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
+                .flatMap(p -> {
+                    String norm = p.trim().toUpperCase(Locale.ROOT).replace('-', '_');
+                    return Stream.of("ROLE_" + norm, "ROLE_GLOBAL_" + norm);
+                });
 
         this.authorities = Stream.concat(Stream.concat(globalRoles, vinculoRoles), papelGlobalRoles)
                 .distinct()

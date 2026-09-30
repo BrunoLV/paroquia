@@ -126,7 +126,7 @@ test('normalizes the root login response used by the API session contract', asyn
     data: {
       usuarioId: 'usuario-42',
       username: 'coordenadora',
-      roles: ['ROLE_CONSELHO_COORDENADOR'],
+      roles: ['ROLE_COORDENADOR'],
       organizations: [],
     },
   });
@@ -147,7 +147,7 @@ test('normalizes the root login response used by the API session contract', asyn
   expect(JSON.parse(localStorage.getItem('user') ?? '{}')).toMatchObject({
     id: 'usuario-42',
     username: 'coordenadora',
-    roles: ['ROLE_CONSELHO_COORDENADOR'],
+    roles: ['ROLE_COORDENADOR'],
   });
 });
 

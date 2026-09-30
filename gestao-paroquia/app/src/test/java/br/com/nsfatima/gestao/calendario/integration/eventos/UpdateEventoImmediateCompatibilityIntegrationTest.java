@@ -54,11 +54,11 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
         UUID eventoId = UUID.fromString(
                 objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
-        // PATCH with sensitive fields by coordenador/CONSELHO → 200 OK (immediately
+        // PATCH with sensitive fields by paroco/CLERO → 200 OK (immediately
         // applied)
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -78,7 +78,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void viceCoordinadorConselhoSensitiveFieldsAppliedImmediately() throws Exception {
+    void bispoDiocesanoSensitiveFieldsAppliedImmediately() throws Exception {
         // Create event
         MvcResult createResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
@@ -88,7 +88,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "titulo": "Evento vice coordenador",
+                                  "titulo": "Evento bispo",
                                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-12-20T12:00:00Z",
                                   "fim": "2027-12-20T13:00:00Z"
@@ -100,11 +100,11 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
         UUID eventoId = UUID.fromString(
                 objectMapper.readTree(createResult.getResponse().getContentAsString()).get("id").asString());
 
-        // PATCH with sensitive fields by vice-coordenador/CONSELHO → 200 OK
+        // PATCH with sensitive fields by bispo-diocesano/CLERO → 200 OK
         // (immediately applied)
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "mesa-diretora-cpp")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "bispo-diocesano")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

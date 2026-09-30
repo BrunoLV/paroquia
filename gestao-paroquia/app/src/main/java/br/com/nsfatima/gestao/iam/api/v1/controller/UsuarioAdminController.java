@@ -53,7 +53,7 @@ public class UsuarioAdminController {
      */
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COORDENADOR')")
     @Operation(summary = "Ativa ou desativa um usuário", description = "Administradores globais ou coordenadores de " +
             "organização podem alternar o status do usuário.")
     @ApiResponses({
@@ -83,7 +83,7 @@ public class UsuarioAdminController {
      */
     @PatchMapping("/{id}/papeis")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN')")
     @Operation(summary = "Atualiza papéis globais do usuário", description = "Apenas administradores globais podem atualizar papéis.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Papéis globais atualizados com sucesso"),
@@ -113,7 +113,7 @@ public class UsuarioAdminController {
      */
     @PostMapping("/{id}/redefinir-senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COORDENADOR')")
     @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais ou coordenadores de organização" +
             " podem redefinir senhas.")
     @ApiResponses({

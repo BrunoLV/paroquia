@@ -47,7 +47,7 @@ class EventoControllerSecurityTest {
         createEvento(eventId, orgId);
 
         mockMvc.perform(get("/api/v1/eventos/" + eventId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId.toString()))
                 .andExpect(status().isOk());
@@ -61,7 +61,7 @@ class EventoControllerSecurityTest {
         createEvento(eventId, otherOrgId);
 
         mockMvc.perform(get("/api/v1/eventos/" + eventId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", myOrgId.toString()))
                 .andExpect(status().isForbidden());

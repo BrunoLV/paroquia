@@ -91,7 +91,7 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
-        entity.setAprovadorPapel(AprovadorPapel.COORD_CONSELHO.storedValue());
+        entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(dataOcorrencia);
 

@@ -102,7 +102,7 @@ describe('Projetos Page', () => {
   };
 
   test('renders page heading and projects list', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     expect(screen.getByRole('heading', { name: /Projetos Paroquiais/i })).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('Projetos Page', () => {
   });
 
   test('opens details view showing metrics on project click', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const projectRow = screen.getByText('Reforma do Salão');
@@ -181,7 +181,7 @@ describe('Projetos Page', () => {
   });
 
   test('renders create dialog Cancelar and Salvar buttons with semantic icons', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
@@ -196,7 +196,7 @@ describe('Projetos Page', () => {
   });
 
   test('shows error notification when save project fails', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
@@ -236,7 +236,7 @@ describe('Projetos Page', () => {
   });
 
   test('shows client-side validation error when project end date is before start date', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
@@ -266,7 +266,7 @@ describe('Projetos Page', () => {
   });
 
   test('shows validation error when submitting empty project form', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const newProjectBtn = screen.getByRole('button', { name: /Novo Projeto/i });
@@ -288,7 +288,7 @@ describe('Projetos Page', () => {
   });
 
   test('renders action buttons in details drawer and handles status transition', async () => {
-    const adminUser = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] };
+    const adminUser = { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] };
     await renderProjects(adminUser);
 
     const projectRow = screen.getByText('Reforma do Salão');

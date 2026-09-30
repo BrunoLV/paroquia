@@ -124,7 +124,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
                 .get("id").asString();
 
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)
-                        .header("X-Actor-Role", "coordenador-movimento")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "MOVIMENTO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -18,7 +18,7 @@ class PatrimonioAuthorizationServiceTest {
 
     @Test
     void deveRejeitarPapelNaoAutorizado() {
-        EventoActorContext actor = new EventoActorContext("joao", "membro-pastoral", "PASTORAL",
+        EventoActorContext actor = new EventoActorContext("joao", "membro-ativo", "PASTORAL",
                 grupoParoquialId, UUID.randomUUID(), null);
 
         assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId))
@@ -27,7 +27,7 @@ class PatrimonioAuthorizationServiceTest {
 
     @Test
     void deveRejeitarCoordenadorParaGrupoParoquialDiferente() {
-        EventoActorContext actor = new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
+        EventoActorContext actor = new EventoActorContext("joao", "coordenador", "PASTORAL",
                 grupoParoquialId, UUID.randomUUID(), null);
         UUID outraGrupoParoquialId = UUID.randomUUID();
 
@@ -37,18 +37,19 @@ class PatrimonioAuthorizationServiceTest {
 
     @Test
     void devePermitirCoordenadorParaSuaPropriaGrupoParoquial() {
-        EventoActorContext actor = new EventoActorContext("joao", "coord-pastoral-local", "PASTORAL",
+        EventoActorContext actor = new EventoActorContext("joao", "coordenador", "PASTORAL",
                 grupoParoquialId, UUID.randomUUID(), null);
 
         assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId)).doesNotThrowAnyException();
     }
 
     @Test
-    void devePermitirAdminParaQualquerGrupoParoquial() {
-        EventoActorContext actor = new EventoActorContext("admin", "admin", "CLERO",
+    void deveRejeitarAdminSemPoderPatrimonialCanonicamente() {
+        EventoActorContext actor = new EventoActorContext("admin", "admin", "GLOBAL",
                 null, UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, UUID.randomUUID())).doesNotThrowAnyException();
+        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, UUID.randomUUID()))
+                .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test

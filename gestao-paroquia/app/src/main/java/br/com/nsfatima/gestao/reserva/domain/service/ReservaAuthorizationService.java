@@ -16,14 +16,14 @@ import java.util.UUID;
 public class ReservaAuthorizationService {
 
     public static final Set<String> ROLES_ADMINISTRATIVAS = Set.of(
-            "ROLE_ADMIN", "ADMIN",
-            "ROLE_PAROCO", "PAROCO",
+            "ROLE_ADMIN", "ROLE_GLOBAL_ADMIN", "ADMIN",
+            "ROLE_PAROCO", "ROLE_GLOBAL_PAROCO", "PAROCO",
             "ROLE_CLERO_PAROCO",
-            "ROLE_SECRETARIA_PAROQUIAL", "SECRETARIA_PAROQUIAL"
+            "ROLE_SECRETARIA_PAROQUIAL", "ROLE_GLOBAL_SECRETARIA_PAROQUIAL", "SECRETARIA_PAROQUIAL"
     );
 
     public static final Set<String> ROLES_COORDENACAO = Set.of(
-            "COORD_PASTORAL", "COORD_PASTORAL_GLOBAL", "COORD_PASTORAL_LOCAL", "COORD_MOVIMENTO"
+            "COORDENADOR", "coordenador"
     );
 
     private final ReservaAutorizacaoPolicy policy;

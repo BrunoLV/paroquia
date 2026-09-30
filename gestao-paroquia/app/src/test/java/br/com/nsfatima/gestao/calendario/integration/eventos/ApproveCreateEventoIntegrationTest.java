@@ -54,7 +54,7 @@ class ApproveCreateEventoIntegrationTest {
 
         MvcResult postResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", idempotencyKey)
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000cc")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,13 +79,13 @@ class ApproveCreateEventoIntegrationTest {
 
         // Step 2: PATCH approve → event created automatically
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "status": "APROVADA",
-                                  "observacao": "Aprovado pelo coordenador"
+                                  "observacao": "Aprovado pelo paroco"
                                 }
                                 """))
                 .andExpect(status().isOk())
@@ -133,7 +133,7 @@ class ApproveCreateEventoIntegrationTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(null);
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
@@ -142,8 +142,8 @@ class ApproveCreateEventoIntegrationTest {
         long eventsBefore = eventoJpaRepository.count();
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

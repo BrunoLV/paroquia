@@ -16,9 +16,7 @@ public final class PadraoUsuarioGerenciamentoAutorizacaoPolicy implements Usuari
             return false;
         }
         String normalized = papel.trim().toLowerCase().replace("_", "-");
-        return normalized.contains("coordenador")
-                || normalized.contains("presidente")
-                || normalized.contains("mesa-diretora");
+        return normalized.equals("coordenador") || normalized.endsWith("-coordenador");
     }
 
     @Override

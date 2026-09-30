@@ -12,7 +12,7 @@ import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 let mockCurrentUser = {
   id: '1',
   name: 'Padre Pedro',
-  roles: ['ROLE_ADMIN', 'ADMIN'],
+  roles: ['ROLE_GLOBAL_PAROCO', 'PAROCO'],
   organizations: [],
 };
 
@@ -93,7 +93,7 @@ describe('UnidadesTerritoriais Page (Governo & Território)', () => {
     mockCurrentUser = {
       id: '1',
       name: 'Padre Pedro',
-      roles: ['ROLE_ADMIN', 'ADMIN'],
+      roles: ['ROLE_GLOBAL_PAROCO', 'PAROCO'],
       organizations: [],
     };
 
@@ -233,7 +233,7 @@ describe('UnidadesTerritoriais Page (Governo & Território)', () => {
     mockCurrentUser = {
       id: '2',
       name: 'Leigo Coordenador',
-      roles: ['ROLE_CONSELHO_COORDENADOR'],
+      roles: ['ROLE_COORDENADOR'],
       organizations: [],
     };
 

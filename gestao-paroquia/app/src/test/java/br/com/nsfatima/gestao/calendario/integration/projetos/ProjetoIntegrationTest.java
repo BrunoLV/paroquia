@@ -50,8 +50,8 @@ class ProjetoIntegrationTest {
                 """.formatted(orgId);
 
         String response = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createPayload))
@@ -64,8 +64,8 @@ class ProjetoIntegrationTest {
 
         // List
         mockMvc.perform(get("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.nome == 'Projeto Lifecycle')]").exists());
@@ -78,8 +78,8 @@ class ProjetoIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/projetos/{id}", projectId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchPayload))
@@ -90,15 +90,15 @@ class ProjetoIntegrationTest {
 
         // Transições via endpoints dedicados: ABERTO -> EM_ANDAMENTO -> CONCLUIDO
         mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", projectId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("EM_ANDAMENTO"));
 
         mockMvc.perform(post("/api/v1/projetos/{id}/concluir", projectId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CONCLUIDO"));
@@ -118,8 +118,8 @@ class ProjetoIntegrationTest {
                 """.formatted(longName, UUID.randomUUID());
 
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "coordenador")
+                        .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
@@ -138,8 +138,8 @@ class ProjetoIntegrationTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/projetos/{id}", UUID.randomUUID())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchPayload))

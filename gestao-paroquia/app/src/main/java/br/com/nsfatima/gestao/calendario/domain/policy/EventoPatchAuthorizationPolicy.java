@@ -12,37 +12,37 @@ import java.util.Set;
  */
 public interface EventoPatchAuthorizationPolicy {
 
-    /** Papéis habilitados a criar eventos. */
+    /** Papéis organizacionais habilitados a criar eventos. */
     Set<PapelOrganizacional> creatorRoles();
 
-    /** Papéis habilitados a editar eventos existentes. */
+    /** Papéis organizacionais habilitados a editar eventos existentes. */
     Set<PapelOrganizacional> editorRoles();
 
     /** {@code true} se o papel estiver habilitado a criar eventos. */
-    boolean isCreatorRole(PapelOrganizacional papel);
+    boolean isCreatorRole(String rawRole);
 
     /** {@code true} se o papel estiver habilitado a editar eventos. */
-    boolean isEditorRole(PapelOrganizacional papel);
+    boolean isEditorRole(String rawRole);
 
-    /** {@code true} se o papel for isento da restrição de escopo de organização/igreja (o Pároco). */
-    boolean isScopeExempt(PapelOrganizacional papel);
+    /** {@code true} se o papel for isento da restrição de escopo de organização/igreja. */
+    boolean isScopeExempt(String rawRole);
 
     /** {@code true} se o papel possui prerrogativa de efetivar agendamento imediato por decisão pastoral. */
-    boolean isLiberacaoConflitoPermitida(PapelOrganizacional papel);
+    boolean isLiberacaoConflitoPermitida(String rawRole);
 
     /**
      * Determina se a criação resultante deve ser aplicada imediatamente ou requer aprovação.
      *
-     * @param papel papel organizacional do ator, já validado como {@link #isCreatorRole(PapelOrganizacional)}
+     * @param rawRole papel global ou organizacional do ator
      * @param tipoGrupo tipo do grupo do ator
      * @return modo de criação resultante
      */
-    ModoRequisicaoCriacao resolveModoRequisicaoCriacao(PapelOrganizacional papel, TipoGrupo tipoGrupo);
+    ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoGrupo tipoGrupo);
 
     /**
      * Garante que o ator tem permissão para alterar a organização responsável por um evento.
      *
-     * @throws OperacaoProibidaException se o ator não for Pároco nem liderança de conselho pastoral autorizada
+     * @throws OperacaoProibidaException se o ator não possuir alçada para alterar organização responsável
      */
-    void assertCanChangeResponsibleOrganization(PapelOrganizacional papel, TipoGrupo tipoGrupo);
+    void assertCanChangeResponsibleOrganization(String rawRole, TipoGrupo tipoGrupo);
 }

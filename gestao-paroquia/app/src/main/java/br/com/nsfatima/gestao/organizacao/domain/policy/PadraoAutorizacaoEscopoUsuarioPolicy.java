@@ -24,7 +24,7 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
         }
 
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(userRole);
-        if (papelGlobal == PapelGlobal.ADMIN || papelGlobal == PapelGlobal.PAROCO
+        if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO
                 || papelGlobal == PapelGlobal.VIGARIO || papelGlobal == PapelGlobal.SECRETARIA_PAROQUIAL) {
             return true;
         }
@@ -34,9 +34,8 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
             return Objects.equals(userOrgId, targetOrgId);
         }
 
-        if (papelOrg == PapelOrganizacional.SECRETARIO_CONSELHO
-                || papelOrg == PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL) {
-            return Objects.equals(userOrgId, targetOrgId) || Objects.equals(userOrgId, targetCommunityId);
+        if (papelOrg == PapelOrganizacional.SECRETARIO_CONSELHO) {
+            return Objects.equals(userOrgId, targetOrgId);
         }
 
         return false;
@@ -78,6 +77,10 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
     @Override
     public boolean canViewPendenteEvents(String userRole) {
         if (userRole == null || userRole.isBlank()) {
+            return false;
+        }
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(userRole);
+        if (papelGlobal == PapelGlobal.FIEL) {
             return false;
         }
         PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(userRole);

@@ -32,7 +32,7 @@ class ProjetoSecurityIntegrationTest {
     @Test
     void devePermitirCoordenadorParaCriarProjetoParaSeuOrg() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId.toString())
                         .header("X-Actor-User-Id", UUID.randomUUID().toString())
@@ -51,7 +51,7 @@ class ProjetoSecurityIntegrationTest {
     @Test
     void deveNegarCoordenadorParaCriarProjetoParaOutraOrg() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", orgId.toString())
                         .header("X-Actor-User-Id", UUID.randomUUID().toString())

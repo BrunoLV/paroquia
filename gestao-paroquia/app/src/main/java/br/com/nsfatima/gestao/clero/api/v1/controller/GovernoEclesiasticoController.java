@@ -48,7 +48,7 @@ public class GovernoEclesiasticoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Salva as configurações de governo eclesiástico", description = "Registra ou atualiza o vínculo diocesano e clérigo pároco responsável pela paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Governo eclesiástico salvo com sucesso",

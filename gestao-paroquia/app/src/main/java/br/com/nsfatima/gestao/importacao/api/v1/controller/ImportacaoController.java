@@ -54,7 +54,7 @@ public class ImportacaoController {
      * @return arquivo binário para download, com nome e content-type apropriados ao formato
      */
     @GetMapping("/modelo")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO')")
     @Operation(summary = "Baixa o modelo de importação", description = "Gera modelo CSV ou XLSX de exemplo para importação em lote")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Arquivo de modelo gerado com sucesso"),
@@ -83,7 +83,7 @@ public class ImportacaoController {
     }
 
     @PostMapping("/validar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO')")
     @Operation(summary = "Validate batch file", description = "Parses and validates uploaded CSV/Excel file line by " +
             "line")
     @ApiResponses({
@@ -104,7 +104,7 @@ public class ImportacaoController {
     }
 
     @PostMapping("/confirmar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'CONSELHO_VICE_COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO')")
     @Operation(summary = "Confirm batch import", description = "Persists validated records into the system")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Importação concluída com sucesso"),

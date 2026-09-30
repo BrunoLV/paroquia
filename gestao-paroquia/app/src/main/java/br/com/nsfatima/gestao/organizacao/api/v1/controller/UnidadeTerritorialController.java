@@ -81,7 +81,7 @@ public class UnidadeTerritorialController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Cria uma nova unidade territorial", description = "Registra uma nova unidade territorial na paróquia.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Unidade territorial criada com sucesso",
@@ -96,7 +96,7 @@ public class UnidadeTerritorialController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Atualiza uma unidade territorial", description = "Atualiza os dados de uma unidade territorial existente.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Unidade territorial atualizada com sucesso",
@@ -116,7 +116,7 @@ public class UnidadeTerritorialController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Exclui uma unidade territorial", description = "Remove uma unidade territorial sem dependências.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Unidade territorial excluída com sucesso"),

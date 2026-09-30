@@ -26,7 +26,7 @@ COMMENT ON COLUMN calendario.usuarios.username IS 'Login único usado na autenti
 COMMENT ON COLUMN calendario.usuarios.password_hash IS 'Hash da senha (nunca texto plano).';
 COMMENT ON COLUMN calendario.usuarios.enabled IS 'Indica se a conta está habilitada para login.';
 COMMENT ON COLUMN calendario.usuarios.version IS 'Controle de versão para concorrência otimista (JPA).';
-COMMENT ON COLUMN calendario.usuarios.roles IS 'Papéis/autoridades atribuídos à conta, usados no controle de acesso.';
+COMMENT ON COLUMN calendario.usuarios.roles IS 'Papéis globais atribuídos à conta (admin, bispo-diocesano, paroco, vigario, diacono-paroquial, secretaria-paroquial, fiel), separados do grau de ordem sacramental.';
 COMMENT ON COLUMN calendario.usuarios.igreja_id IS 'Unidade territorial (igreja) de referência da conta.';
 COMMENT ON COLUMN calendario.usuarios.fiel_id IS 'Fiel associado a esta conta de acesso, quando existente.';
 COMMENT ON COLUMN calendario.usuarios.criado_em_utc IS 'Data e hora de criação da conta.';
@@ -53,10 +53,10 @@ CREATE TABLE calendario.papel_global (
     criado_por character varying(255),
     atualizado_por character varying(255)
 );
-COMMENT ON TABLE calendario.papel_global IS 'Papéis globais concedidos a fiéis para funções institucionais que ultrapassam um vínculo local.';
+COMMENT ON TABLE calendario.papel_global IS 'Papéis globais canônicos (admin, bispo-diocesano, paroco, vigario, diacono-paroquial, secretaria-paroquial, fiel) concedidos a fiéis para funções institucionais transversais.';
 COMMENT ON COLUMN calendario.papel_global.id IS 'Identificador único do registro de papel global.';
 COMMENT ON COLUMN calendario.papel_global.fiel_id IS 'Identificador do registro relacionado por fiel no contexto de papel global.';
-COMMENT ON COLUMN calendario.papel_global.papel IS 'Propriedade papel que caracteriza o registro de papel global.';
+COMMENT ON COLUMN calendario.papel_global.papel IS 'Código canônico do papel global (admin, bispo-diocesano, paroco, vigario, diacono-paroquial, secretaria-paroquial, fiel).';
 COMMENT ON COLUMN calendario.papel_global.ativo IS 'Indicador booleano de vigência operacional: ativo.';
 COMMENT ON COLUMN calendario.papel_global.criado_em_utc IS 'Instante UTC de criação imutável do registro.';
 COMMENT ON COLUMN calendario.papel_global.atualizado_em_utc IS 'Instante UTC da última atualização do registro.';

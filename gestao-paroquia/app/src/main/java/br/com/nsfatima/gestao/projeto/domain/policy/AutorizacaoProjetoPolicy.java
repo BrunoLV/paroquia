@@ -1,8 +1,5 @@
 package br.com.nsfatima.gestao.projeto.domain.policy;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-
 import java.util.UUID;
 
 /**
@@ -11,55 +8,55 @@ import java.util.UUID;
 public interface AutorizacaoProjetoPolicy {
 
     /**
-     * Determina se o ator possui alçada de alto nível (Pároco, Admin ou Liderança de Conselho).
+     * Determina se o ator possui alçada canônica de alto nível (Pároco ou Bispo Diocesano).
      *
-     * @param papel papel organizacional do ator
-     * @param tipoGrupo tipo do grupo ao qual o ator está vinculado
+     * @param rawRole papel global ou organizacional do ator
+     * @param rawTipoGrupo tipo do grupo ao qual o ator está vinculado
      * @return true se o ator for de alto nível
      */
-    boolean isAtorDeAltoNivel(PapelOrganizacional papel, TipoGrupo tipoGrupo);
+    boolean isAtorDeAltoNivel(String rawRole, String rawTipoGrupo);
 
     /**
      * Valida permissão para criação de projetos no grupo responsável.
      *
-     * @param papel papel organizacional do ator
-     * @param tipoGrupo tipo do grupo do ator
+     * @param rawRole papel global ou organizacional do ator
+     * @param rawTipoGrupo tipo do grupo do ator
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
-    void assertCanCreate(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
+    void assertCanCreate(String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
 
     /**
      * Valida permissão para edição de dados do projeto.
      *
-     * @param papel papel organizacional do ator
-     * @param tipoGrupo tipo do grupo do ator
+     * @param rawRole papel global ou organizacional do ator
+     * @param rawTipoGrupo tipo do grupo do ator
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
-    void assertCanEdit(PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
+    void assertCanEdit(String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
 
     /**
      * Valida permissão para transição de status (iniciar ou concluir projeto).
      *
-     * @param papel papel organizacional do ator
-     * @param tipoGrupo tipo do grupo do ator
+     * @param rawRole papel global ou organizacional do ator
+     * @param rawTipoGrupo tipo do grupo do ator
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
     void assertCanStartOrConclude(
-            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
+            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId);
 
     /**
      * Valida permissão para solicitação ou execução de cancelamento de projeto.
      *
-     * @param papel papel organizacional do ator
-     * @param tipoGrupo tipo do grupo do ator
+     * @param rawRole papel global ou organizacional do ator
+     * @param rawTipoGrupo tipo do grupo do ator
      * @param atorOrganizacaoId ID da organização do ator
      * @param targetOrgId ID da organização responsável pelo projeto
      */
     default void assertCanCancel(
-            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        assertCanStartOrConclude(papel, tipoGrupo, atorOrganizacaoId, targetOrgId);
+            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+        assertCanStartOrConclude(rawRole, rawTipoGrupo, atorOrganizacaoId, targetOrgId);
     }
 }

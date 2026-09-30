@@ -26,9 +26,7 @@ import java.util.UUID;
 /**
  * Promove um {@code Fiel} já membro ativo de uma organização a um papel de liderança e, se ele ainda não
  * possuir {@code Usuario}, cria um novo login vinculado a ele — o único ponto do sistema em que a
- * participação pastoral comum "vira" acesso administrativo. Restrito a quem tem papel global (Pároco,
- * Vigário, Admin ou Secretaria Paroquial — ver {@link PapelGlobalAuthorizationService}) ou é Mesa do CPP
- * (papel escopado, fora do domínio de papéis globais).
+ * participação pastoral comum "vira" acesso administrativo. Restrito exclusivamente à provisão canônica do Pároco.
  */
 @Service
 public class PromoverACoordenadorUseCase {
@@ -67,7 +65,7 @@ public class PromoverACoordenadorUseCase {
      * @return o vínculo atualizado e o {@code usuarioId} (existente ou recém-criado)
      * @throws IllegalArgumentException se o Fiel/organização não existirem, se o papel for inválido, ou se o
      *                                   Fiel não for membro ativo da organização
-     * @throws org.springframework.security.access.AccessDeniedException se o ator não tiver autoridade
+     * @throws AccessDeniedException se o ator não tiver autoridade
      */
     @Transactional
     public PromoverACoordenadorResponse execute(PromoverACoordenadorRequest request) {
@@ -108,8 +106,7 @@ public class PromoverACoordenadorUseCase {
     }
 
     /**
-     * Restringe a promoção a quem tem papel global (via {@link PapelGlobalAuthorizationService}) ou é Mesa
-     * do CPP — papel escopado, deliberadamente fora do domínio de papéis globais desta track.
+     * Restringe a promoção/nomeação de coordenador à provisão canônica do Pároco.
      */
     private void requireGlobalOuMesaCpp() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -121,16 +118,21 @@ public class PromoverACoordenadorUseCase {
                 .anyMatch(a -> "ROLE_GLOBAL_PAROCO".equals(a.getAuthority())
                         || "ROLE_CLERO_PAROCO".equals(a.getAuthority())
                         || "ROLE_PAROCO".equals(a.getAuthority())
-                        || "ROLE_ADMIN".equals(a.getAuthority())
-                        || "ROLE_CPP_MESA_CPP".equals(a.getAuthority()));
+                        || "PAROCO".equals(a.getAuthority())
+                        || "ROLE_BISPO_DIOCESANO".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority()));
         if (autorizado) {
             return;
         }
 
+        boolean isAdminOnly = auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority())
+                        || "ROLE_GLOBAL_ADMIN".equals(a.getAuthority())
+                        || "ADMIN".equals(a.getAuthority()));
         UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
-        if (actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)) {
+        if (isAdminOnly || actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)) {
             throw new AccessDeniedException(
-                    "Apenas Pároco, Vigário, Mesa do CPP, Admin ou Secretaria Paroquial podem promover um Fiel");
+                    "Apenas o Pároco possui provisão canônica para promover um Fiel a coordenador");
         }
     }
 }

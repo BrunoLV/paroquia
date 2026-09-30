@@ -83,8 +83,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLERO_PAROCO', 'CONSELHO_COORDENADOR', 'GLOBAL_ADMIN', 'GLOBAL_PAROCO',"
-            + " 'GLOBAL_VIGARIO', 'GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR', 'SECRETARIO_CONSELHO')")
     @Operation(summary = "Lista todos os usuários")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de usuários recuperada com sucesso",
@@ -97,7 +96,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cria um novo usuário")
     @ApiResponses(value = {
@@ -117,7 +116,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR')")
     @Operation(summary = "Obtém detalhes de um usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário recuperado com sucesso",
@@ -133,7 +132,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN')")
     @Operation(summary = "Atualiza um usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
@@ -149,9 +148,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}/aprovar")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CLERO_PAROCO') or hasRole('CONSELHO_COORDENADOR')"
-            + " or hasRole('GLOBAL_ADMIN') or hasRole('GLOBAL_PAROCO') or hasRole('GLOBAL_VIGARIO')"
-            + " or hasRole('GLOBAL_SECRETARIA_PAROQUIAL')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR', 'SECRETARIO_CONSELHO')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Aprova um novo usuário e ativa suas solicitações de pastorais")
     @ApiResponses(value = {
@@ -166,7 +163,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}/membros")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR')")
     @Operation(summary = "Lista associações de um usuário a organizações")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vínculos recuperados com sucesso",
@@ -182,7 +179,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/{id}/membros")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Adiciona associação a organização")
     @ApiResponses(value = {
@@ -202,7 +199,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}/membros/{vinculoId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('COORDENADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remove associação a organização")
     @ApiResponses(value = {

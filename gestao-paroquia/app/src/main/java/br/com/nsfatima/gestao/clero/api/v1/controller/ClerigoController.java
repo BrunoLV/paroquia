@@ -60,7 +60,7 @@ public class ClerigoController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Lista clérigos ativos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de clérigos recuperada com sucesso",
@@ -99,7 +99,7 @@ public class ClerigoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Obtém cadastro clerical")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cadastro clerical recuperado com sucesso",
@@ -115,7 +115,7 @@ public class ClerigoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Cadastra clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Clérigo cadastrado com sucesso",
@@ -129,7 +129,7 @@ public class ClerigoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Atualiza clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Clérigo atualizado com sucesso",
@@ -147,7 +147,7 @@ public class ClerigoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Inativa logicamente clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Clérigo inativado com sucesso"),
@@ -162,7 +162,7 @@ public class ClerigoController {
     }
 
     @GetMapping("/{id}/historico-encargos")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Lista histórico de encargos e provisões do clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Histórico de encargos recuperado com sucesso",
@@ -178,7 +178,7 @@ public class ClerigoController {
     }
 
     @GetMapping("/solicitacoes-ajuste")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Lista solicitações de ajuste cadastral pendentes")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Solicitações pendentes recuperadas com sucesso",
@@ -207,7 +207,7 @@ public class ClerigoController {
 
     @PostMapping("/solicitacoes-ajuste/{id}/decisao")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
     @Operation(summary = "Aprova ou rejeita solicitação de ajuste clerical")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Decisão registrada com sucesso"),
@@ -223,7 +223,7 @@ public class ClerigoController {
     }
 
     @GetMapping("/{clerigoId}/familiares")
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Lista vínculos familiares do clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vínculos familiares recuperados com sucesso",
@@ -240,7 +240,7 @@ public class ClerigoController {
 
     @PostMapping("/{clerigoId}/familiares")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Adiciona vínculo familiar para o clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Vínculo familiar criado com sucesso",
@@ -264,7 +264,7 @@ public class ClerigoController {
 
     @DeleteMapping("/{clerigoId}/familiares/{relacaoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN','GLOBAL_ADMIN','GLOBAL_PAROCO','GLOBAL_SECRETARIA_PAROQUIAL','GLOBAL_BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO')")
     @Operation(summary = "Remove vínculo familiar do clérigo")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Vínculo familiar removido com sucesso"),

@@ -54,51 +54,52 @@ class CreateEventoImmediateCompatibilityIntegrationTest {
     }
 
     @Test
-    void conselhoCoordinatorRoleStillReturns201Created() throws Exception {
+    void bispoDiocesanoRoleStillReturns201Created() throws Exception {
         long countBefore = eventoJpaRepository.count();
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "bispo-diocesano")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "titulo": "Evento conselho - imediato",
+                                  "titulo": "Evento bispo - imediato",
                                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-02T10:00:00Z",
                                   "fim": "2027-09-02T11:00:00Z"
                                 }
                                 """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.titulo").value("Evento conselho - imediato"))
+                .andExpect(jsonPath("$.titulo").value("Evento bispo - imediato"))
                 .andExpect(jsonPath("$.id").isNotEmpty());
 
         assertThat(eventoJpaRepository.count()).isEqualTo(countBefore + 1);
     }
 
     @Test
-    void conselhoViceCoordinatorRoleStillReturns201Created() throws Exception {
+    void secretarioConselhoRoleRoutesToApprovalWith202Accepted() throws Exception {
         long countBefore = eventoJpaRepository.count();
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "mesa-diretora-cpp")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "titulo": "Evento vice-coordenador - imediato",
+                                  "titulo": "Evento conselho - requer aprovacao",
                                   "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-03T14:00:00Z",
-                                  "fim": "2027-09-03T15:00:00Z"
+                                  "fim": "2027-09-03T15:00:00Z",
+                                  "adicionadoExtraJustificativa": "Justificativa formal do conselho"
                                 }
                                 """))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNotEmpty());
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.solicitacaoAprovacaoId").isNotEmpty());
 
-        assertThat(eventoJpaRepository.count()).isEqualTo(countBefore + 1);
+        assertThat(eventoJpaRepository.count()).isEqualTo(countBefore);
     }
 }

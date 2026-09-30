@@ -32,9 +32,9 @@ class CancelEventoAuthorizationIntegrationTest {
 
     static Stream<Arguments> forbiddenActors() {
         return Stream.of(
-                Arguments.of("voluntario-pastoral-local", "PASTORAL"),
-                Arguments.of("membro-pastoral", "PASTORAL"),
-                Arguments.of("padre", "CLERO"));
+                Arguments.of("voluntario", "PASTORAL"),
+                Arguments.of("membro-ativo", "PASTORAL"),
+                Arguments.of("fiel", "PAROQUIA"));
     }
 
     @ParameterizedTest
@@ -80,7 +80,7 @@ class CancelEventoAuthorizationIntegrationTest {
         eventoJpaRepository.save(evento);
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ class CancelEventoAuthorizationIntegrationTest {
         eventoJpaRepository.save(evento);
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", eventoId)
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)

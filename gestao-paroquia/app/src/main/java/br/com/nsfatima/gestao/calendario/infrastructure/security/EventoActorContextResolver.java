@@ -66,50 +66,123 @@ public class EventoActorContextResolver {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof UsuarioDetails usuarioDetails) {
+            UUID primaryOrgId = usuarioDetails.vinculoPrimario()
+                    .map(LeitorVinculoExterno.Vinculo::organizationId)
+                    .orElse(null);
+            UUID primaryIgrejaId = usuarioDetails.vinculoPrimario()
+                    .map(LeitorVinculoExterno.Vinculo::igrejaVinculoId)
+                    .orElse(null);
+
             boolean isAdmin = usuarioDetails.getAuthorities().stream()
-                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ADMIN") ||
-                            a.getAuthority().equals("ROLE_ADMIN"));
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ADMIN")
+                            || a.getAuthority().equals("ROLE_ADMIN")
+                            || a.getAuthority().equals("ROLE_GLOBAL_ADMIN"));
 
             if (isAdmin) {
                 return new EventoActorContext(
                         authentication.getName(),
                         PapelGlobal.ADMIN.storedValue(),
                         "ADMIN",
-                        null,
+                        primaryOrgId,
                         usuarioDetails.getUsuarioId(),
-                        null);
+                        primaryIgrejaId);
             }
 
             boolean isParoco = usuarioDetails.getAuthorities().stream()
-                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_PAROCO") ||
-                            a.getAuthority().equals("ROLE_CLERO_PAROCO") ||
-                            a.getAuthority().equals("PAROCO") ||
-                            a.getAuthority().equals("ROLE_PAROCO"));
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_PAROCO")
+                            || a.getAuthority().equals("ROLE_CLERO_PAROCO")
+                            || a.getAuthority().equals("PAROCO")
+                            || a.getAuthority().equals("ROLE_PAROCO"));
 
             if (isParoco) {
                 return new EventoActorContext(
                         authentication.getName(),
                         PapelGlobal.PAROCO.storedValue(),
                         "CLERO",
-                        null,
+                        primaryOrgId,
                         usuarioDetails.getUsuarioId(),
-                        null);
+                        primaryIgrejaId);
+            }
+
+            boolean isBispo = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_BISPO_DIOCESANO")
+                            || a.getAuthority().equals("ROLE_CLERO_BISPO_DIOCESANO")
+                            || a.getAuthority().equals("BISPO_DIOCESANO")
+                            || a.getAuthority().equals("ROLE_BISPO_DIOCESANO"));
+
+            if (isBispo) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.BISPO_DIOCESANO.storedValue(),
+                        "CLERO",
+                        primaryOrgId,
+                        usuarioDetails.getUsuarioId(),
+                        primaryIgrejaId);
             }
 
             boolean isVigario = usuarioDetails.getAuthorities().stream()
-                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_VIGARIO") ||
-                            a.getAuthority().equals("ROLE_CLERO_VIGARIO") ||
-                            a.getAuthority().equals("VIGARIO") ||
-                            a.getAuthority().equals("ROLE_VIGARIO"));
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_VIGARIO")
+                            || a.getAuthority().equals("ROLE_CLERO_VIGARIO")
+                            || a.getAuthority().equals("VIGARIO")
+                            || a.getAuthority().equals("ROLE_VIGARIO"));
 
             if (isVigario) {
                 return new EventoActorContext(
                         authentication.getName(),
                         PapelGlobal.VIGARIO.storedValue(),
                         "CLERO",
-                        null,
+                        primaryOrgId,
                         usuarioDetails.getUsuarioId(),
-                        null);
+                        primaryIgrejaId);
+            }
+
+            boolean isDiacono = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_DIACONO_PAROQUIAL")
+                            || a.getAuthority().equals("ROLE_CLERO_DIACONO_PAROQUIAL")
+                            || a.getAuthority().equals("DIACONO_PAROQUIAL")
+                            || a.getAuthority().equals("ROLE_DIACONO_PAROQUIAL"));
+
+            if (isDiacono) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.DIACONO_PAROQUIAL.storedValue(),
+                        "CLERO",
+                        primaryOrgId,
+                        usuarioDetails.getUsuarioId(),
+                        primaryIgrejaId);
+            }
+
+            boolean isSecretaria = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_SECRETARIA_PAROQUIAL")
+                            || a.getAuthority().equals("SECRETARIA_PAROQUIAL")
+                            || a.getAuthority().equals("ROLE_SECRETARIA_PAROQUIAL"));
+
+            if (isSecretaria) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.SECRETARIA_PAROQUIAL.storedValue(),
+                        "SECRETARIA",
+                        primaryOrgId,
+                        usuarioDetails.getUsuarioId(),
+                        primaryIgrejaId);
+            }
+
+            boolean isFiel = usuarioDetails.getAuthorities().stream()
+                    .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_FIEL")
+                            || a.getAuthority().equals("FIEL")
+                            || a.getAuthority().equals("ROLE_FIEL"));
+
+            boolean hasValidOrganizationalVinculo = usuarioDetails.getVinculos().stream()
+                    .anyMatch(m -> aceitaPapel(m.organizationType(), m.role()));
+
+            if (isFiel && !hasValidOrganizationalVinculo) {
+                return new EventoActorContext(
+                        authentication.getName(),
+                        PapelGlobal.FIEL.storedValue(),
+                        "PAROQUIA",
+                        primaryOrgId,
+                        usuarioDetails.getUsuarioId(),
+                        primaryIgrejaId);
             }
 
             LeitorVinculoExterno.Vinculo vinculo = usuarioDetails.getVinculos().stream()

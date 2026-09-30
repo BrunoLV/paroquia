@@ -16,39 +16,15 @@ export interface User {
   organizations?: Organization[];
 }
 
-// ─── Eclesial Role Predicates ────────────────────────────────────────────────
+// ─── Eclesial Role Predicates (14 Papéis Canônicos Ortogonais) ───────────────
 
 const PAROCO_ROLES = ['PAROCO', 'BISPO_DIOCESANO'] as const;
-const CPP_ROLES = ['MEMBRO_CPP', 'MESA_CPP', 'MESA_DIRETORA_CPP'] as const;
-const CAE_ROLES = ['MEMBRO_CAE'] as const;
-const CLERO_ROLES = ['VIGARIO', 'DIACONO', 'PADRE'] as const;
-const SECRETARIO_ROLES = ['SECRETARIO', 'SECRETARIA_PAROQUIAL', 'GLOBAL_SECRETARIA_PAROQUIAL'] as const;
-const COORDENADOR_GERAL_CONSELHO_ROLES = [
-  'COORD_PASTORAL_GLOBAL',
-  'COORDENADOR_PASTORAL_GLOBAL',
-  'MESA_CPP',
-  'MESA_DIRETORA_CPP',
-] as const;
-const COORDENADOR_ROLES = [
-  'COORD_PASTORAL_GLOBAL',
-  'COORD_PASTORAL_LOCAL',
-  'COORD_PASTORAL',
-  'COORD_MOVIMENTO',
-  'COORDENADOR_PASTORAL_GLOBAL',
-  'COORDENADOR_PASTORAL_LOCAL',
-  'COORDENADOR_PASTORAL',
-  'COORDENADOR_MOVIMENTO',
-  'PRESIDENTE_CPC',
-  'COORDENADOR',
-  'VICE_COORDENADOR',
-] as const;
-const MEMBRO_ROLES = [
-  'VOLUNTARIO_PASTORAL_LOCAL',
-  'MEMBRO_PASTORAL',
-  'MEMBRO_MOVIMENTO',
-  'MEMBRO_CPC',
-  'MEMBRO',
-] as const;
+const CPP_ROLES = ['MEMBRO_CONSELHO_PASTORAL', 'SECRETARIO_CONSELHO'] as const;
+const CAE_ROLES = ['MEMBRO_CONSELHO_ECONOMICO'] as const;
+const CLERO_ROLES = ['VIGARIO', 'DIACONO_PAROQUIAL'] as const;
+const SECRETARIO_ROLES = ['SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO', 'SECRETARIO_GRUPO'] as const;
+const COORDENADOR_ROLES = ['COORDENADOR'] as const;
+const MEMBRO_ROLES = ['MEMBRO_ATIVO', 'VOLUNTARIO', 'FIEL'] as const;
 
 const hasRole = (user: User | null, ...roles: string[]): boolean => {
   if (!user) return false;
@@ -56,19 +32,20 @@ const hasRole = (user: User | null, ...roles: string[]): boolean => {
     roles.some((allowed) =>
       r === allowed ||
       r === `ROLE_${allowed}` ||
+      r === `GLOBAL_${allowed}` ||
+      r === `ROLE_GLOBAL_${allowed}` ||
       r.endsWith(`_${allowed}`)
     )
   );
 };
 
-
 // ─── Public Permission Functions ─────────────────────────────────────────────
 
-/** Administrador do sistema: acesso irrestrito, ignora qualquer regra de escopo organizacional */
-export const isAdmin = (user: User | null): boolean => {
-  if (!user) return false;
-  return user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN');
-};
+/**
+ * Administrador técnico de infraestrutura e IAM (`ADMIN`).
+ * Isolado de decisões eclesiais (não homologa atas, não fecha ano paroquial, não aprova eventos).
+ */
+export const isAdmin = (user: User | null): boolean => hasRole(user, 'ADMIN');
 
 /**
  * Papéis administrativos responsáveis pelo ciclo de vida do cadastro civil de fiéis.
@@ -76,15 +53,7 @@ export const isAdmin = (user: User | null): boolean => {
  */
 export const canManageCadastroFieis = (user: User | null): boolean => {
   if (!user) return false;
-  return hasRole(
-    user,
-    'ADMIN',
-    'GLOBAL_ADMIN',
-    'PAROCO',
-    'GLOBAL_PAROCO',
-    'SECRETARIA_PAROQUIAL',
-    'GLOBAL_SECRETARIA_PAROQUIAL'
-  );
+  return hasRole(user, 'ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL');
 };
 
 /**
@@ -92,83 +61,77 @@ export const canManageCadastroFieis = (user: User | null): boolean => {
  */
 export const canManageClero = (user: User | null): boolean => {
   if (!user) return false;
-  return hasRole(
-    user,
-    'ADMIN',
-    'GLOBAL_ADMIN',
-    'PAROCO',
-    'GLOBAL_PAROCO',
-    'SECRETARIA_PAROQUIAL',
-    'GLOBAL_SECRETARIA_PAROQUIAL',
-    'BISPO_DIOCESANO',
-    'GLOBAL_BISPO_DIOCESANO'
-  );
+  return hasRole(user, 'ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL');
 };
 
-/** Pároco ou Bispo: palavra deliberativa final */
+/** Pároco (ou Administrador Paroquial) e Bispo Diocesano: autoridade executiva e homologação final (Cân. 515 §1, 536 §2) */
 export const isParoco = (user: User | null): boolean => hasRole(user, ...PAROCO_ROLES);
 
-/** Membro do Conselho Pastoral Paroquial (CPP) */
+/** Secretário de Conselho (CPP/CPC): pauta reuniões e redige minutas de atas, sem voto deliberativo */
+export const isSecretarioConselho = (user: User | null): boolean => hasRole(user, 'SECRETARIO_CONSELHO');
+
+/** Membro do Conselho Pastoral (CPP/CPC): voto estritamente consultivo */
+export const isMembroConselhoPastoral = (user: User | null): boolean => hasRole(user, 'MEMBRO_CONSELHO_PASTORAL');
+
+/** Membro do Conselho Econômico (CAE/CAEP): parecer financeiro e auditoria patrimonial */
+export const isMembroConselhoEconomico = (user: User | null): boolean => hasRole(user, ...CAE_ROLES);
+
+/** Membro ou Secretário do Conselho Pastoral (CPP/CPC) — voto estritamente consultivo */
 export const isMembroCpp = (user: User | null): boolean => hasRole(user, ...CPP_ROLES);
 
-/** Membro do Conselho Econômico Paroquial (CAE) */
-export const isMembroCae = (user: User | null): boolean => hasRole(user, ...CAE_ROLES);
+/** Membro do Conselho Econômico (CAE/CAEP) — voto consultivo e parecer patrimonial */
+export const isMembroCae = (user: User | null): boolean => isMembroConselhoEconomico(user);
 
-/** Clero paroquial (Vigário, Diácono, Padre) */
+/** Clero paroquial cooperador (Vigário Paroquial, Diácono Paroquial) */
 export const isClero = (user: User | null): boolean => hasRole(user, ...CLERO_ROLES);
 
-/** Secretário com atuação global paroquial */
+/** Secretários (Secretaria Paroquial, Secretário de Conselho, Secretário de Grupo) */
 export const isSecretario = (user: User | null): boolean => hasRole(user, ...SECRETARIO_ROLES);
 
-/** Coordenador Geral do Conselho Pastoral Paroquial com escopo e alçada global */
-export const isCoordenadorGeralConselho = (user: User | null): boolean =>
-  hasRole(user, ...COORDENADOR_GERAL_CONSELHO_ROLES);
-
-/** Coordenador de Pastoral ou Movimento */
+/** Coordenador de Pastoral ou Movimento (escopo territorial resolvido via ABAC da organização vinculada) */
 export const isCoordenador = (user: User | null): boolean => hasRole(user, ...COORDENADOR_ROLES);
 
-/** Membro de Pastoral ou Movimento */
+/**
+ * ABAC de Coordenador: verifica se o coordenador possui vínculo com organização de nível paroquial/matriz (global)
+ * ou se atua no escopo de uma comunidade/organização específica (local).
+ */
+export const hasCoordenadorScope = (user: User | null, targetOrgId?: string): boolean => {
+  if (!user || !isCoordenador(user)) return false;
+  if (!Array.isArray(user.organizations) || user.organizations.length === 0) return false;
+  const hasParoquialScope = user.organizations.some(
+    (org) => org.tipo === 'MATRIZ' || org.tipo === 'PAROQUIA' || org.tipo === 'CONSELHO'
+  );
+  if (hasParoquialScope) return true;
+  if (!targetOrgId) return true;
+  return user.organizations.some((org) => org.id === targetOrgId);
+};
+
+/** Membro Ativo, Voluntário ou Fiel comum */
 export const isMembro = (user: User | null): boolean => hasRole(user, ...MEMBRO_ROLES);
 
-/** Lideranças com poder de gestão de projetos: admin, pároco/bispo, clero, CPP ou coordenador de pastoral/movimento */
+/** Lideranças com poder de proposição/gestão de projetos: pároco/bispo, clero, conselho pastoral ou coordenador */
 export const canManageProjetos = (user: User | null): boolean => {
   if (!user) return false;
-  return isAdmin(user) || isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
+  return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user);
 };
 
 /**
- * Papéis com autoridade paroquial (não apenas local/setorial): admin, pároco/bispo, CPP,
- * coordenador geral do conselho, secretário, ou coordenador/vice-coordenador de conselho.
+ * Autoridade canônica global para criação/edição imediata sem restrição de vínculo local:
+ * exclusivamente Pároco e Bispo Diocesano.
  */
 export const isGlobalCreator = (user: User | null): boolean => {
   if (!user) return false;
-  return (
-    isAdmin(user) ||
-    isParoco(user) ||
-    isMembroCpp(user) ||
-    isSecretario(user) ||
-    isCoordenadorGeralConselho(user) ||
-    user.roles.some((r) =>
-      r.includes('CONSELHO_COORDENADOR') ||
-      r.includes('CONSELHO_VICE_COORDENADOR') ||
-      r.includes('COORD_CONSELHO') ||
-      r.includes('VICE_COORD_CONSELHO') ||
-      r === 'COORDENADOR_CONSELHO' ||
-      r === 'VICE_COORDENADOR_CONSELHO'
-    )
-  );
+  return isParoco(user);
 };
 
 /**
- * Quem pode transicionar (mudar de status) um projeto: papéis com autoridade global
- * (`isGlobalCreator`) podem transicionar qualquer projeto; um coordenador de pastoral/movimento
- * só pode transicionar projetos da(s) organização(ões) às quais está vinculado, comparando
- * `projetoOrgId` com `user.organizations` — evita que um coordenador de uma pastoral altere
- * o status de projeto de outra pastoral/movimento sem vínculo.
+ * Quem pode transicionar (mudar de status) um projeto: Pároco/Bispo (`isParoco`) pode
+ * transicionar qualquer projeto; Coordenador (`COORDENADOR`) só pode transicionar projetos
+ * da(s) organização(ões) às quais está vinculado.
  */
 export const canTransitionProjeto = (user: User | null, projetoOrgId: string): boolean => {
   if (!user) return false;
-  if (isGlobalCreator(user)) return true;
+  if (isParoco(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
     return user.organizations.some((org: Organization) => org.id === projetoOrgId);
@@ -177,29 +140,27 @@ export const canTransitionProjeto = (user: User | null, projetoOrgId: string): b
 };
 
 /**
- * Determines if a user can manage (edit or cancel) an event.
- * Secretário possui escopo global paroquial para submeter alterações e cancelamentos (sujeitos a aprovação).
+ * Determina se o usuário pode submeter criação/edição/cancelamento de eventos
+ * (aplicado imediatamente para Pároco/Bispo ou via solicitação de aprovação para demais lideranças).
  */
 export const canManageEvento = (user: User | null, _eventoOrgId?: string): boolean => {
   if (!user) return false;
-  if (isAdmin(user)) return true;
   return isParoco(user) || isClero(user) || isMembroCpp(user) || isCoordenador(user) || isSecretario(user);
 };
 
-/** Quem pode gerir o cadastro de ativos patrimoniais: admin, pároco/bispo, clero ou coordenador de pastoral/movimento */
+/** Quem pode gerir o cadastro de ativos patrimoniais: Pároco/Bispo, Clero, CAE, Secretaria Paroquial ou Coordenador */
 export const canManageAtivos = (user: User | null): boolean => {
   if (!user) return false;
-  return isAdmin(user) || isParoco(user) || isClero(user) || isCoordenador(user);
+  return isParoco(user) || isClero(user) || isMembroCae(user) || isCoordenador(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
 };
 
 /**
  * Quem pode gerir (manutenção, exclusão) um ativo pertencente a uma unidade territorial:
- * papéis com autoridade global (`isGlobalCreator`) podem gerir qualquer ativo; um coordenador
- * de pastoral/movimento só pode gerir ativos da(s) unidade(s) à(s) qual(is) está vinculado.
+ * Pároco/Bispo e membros do CAE podem gerir em âmbito paroquial; Coordenador gere ativos da sua unidade.
  */
 export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: string): boolean => {
   if (!user) return false;
-  if (isGlobalCreator(user)) return true;
+  if (isParoco(user) || isMembroCae(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
     return user.organizations.some((org: Organization) => org.id === grupoParoquialId);
@@ -211,93 +172,62 @@ export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: st
 export const canExcluirAtivo = canManageManutencaoAtivo;
 
 /**
- * Quem pode decidir (aprovar/rejeitar) uma solicitação de aprovação pendente:
- * Admin, Pároco/Bispo, CPP, Coordenador Geral do Conselho, ou coordenação de conselho.
+ * Alçada decisória final sobre solicitações de aprovação de eventos e projetos:
+ * exclusivamente Pároco (ou Bispo Diocesano). Conselhos, coordenadores e ADMIN não aprovam.
  */
 export const canApprove = (user: User | null): boolean => {
   if (!user) return false;
-  return (
-    isAdmin(user) ||
-    isParoco(user) ||
-    isMembroCpp(user) ||
-    isCoordenadorGeralConselho(user) ||
-    user.roles.some((r) =>
-      r.includes('CONSELHO_COORDENADOR') ||
-      r.includes('COORD_CONSELHO') ||
-      r === 'COORDENADOR_CONSELHO' ||
-      r === 'VICE_COORDENADOR_CONSELHO'
-    )
-  );
-};
-
-/** Quem pode configurar o ano paroquial (calendário/período operacional): admin, pároco/bispo, CPP ou coordenador */
-export const canManageAnoParoquial = (user: User | null): boolean => {
-  if (!user) return false;
-  return isAdmin(user) || isParoco(user) || isMembroCpp(user) || isCoordenador(user);
+  return isParoco(user);
 };
 
 /**
- * Quem pode gerir o cadastro de locais/espaços físicos: admin, pároco/bispo, CPP, ou
- * coordenador/vice-coordenador de conselho — mesmo conjunto de autoridade global usado em
- * `canManageOrganizacoes`, pois locais são um recurso compartilhado da paróquia como um todo,
- * não escopado por organização individual.
+ * Homologação ou veto de atas e decisões dos conselhos (CPP, CPC, CAE):
+ * exclusivamente Pároco (ou Bispo Diocesano) conforme Cân. 536 §2.
+ */
+export const canHomologarDecisao = (user: User | null): boolean => {
+  if (!user) return false;
+  return isParoco(user);
+};
+
+/**
+ * Trava, abertura e conclusão do Ano Paroquial:
+ * exclusivamente Pároco (ou Bispo Diocesano). ADMIN, conselhos e coordenadores são impedidos.
+ */
+export const canManageAnoParoquial = (user: User | null): boolean => {
+  if (!user) return false;
+  return isParoco(user);
+};
+
+/**
+ * Gestão do cadastro de locais/espaços físicos da paróquia:
+ * Pároco/Bispo e Secretaria Paroquial.
  */
 export const canManageLocais = (user: User | null): boolean => {
   if (!user) return false;
-  return (
-    isAdmin(user) ||
-    isParoco(user) ||
-    isMembroCpp(user) ||
-    user.roles.some((r) =>
-      r === 'ROLE_CONSELHO_COORDENADOR' ||
-      r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-      r === 'ROLE_COORD_CONSELHO' ||
-      r === 'ROLE_VICE_COORD_CONSELHO' ||
-      r === 'COORDENADOR_CONSELHO' ||
-      r === 'VICE_COORDENADOR_CONSELHO'
-    )
-  );
+  return isParoco(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
 };
 
 /**
- * Quem pode gerir a própria hierarquia organizacional (Matriz, Comunidades, movimentos):
- * admin, pároco/bispo, CPP, ou coordenador/vice-coordenador de conselho. Restrito de propósito
- * a esse conjunto restrito de papéis, já que alterar o organograma afeta o escopo de autorização
- * de todas as demais permissões baseadas em organização.
+ * Gestão de organizações e vínculos de usuários:
+ * Pároco/Bispo (criação de grupos/pastorais e provisão canônica) e ADMIN (gestão técnica de usuários).
  */
 export const canManageOrganizacoes = (user: User | null): boolean => {
-  if (!user) return false;
-  return (
-    isAdmin(user) ||
-    isParoco(user) ||
-    isMembroCpp(user) ||
-    user.roles.some((r) =>
-      r === 'ROLE_CONSELHO_COORDENADOR' ||
-      r === 'ROLE_CONSELHO_VICE_COORDENADOR' ||
-      r === 'ROLE_COORD_CONSELHO' ||
-      r === 'ROLE_VICE_COORD_CONSELHO' ||
-      r === 'COORDENADOR_CONSELHO' ||
-      r === 'VICE_COORDENADOR_CONSELHO'
-    )
-  );
-};
-
-/**
- * Quem pode gerir Unidades Territoriais (Matriz, Comunidades) e Governo Eclesiástico:
- * Estritamente restrito a ADMIN e Pároco conforme o Direito Canônico e diretrizes do sistema.
- */
-export const canManageUnidadesTerritoriais = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user);
 };
 
 /**
- * Quem pode adicionar uma observação a um registro: qualquer usuário que tenha ao menos um
- * papel além de "membro comum" (verificado remapeando cada papel individualmente por
- * `isMembro`) pode observar em qualquer organização. Um usuário cujos papéis são
- * exclusivamente de membro fica restrito a observar apenas dentro da(s) organização(ões) às
- * quais pertence (`targetOrgId` deve casar com `user.organizations`), evitando que um membro
- * comum registre observações sobre pastorais/movimentos alheios.
+ * Quem pode gerir Unidades Territoriais (Matriz, Comunidades) e Governo Eclesiástico:
+ * Estritamente restrito a Pároco e Bispo Diocesano conforme o Direito Canônico.
+ */
+export const canManageUnidadesTerritoriais = (user: User | null): boolean => {
+  if (!user) return false;
+  return isParoco(user);
+};
+
+/**
+ * Quem pode adicionar uma observação a um registro: lideranças/clero em qualquer organização;
+ * usuário com papel exclusivamente de membro/voluntário apenas dentro das organizações vinculadas.
  */
 export const canAddObservation = (user: User | null, targetOrgId: string): boolean => {
   if (!user) return false;
@@ -313,25 +243,17 @@ export const canAddObservation = (user: User | null, targetOrgId: string): boole
 };
 
 /**
- * A aba/listagem de eventos pendentes de aprovação só faz sentido para quem tem alguma
- * responsabilidade de gestão ou aprovação; um usuário cujos papéis são exclusivamente
- * "membro comum" (MEMBRO/ROLE_PASTORAL_MEMBRO) não participa do fluxo de aprovação e não
- * deve enxergar a fila de pendências.
+ * A listagem de eventos pendentes de aprovação é visível para lideranças, clero e secretarias;
+ * usuários exclusivamente com papéis de membro/voluntário/fiel não visualizam a fila de pendências.
  */
 export const canViewEventosPendentes = (user: User | null): boolean => {
   if (!user) return false;
-  const isApenasMembro = user.roles.length > 0 && user.roles.every((r) => r === 'MEMBRO' || r === 'ROLE_PASTORAL_MEMBRO');
+  const isApenasMembro = user.roles.length > 0 && user.roles.every((r) => isMembro({ ...user, roles: [r] }));
   return !isApenasMembro;
 };
 
 /**
- * Identifica o "usuário não vinculado": um membro/usuário comum sem nenhuma organização
- * associada, cenário usado pela UI para solicitar que o usuário seja vinculado a uma
- * pastoral/movimento antes de liberar funcionalidades dependentes de organização. Lideranças
- * e clero (admin, pároco/bispo, clero, CPP, CAE, coordenador, secretário) são sempre
- * excluídos dessa checagem, pois sua atuação não depende de vínculo com uma organização
- * específica. Só retorna `true` quando os papéis do usuário são exclusivamente de
- * membro/usuário comum E a lista de organizações está vazia.
+ * Identifica o usuário comum/membro sem vínculo organizacional ativo.
  */
 export const isUnlinkedUser = (user: User | null): boolean => {
   if (!user) return false;
@@ -343,13 +265,11 @@ export const isUnlinkedUser = (user: User | null): boolean => {
     isMembroCpp(user) ||
     isMembroCae(user) ||
     isCoordenador(user) ||
-    user.roles.some((r) => r === 'SECRETARIO' || r === 'ADMIN');
+    isSecretario(user);
 
   if (isLeaderOrClero) return false;
 
-  const isUsuarioComumOuMembro = user.roles.every(
-    (r) => r === 'MEMBRO' || r === 'MEMBRO_PASTORAL' || r === 'MEMBRO_MOVIMENTO' || r === 'ROLE_PASTORAL_MEMBRO' || r === 'ROLE_USER' || r === 'USER'
-  );
+  const isUsuarioComumOuMembro = user.roles.every((r) => isMembro({ ...user, roles: [r] }));
 
   if (isUsuarioComumOuMembro && Array.isArray(user.organizations) && user.organizations.length === 0) {
     return true;

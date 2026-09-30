@@ -57,7 +57,7 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,9 +72,8 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
         String aprovacaoIdStr = objectMapper.readTree(patchResult.getResponse().getContentAsString())
                 .get("solicitacaoAprovacaoId").asString();
 
-        // secretario/CONSELHO trying to approve → 403 (not allowed to decide, only
-        // coordenador/paroco can)
-        assertForbiddenAprovacaoDecision(aprovacaoIdStr, "secretario", "CONSELHO", """
+        // secretario-conselho/CONSELHO trying to approve → 403 (not allowed to decide, only paroco can)
+        assertForbiddenAprovacaoDecision(aprovacaoIdStr, "secretario-conselho", "CONSELHO", """
                 {
                   "status": "APROVADA",
                   "observacao": "Unauthorized attempt"
@@ -108,7 +107,7 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
 
         // PATCH with sensitive fields by coordenador/PASTORAL → 202 PENDENTE
         MvcResult patchResult = mockMvc.perform(patch("/api/v1/eventos/{id}", eventoId)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000bb")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -123,8 +122,8 @@ class AprovacaoDecisionAuthorizationIntegrationTest {
         String aprovacaoIdStr = objectMapper.readTree(patchResult.getResponse().getContentAsString())
                 .get("solicitacaoAprovacaoId").asString();
 
-        // membro/PASTORAL trying to approve → 403 (no authority)
-        assertForbiddenAprovacaoDecision(aprovacaoIdStr, "membro", "PASTORAL", """
+        // membro-ativo/PASTORAL trying to approve → 403 (no authority)
+        assertForbiddenAprovacaoDecision(aprovacaoIdStr, "membro-ativo", "PASTORAL", """
                 {
                         "status": "APROVADA"
                 }

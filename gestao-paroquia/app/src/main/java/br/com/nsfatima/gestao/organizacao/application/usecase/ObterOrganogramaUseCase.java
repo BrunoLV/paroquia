@@ -199,7 +199,10 @@ public class ObterOrganogramaUseCase {
         }
         if (viceResponsavelNome == null || viceResponsavelNome.isBlank()) {
             viceResponsavelNome = membros.stream()
-                    .filter(m -> "VICE_COORDENADOR".equalsIgnoreCase(m.papel())
+                    .filter(m -> "SECRETARIO_GRUPO".equalsIgnoreCase(m.papel())
+                            || "SECRETARIO_CONSELHO".equalsIgnoreCase(m.papel())
+                            || "secretario-grupo".equalsIgnoreCase(m.papel())
+                            || "secretario-conselho".equalsIgnoreCase(m.papel())
                             || "VIGARIO".equalsIgnoreCase(m.papel()))
                     .map(GrupoParoquialMembroResponse::fielNome)
                     .findFirst()

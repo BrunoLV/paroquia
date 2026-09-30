@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.projeto.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
 
 import java.util.Objects;
 import java.util.Set;
@@ -10,42 +10,35 @@ import java.util.UUID;
 
 /**
  * Implementação pura da política de autorização de projetos sem acoplamento a frameworks ou I/O.
+ * Na governança canônica, apenas o Pároco (e Bispo Diocesano) detém alçada decisória de alto nível,
+ * enquanto coordenadores e secretarias propõem/editam projetos no escopo da sua organização.
  */
 public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoPolicy {
 
-    private static final Set<PapelOrganizacional> PROJECT_EDITOR_ROLES = Set.of(
-            PapelOrganizacional.ADMIN,
-            PapelOrganizacional.COORD_PASTORAL_GLOBAL,
-            PapelOrganizacional.COORD_PASTORAL_LOCAL,
-            PapelOrganizacional.COORD_MOVIMENTO,
-            PapelOrganizacional.COORD_PASTORAL,
-            PapelOrganizacional.PRESIDENTE_CPC,
-            PapelOrganizacional.MESA_CPP,
-            PapelOrganizacional.SECRETARIO,
-            PapelOrganizacional.PAROCO,
-            PapelOrganizacional.VIGARIO,
-            PapelOrganizacional.PADRE);
+    private static final Set<PapelGlobal> GLOBAL_EDITOR_ROLES = Set.of(
+            PapelGlobal.PAROCO,
+            PapelGlobal.BISPO_DIOCESANO,
+            PapelGlobal.VIGARIO,
+            PapelGlobal.SECRETARIA_PAROQUIAL);
+
+    private static final Set<PapelOrganizacional> ORG_EDITOR_ROLES = Set.of(
+            PapelOrganizacional.COORDENADOR,
+            PapelOrganizacional.SECRETARIO_CONSELHO,
+            PapelOrganizacional.SECRETARIO_GRUPO);
 
     @Override
-    public boolean isAtorDeAltoNivel(PapelOrganizacional papel, TipoGrupo tipoGrupo) {
-        if (papel == null) {
-            return false;
-        }
-        return papel == PapelOrganizacional.PAROCO
-                || papel == PapelOrganizacional.ADMIN
-                || (tipoGrupo == TipoGrupo.CONSELHO
-                && (papel == PapelOrganizacional.PRESIDENTE_CPC
-                || papel == PapelOrganizacional.MESA_CPP
-                || papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL));
+    public boolean isAtorDeAltoNivel(String rawRole, String rawTipoGrupo) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        return papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO;
     }
 
     @Override
     public void assertCanCreate(
-            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        if (!PROJECT_EDITOR_ROLES.contains(papel)) {
+            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+        if (!isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para criar projetos");
         }
-        if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(rawRole, rawTipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new OperacaoProibidaException("Usuário não pode criar projetos para outra organização");
         }
@@ -53,11 +46,11 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
 
     @Override
     public void assertCanEdit(
-            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        if (!PROJECT_EDITOR_ROLES.contains(papel)) {
+            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+        if (!isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para editar projetos");
         }
-        if (!isAtorDeAltoNivel(papel, tipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(rawRole, rawTipoGrupo) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new OperacaoProibidaException("Usuário não pode editar projetos de outra organização");
         }
@@ -65,19 +58,25 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
 
     @Override
     public void assertCanStartOrConclude(
-            PapelOrganizacional papel, TipoGrupo tipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        if (isAtorDeAltoNivel(papel, tipoGrupo)) {
+            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+        if (isAtorDeAltoNivel(rawRole, rawTipoGrupo)) {
             return;
         }
-        boolean isOrgLeader = papel == PapelOrganizacional.COORD_PASTORAL_GLOBAL
-                || papel == PapelOrganizacional.COORD_PASTORAL_LOCAL
-                || papel == PapelOrganizacional.COORD_MOVIMENTO
-                || papel == PapelOrganizacional.COORD_PASTORAL
-                || papel == PapelOrganizacional.PRESIDENTE_CPC;
-
-        if (isOrgLeader && atorOrganizacaoId != null && Objects.equals(atorOrganizacaoId, targetOrgId)) {
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        if (papelOrg == PapelOrganizacional.COORDENADOR
+                && atorOrganizacaoId != null
+                && Objects.equals(atorOrganizacaoId, targetOrgId)) {
             return;
         }
         throw new OperacaoProibidaException("Usuário não tem permissão para executar esta transição de projeto");
+    }
+
+    private boolean isEditorRole(String rawRole) {
+        PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
+        if (papelGlobal != null && GLOBAL_EDITOR_ROLES.contains(papelGlobal)) {
+            return true;
+        }
+        PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);
+        return papelOrg != null && ORG_EDITOR_ROLES.contains(papelOrg);
     }
 }

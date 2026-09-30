@@ -215,49 +215,46 @@ export type PapelEclesial =
   | "BISPO_DIOCESANO"
   | "PAROCO"
   | "VIGARIO"
-  | "DIACONO"
-  | "PADRE"
-  | "MESA_CPP"
-  | "MEMBRO_CPP"
-  | "MEMBRO_CAE"
-  | "PRESIDENTE_CPC"
-  | "MEMBRO_CPC"
-  | "COORD_PASTORAL_GLOBAL"
-  | "COORD_PASTORAL_LOCAL"
-  | "COORD_PASTORAL"
-  | "COORD_MOVIMENTO"
-  | "VOLUNTARIO_PASTORAL_LOCAL"
-  | "MEMBRO_PASTORAL"
-  | "MEMBRO_MOVIMENTO"
-  | "SECRETARIO";
+  | "DIACONO_PAROQUIAL"
+  | "SECRETARIA_PAROQUIAL"
+  | "FIEL"
+  | "SECRETARIO_CONSELHO"
+  | "MEMBRO_CONSELHO_PASTORAL"
+  | "MEMBRO_CONSELHO_ECONOMICO"
+  | "COORDENADOR"
+  | "SECRETARIO_GRUPO"
+  | "MEMBRO_ATIVO"
+  | "VOLUNTARIO";
 
 export const PAPEL_ECLESIAL_LABELS: Record<string, string> = {
-  ADMIN: "Administrador do Sistema",
+  ADMIN: "Administrador de Infraestrutura",
   BISPO_DIOCESANO: "Bispo Diocesano",
-  PAROCO: "Pároco",
+  PAROCO: "Pároco / Administrador Paroquial",
   VIGARIO: "Vigário Paroquial",
-  DIACONO: "Diácono",
-  PADRE: "Padre",
-  MESA_CPP: "Mesa Diretora do CPP",
-  MEMBRO_CPP: "Membro do CPP",
-  MEMBRO_CAE: "Membro do CAE",
-  PRESIDENTE_CPC: "Presidente do CPC",
-  MEMBRO_CPC: "Membro do CPC",
-  COORD_PASTORAL_GLOBAL: "Coordenador Pastoral Global",
-  COORD_PASTORAL_LOCAL: "Coordenador Pastoral Local",
-  COORD_PASTORAL: "Coordenador Pastoral",
-  COORD_MOVIMENTO: "Coordenador de Movimento",
-  VOLUNTARIO_PASTORAL_LOCAL: "Voluntário Pastoral Local",
-  MEMBRO_PASTORAL: "Membro de Pastoral",
-  MEMBRO_MOVIMENTO: "Membro de Movimento",
-  SECRETARIO: "Secretário",
-
-  // Aliases for stored values / legacy compatibility
-  MESA_DIRETORA_CPP: "Mesa Diretora do CPP",
-  COORDENADOR_PASTORAL_GLOBAL: "Coordenador Pastoral Global",
-  COORDENADOR_PASTORAL_LOCAL: "Coordenador Pastoral Local",
-  COORDENADOR_PASTORAL: "Coordenador Pastoral",
-  COORDENADOR_MOVIMENTO: "Coordenador de Movimento",
+  DIACONO_PAROQUIAL: "Diácono Paroquial",
+  SECRETARIA_PAROQUIAL: "Secretaria Paroquial",
+  FIEL: "Fiel",
+  SECRETARIO_CONSELHO: "Secretário de Conselho",
+  MEMBRO_CONSELHO_PASTORAL: "Membro do Conselho Pastoral (CPP/CPC)",
+  MEMBRO_CONSELHO_ECONOMICO: "Membro do Conselho Econômico (CAE)",
+  COORDENADOR: "Coordenador de Grupo/Pastoral",
+  SECRETARIO_GRUPO: "Secretário de Grupo/Pastoral",
+  MEMBRO_ATIVO: "Membro Ativo",
+  VOLUNTARIO: "Voluntário",
+  admin: "Administrador de Infraestrutura",
+  "bispo-diocesano": "Bispo Diocesano",
+  paroco: "Pároco / Administrador Paroquial",
+  vigario: "Vigário Paroquial",
+  "diacono-paroquial": "Diácono Paroquial",
+  "secretaria-paroquial": "Secretaria Paroquial",
+  fiel: "Fiel",
+  "secretario-conselho": "Secretário de Conselho",
+  "membro-conselho-pastoral": "Membro do Conselho Pastoral (CPP/CPC)",
+  "membro-conselho-economico": "Membro do Conselho Econômico (CAE)",
+  coordenador: "Coordenador de Grupo/Pastoral",
+  "secretario-grupo": "Secretário de Grupo/Pastoral",
+  "membro-ativo": "Membro Ativo",
+  voluntario: "Voluntário",
 };
 
 /**

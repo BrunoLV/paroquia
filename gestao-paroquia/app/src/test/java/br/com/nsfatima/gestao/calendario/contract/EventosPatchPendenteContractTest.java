@@ -57,7 +57,7 @@ class EventosPatchPendenteContractTest {
 
         // Contract: PATCH with sensitive field + coordenador/PASTORAL → 202 ACCEPTED
         mockMvc.perform(patch("/api/v1/eventos/{id}", eventoIdStr)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", PASTORAL_A)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -19,7 +19,7 @@ class MembroGrupoTest {
 
     @Test
     void novoNasceAtivo() {
-        assertThat(novo(PapelOrganizacional.MEMBRO_PASTORAL).isAtivo()).isTrue();
+        assertThat(novo(PapelOrganizacional.MEMBRO_ATIVO).isAtivo()).isTrue();
     }
 
     @Test
@@ -28,23 +28,16 @@ class MembroGrupoTest {
     }
 
     @Test
-    void rejeitaPapelGlobal() {
-        assertThatThrownBy(() -> novo(PapelOrganizacional.PAROCO))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("global");
-    }
-
-    @Test
     void atribuirPapelCoordenacaoMarcaExercicioDeCoordenacao() {
-        MembroGrupo m = novo(PapelOrganizacional.MEMBRO_PASTORAL);
+        MembroGrupo m = novo(PapelOrganizacional.MEMBRO_ATIVO);
         assertThat(m.exercerCoordenacao()).isFalse();
-        m.atribuirPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL);
+        m.atribuirPapel(PapelOrganizacional.COORDENADOR);
         assertThat(m.exercerCoordenacao()).isTrue();
     }
 
     @Test
     void ativarDesativar() {
-        MembroGrupo m = novo(PapelOrganizacional.MEMBRO_PASTORAL);
+        MembroGrupo m = novo(PapelOrganizacional.MEMBRO_ATIVO);
         m.desativar();
         assertThat(m.isAtivo()).isFalse();
         m.ativar();
@@ -53,10 +46,9 @@ class MembroGrupoTest {
 
     @Test
     void isCoordenacaoConsolidada() {
-        assertThat(PapelOrganizacional.MESA_CPP.isCoordenacao()).isTrue();
-        assertThat(PapelOrganizacional.PRESIDENTE_CPC.isCoordenacao()).isTrue();
-        assertThat(PapelOrganizacional.MEMBRO_CPC.isCoordenacao()).isFalse();
-        assertThat(PapelOrganizacional.ADMIN.isGlobal()).isTrue();
-        assertThat(PapelOrganizacional.MESA_CPP.isGlobal()).isFalse();
+        assertThat(PapelOrganizacional.COORDENADOR.isCoordenacao()).isTrue();
+        assertThat(PapelOrganizacional.SECRETARIO_CONSELHO.isCoordenacao()).isFalse();
+        assertThat(PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.isCoordenacao()).isFalse();
+        assertThat(PapelOrganizacional.MEMBRO_ATIVO.isCoordenacao()).isFalse();
     }
 }

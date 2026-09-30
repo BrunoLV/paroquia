@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +20,12 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     @Test
     @DisplayName("Identifica papéis de alto nível com alçada ampla")
     void deveIdentificarAltoNivel() {
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.ADMIN)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PAROCO)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.PRESIDENTE_CPC)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MESA_CPP)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.COORD_PASTORAL_GLOBAL)).isTrue();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.COORD_PASTORAL_LOCAL)).isFalse();
-        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_PASTORAL)).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelGlobal.PAROCO.storedValue())).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelGlobal.BISPO_DIOCESANO.storedValue())).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO.storedValue())).isTrue();
+        assertThat(policy.isAtorDeAltoNivel(PapelGlobal.ADMIN.storedValue())).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.COORDENADOR.storedValue())).isFalse();
+        assertThat(policy.isAtorDeAltoNivel(PapelOrganizacional.MEMBRO_ATIVO.storedValue())).isFalse();
     }
 
     @Test
@@ -33,22 +33,23 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     void devePermitirGestaoParaAltoNivelEmQualquerUnidade() {
         UUID outraUnidade = UUID.randomUUID();
         assertThatCode(() -> policy.assertPodeGerirPatrimonio(
-                PapelOrganizacional.PAROCO, outraUnidade, unidadeProprietaria))
+                PapelGlobal.PAROCO.storedValue(), outraUnidade, unidadeProprietaria))
                 .doesNotThrowAnyException();
-        assertThatCode(() -> policy.assertPodeGerirPatrimonio(PapelOrganizacional.ADMIN, null, unidadeProprietaria))
+        assertThatCode(() -> policy.assertPodeGerirPatrimonio(
+                PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO.storedValue(), null, unidadeProprietaria))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("Permite coordenação local na própria unidade e rejeita em unidade distinta")
+    @DisplayName("Permite coordenação na própria unidade e rejeita em unidade distinta")
     void deveValidarEscopoDeCoordenacaoLocal() {
         UUID outraUnidade = UUID.randomUUID();
         assertThatCode(() -> policy.assertPodeGerirPatrimonio(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, unidadeProprietaria, unidadeProprietaria))
+                PapelOrganizacional.COORDENADOR.storedValue(), unidadeProprietaria, unidadeProprietaria))
                 .doesNotThrowAnyException();
 
         assertThatThrownBy(() -> policy.assertPodeGerirPatrimonio(
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, outraUnidade, unidadeProprietaria))
+                PapelOrganizacional.COORDENADOR.storedValue(), outraUnidade, unidadeProprietaria))
                 .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("outra unidade territorial");
     }
@@ -57,7 +58,7 @@ class PadraoAutorizacaoPatrimonioPolicyTest {
     @DisplayName("Rejeita papéis sem permissão de gestão de patrimônio")
     void deveRejeitarPapeisSemPermissao() {
         assertThatThrownBy(() -> policy.assertPodeGerirPatrimonio(
-                PapelOrganizacional.MEMBRO_PASTORAL, unidadeProprietaria, unidadeProprietaria))
+                PapelOrganizacional.MEMBRO_ATIVO.storedValue(), unidadeProprietaria, unidadeProprietaria))
                 .isInstanceOf(OperacaoProibidaException.class)
                 .hasMessageContaining("não tem permissão");
     }

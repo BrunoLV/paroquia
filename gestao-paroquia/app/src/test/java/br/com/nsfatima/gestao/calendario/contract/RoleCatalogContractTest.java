@@ -20,7 +20,7 @@ class RoleCatalogContractTest {
 
     @Test
     void deveRejeitarSecretarioForaConselho() {
-        assertFalse(aceita("PASTORAL", PapelOrganizacional.SECRETARIO));
+        assertFalse(aceita("PASTORAL", PapelOrganizacional.SECRETARIO_CONSELHO));
     }
 
     private boolean aceita(String tipo, PapelOrganizacional papel) {

@@ -96,7 +96,7 @@ class SddCenario1CadastroSemLoginIntegrationTest {
         MembroRequest request = new MembroRequest(
                 fiel.id(),
                 org.getId(),
-                "MEMBRO_PASTORAL",
+                "MEMBRO_ATIVO",
                 LocalDate.now(),
                 null,
                 true

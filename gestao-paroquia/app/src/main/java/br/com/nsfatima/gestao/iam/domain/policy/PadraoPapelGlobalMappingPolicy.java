@@ -42,8 +42,7 @@ public final class PadraoPapelGlobalMappingPolicy implements PapelGlobalMappingP
                             || norm.equals("PAROCO")
                             || norm.equals("VIGARIO")
                             || norm.equals("DIACONO_PAROQUIAL")
-                            || norm.equals("SECRETARIA_PAROQUIAL")
-                            || norm.equals("FIEL");
+                            || norm.equals("SECRETARIA_PAROQUIAL");
                 });
     }
 }

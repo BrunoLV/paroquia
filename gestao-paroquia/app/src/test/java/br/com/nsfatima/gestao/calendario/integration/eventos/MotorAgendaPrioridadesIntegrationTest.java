@@ -90,7 +90,7 @@ class MotorAgendaPrioridadesIntegrationTest {
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", "evt-prio-002")
-                        .header("X-Actor-Role", "coord_movimento")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "MOVIMENTO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .header("X-Actor-Igreja-Id", IGREJA_ID)
@@ -162,7 +162,7 @@ class MotorAgendaPrioridadesIntegrationTest {
 
         mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", "evt-prio-005")
-                        .header("X-Actor-Role", "coord_pastoral_local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

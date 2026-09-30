@@ -51,7 +51,7 @@ class AprovacoesContractTest {
     @Test
     void deveCriarAprovacaoComExplicitoDto() throws Exception {
         mockMvc.perform(post("/api/v1/aprovacoes")
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", ORG_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -71,15 +71,15 @@ class AprovacoesContractTest {
         aprovacao.setId(aprovacaoId);
         aprovacao.setEventoId(EVENT_ID);
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
-        aprovacao.setAprovadorPapel("conselho-coordenador");
+        aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
         aprovacao.setCriadoEmUtc(Instant.now());
-        aprovacao.setMotivoCancelamentoSnapshot("Aprovado no conselho.");
+        aprovacao.setMotivoCancelamentoSnapshot("Aprovado pelo pároco.");
         aprovacaoJpaRepository.save(aprovacao);
 
         mockMvc.perform(patch("/api/v1/aprovacoes/{id}", aprovacaoId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID.toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""

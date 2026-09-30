@@ -93,7 +93,7 @@ class AdicionarVinculoUseCaseTest {
 
     @Test
     void deveInativarAnteriorCoordenadorQuandoNovoUmEAdicionado() {
-        mockAuthentication("ROLE_ADMIN");
+        mockAuthentication("ROLE_CLERO_PAROCO");
 
         UUID usuarioId = UUID.randomUUID();
         UUID grupoParoquialId = UUID.randomUUID();
@@ -103,11 +103,11 @@ class AdicionarVinculoUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setFielId(UUID.randomUUID());
         existing.setGrupoParoquialId(grupoParoquialId);
-        existing.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.COORDENADOR.name());
         existing.setAtivo(true);
 
         when(vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(eq(grupoParoquialId),
-                eq(PapelOrganizacional.COORD_PASTORAL_LOCAL.name()), any(UUID.class)))
+                eq(PapelOrganizacional.COORDENADOR.name()), any(UUID.class)))
 
                 .thenReturn(Optional.of(existing));
 
@@ -115,7 +115,7 @@ class AdicionarVinculoUseCaseTest {
                 invocation -> invocation.getArgument(0));
 
         useCase.execute(usuarioId,
-                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL, UUID.randomUUID());
+                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID());
 
 
         assertFalse(existing.isAtivo());
@@ -123,8 +123,9 @@ class AdicionarVinculoUseCaseTest {
     }
 
     @Test
-    void deveNegarConselhoCoordenadorDefinicaoQuandoNaoParocoOuAdmin() {
-        mockAuthentication("ROLE_USER");
+    void deveNegarCoordenadorDefinicaoQuandoNaoParoco() {
+        mockAuthentication("ROLE_ADMIN", "ROLE_GLOBAL_ADMIN");
+        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(any())).thenReturn(true);
 
         UUID usuarioId = UUID.randomUUID();
         UUID grupoParoquialId = UUID.randomUUID();
@@ -132,24 +133,23 @@ class AdicionarVinculoUseCaseTest {
 
         assertThrows(AccessDeniedException.class, () ->
                 useCase.execute(usuarioId,
-                        grupoParoquialId, TipoGrupo.CONSELHO, PapelOrganizacional.PRESIDENTE_CPC, null)
+                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID())
 
         );
     }
 
     @Test
-    void devePermitirConselhoCoordenadorDefinicaoQuandoParocoOuAdmin() {
+    void devePermitirCoordenadorDefinicaoQuandoParoco() {
         mockAuthentication("ROLE_CLERO_PAROCO");
 
         UUID usuarioId = UUID.randomUUID();
         UUID grupoParoquialId = UUID.randomUUID();
         mockUsuarioComFiel(usuarioId);
-        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(any())).thenReturn(true);
         when(vinculoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() ->
                 useCase.execute(usuarioId,
-                        grupoParoquialId, TipoGrupo.CONSELHO, PapelOrganizacional.PRESIDENTE_CPC, null)
+                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID())
 
         );
     }
@@ -163,13 +163,13 @@ class AdicionarVinculoUseCaseTest {
 
         IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId, grupoParoquialId, TipoGrupo.PASTORAL,
-                        PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, null)
+                        PapelOrganizacional.VOLUNTARIO, null)
         );
         assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex1.getMessage());
 
         IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId, grupoParoquialId, TipoGrupo.MOVIMENTO,
-                        PapelOrganizacional.MEMBRO_MOVIMENTO, null)
+                        PapelOrganizacional.MEMBRO_ATIVO, null)
         );
         assertEquals("Igreja de vinculo e obrigatoria para pastorais e movimentos", ex2.getMessage());
     }
@@ -185,7 +185,7 @@ class AdicionarVinculoUseCaseTest {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO,
                                 igrejaId)
 
         );
@@ -207,7 +207,7 @@ class AdicionarVinculoUseCaseTest {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO,
                                 igrejaId)
 
         );
@@ -225,11 +225,11 @@ class AdicionarVinculoUseCaseTest {
 
         UUID fielId = mockUsuarioComFiel(usuarioId);
         when(vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(fielId,
-                grupoParoquialId, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name(), churchA))
+                grupoParoquialId, PapelOrganizacional.VOLUNTARIO.name(), churchA))
 
                 .thenReturn(Optional.empty());
         when(vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(fielId,
-                grupoParoquialId, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name(), churchB))
+                grupoParoquialId, PapelOrganizacional.VOLUNTARIO.name(), churchB))
 
                 .thenReturn(Optional.empty());
 
@@ -246,10 +246,10 @@ class AdicionarVinculoUseCaseTest {
         when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         assertDoesNotThrow(() -> useCase.execute(usuarioId,
-                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, churchA));
+                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO, churchA));
 
         assertDoesNotThrow(() -> useCase.execute(usuarioId,
-                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, churchB));
+                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO, churchB));
 
     }
 
@@ -267,17 +267,17 @@ class AdicionarVinculoUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setFielId(fielId);
         existing.setGrupoParoquialId(grupoParoquialId);
-        existing.setPapel(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.VOLUNTARIO.name());
         existing.setIgrejaVinculoId(churchId);
         existing.setAtivo(true);
 
         when(vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(fielId,
-                grupoParoquialId, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name(), churchId))
+                grupoParoquialId, PapelOrganizacional.VOLUNTARIO.name(), churchId))
 
                 .thenReturn(Optional.of(existing));
 
         UUID resultId = useCase.execute(usuarioId,
-                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, churchId);
+                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO, churchId);
 
         assertEquals(existing.getId(), resultId);
         verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
@@ -297,18 +297,18 @@ class AdicionarVinculoUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setFielId(fielId);
         existing.setGrupoParoquialId(grupoParoquialId);
-        existing.setPapel(PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.VOLUNTARIO.name());
         existing.setIgrejaVinculoId(churchId);
         existing.setAtivo(false);
 
         when(vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(fielId,
-                grupoParoquialId, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL.name(), churchId))
+                grupoParoquialId, PapelOrganizacional.VOLUNTARIO.name(), churchId))
 
                 .thenReturn(Optional.of(existing));
         when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         UUID resultId = useCase.execute(usuarioId,
-                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL, churchId);
+                grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO, churchId);
 
         assertEquals(existing.getId(), resultId);
         assertTrue(existing.isAtivo());
@@ -317,7 +317,7 @@ class AdicionarVinculoUseCaseTest {
 
     @Test
     void deveApenasInativarAnteriorCoordenadorEmEspecificoIgreja() {
-        mockAuthentication("ROLE_ADMIN");
+        mockAuthentication("ROLE_CLERO_PAROCO");
 
         UUID usuarioId = UUID.randomUUID();
         UUID grupoParoquialId = UUID.randomUUID();
@@ -329,17 +329,17 @@ class AdicionarVinculoUseCaseTest {
         existing.setId(UUID.randomUUID());
         existing.setFielId(UUID.randomUUID());
         existing.setGrupoParoquialId(grupoParoquialId);
-        existing.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
+        existing.setPapel(PapelOrganizacional.COORDENADOR.name());
         existing.setIgrejaVinculoId(churchA);
         existing.setAtivo(true);
 
         when(vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(grupoParoquialId,
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchA))
+                PapelOrganizacional.COORDENADOR.name(), churchA))
 
                 .thenReturn(Optional.of(existing));
         when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        useCase.execute(usuarioId, grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORD_PASTORAL_LOCAL,
+        useCase.execute(usuarioId, grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.COORDENADOR,
                 churchA);
 
         assertFalse(existing.isAtivo());
@@ -348,7 +348,7 @@ class AdicionarVinculoUseCaseTest {
 
     @Test
     void deveRebaixarAnteriorCoordenadorParaMembroPapelQuandoNovoUmEAssigned() {
-        mockAuthentication("ROLE_ADMIN");
+        mockAuthentication("ROLE_CLERO_PAROCO");
 
         UUID newCoordUsuarioId = UUID.randomUUID();
         UUID oldCoordFielId = UUID.randomUUID();
@@ -361,33 +361,32 @@ class AdicionarVinculoUseCaseTest {
         existingCoord.setId(UUID.randomUUID());
         existingCoord.setFielId(oldCoordFielId);
         existingCoord.setGrupoParoquialId(grupoParoquialId);
-        existingCoord.setPapel(PapelOrganizacional.COORD_PASTORAL_LOCAL.name());
+        existingCoord.setPapel(PapelOrganizacional.COORDENADOR.name());
         existingCoord.setIgrejaVinculoId(churchId);
         existingCoord.setAtivo(true);
 
         when(vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(grupoParoquialId,
-                PapelOrganizacional.COORD_PASTORAL_LOCAL.name(), churchId))
+                PapelOrganizacional.COORDENADOR.name(), churchId))
 
                 .thenReturn(Optional.of(existingCoord));
         when(vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(oldCoordFielId,
-                grupoParoquialId, "VOLUNTARIO_PASTORAL_LOCAL", churchId))
+                grupoParoquialId, PapelOrganizacional.MEMBRO_ATIVO.name(), churchId))
 
                 .thenReturn(Optional.empty());
 
         when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         useCase.execute(newCoordUsuarioId, grupoParoquialId, TipoGrupo.PASTORAL,
-                PapelOrganizacional.COORD_PASTORAL_LOCAL, churchId);
+                PapelOrganizacional.COORDENADOR, churchId);
 
         assertFalse(existingCoord.isAtivo());
-        // Verify demoted VOLUNTARIO vinculo was created and saved
         ArgumentCaptor<MembroGrupoEntity> captor = ArgumentCaptor.forClass(MembroGrupoEntity.class);
         verify(vinculoRepository, atLeast(2)).save(captor.capture());
 
         boolean demotedSaved = captor.getAllValues().stream()
                 .anyMatch(m -> oldCoordFielId.equals(m.getFielId())
-                        && "VOLUNTARIO_PASTORAL_LOCAL".equals(m.getPapel()) && m.isAtivo());
-        assertTrue(demotedSaved, "Previous coordinator should have an active VOLUNTARIO vinculo saved");
+                        && PapelOrganizacional.MEMBRO_ATIVO.name().equals(m.getPapel()) && m.isAtivo());
+        assertTrue(demotedSaved, "Previous coordinator should have an active MEMBRO_ATIVO vinculo saved");
     }
 
     @Test
@@ -400,7 +399,7 @@ class AdicionarVinculoUseCaseTest {
 
         var ex = assertThrows(IllegalArgumentException.class, () ->
                 useCase.execute(usuarioId,
-                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO_PASTORAL_LOCAL,
+                        grupoParoquialId, TipoGrupo.PASTORAL, PapelOrganizacional.VOLUNTARIO,
                         UUID.randomUUID())
         );
 

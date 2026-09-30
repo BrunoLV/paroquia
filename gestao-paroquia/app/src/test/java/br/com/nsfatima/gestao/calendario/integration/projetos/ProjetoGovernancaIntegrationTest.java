@@ -77,8 +77,8 @@ class ProjetoGovernancaIntegrationTest {
                 """.formatted(CONSELHO_ORG, testYear, testYear);
 
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
@@ -103,8 +103,8 @@ class ProjetoGovernancaIntegrationTest {
                 """.formatted(CONSELHO_ORG, testYear, testYear);
 
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
@@ -120,8 +120,8 @@ class ProjetoGovernancaIntegrationTest {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("EM_ANDAMENTO"));
@@ -133,7 +133,7 @@ class ProjetoGovernancaIntegrationTest {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/iniciar", project.getId())
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", PASTORAL_ORG)) // different org
                 .andExpect(status().isForbidden());
@@ -145,21 +145,21 @@ class ProjetoGovernancaIntegrationTest {
         ProjetoEventoEntity project = saveProject("Projeto Em Andamento", ProjetoStatus.EM_ANDAMENTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/concluir", project.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CONCLUIDO"));
     }
 
     @Test
-    @DisplayName("Should cancel project immediately when requested by Council Leader")
+    @DisplayName("Should cancel project immediately when requested by Paroco")
     void deveCancelarImediatamenteQuandoSolicitadoPorConselhoLider() throws Exception {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, CONSELHO_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"cancelarEventosVinculados\":false}"))
@@ -173,7 +173,7 @@ class ProjetoGovernancaIntegrationTest {
         ProjetoEventoEntity project = saveProject("Projeto Aberto", ProjetoStatus.ABERTO, PASTORAL_ORG);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", PASTORAL_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -202,15 +202,15 @@ class ProjetoGovernancaIntegrationTest {
         req.setTipoSolicitacao("CRIACAO");
         req.setStatus(AprovacaoStatus.PENDENTE);
         req.setSolicitanteId("solicitante");
-        req.setSolicitantePapel("coordenador-pastoral-local");
+        req.setSolicitantePapel("coordenador");
         req.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
         req.setCriadoEmUtc(Instant.now());
         req.setActionPayloadJson(payloadJson);
         approvalRepository.saveAndFlush(req);
 
         mockMvc.perform(post("/api/v1/projetos/solicitacoes/{id}/decisao", req.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"aprovado\":true,\"observacao\":\"Ok\"}"))
                 .andExpect(status().isOk())
@@ -239,8 +239,8 @@ class ProjetoGovernancaIntegrationTest {
         eventRepository.saveAndFlush(event);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"cancelarEventosVinculados\":true}"))
@@ -272,8 +272,8 @@ class ProjetoGovernancaIntegrationTest {
         eventRepository.saveAndFlush(event);
 
         mockMvc.perform(post("/api/v1/projetos/{id}/cancelar", project.getId())
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", CONSELHO_ORG)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"cancelarEventosVinculados\":false}"))

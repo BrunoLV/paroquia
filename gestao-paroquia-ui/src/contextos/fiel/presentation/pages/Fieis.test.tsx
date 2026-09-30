@@ -52,7 +52,7 @@ describe('Ficha civil de fiéis', () => {
   });
 
   it('mantém a ficha somente leitura para coordenador', async () => {
-    useAuthMock.mockReturnValue({ user:{id:'coord',roles:['CONSELHO_COORDENADOR']}, isAuthenticated:true });
+    useAuthMock.mockReturnValue({ user:{id:'coord',roles:['COORDENADOR']}, isAuthenticated:true });
     renderPage();
     await screen.findByText('Maria da Silva');
     expect(screen.queryByRole('button', {name:/novo fiel/i})).not.toBeInTheDocument();

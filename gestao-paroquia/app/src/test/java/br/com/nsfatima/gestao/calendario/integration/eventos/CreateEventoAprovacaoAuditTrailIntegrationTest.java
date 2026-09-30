@@ -41,7 +41,7 @@ class CreateEventoAprovacaoAuditTrailIntegrationTest {
 
         MvcResult pendenteResult = mockMvc.perform(post("/api/v1/eventos")
                         .header("Idempotency-Key", UUID.randomUUID())
-                        .header("X-Actor-Role", "secretario")
+                        .header("X-Actor-Role", "secretario-conselho")
                         .header("X-Actor-Org-Type", "CONSELHO")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000cc")
                         .contentType(MediaType.APPLICATION_JSON)

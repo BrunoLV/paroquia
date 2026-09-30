@@ -55,7 +55,7 @@ class SolenidadeLiturgicaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve permitir cadastrar nova solenidade quando o perfil for PAROCO")
+    @DisplayName("Deve permitir cadastrar nova solenidade")
     void testShouldCreateSolenidadeWhenParoco() {
         SolenidadeLiturgicaRequestDTO req = new SolenidadeLiturgicaRequestDTO(
                 "SAO_PADRE_PIO",
@@ -73,32 +73,10 @@ class SolenidadeLiturgicaServiceTest {
 
         when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        SolenidadeLiturgicaResponseDTO created = service.create(req, "PAROCO");
+        SolenidadeLiturgicaResponseDTO created = service.create(req);
 
         assertThat(created).isNotNull();
         assertThat(created.chave()).isEqualTo("SAO_PADRE_PIO");
         verify(repository).save(any(SolenidadeLiturgicaEntity.class));
-    }
-
-    @Test
-    @DisplayName("Deve proibir cadastro de solenidade caso o usuário não seja PAROCO ou VIGARIO")
-    void testShouldForbiddenCreationForNonParoco() {
-        SolenidadeLiturgicaRequestDTO req = new SolenidadeLiturgicaRequestDTO(
-                "TESTE",
-                "Teste",
-                TipoSolenidade.FIXA,
-                1,
-                1,
-                null,
-                "BRANCO",
-                1.0,
-                2,
-                "Desc",
-                true
-        );
-
-        assertThatThrownBy(() -> service.create(req, "SECRETARIO"))
-                .isInstanceOf(OperacaoProibidaException.class)
-                .hasMessageContaining("Apenas Pároco ou Vigário");
     }
 }

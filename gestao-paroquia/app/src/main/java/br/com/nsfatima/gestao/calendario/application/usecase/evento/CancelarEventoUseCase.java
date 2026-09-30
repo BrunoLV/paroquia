@@ -18,6 +18,7 @@ import br.com.nsfatima.gestao.calendario.application.service.EventoCancelamentoA
 import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCancelamento;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoObservacaoInput;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
@@ -92,8 +93,11 @@ public class CancelarEventoUseCase {
         EventoEntity evento = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
+        PapelGlobal atorGlobal = PapelGlobal.fromStoredValue(actorContext.role());
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
+        if (atorGlobal == PapelGlobal.SECRETARIA_PAROQUIAL
+                || atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO
+                || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
             if (request.motivo() == null || request.motivo().isBlank()) {
                 throw new ViolacaoRegraNegocioException(
                         "Justificativa é obrigatória para operações submetidas pelo Secretário");

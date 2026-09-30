@@ -99,7 +99,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
         adicionarMembroUseCase.execute(new MembroRequest(
                 fielCoord.id(),
                 org.getId(),
-                "COORD_PASTORAL",
+                "COORDENADOR",
                 LocalDate.now(),
                 null,
                 true
@@ -108,7 +108,7 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
         adicionarMembroUseCase.execute(new MembroRequest(
                 fielMembro.id(),
                 org.getId(),
-                "MEMBRO_PASTORAL",
+                "MEMBRO_ATIVO",
                 LocalDate.now(),
                 null,
                 true
@@ -125,13 +125,13 @@ class SddCenario2ConsultaFielUsuarioIntegrationTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(coordMembro.papel()).isEqualTo("coord-pastoral");
+        assertThat(coordMembro.papel()).isEqualTo("coordenador");
 
         MembroResponse comumMembro = membros.stream()
                 .filter(m -> m.fielId().equals(fielMembro.id()))
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(comumMembro.papel()).isEqualTo("membro-pastoral");
+        assertThat(comumMembro.papel()).isEqualTo("membro-ativo");
     }
 }

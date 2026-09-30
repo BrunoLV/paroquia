@@ -17,6 +17,7 @@ import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
 import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.PapelEnvolvido;
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.calendario.infrastructure.config.CacheConfig;
 import br.com.nsfatima.gestao.calendario.infrastructure.observability.CadastroEventoMetricsPublisher;
@@ -146,8 +147,11 @@ public class AtualizarEventoUseCase {
         EventoEntity entity = findEntity(eventoId);
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
+        PapelGlobal atorGlobal = PapelGlobal.fromStoredValue(actorContext.role());
         PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorPapel == PapelOrganizacional.SECRETARIO) {
+        if (atorGlobal == PapelGlobal.SECRETARIA_PAROQUIAL
+                || atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO
+                || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
             boolean hasJustificativa = (request.adicionadoExtraJustificativa() != null
                     && !request.adicionadoExtraJustificativa().isBlank())
                     || (request.canceladoMotivo() != null && !request.canceladoMotivo().isBlank());

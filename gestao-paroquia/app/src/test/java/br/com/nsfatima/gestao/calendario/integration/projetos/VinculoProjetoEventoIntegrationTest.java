@@ -43,8 +43,8 @@ class VinculoProjetoEventoIntegrationTest {
     @Test
     void deveSuportarProjetoLinkingCicloVida() throws Exception {
         mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
@@ -60,8 +60,8 @@ class VinculoProjetoEventoIntegrationTest {
                 .andExpect(jsonPath("$.nome").value("Projeto Vinculado"));
 
         mockMvc.perform(get("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nome").value("Projeto Vinculado"));
@@ -70,8 +70,8 @@ class VinculoProjetoEventoIntegrationTest {
     @Test
     void deveRejeitarEventoCriacaoForaProjetoPeriodo() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
@@ -90,8 +90,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // Event starts on June 1st (outside May)
         mockMvc.perform(post("/api/v1/eventos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -125,8 +125,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // Event should succeed because project dates are null
         mockMvc.perform(post("/api/v1/eventos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -147,8 +147,8 @@ class VinculoProjetoEventoIntegrationTest {
     @Test
     void deveRejeitarRecorrenteEventoRegraMismatchedDatas() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
@@ -167,8 +167,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // Event inside project timeframe
         String eventResponse = mockMvc.perform(post("/api/v1/eventos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -190,8 +190,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // 1. Recurrence rule with no end limits (indefinite) should be rejected
         mockMvc.perform(put("/api/v1/eventos/{id}/recorrencia", eventId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -205,8 +205,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // 2. Recurrence rule with dataLimite exceeding project end date (2026-05-31) should be rejected
         mockMvc.perform(put("/api/v1/eventos/{id}/recorrencia", eventId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -223,8 +223,8 @@ class VinculoProjetoEventoIntegrationTest {
     @Test
     void devePermitirRecorrenteEventoRegraCorrespondenteDatas() throws Exception {
         String projectResponse = mockMvc.perform(post("/api/v1/projetos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
@@ -243,8 +243,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // Event inside project timeframe
         String eventResponse = mockMvc.perform(post("/api/v1/eventos")
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .header("Idempotency-Key", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -266,8 +266,8 @@ class VinculoProjetoEventoIntegrationTest {
 
         // Recurrence rule with dataLimite within project end date should be allowed
         mockMvc.perform(put("/api/v1/eventos/{id}/recorrencia", eventId)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CPC")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .header("X-Actor-Org-Id", ORG_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

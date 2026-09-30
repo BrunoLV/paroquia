@@ -11,7 +11,7 @@ import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 let mockCurrentUser = {
   id: '1',
   name: 'Padre',
-  roles: ['ROLE_ADMIN', 'ADMIN'],
+  roles: ['ROLE_GLOBAL_PAROCO', 'PAROCO'],
   organizations: [],
 };
 
@@ -52,7 +52,7 @@ describe('Locais page', () => {
     mockCurrentUser = {
       id: '1',
       name: 'Padre',
-      roles: ['ROLE_ADMIN', 'ADMIN'],
+      roles: ['ROLE_GLOBAL_PAROCO', 'PAROCO'],
       organizations: [],
     };
     vi.spyOn(locaisApi, 'getLocais').mockResolvedValue(mockLocaisData as any);

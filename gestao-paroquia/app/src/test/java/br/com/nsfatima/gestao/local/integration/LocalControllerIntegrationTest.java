@@ -99,9 +99,9 @@ class LocalControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Permitir POST/PUT/DELETE para ADMIN, Pároco e Coordenadores/Vice do Conselho")
+    @DisplayName("Permitir POST/PUT/DELETE para ADMIN, Pároco, Secretaria e Conselho")
     void devePermitirMutacoesParaPerfisAutorizados() throws Exception {
-        String[] authorizedRoles = {"ADMIN", "CLERO_PAROCO", "CONSELHO_COORDENADOR", "CONSELHO_VICE_COORDENADOR"};
+        String[] authorizedRoles = {"ADMIN", "PAROCO", "SECRETARIA_PAROQUIAL", "SECRETARIO_CONSELHO", "MEMBRO_CONSELHO_PASTORAL"};
 
         for (String role : authorizedRoles) {
             Authentication auth = getAuthForRole(role);
@@ -173,7 +173,7 @@ class LocalControllerIntegrationTest {
     @Test
     @DisplayName("Negar POST/PUT/DELETE para perfis não autorizados")
     void deveNegarMutacoesParaPerfisNaoAutorizados() throws Exception {
-        String[] unauthorizedRoles = {"PASTORAL_MEMBRO", "PASTORAL_COORDENADOR", "CLERO_VIGARIO"};
+        String[] unauthorizedRoles = {"MEMBRO_ATIVO", "COORDENADOR", "VIGARIO"};
 
         for (String role : unauthorizedRoles) {
             Authentication auth = getAuthForRole(role);

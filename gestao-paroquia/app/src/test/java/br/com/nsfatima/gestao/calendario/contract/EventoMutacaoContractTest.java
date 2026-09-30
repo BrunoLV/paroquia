@@ -40,7 +40,7 @@ class EventoMutacaoContractTest {
                 """;
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", EVENTO_ID)
-                        .header("X-Actor-Role", "coordenador-pastoral-local")
+                        .header("X-Actor-Role", "coordenador")
                         .header("X-Actor-Org-Type", "PASTORAL")
                         .header("X-Actor-Org-Id", "00000000-0000-0000-0000-0000000000aa")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -89,8 +89,8 @@ class EventoMutacaoContractTest {
         persistEventoConfirmado();
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/cancelar", EVENTO_ID)
-                        .header("X-Actor-Role", "presidente-cpc")
-                        .header("X-Actor-Org-Type", "CONSELHO")
+                        .header("X-Actor-Role", "paroco")
+                        .header("X-Actor-Org-Type", "CLERO")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("""
                                 {

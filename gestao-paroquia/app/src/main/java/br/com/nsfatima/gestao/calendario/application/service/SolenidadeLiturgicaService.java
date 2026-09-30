@@ -2,7 +2,6 @@ package br.com.nsfatima.gestao.calendario.application.service;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaRequestDTO;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.SolenidadeLiturgicaResponseDTO;
-import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.SolenidadeLiturgicaJpaRepository;
 import org.springframework.stereotype.Service;
@@ -59,14 +58,10 @@ public class SolenidadeLiturgicaService {
      * prioridade 2, ativa).
      *
      * @param req dados da solenidade a ser criada
-     * @param userRole papel do usuário solicitante, usado para validar autorização
      * @return solenidade criada
-     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      */
     @Transactional
-    public SolenidadeLiturgicaResponseDTO create(SolenidadeLiturgicaRequestDTO req, String userRole) {
-        validarPapel(userRole);
-
+    public SolenidadeLiturgicaResponseDTO create(SolenidadeLiturgicaRequestDTO req) {
         SolenidadeLiturgicaEntity entity = new SolenidadeLiturgicaEntity();
         entity.setId(UUID.randomUUID());
         entity.setChave(req.chave());
@@ -91,15 +86,11 @@ public class SolenidadeLiturgicaService {
      *
      * @param id identificador da solenidade a ser atualizada
      * @param req dados a serem atualizados; campos {@code null} são ignorados
-     * @param userRole papel do usuário solicitante, usado para validar autorização
      * @return solenidade atualizada
-     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      * @throws IllegalArgumentException se nenhuma solenidade existir com o identificador informado
      */
     @Transactional
-    public SolenidadeLiturgicaResponseDTO update(UUID id, SolenidadeLiturgicaRequestDTO req, String userRole) {
-        validarPapel(userRole);
-
+    public SolenidadeLiturgicaResponseDTO update(UUID id, SolenidadeLiturgicaRequestDTO req) {
         SolenidadeLiturgicaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solenidade litúrgica não encontrada: " + id));
 
@@ -146,26 +137,14 @@ public class SolenidadeLiturgicaService {
      * solenidades ativas sem apagar o registro histórico.
      *
      * @param id identificador da solenidade a ser desativada
-     * @param userRole papel do usuário solicitante, usado para validar autorização
-     * @throws OperacaoProibidaException se o usuário não for Pároco nem Vigário
      * @throws IllegalArgumentException se nenhuma solenidade existir com o identificador informado
      */
     @Transactional
-    public void delete(UUID id, String userRole) {
-        validarPapel(userRole);
-
+    public void delete(UUID id) {
         SolenidadeLiturgicaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Solenidade litúrgica não encontrada: " + id));
         entity.setAtivo(false);
         repository.save(entity);
-    }
-
-    private void validarPapel(String userRole) {
-        String roleUpper = userRole != null ? userRole.toUpperCase().replace("ROLE_", "") : "";
-        if (!"PAROCO".equals(roleUpper) && !"VIGARIO".equals(roleUpper)) {
-            throw new OperacaoProibidaException(
-                    "Apenas Pároco ou Vigário podem gerenciar o cadastro de solenidades litúrgicas.");
-        }
     }
 
     private SolenidadeLiturgicaResponseDTO toResponse(SolenidadeLiturgicaEntity e) {

@@ -7,6 +7,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ---
 
 ## [Unreleased]
+ 
+---
+
+## [0.3.0] - 2026-09-30
+
+### Modificado
+- **Clean Slate em Authorities e `@PreAuthorize` do Spring Security:**
+  - Padronização integral de todas as anotações `@PreAuthorize` em controllers REST (`FielController`, `UsuarioController`, `UsuarioAdminController`, `CpcDecisaoController`, `LocalController`, `ImportacaoController`, `ClerigoController`, `AjusteCadastralController`, `UnidadeTerritorialController`, `DioceseController`, `GovernoEclesiasticoController`, `PastoralMovimentoOficialController`, `GrupoParoquialController`, `MembroController`) para referenciar estritamente os 14 papéis canônicos (`'ADMIN'`, `'PAROCO'`, `'BISPO_DIOCESANO'`, `'VIGARIO'`, `'SECRETARIA_PAROQUIAL'`, `'COORDENADOR'`, `'SECRETARIO_CONSELHO'`, `'MEMBRO_CONSELHO_PASTORAL'`, `'MEMBRO_CONSELHO_ECONOMICO'`), eliminando prefixos legados e nomes compostos (`CLERO_PAROCO`, `GLOBAL_PAROCO`, `PASTORAL_COORDENADOR`, `MINISTERIO_COORDENADOR`).
+  - `LeitorVinculoExterno.Vinculo.authority()` e `UsuarioDetails` emitem `ROLE_<PAPEL>` (canônico) e mantêm `ROLE_<TIPO>_<PAPEL>`/`ROLE_GLOBAL_<PAPEL>` como compatibilidade secundária de escopo.
+  - Atualização dos testes de integração de segurança (`UsuarioControllerSecurityIntegrationTest`, `LocalControllerIntegrationTest`, `GrupoParoquialApiIntegrationTest`, `PastoralMovimentoOficialApiIntegrationTest`) para utilizar os papéis canônicos.
 
 ---
 
