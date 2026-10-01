@@ -8,6 +8,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-10-01
+
+### Corrigido
+- Menu lateral reorganizado por finalidade em seis seções, com cabeçalhos legíveis, recuo dos links e recolhimento acessível; rotas e permissões preservadas, inclusive nos modos compacto e mobile.
+- Ações das tabelas padronizadas com menu compartilhado e botão delineado `⋮`, sem texto visível, preservando permissões e estados; regra permanente dos agentes e testes de teclado, foco e estrutura.
+- Autocompletes alinhados aos campos de texto do tema em altura, espaçamento e superfície; seta e limpeza sem borda de botão, preservando seleção múltipla e pesquisa.
+- Paginação integrada ao rodapé semântico das tabelas; Linhas por página com pesquisa e mesma altura dos botões anterior/próximo, sem alterar formulários. Padrão registrado no Design System e nas configurações dos agentes, com teste estrutural contra rodapés externos.
+
 ## [0.7.1] - 2026-10-01
 
 ### Modificado

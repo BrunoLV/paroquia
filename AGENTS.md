@@ -37,6 +37,10 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
 
 **Diretiva global de UI:** Todas as listas de valores permitem pesquisa por autocomplete, inclusive filtros, seleção múltipla e Linhas por página. Agentes aplicam a seção 2.1 de [`gestao-paroquia-ui/DESIGN_SYSTEM.md`](gestao-paroquia-ui/DESIGN_SYSTEM.md) e [`.agents/rules/frontend-design-system.md`](.agents/rules/frontend-design-system.md). Proibidos seletores sem pesquisa, independentemente do número de opções.
 
+**Paginação de tabelas:** Aplicar a seção 7 do Design System: `SearchableTablePagination` dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Seletor Linhas por página e botões anterior/próximo têm a mesma altura; compactação exclusiva da paginação, nunca dos formulários. Proibida paginação fora do rodapé da tabela.
+
+**Ações de tabelas:** Usar `TableActionMenu` em todas as linhas, inclusive ações únicas: botão pequeno delineado somente com `⋮` vertical, tooltip/nome acessível “Ações”, sem texto visível. Preservar permissões e estados; validar `tableActionsArchitecture.test.ts`.
+
 1. **PLANEJAMENTO OBRIGATÓRIO (PLAN MODE / `/plan`):**
    * Antes de propor qualquer alteração ou gerar código, consulte obrigatoriamente `docs/business-rules/<modulo>.md` para o(s) Bounded Context(s) afetado(s).
    * Especifique o plano de arquitetura, branch prevista via GitHub Flow e testes. Proibido mutar código sem aprovação explícita do plano.

@@ -466,21 +466,20 @@ const Aprovacoes = () => {
                         </TableRow>
                       ))}
                     </TableBody>
+                    <SearchableTablePagination colSpan={6}
+                      rowsPerPageOptions={[5, 10, 25]}
+                      count={data.totalElements}
+                      rowsPerPage={size}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      labelRowsPerPage="Linhas por página:"
+                      labelDisplayedRows={({ from, to, count }) =>
+                        `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                      }
+                    />
                   </Table>
                 </TableContainer>
-                <SearchableTablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={data.totalElements}
-                  rowsPerPage={size}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  labelRowsPerPage="Linhas por página:"
-                  labelDisplayedRows={({ from, to, count }) =>
-                    `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-                  }
-                />
               </>
             )
           )}
@@ -545,24 +544,23 @@ const Aprovacoes = () => {
                           </TableRow>
                         ))}
                     </TableBody>
+                    <SearchableTablePagination colSpan={6}
+                      rowsPerPageOptions={[5, 10, 25]}
+                      count={projectData.length}
+                      rowsPerPage={projRowsPerPage}
+                      page={projPage}
+                      onPageChange={(_, newPage) => setProjPage(newPage)}
+                      onRowsPerPageChange={(e) => {
+                        setProjRowsPerPage(parseInt(e.target.value, 10));
+                        setProjPage(0);
+                      }}
+                      labelRowsPerPage="Linhas por página:"
+                      labelDisplayedRows={({ from, to, count }) =>
+                        `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                      }
+                    />
                   </Table>
                 </TableContainer>
-                <SearchableTablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={projectData.length}
-                  rowsPerPage={projRowsPerPage}
-                  page={projPage}
-                  onPageChange={(_, newPage) => setProjPage(newPage)}
-                  onRowsPerPageChange={(e) => {
-                    setProjRowsPerPage(parseInt(e.target.value, 10));
-                    setProjPage(0);
-                  }}
-                  labelRowsPerPage="Linhas por página:"
-                  labelDisplayedRows={({ from, to, count }) =>
-                    `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-                  }
-                />
               </>
             )
           )}
@@ -638,37 +636,33 @@ const Aprovacoes = () => {
                                 </TableCell>
                                 <TableCell align="right">
                                   {!u.enabled && canApproveUsuario(user) ? (
-                                    <ActionButton
-                                      title="Aprovar Usuário"
-                                      icon={<CheckCircleIcon />}
-                                      color="success"
-                                      onClick={() => approveUserMutation.mutate(u.id)}
-                                      disabled={approveUserMutation.isPending}
-                                    />
+                                    <TableActionMenu actions={[{
+                                      label: "Aprovar Usuário", icon: <CheckCircleIcon color="success" />,
+                                      onClick: () => approveUserMutation.mutate(u.id), disabled: approveUserMutation.isPending,
+                                    }]} />
                                   ) : null}
                                 </TableCell>
                               </TableRow>
                             );
                           })}
                       </TableBody>
+                      <SearchableTablePagination colSpan={5}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        count={filteredUsers.length}
+                        rowsPerPage={usersRowsPerPage}
+                        page={usersPage}
+                        onPageChange={(_, newPage) => setUsersPage(newPage)}
+                        onRowsPerPageChange={(e) => {
+                          setUsersRowsPerPage(parseInt(e.target.value, 10));
+                          setUsersPage(0);
+                        }}
+                        labelRowsPerPage="Linhas por página:"
+                        labelDisplayedRows={({ from, to, count }) =>
+                          `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                        }
+                      />
                     </Table>
                   </TableContainer>
-                  <SearchableTablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={filteredUsers.length}
-                    rowsPerPage={usersRowsPerPage}
-                    page={usersPage}
-                    onPageChange={(_, newPage) => setUsersPage(newPage)}
-                    onRowsPerPageChange={(e) => {
-                      setUsersRowsPerPage(parseInt(e.target.value, 10));
-                      setUsersPage(0);
-                    }}
-                    labelRowsPerPage="Linhas por página:"
-                    labelDisplayedRows={({ from, to, count }) =>
-                      `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-                    }
-                  />
                 </>
               );
             })()

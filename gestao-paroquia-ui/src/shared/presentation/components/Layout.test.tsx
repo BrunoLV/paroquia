@@ -1,5 +1,6 @@
 import React from 'react';
-import {render, screen} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {MemoryRouter} from 'react-router-dom';
 import Layout from './Layout';
 import {useAuth} from '@/contextos/iam/presentation/auth/AuthContext';
@@ -188,7 +189,7 @@ describe('Layout component link visibility', () => {
     expect(screen.queryByText('Governo & Território')).not.toBeInTheDocument();
   });
 
-  test('renders menu items in alphabetical order within each category', () => {
+  test('renders menu items in functional order across sections', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
@@ -209,16 +210,18 @@ describe('Layout component link visibility', () => {
       </QueryProvider>
     );
 
-    // Pastoral items expected in alphabetical order
     const expectedPastoral = [
-      'Calendário',
-      'Clero',
-      'Conselhos & Atas',
-      'Fiéis',
+      'Painel',
       'Notificações',
+      'Relatórios',
+      'Fiéis',
+      'Clero',
       'Pastorais e Movimentos',
+      'Calendário',
       'Projetos',
-      'Reservas',
+      'Governo & Território',
+      'Organograma',
+      'Conselhos & Atas',
     ];
 
     const pastoralElements = expectedPastoral.map((name) => screen.getByText(name));
@@ -229,15 +232,13 @@ describe('Layout component link visibility', () => {
       ).toBeTruthy();
     }
 
-    // Administrative items expected in alphabetical order
     const expectedAdmin = [
-      'Ajustes cadastrais',
-      'Aprovações',
-      'Configurações',
-      'Governo & Território',
       'Locais',
-      'Organograma',
       'Patrimônio',
+      'Reservas',
+      'Aprovações',
+      'Ajustes cadastrais',
+      'Configurações',
     ];
 
     const adminElements = expectedAdmin.map((name) => screen.getByText(name));
@@ -260,7 +261,7 @@ describe('Layout component link visibility', () => {
       setParoquiaAtiva: vi.fn(),
     });
 
-    const { fireEvent } = await import('@testing-library/react');
+    const keyboard = userEvent.setup();
 
     render(
       <QueryProvider>
@@ -272,14 +273,17 @@ describe('Layout component link visibility', () => {
       </QueryProvider>
     );
 
-    const categoriaPastoral = screen.getByText('Gestão pastoral');
+    await keyboard.click(screen.getByRole('button', { name: 'abrir menu' }));
+    const categoriaPastoral = screen.getByRole('button', { name: 'Pessoas e comunidades' });
     expect(categoriaPastoral).toBeInTheDocument();
 
-    // Click to collapse
-    fireEvent.click(categoriaPastoral);
+    await keyboard.click(categoriaPastoral);
+    expect(categoriaPastoral).toHaveAttribute('aria-expanded', 'false');
 
-    // Click again to expand
-    fireEvent.click(categoriaPastoral);
+    await keyboard.click(categoriaPastoral);
+    expect(categoriaPastoral).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText('Fiéis')).toBeInTheDocument();
+    await keyboard.click(screen.getByRole('link', { name: 'Fiéis' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'abrir menu' })).toBeInTheDocument());
   });
 });

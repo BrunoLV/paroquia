@@ -163,6 +163,24 @@ export const createAppTheme = (mode: PaletteMode) => {
           },
         },
       },
+      MuiAutocomplete: {
+        // O MUI compacta o input interno e reutiliza IconButton para adornos.
+        // Alinha a densidade ao TextField sem transformar seta/limpeza em ações delineadas.
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root.MuiInputBase-sizeSmall': {
+              paddingTop: '6px',
+              paddingBottom: '6px',
+              paddingLeft: '6px',
+              '& .MuiAutocomplete-input': {
+                padding: '11px 6px',
+              },
+            },
+          },
+          popupIndicator: { border: 0, padding: '2px' },
+          clearIndicator: { border: 0, padding: '2px' },
+        },
+      },
       MuiLink: {
         defaultProps: {
           underline: 'hover',

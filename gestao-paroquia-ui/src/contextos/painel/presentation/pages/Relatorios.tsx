@@ -579,23 +579,22 @@ const Relatorios: React.FC = () => {
                     </TableRow>
                   ))}
               </TableBody>
+              <SearchableTablePagination colSpan={4}
+                rowsPerPageOptions={[5, 10, 25]}
+                count={filteredMetrics.eventosSemana.length}
+                rowsPerPage={reportsRowsPerPage}
+                page={reportsPage}
+                onPageChange={(_, newPage) => setReportsPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setReportsRowsPerPage(parseInt(e.target.value, 10));
+                  setReportsPage(0);
+                }}
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
+              />
             </Table>
-            <SearchableTablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredMetrics.eventosSemana.length}
-              rowsPerPage={reportsRowsPerPage}
-              page={reportsPage}
-              onPageChange={(_, newPage) => setReportsPage(newPage)}
-              onRowsPerPageChange={(e) => {
-                setReportsRowsPerPage(parseInt(e.target.value, 10));
-                setReportsPage(0);
-              }}
-              labelRowsPerPage="Linhas por página:"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-              }
-            />
           </TableContainer>
         ) : (
           <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>

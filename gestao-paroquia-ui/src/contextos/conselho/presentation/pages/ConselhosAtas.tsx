@@ -256,23 +256,22 @@ export const ConselhosAtas: React.FC = () => {
                   ))
               )}
             </TableBody>
+            <SearchableTablePagination colSpan={5}
+              rowsPerPageOptions={[5, 10, 25]}
+              count={decisoes.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              labelRowsPerPage="Linhas por página:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+              }
+            />
           </Table>
-          <SearchableTablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={decisoes.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(_, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            labelRowsPerPage="Linhas por página:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-            }
-          />
         </TableContainer>
       )}
 

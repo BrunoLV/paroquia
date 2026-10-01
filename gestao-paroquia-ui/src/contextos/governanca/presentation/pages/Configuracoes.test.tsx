@@ -130,7 +130,8 @@ describe('Configuracoes page', () => {
       expect(screen.getByText('2026')).toBeInTheDocument();
     });
 
-    const fecharBtn = screen.getByRole('button', { name: /Fechar Ano/i });
+    fireEvent.click(screen.getAllByRole('button', { name: /^Ações$/i })[0]);
+    const fecharBtn = screen.getByRole('menuitem', { name: /Fechar Ano/i });
     fireEvent.click(fecharBtn);
 
     await waitFor(() => {

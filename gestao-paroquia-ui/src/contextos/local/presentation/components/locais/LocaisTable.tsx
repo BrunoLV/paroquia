@@ -148,24 +148,23 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
               </TableRow>
             )}
           </TableBody>
+          <SearchableTablePagination colSpan={7}
+            rowsPerPageOptions={[5, 10, 25]}
+            count={locais.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => onPageChange(newPage)}
+            onRowsPerPageChange={(e) => {
+              onRowsPerPageChange(parseInt(e.target.value, 10));
+              onPageChange(0);
+            }}
+            labelRowsPerPage="Linhas por página:"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+            }
+          />
         </Table>
       </TableContainer>
-      <SearchableTablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={locais.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, newPage) => onPageChange(newPage)}
-        onRowsPerPageChange={(e) => {
-          onRowsPerPageChange(parseInt(e.target.value, 10));
-          onPageChange(0);
-        }}
-        labelRowsPerPage="Linhas por página:"
-        labelDisplayedRows={({ from, to, count }) =>
-          `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-        }
-      />
     </>
   );
 };

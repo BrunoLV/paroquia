@@ -1,8 +1,7 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import { Box, Chip, Menu, MenuItem, ListItemIcon, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import IconActionButton from '@/shared/presentation/components/IconActionButton';
+import { Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import TableActionMenu, { type TableAction } from '@/shared/presentation/components/TableActionMenu';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -71,18 +70,23 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [selectedReserva, setSelectedReserva] = React.useState<null | ReservaDetalhe>(null);
-
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, r: ReservaDetalhe) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedReserva(r);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-    setSelectedReserva(null);
-  };
+  /** O menu comum preserva as ações disponíveis por estado e permissão de aprovação. */
+  const rowActions = (reserva: ReservaDetalhe): TableAction[] => [
+    { label: 'Ver detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => onVisualizar(reserva) },
+    ...(reserva.status === 'PENDENTE' && podeAprovar ? [
+      { label: 'Aprovar Reserva', icon: <CheckCircleIcon fontSize="small" color="success" />, onClick: () => onAprovar(reserva) },
+      { label: 'Rejeitar Solicitação', icon: <HighlightOffIcon fontSize="small" color="error" />, onClick: () => onRejeitar(reserva) },
+    ] : []),
+    ...(reserva.status === 'CONFIRMADA' && reserva.tipoItem === 'ATIVO' ? [
+      { label: 'Registrar Saída (Retirada)', icon: <LocalShippingIcon fontSize="small" color="info" />, onClick: () => onRetirar(reserva) },
+    ] : []),
+    ...(reserva.status === 'RETIRADO' && reserva.tipoItem === 'ATIVO' ? [
+      { label: 'Registrar Devolução', icon: <AssignmentReturnIcon fontSize="small" color="primary" />, onClick: () => onDevolver(reserva) },
+    ] : []),
+    ...(['PENDENTE', 'CONFIRMADA'].includes(reserva.status) ? [
+      { label: 'Cancelar Reserva', icon: <BlockIcon fontSize="small" color="error" />, onClick: () => onCancelar(reserva) },
+    ] : []),
+  ];
 
   const formatarDataHora = (iso: string) => {
     try {
@@ -188,116 +192,25 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                       <StatusIcon {...statusMeta} />
                     </TableCell>
                     <TableCell align="right">
-                      <IconActionButton
-                        title="Mais ações"
-                        icon={<MoreVertIcon fontSize="small" />}
-                        size="small"
-                        onClick={(e) => handleOpenMenu(e, r)}
-                      />
+                      <TableActionMenu actions={rowActions(r)} />
                     </TableCell>
                   </TableRow>
                 );
               })
             )}
           </TableBody>
+          <SearchableTablePagination colSpan={6}
+            rowsPerPageOptions={[5, 10, 25]}
+            count={reservas.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, p) => onPageChange(p)}
+            onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
+            labelRowsPerPage="Linhas por página:"
+          />
         </Table>
       </TableContainer>
 
-      <SearchableTablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={reservas.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, p) => onPageChange(p)}
-        onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
-        labelRowsPerPage="Linhas por página:"
-      />
-
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-        <MenuItem
-          onClick={() => {
-            if (selectedReserva) onVisualizar(selectedReserva);
-            handleCloseMenu();
-          }}
-        >
-          <ListItemIcon>
-            <VisibilityIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Ver detalhes" />
-        </MenuItem>
-
-        {selectedReserva?.status === 'PENDENTE' && podeAprovar && (
-          <MenuItem
-            onClick={() => {
-              if (selectedReserva) onAprovar(selectedReserva);
-              handleCloseMenu();
-            }}
-          >
-            <ListItemIcon>
-              <CheckCircleIcon fontSize="small" color="success" />
-            </ListItemIcon>
-            <ListItemText primary="Aprovar Reserva" />
-          </MenuItem>
-        )}
-
-        {selectedReserva?.status === 'PENDENTE' && podeAprovar && (
-          <MenuItem
-            onClick={() => {
-              if (selectedReserva) onRejeitar(selectedReserva);
-              handleCloseMenu();
-            }}
-          >
-            <ListItemIcon>
-              <HighlightOffIcon fontSize="small" color="error" />
-            </ListItemIcon>
-            <ListItemText primary="Rejeitar Solicitação" />
-          </MenuItem>
-        )}
-
-        {selectedReserva?.status === 'CONFIRMADA' && selectedReserva.tipoItem === 'ATIVO' && (
-          <MenuItem
-            onClick={() => {
-              if (selectedReserva) onRetirar(selectedReserva);
-              handleCloseMenu();
-            }}
-          >
-            <ListItemIcon>
-              <LocalShippingIcon fontSize="small" color="info" />
-            </ListItemIcon>
-            <ListItemText primary="Registrar Saída (Retirada)" />
-          </MenuItem>
-        )}
-
-        {selectedReserva?.status === 'RETIRADO' && selectedReserva.tipoItem === 'ATIVO' && (
-          <MenuItem
-            onClick={() => {
-              if (selectedReserva) onDevolver(selectedReserva);
-              handleCloseMenu();
-            }}
-          >
-            <ListItemIcon>
-              <AssignmentReturnIcon fontSize="small" color="primary" />
-            </ListItemIcon>
-            <ListItemText primary="Registrar Devolução" />
-          </MenuItem>
-        )}
-
-        {selectedReserva &&
-          (selectedReserva.status === 'PENDENTE' || selectedReserva.status === 'CONFIRMADA') && (
-            <MenuItem
-              onClick={() => {
-                if (selectedReserva) onCancelar(selectedReserva);
-                handleCloseMenu();
-              }}
-            >
-              <ListItemIcon>
-                <BlockIcon fontSize="small" color="error" />
-              </ListItemIcon>
-              <ListItemText primary="Cancelar Reserva" />
-            </MenuItem>
-          )}
-      </Menu>
     </>
   );
 };
