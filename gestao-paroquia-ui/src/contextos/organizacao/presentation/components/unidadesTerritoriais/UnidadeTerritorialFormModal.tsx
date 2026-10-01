@@ -1,28 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Box,
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Switch,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Grid, MenuItem, Stack, Switch, Tab, Tabs, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import ChurchIcon from '@mui/icons-material/Church';
@@ -215,11 +195,11 @@ export const UnidadeTerritorialFormModal: React.FC<UnidadeTerritorialFormModalPr
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth size="small" error={Boolean(errors.tipo)}>
-                        <InputLabel id="tipo-label">Tipo *</InputLabel>
-                        <Select {...field} labelId="tipo-label" label="Tipo *">
+
+                        <SearchableSelect {...field} labelId="tipo-label" label="Tipo *">
                           <MenuItem value="MATRIZ">Igreja Matriz</MenuItem>
                           <MenuItem value="COMUNIDADE">Comunidade / Capela</MenuItem>
-                        </Select>
+                        </SearchableSelect>
                         {errors.tipo && <FormHelperText>{errors.tipo.message}</FormHelperText>}
                       </FormControl>
                     )}
@@ -233,8 +213,8 @@ export const UnidadeTerritorialFormModal: React.FC<UnidadeTerritorialFormModalPr
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small" error={Boolean(errors.parentId)}>
-                          <InputLabel id="parent-label">Igreja Matriz Responsável</InputLabel>
-                          <Select
+
+                          <SearchableSelect
                             {...field}
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value || null)}
@@ -247,7 +227,7 @@ export const UnidadeTerritorialFormModal: React.FC<UnidadeTerritorialFormModalPr
                                 {m.nome}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                           <FormHelperText>Associação à paróquia sede / igreja matriz</FormHelperText>
                         </FormControl>
                       )}
@@ -296,8 +276,8 @@ export const UnidadeTerritorialFormModal: React.FC<UnidadeTerritorialFormModalPr
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth size="small">
-                        <InputLabel id="clerigo-label">Clérigo Responsável</InputLabel>
-                        <Select
+
+                        <SearchableSelect
                           {...field}
                           value={field.value || ''}
                           onChange={(e) => field.onChange(e.target.value || null)}
@@ -310,7 +290,7 @@ export const UnidadeTerritorialFormModal: React.FC<UnidadeTerritorialFormModalPr
                               {c.nomeEclesiastico} ({c.grauOrdem})
                             </MenuItem>
                           ))}
-                        </Select>
+                        </SearchableSelect>
                       </FormControl>
                     )}
                   />

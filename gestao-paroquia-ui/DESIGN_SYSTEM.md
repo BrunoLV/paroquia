@@ -33,7 +33,30 @@ Componente único: `src/shared/presentation/components/SearchField.tsx`. Nunca r
 
 - Props: `value`, `onChange(value: string)`, `placeholder?`, `sx?`.
 - Internamente já aplica `Box maxWidth:400` + `TextField fullWidth size="small"` + `InputAdornment` com `SearchIcon`.
-- Dropdowns de filtro adicionais (Select, Switch) ficam fora do `SearchField`, lado a lado, em `Stack`/`Paper` bespoke por tela — não existe (nem deve ser criado) um `FilterBar` genérico.
+- Filtros adicionais (`SearchableSelect`, Switch) ficam fora do `SearchField`, lado a lado, em `Stack`/`Paper` bespoke por tela — não existe (nem deve ser criado) um `FilterBar` genérico.
+
+## 2.1. Listas de Valores — Pesquisa Obrigatória
+
+Toda lista de seleção permite digitar para pesquisar, independentemente da quantidade de opções. A regra abrange todas as telas, filtros, formulários, modais, drawers, seleção múltipla e **Linhas por página**. São proibidos `Select`, `TextField select` e `<select>` nativo sem pesquisa. Menus de ações, abas, switches e seletores de data mantêm sua função.
+
+- Base única: `SearchableAutocomplete` em `src/shared/presentation/components/`. Usa MUI Autocomplete com `size="small"`, mensagens em português e `freeSolo={false}`. A pesquisa local ignora maiúsculas e acentos e considera o rótulo visível.
+- Para códigos, enums e IDs: `SearchableSelect`. Recebe `value`, `label`, opções declarativas e `onChange({ target: { value, name } })`; suporta `multiple`, `disabled`, `required`, `error`, `helperText` e referência ao input. Integrar formulários por `Controller` do React Hook Form.
+- `MenuItem` dentro de `SearchableSelect` descreve uma opção com valor, rótulo e disponibilidade; não renderiza um Select. `StatusIcon` conserva ícone e texto nas opções e é pesquisado pelo texto.
+- Digitar pesquisa nunca altera o código selecionado. Selecionar ou remover uma opção atualiza o valor. Não cadastrar valores livres pelo autocomplete.
+- Seleções múltiplas exibem chips removíveis. Limpeza da seleção simples só é habilitada se existir opção de valor vazio e o campo não for obrigatório.
+- O contexto fornece opções autorizadas e mantém dependências entre campos, valores de edição e disponibilidade. Não ampliar consultas nem expor novos dados pessoais.
+- Para objetos, usar `SearchableAutocomplete` com `getOptionLabel`, igualdade por ID e `renderInput` com `TextField size="small"`. O contexto apresenta carregamento, ausência e falhas das consultas.
+
+```tsx
+<Controller name="organizacaoId" control={control} render={({ field }) => (
+  <SearchableSelect {...field} label="Organização" required error={Boolean(errors.organizacaoId)}
+    helperText={errors.organizacaoId?.message}>
+    {organizacoes.map((opcao) => <MenuItem key={opcao.id} value={opcao.id}>{opcao.nome}</MenuItem>)}
+  </SearchableSelect>
+)} />
+```
+
+A suíte `searchableListsArchitecture.test.ts` impede seletores sem pesquisa e uso de componentes MUI não padronizados nas telas, inclusive com aliases de importação.
 
 ## 3. Botões — `ActionButton` / `IconActionButton`
 
@@ -98,7 +121,7 @@ Regras:
   - Modais de tabela/gestão de lista (`OrganizacaoMembrosModal.tsx`): tabela + toolbar inline, sem Card/Grid.
 - **Um único controle de fechar por Dialog/Drawer.** O botão canônico é o `ActionButton` "Cancelar"/"Fechar" no `DialogActions`/rodapé. Proibido adicionar também um "X" no cabeçalho/título chamando o mesmo `onClose` — isso duplica a mesma ação. Se o cabeçalho precisar de um controle de fechar (ex.: `Drawer` sem `DialogActions`), esse É o único controle: não replicar embaixo.
 - **`<DialogTitle>` simples:** Sempre string pura diretamente no nó (`<DialogTitle>Título do Modal</DialogTitle>`). É **expressamente proibido** aninhar `<Typography>` dentro de `<DialogTitle>`.
-- **`size="small"` mandatório em todos os inputs:** Todo `<TextField>`, `<Select>` e `<FormControl>` dentro de diálogos DEVE usar `size="small"` (40px). Proibido input medium (56px).
+- **`size="small"` mandatório em todos os inputs:** Todo `<TextField>`, autocomplete e `<FormControl>` dentro de diálogos DEVE usar `size="small"` (40px). Proibido input medium (56px).
 - **`noValidate` na tag `<form>`:** Obrigatório para desabilitar balões nativos do browser e delegar erros ao Zod + React Hook Form.
 
 ## 4.1. Espaçamento de Campos
@@ -138,7 +161,7 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 - Cabeçalho: `TableHead` com `backgroundColor: 'action.hover'` e células `fontWeight: 600/700`.
 - Linha clicável: `role="button"`, `tabIndex={0}`, `onKeyDown` tratando `Enter`/`Espaço`.
 - Ações de linha (`IconActionButton`, menu): sempre `event.stopPropagation()` no `onClick`.
-- Paginação obrigatória: `<TablePagination rowsPerPageOptions={[5, 10, 25]} labelRowsPerPage="Linhas por página:" />`.
+- Paginação obrigatória: `SearchableTablePagination` com `[5, 10, 25]`. A quantidade é pesquisável e sua alteração retorna à primeira página. `onRowsPerPageChange` recebe `{ target: { value: string } }`; `onPageChange` mantém o contrato MUI. O seletor simples interno do MUI fica desabilitado. Proibido TablePagination direto em telas.
 
 ## 8. Tokens e Estilo
 
@@ -163,6 +186,7 @@ O sistema tem tema claro/escuro (`createAppTheme(mode)` em `src/shared/presentat
 | `ActionButton` | `src/shared/presentation/components/ActionButton.tsx` |
 | `IconActionButton` | `src/shared/presentation/components/IconActionButton.tsx` |
 | `SearchField` | `src/shared/presentation/components/SearchField.tsx` |
+| `SearchableAutocomplete`, `SearchableSelect`, `SearchableTablePagination` | `src/shared/presentation/components/` |
 | `DIALOG_CONTENT_SCROLL_SX` | `src/shared/presentation/theme/dialogStyles.ts` |
 | `StatusIcon` | `src/shared/presentation/components/StatusIcon.tsx` |
 | `InfoField` | `src/contextos/fiel/presentation/components/fieis/fielConstants.tsx` |

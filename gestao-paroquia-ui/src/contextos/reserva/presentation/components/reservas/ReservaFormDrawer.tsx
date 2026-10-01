@@ -1,24 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Alert,
-  Box,
-  Chip,
-  CircularProgress,
-  Divider,
-  Drawer,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Chip, CircularProgress, Divider, Drawer, FormControl, FormControlLabel, FormHelperText, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/shared/presentation/components/ActionButton';
@@ -155,8 +139,8 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                 control={control}
                 render={({ field }) => (
                   <FormControl fullWidth size="small" error={Boolean(errors.tipoItem)}>
-                    <InputLabel>Tipo de Recurso</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       {...field}
                       label="Tipo de Recurso"
                       onChange={(e) => {
@@ -166,7 +150,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                     >
                       <MenuItem value="LOCAL">Espaço Físico / Local</MenuItem>
                       <MenuItem value="ATIVO">Ativo Patrimonial Móvel</MenuItem>
-                    </Select>
+                    </SearchableSelect>
                     {errors.tipoItem && <FormHelperText>{errors.tipoItem.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -177,8 +161,8 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                 control={control}
                 render={({ field }) => (
                   <FormControl fullWidth size="small" error={Boolean(errors.itemId)}>
-                    <InputLabel>{selectedTipo === 'LOCAL' ? 'Selecionar Espaço' : 'Selecionar Ativo'}</InputLabel>
-                    <Select {...field} label={selectedTipo === 'LOCAL' ? 'Selecionar Espaço' : 'Selecionar Ativo'}>
+
+                    <SearchableSelect {...field} label={selectedTipo === 'LOCAL' ? 'Selecionar Espaço' : 'Selecionar Ativo'}>
                       {selectedTipo === 'LOCAL'
                         ? locais.map((l) => (
                             <MenuItem key={l.id} value={l.id}>
@@ -190,7 +174,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                               {a.nome} {a.codigoTombamento ? `(Nº ${a.codigoTombamento})` : ''}
                             </MenuItem>
                           ))}
-                    </Select>
+                    </SearchableSelect>
                     {errors.itemId && <FormHelperText>{errors.itemId.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -269,14 +253,14 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                 control={control}
                 render={({ field }) => (
                   <FormControl fullWidth size="small" error={Boolean(errors.pastoralMovimentoId)}>
-                    <InputLabel>Pastoral / Movimento</InputLabel>
-                    <Select {...field} label="Pastoral / Movimento">
+
+                    <SearchableSelect {...field} label="Pastoral / Movimento">
                       {pastorais.map((p) => (
                         <MenuItem key={p.id} value={p.id}>
                           {p.nome}
                         </MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                     {errors.pastoralMovimentoId && (
                       <FormHelperText>{errors.pastoralMovimentoId.message}</FormHelperText>
                     )}
@@ -289,8 +273,8 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                 control={control}
                 render={({ field }) => (
                   <FormControl fullWidth size="small">
-                    <InputLabel>Vincular a Evento do Calendário (Opcional)</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       {...field}
                       value={field.value ?? ''}
                       onChange={(e) => field.onChange(e.target.value || null)}
@@ -302,7 +286,7 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                           {ev.titulo}
                         </MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                 )}
               />
@@ -346,12 +330,12 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth size="small">
-                        <InputLabel>Frequência</InputLabel>
-                        <Select {...field} label="Frequência">
+
+                        <SearchableSelect {...field} label="Frequência">
                           <MenuItem value="SEMANAL">Semanal</MenuItem>
                           <MenuItem value="QUINZENAL">Quinzenal</MenuItem>
                           <MenuItem value="MENSAL">Mensal</MenuItem>
-                        </Select>
+                        </SearchableSelect>
                       </FormControl>
                     )}
                   />

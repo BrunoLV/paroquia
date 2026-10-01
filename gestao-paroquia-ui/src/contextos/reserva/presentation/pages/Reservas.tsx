@@ -1,17 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import { useMemo, useState, type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Card,
-  CardContent,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import { Card, CardContent, FormControl, MenuItem, Stack, Tab, Tabs } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import TableViewIcon from '@mui/icons-material/TableView';
@@ -303,8 +294,8 @@ const Reservas: FC = () => {
               />
 
               <FormControl size="small" sx={{ minWidth: 140 }}>
-                <InputLabel>Tipo</InputLabel>
-                <Select
+
+                <SearchableSelect
                   value={filtroTipo}
                   label="Tipo"
                   onChange={(e) => {
@@ -315,12 +306,12 @@ const Reservas: FC = () => {
                   <MenuItem value="TODOS">Todos os tipos</MenuItem>
                   <MenuItem value="LOCAL">Espaços (Locais)</MenuItem>
                   <MenuItem value="ATIVO">Bens (Ativos)</MenuItem>
-                </Select>
+                </SearchableSelect>
               </FormControl>
 
               <FormControl size="small" sx={{ minWidth: 160 }}>
-                <InputLabel>Situação</InputLabel>
-                <Select
+
+                <SearchableSelect
                   value={filtroStatus}
                   label="Situação"
                   onChange={(e) => {
@@ -335,7 +326,7 @@ const Reservas: FC = () => {
                   <MenuItem value="FINALIZADA">Finalizadas</MenuItem>
                   <MenuItem value="CANCELADA">Canceladas</MenuItem>
                   <MenuItem value="EXPIRADA">Expiradas</MenuItem>
-                </Select>
+                </SearchableSelect>
               </FormControl>
             </Stack>
 

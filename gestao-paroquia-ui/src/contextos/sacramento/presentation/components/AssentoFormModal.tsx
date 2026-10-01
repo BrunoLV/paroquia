@@ -1,25 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -116,13 +99,13 @@ export const AssentoFormModal: React.FC<AssentoFormModalProps> = ({
                           defaultValue=""
                           render={({ field }) => (
                             <FormControl fullWidth size="small">
-                              <InputLabel id={`esp-${campo.chave}`}>{campo.label}</InputLabel>
-                              <Select {...field} labelId={`esp-${campo.chave}`} label={campo.label}>
+
+                              <SearchableSelect {...field} labelId={`esp-${campo.chave}`} label={campo.label}>
                                 <MenuItem value="">—</MenuItem>
                                 {campo.opcoes?.map((o) => (
                                   <MenuItem key={o.valor} value={o.valor}>{o.label}</MenuItem>
                                 ))}
-                              </Select>
+                              </SearchableSelect>
                             </FormControl>
                           )}
                         />

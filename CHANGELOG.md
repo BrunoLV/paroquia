@@ -8,6 +8,12 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-01
+
+### Modificado
+- Todas as listas de valores da UI oferecem autocomplete com pesquisa, incluindo filtros, seleção múltipla e quantidade de linhas por página; códigos, IDs e permissões dos contextos são preservados.
+- Design System, instruções dos agentes e skill frontend exigem listas pesquisáveis, com verificação estrutural automatizada contra seletores sem pesquisa.
+
 ## [0.7.0] - 2026-10-01
 
 ### Adicionado

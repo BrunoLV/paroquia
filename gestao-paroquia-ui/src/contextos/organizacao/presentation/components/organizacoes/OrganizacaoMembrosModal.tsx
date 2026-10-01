@@ -1,26 +1,7 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Box,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -180,8 +161,8 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
               <FormControl sx={{ minWidth: 240 }} size="small">
-                <InputLabel id="add-member-user-label">Usuário</InputLabel>
-                <Select
+
+                <SearchableSelect
                   labelId="add-member-user-label"
                   value={novoUsuarioId}
                   label="Usuário"
@@ -192,12 +173,12 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                       {u.nome} ({u.username})
                     </MenuItem>
                   ))}
-                </Select>
+                </SearchableSelect>
               </FormControl>
 
               <FormControl sx={{ minWidth: 200 }} size="small">
-                <InputLabel id="add-member-role-label">Papel</InputLabel>
-                <Select
+
+                <SearchableSelect
                   labelId="add-member-role-label"
                   value={novoPapel}
                   label="Papel"
@@ -210,13 +191,13 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                   <MenuItem value="SECRETARIO_CONSELHO">Secretário de Conselho</MenuItem>
                   <MenuItem value="MEMBRO_CONSELHO_PASTORAL">Membro do Conselho Pastoral (CPP/CPC)</MenuItem>
                   <MenuItem value="MEMBRO_CONSELHO_ECONOMICO">Membro do Conselho Econômico (CAE)</MenuItem>
-                </Select>
+                </SearchableSelect>
               </FormControl>
 
               {isPastoralOuMovimento && (
                 <FormControl sx={{ minWidth: 200 }} size="small">
-                  <InputLabel id="add-member-church-label">Igreja de Atuação</InputLabel>
-                  <Select
+
+                  <SearchableSelect
                     labelId="add-member-church-label"
                     value={novaIgrejaId}
                     label="Igreja de Atuação"
@@ -228,7 +209,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                         {o.nome}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
 

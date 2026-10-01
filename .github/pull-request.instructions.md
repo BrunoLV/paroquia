@@ -68,6 +68,7 @@ Descreva sucintamente o problema resolvido, o objetivo de negócio ou a motivaç
 - [ ] **Design System (se houver UI):** Aderência estrita ao `gestao-paroquia-ui/DESIGN_SYSTEM.md` (inputs `size="small"`, `<DialogTitle>` limpo, sem tags HTML cruas para layout).
 
 ## 📸 Evidências / Screenshots (Obrigatório para Frontend)
+- [ ] **Listas pesquisáveis:** Campos, filtros, seleção múltipla e Linhas por página seguem a seção 2.1 do Design System; suíte estrutural do frontend passando.
 *Insira capturas de tela ou gravações demonstrando o comportamento visual e validações.*
 ```
 

@@ -1,28 +1,7 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, {useEffect, useState} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {
-    Alert,
-    Box,
-    Card,
-    Container,
-    Divider,
-    Drawer,
-    Skeleton,
-    Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Tabs,
-    TextField,
-    Tooltip,
-    Typography,
-    Chip,
-    useTheme,
-} from '@mui/material';
+import { Alert, Box, Card, Container, Divider, Drawer, Skeleton, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Tooltip, Typography, Chip, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -320,7 +299,7 @@ const Aprovacoes = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: { target: { value: string } }) => {
     setSize(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -489,7 +468,7 @@ const Aprovacoes = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <TablePagination
+                <SearchableTablePagination
                   rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={data.totalElements}
@@ -568,7 +547,7 @@ const Aprovacoes = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <TablePagination
+                <SearchableTablePagination
                   rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={projectData.length}
@@ -674,7 +653,7 @@ const Aprovacoes = () => {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                  <TablePagination
+                  <SearchableTablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
                     count={filteredUsers.length}

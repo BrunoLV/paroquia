@@ -1,27 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card,
-  CardContent,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormControlLabel, Grid, InputAdornment, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material';
 import BadgeIcon from '@mui/icons-material/Badge';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloseIcon from '@mui/icons-material/Close';
@@ -168,14 +149,14 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small" required error={Boolean(errors.grauOrdem)}>
-                          <InputLabel>Grau da ordem</InputLabel>
-                          <Select {...field} label="Grau da ordem">
+
+                          <SearchableSelect {...field} label="Grau da ordem">
                             {GRAUS_ORDEM.map((item) => (
                               <MenuItem key={item.value} value={item.value}>
                                 {item.label}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                         </FormControl>
                       )}
                     />
@@ -186,14 +167,14 @@ export const ClerigoFormModal: React.FC<ClerigoFormModalProps> = ({
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small" required error={Boolean(errors.funcaoAtual)}>
-                          <InputLabel>Encargo atual</InputLabel>
-                          <Select {...field} label="Encargo atual">
+
+                          <SearchableSelect {...field} label="Encargo atual">
                             {FUNCOES_ECLESIASTICAS.map((item) => (
                               <MenuItem key={item.value} value={item.value}>
                                 {item.label}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                         </FormControl>
                       )}
                     />

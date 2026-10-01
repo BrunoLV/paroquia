@@ -1,9 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Autocomplete, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel,
-  MenuItem, Select, Stack, TextField, Typography,
-} from '@mui/material';
+import { Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import Autocomplete from '@/shared/presentation/components/SearchableAutocomplete';
 import CloseIcon from '@mui/icons-material/Close';
 import LinkIcon from '@mui/icons-material/Link';
 import ActionButton from '@/shared/presentation/components/ActionButton';
@@ -100,8 +99,8 @@ export const VinculoDialog: React.FC<VinculoDialogProps> = ({
                 </Stack>
                 <Stack spacing={2}>
                   <FormControl fullWidth size="small" required>
-                    <InputLabel id="vinculo-papel">Tipo de participação</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       labelId="vinculo-papel"
                       label="Tipo de participação"
                       value={papel}
@@ -110,11 +109,11 @@ export const VinculoDialog: React.FC<VinculoDialogProps> = ({
                       {papeis.map((p) => (
                         <MenuItem key={p} value={p}>{PAPEL_LABEL[p]}</MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                   <FormControl fullWidth size="small" required disabled={papel === ''}>
-                    <InputLabel id="vinculo-posicao">Posição no termo</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       labelId="vinculo-posicao"
                       label="Posição no termo"
                       value={participanteId}
@@ -123,7 +122,7 @@ export const VinculoDialog: React.FC<VinculoDialogProps> = ({
                       {posicoes.map((p) => (
                         <MenuItem key={p.id} value={p.id}>{p.nomeHistorico}</MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                   <Autocomplete
                     options={candidatos}

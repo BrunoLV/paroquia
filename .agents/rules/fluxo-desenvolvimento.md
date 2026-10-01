@@ -36,7 +36,7 @@ Após a aprovação expressa do plano pelo usuário:
 
 ### 2.2. Living Documentation em `docs/business-rules/`
 - Cada módulo do sistema possui seu manual em `docs/business-rules/<modulo>.md`.
-- **Invariante de Atualização:** Todo código implementado que altere comportamentos, entidades, enums, políticas ou telas **DEVE OBRIGATORIAMENTE atualizar o documento correspondente em `docs/business-rules/` no mesmo ciclo de desenvolvimento**, mantendo a documentação sincronizada com o último estado implementado.
+- **Invariante de Atualização:** Toda alteração de regra de negócio, política de domínio ou fluxo operacional **DEVE atualizar o documento correspondente em `docs/business-rules/` no mesmo ciclo de desenvolvimento**. Diretivas exclusivamente técnicas ou visuais, como autocomplete e padrões de componentes, pertencem ao Design System e às instruções dos agentes; não são incluídas em `docs/business-rules/`.
 - **Invariante Temporal (Zero Histórico):** A documentação em `docs/business-rules/` é estritamente normativa e em tempo presente. É proibido narrar passado, o que existia antes ou citar termos como "antigo", "foi substituído". O histórico pertence exclusivamente ao `CHANGELOG.md`.
 
 

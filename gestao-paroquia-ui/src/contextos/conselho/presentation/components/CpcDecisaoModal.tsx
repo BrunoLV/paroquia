@@ -1,19 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import GavelIcon from '@mui/icons-material/Gavel';
 import SendIcon from '@mui/icons-material/Send';
@@ -106,8 +93,8 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
             />
 
             <FormControl fullWidth required size="small">
-              <InputLabel id="cpc-comunidade-label">Comunidade de Origem (CPC/CPP)</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="cpc-comunidade-label"
                 value={comunidadeId}
                 label="Comunidade de Origem (CPC/CPP)"
@@ -119,7 +106,7 @@ export const CpcDecisaoModal: React.FC<CpcDecisaoModalProps> = ({
                     {c.nome}
                   </MenuItem>
                 ))}
-              </Select>
+              </SearchableSelect>
             </FormControl>
 
             <TextField

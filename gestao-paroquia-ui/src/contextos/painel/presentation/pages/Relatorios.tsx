@@ -1,26 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, {useMemo, useState} from 'react';
-import {
-    Alert,
-    alpha,
-    Box,
-    Card,
-    CardContent,
-    Grid,
-    LinearProgress,
-    Paper,
-    Skeleton,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Typography,
-    Tabs,
-    Tab,
-} from '@mui/material';
+import { Alert, alpha, Box, Card, CardContent, Grid, LinearProgress, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Tabs, Tab } from '@mui/material';
 import MetricasEstrategicasTab from '@/contextos/painel/presentation/components/relatorios/MetricasEstrategicasTab';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ProjectIcon from '@mui/icons-material/Assignment';
@@ -556,7 +536,7 @@ const Relatorios: React.FC = () => {
         sx={{
           mt: 4,
           p: 3,
-          
+
           border: '1px solid',
           borderColor: 'divider',
         }}
@@ -600,7 +580,7 @@ const Relatorios: React.FC = () => {
                   ))}
               </TableBody>
             </Table>
-            <TablePagination
+            <SearchableTablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={filteredMetrics.eventosSemana.length}

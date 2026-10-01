@@ -1,17 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import {
-  Box,
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -161,7 +150,7 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+      <SearchableTablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={locais.length}

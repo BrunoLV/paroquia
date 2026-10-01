@@ -1,6 +1,7 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {MenuItem, Stack, TextField, ToggleButton, ToggleButtonGroup} from '@mui/material';
+import { MenuItem, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {getOrganizacoes} from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import {Organizacao, PeriodoDashboard} from '@/shared/domain/types/types';
 import {useDashboardFilter} from '@/shared/presentation/context/DashboardFilterContext';
@@ -32,8 +33,8 @@ const DashboardFilterBar: React.FC = () => {
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
-      <TextField
-        select
+      <SearchableSelect
+
         size="small"
         label="Comunidade"
         sx={{minWidth: 200}}
@@ -46,7 +47,7 @@ const DashboardFilterBar: React.FC = () => {
             {org.nome}
           </MenuItem>
         ))}
-      </TextField>
+      </SearchableSelect>
     </Stack>
   );
 };

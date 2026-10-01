@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { Card, CardContent, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Card, CardContent, FormControl, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import { Controller, type UseFormReturn } from 'react-hook-form';
 import { EventoFormInput } from '@/contextos/calendario/presentation/schemas/eventoSchema';
@@ -54,12 +55,12 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-formato-label">Formato</InputLabel>
-                  <Select {...field} labelId="new-formato-label" label="Formato" disabled={disabled}>
+
+                  <SearchableSelect {...field} labelId="new-formato-label" label="Formato" disabled={disabled}>
                     <MenuItem value="PRESENCIAL">Presencial</MenuItem>
                     <MenuItem value="ONLINE">Online / Remoto</MenuItem>
                     <MenuItem value="HIBRIDO">Híbrido</MenuItem>
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />
@@ -70,14 +71,14 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-cat-label">Categoria</InputLabel>
-                  <Select {...field} labelId="new-cat-label" label="Categoria" disabled={disabled}>
+
+                  <SearchableSelect {...field} labelId="new-cat-label" label="Categoria" disabled={disabled}>
                     {CATEGORIES.map((cat) => (
                       <MenuItem key={cat} value={cat}>
                         {cat}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />
@@ -88,14 +89,14 @@ const EventoDadosCard: React.FC<EventoDadosCardProps> = ({ form, disabled }) => 
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-status-label">Status</InputLabel>
-                  <Select {...field} labelId="new-status-label" label="Status" disabled={disabled}>
+
+                  <SearchableSelect {...field} labelId="new-status-label" label="Status" disabled={disabled}>
                     {STATUSES.map((st) => (
                       <MenuItem key={st} value={st}>
                         {st}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />

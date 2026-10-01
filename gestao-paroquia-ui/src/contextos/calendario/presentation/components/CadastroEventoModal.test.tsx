@@ -6,6 +6,9 @@ import CadastroEventoModal from './CadastroEventoModal';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 
 vi.mock('@/contextos/iam/presentation/auth/AuthContext');
+// Consultas auxiliares da edição permanecem isoladas da API durante testes de formulário.
+vi.mock('@/contextos/reserva/infrastructure/http/reservas', () => ({ listarReservas: vi.fn().mockResolvedValue([]) }));
+vi.mock('@/contextos/calendario/infrastructure/http/eventos', () => ({ getRecorrencia: vi.fn().mockResolvedValue(null) }));
 const mockedUseAuth = vi.mocked(useAuth);
 
 const mockShowError = jest.fn();

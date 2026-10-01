@@ -1,7 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import {
-  Box, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography,
-} from '@mui/material';
+import { Box, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import TableActionMenu, { TableAction } from '@/shared/presentation/components/TableActionMenu';
 import { AssentoResumo } from '@/contextos/sacramento/domain/sacramento';
@@ -93,7 +92,7 @@ export const AssentosTable: React.FC<AssentosTableProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+      <SearchableTablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={assentos.length}

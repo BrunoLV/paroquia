@@ -1,36 +1,9 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  Card,
-  CircularProgress,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Skeleton,
-  Stack,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tabs,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Card, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from '@mui/material';
+import Autocomplete from '@/shared/presentation/components/SearchableAutocomplete';
 import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -516,7 +489,7 @@ export const Configuracoes = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
+            <SearchableTablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={years.length}
@@ -620,7 +593,7 @@ export const Configuracoes = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
+              <SearchableTablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={users.length}
@@ -703,7 +676,7 @@ export const Configuracoes = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
+              <SearchableTablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={pastoraisOficiais.length}
@@ -819,8 +792,8 @@ export const Configuracoes = () => {
               />
 
               <FormControl fullWidth size="small">
-                <InputLabel id="edit-user-status-label">Status da Conta</InputLabel>
-                <Select
+
+                <SearchableSelect
                   labelId="edit-user-status-label"
                   label="Status da Conta"
                   value={editUserEnabled ? 'true' : 'false'}
@@ -828,7 +801,7 @@ export const Configuracoes = () => {
                 >
                   <MenuItem value="true">Ativo</MenuItem>
                   <MenuItem value="false">Inativo</MenuItem>
-                </Select>
+                </SearchableSelect>
               </FormControl>
             </Stack>
           </Card>
@@ -961,8 +934,8 @@ export const Configuracoes = () => {
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                 <FormControl sx={{ minWidth: 200 }} size="small">
-                  <InputLabel id="add-vinculo-org-label">Organização</InputLabel>
-                  <Select
+
+                  <SearchableSelect
                     labelId="add-vinculo-org-label"
                     value={newVinculoOrgId}
                     label="Organização"
@@ -978,12 +951,12 @@ export const Configuracoes = () => {
                           {o.nome}
                         </MenuItem>
                       ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
 
                 <FormControl sx={{ minWidth: 200 }} size="small">
-                  <InputLabel id="add-vinculo-role-label">Papel</InputLabel>
-                  <Select
+
+                  <SearchableSelect
                     labelId="add-vinculo-role-label"
                     value={newVinculoPapel}
                     label="Papel"
@@ -996,15 +969,15 @@ export const Configuracoes = () => {
                     <MenuItem value="SECRETARIO_CONSELHO">Secretário de Conselho</MenuItem>
                     <MenuItem value="MEMBRO_CONSELHO_PASTORAL">Membro do Conselho Pastoral (CPP/CPC)</MenuItem>
                     <MenuItem value="MEMBRO_CONSELHO_ECONOMICO">Membro do Conselho Econômico (CAE)</MenuItem>
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
 
                 {(() => {
                   const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
                   return selectedOrgObj && (selectedOrgObj.tipo === 'PASTORAL' || selectedOrgObj.tipo === 'MOVIMENTO') ? (
                     <FormControl sx={{ minWidth: 200 }} size="small">
-                      <InputLabel id="add-vinculo-church-label">Igreja de Atuação</InputLabel>
-                      <Select
+
+                      <SearchableSelect
                         labelId="add-vinculo-church-label"
                         value={newVinculoChurchId}
                         label="Igreja de Atuação"
@@ -1018,7 +991,7 @@ export const Configuracoes = () => {
                               {o.nome}
                             </MenuItem>
                           ))}
-                      </Select>
+                      </SearchableSelect>
                     </FormControl>
                   ) : null;
                 })()}
@@ -1175,8 +1148,8 @@ export const Configuracoes = () => {
                 helperText={poErrors.nome}
               />
               <FormControl fullWidth size="small">
-                <InputLabel id="po-tipo-label">Tipo</InputLabel>
-                <Select
+
+                <SearchableSelect
                   labelId="po-tipo-label"
                   value={poTipo}
                   label="Tipo"
@@ -1184,7 +1157,7 @@ export const Configuracoes = () => {
                 >
                   <MenuItem value="PASTORAL">Pastoral</MenuItem>
                   <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                </Select>
+                </SearchableSelect>
               </FormControl>
             </Stack>
           </Card>

@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { Card, CardContent, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Card, CardContent, FormControl, FormHelperText, Grid, MenuItem, Stack, Typography } from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import { Controller, type UseFormReturn } from 'react-hook-form';
 import { Organizacao, Projeto } from '@/shared/domain/types/types';
@@ -48,14 +49,14 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small" required>
-                  <InputLabel id="new-org-label">Organização Responsável</InputLabel>
-                  <Select {...field} labelId="new-org-label" label="Organização Responsável" disabled={disabled}>
+
+                  <SearchableSelect {...field} labelId="new-org-label" label="Organização Responsável" disabled={disabled}>
                     {filteredOrganizations.map((org) => (
                       <MenuItem key={org.id} value={org.id}>
                         {org.nome}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />
@@ -66,8 +67,8 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small" required error={!igrejaVinculoId}>
-                  <InputLabel id="new-igreja-vinculo-label">Comunidade / Igreja de Atuação</InputLabel>
-                  <Select {...field} labelId="new-igreja-vinculo-label" label="Comunidade / Igreja de Atuação" disabled={disabled} data-testid="event-church-select">
+
+                  <SearchableSelect {...field} labelId="new-igreja-vinculo-label" label="Comunidade / Igreja de Atuação" disabled={disabled} data-testid="event-church-select">
                     <MenuItem value="" disabled>
                       <em>Selecione a Comunidade / Igreja</em>
                     </MenuItem>
@@ -76,7 +77,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
                         {ch.nome}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />
@@ -87,8 +88,8 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-projeto-label">Projeto</InputLabel>
-                  <Select {...field} labelId="new-projeto-label" label="Projeto" disabled={disabled} error={!!projectValidationError}>
+
+                  <SearchableSelect {...field} labelId="new-projeto-label" label="Projeto" disabled={disabled} error={!!projectValidationError}>
                     <MenuItem value="">
                       <em>Nenhum</em>
                     </MenuItem>
@@ -97,7 +98,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
                         {p.nome}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                   {projectValidationError ? (
                     <FormHelperText error>{projectValidationError}</FormHelperText>
                   ) : selectedProjectInfo ? (
