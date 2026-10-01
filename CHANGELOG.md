@@ -8,6 +8,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-30
+
+### Removido
+- **Saneamento e Limpeza da Suíte de Testes (Backend e Frontend):**
+  - Remoção de testes obsoletos preliminares BDD/SDD (`SddCenario1CadastroSemLoginIntegrationTest`, `SddCenario2ConsultaFielUsuarioIntegrationTest`, `SddCenario3AcessoVigarioIntegrationTest`), superados pela suíte canônica de testes de domínio de Fiel, Membro e IAM.
+  - Eliminação de testes rudimentares e duplicados (`LocalApiIntegrationTest`, `SmokeCalendarFlowTest`, `EventoIntegrationTest`, `ContractValidationErrorIntegrationTest`, `LegacyEventStatusReadIntegrationTest`).
+  - Remoção de testes de getters e setters de JPA Entities anêmicas (`ReservaEntityTest`, `EventoRecorrenciaEntityTest`) e teste artificial de `assertNotNull` em contexto Spring (`FoundationInfrastructureTest`).
+  - Desativação da suíte frágil de medição de latência em banco H2 (`AuditoriaTier1PerformanceTest`, `CancelEventoTier1PerformanceTest`, `ConsultaCalendarioPerformanceTest`, `ObservacaoTier1PerformanceTest`, `UpdateEventoTier1PerformanceTest`), reduzindo drasticamente o tempo e consumo de memória do CI.
+  - Remoção no frontend de testes com mocks incompletos de Jest ou superficiais de ícones (`api.test.tsx`, `DataFetching.test.tsx`, `OrganogramaExportButton.test.tsx`, `CpcDecisaoModal.test.tsx`, `DialogExportarCalendario.test.tsx`).
+
 ## [0.4.0] - 2026-09-30
 
 ### Adicionado
