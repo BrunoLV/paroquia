@@ -85,6 +85,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/autenticacao/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/autenticacao/solicitar-reset-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/observabilidade/logs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()
                         .anyRequest().authenticated())

@@ -3,23 +3,22 @@ import apiClient from '@/shared/infrastructure/http/client';
 export interface Usuario {
   id: string;
   username: string;
-  fielId?: string;
-  nome: string;
-  telefone?: string;
-  dataNascimento?: string;
   enabled: boolean;
-  igrejaId?: string;
-  igrejaNome?: string;
-  batizado?: boolean;
-  primeiraComunhao?: boolean;
-  crismado?: boolean;
-  casadoIgrejaCatolica?: boolean;
+  nome?: string;
+  fielId?: string;
+  clerigoId?: string;
+  roles?: string[];
 }
 
 export interface CreateUsuarioRequest {
   fielId: string;
   username: string;
   password?: string;
+}
+
+export interface UpdateUsuarioRequest {
+  username?: string;
+  enabled?: boolean;
 }
 
 export interface VinculoResponse {
@@ -55,6 +54,20 @@ export const getUsuarios = async (): Promise<Usuario[]> => {
 export const createUsuario = async (request: CreateUsuarioRequest): Promise<string> => {
   const response = await apiClient.post<string>('/usuarios', request);
   return response.data;
+};
+
+/**
+ * Atualiza parcialmente um usuário (username ou status).
+ */
+export const updateUsuario = async (id: string, request: UpdateUsuarioRequest): Promise<void> => {
+  await apiClient.patch(`/usuarios/${id}`, request);
+};
+
+/**
+ * Altera o status de ativação/inativação de um usuário.
+ */
+export const alternarStatusUsuario = async (id: string, enabled: boolean): Promise<void> => {
+  await apiClient.patch(`/usuarios/${id}/status`, { enabled });
 };
 
 /**

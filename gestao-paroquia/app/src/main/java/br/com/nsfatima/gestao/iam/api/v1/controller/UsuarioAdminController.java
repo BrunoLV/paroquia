@@ -53,9 +53,8 @@ public class UsuarioAdminController {
      */
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDENADOR')")
-    @Operation(summary = "Ativa ou desativa um usuário", description = "Administradores globais ou coordenadores de " +
-            "organização podem alternar o status do usuário.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO')")
+    @Operation(summary = "Ativa ou desativa um usuário", description = "Apenas administradores globais ou pároco podem alternar o status do usuário.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Status do usuário atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
@@ -113,9 +112,9 @@ public class UsuarioAdminController {
      */
     @PostMapping("/{id}/redefinir-senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'COORDENADOR')")
-    @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais ou coordenadores de organização" +
-            " podem redefinir senhas.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO', 'COORDENADOR')")
+    @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais, pároco ou coordenadores" +
+            " de organização podem redefinir senhas.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),

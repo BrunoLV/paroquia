@@ -8,7 +8,33 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-10-01
+## [0.6.0] - 2026-10-01
+
+### Adicionado
+- **Fluxos de Alteração e Redefinição de Senha (Autoatendimento e Recuperação):**
+  - Endpoint autenticado `POST /api/v1/autenticacao/alterar-senha` permitindo ao usuário logado alterar sua própria senha com validação da credencial atual.
+  - Endpoint público `POST /api/v1/autenticacao/solicitar-reset-senha` (`permitAll()`) para registro de solicitação anônima de redefinição de acesso na tela de login.
+  - Nova aba "Minha Senha" na tela de Configurações (`Configuracoes.tsx`) com formulário padronizado.
+  - Diálogo e ação "Esqueci minha senha" na tela de login (`Acesso.tsx`), seguindo o Design System.
+- **Edição e Atualização Parcial de Usuários:**
+  - Endpoint `PATCH /api/v1/usuarios/{id}` no backend via `AtualizarUsuarioRequest` (`username` e `enabled`).
+  - Modal de edição de usuário com formulário em `Card variant="outlined"` e campos compactos `size="small"`.
+- **Governança de Living Documentation:**
+  - Novas regras `RN-IAM-06` (Pureza de IAM e expurgo de dados pastorais), `RN-IAM-07` (Alçada exclusiva de ADMIN e PAROCO para edição e inativação) e `RN-IAM-08` (Fluxos de senha) em `docs/business-rules/iam.md`.
+
+### Modificado
+- **Pureza do Bounded Context IAM e Segregação de Dados Pessoais/Pastorais:**
+  - Expurgo dos atributos de contato e sacramentais (`telefone`, `dataNascimento`, `igrejaId`, `igrejaNome`, `batizado`, `primeiraComunhao`, `crismado`, `casadoIgrejaCatolica`) de `UsuarioResponse`.
+  - Desacoplamento dos use cases `ListarUsuariosUseCase` e `ObterUsuarioUseCase` de repositórios pastorais e de organizações; apenas o `nome` do fiel ou clérigo vinculado é recuperado para rótulo de identificação.
+  - Tabela de gerenciamento de usuários em `Configuracoes.tsx` reestruturada para 4 colunas limpas: Nome, E-mail / Username, Status e Ações.
+- **Restrição de Alçadas Canônicas em Usuários:**
+  - Remoção de privilégios de `SECRETARIA_PAROQUIAL` no `UsuarioAuthorizationService` para ações administrativas de contas.
+  - Proteção declarativa restrita a `ADMIN` e `PAROCO` no endpoint `PATCH /api/v1/usuarios/{id}` e `PATCH /api/v1/usuarios-admin/{id}/status`.
+  - Frontend condicionado via helper `canEditOrInactivateUser(user)`: opções de "Editar" e "Inativar/Ativar" são omitidas para usuários com papel de Secretaria.
+- **Padronização Visual no Design System:**
+  - Modais de cadastro e edição de usuário em `Configuracoes.tsx` convertidos para o padrão estrito com `size="small"`, `Card variant="outlined" sx={{ borderRadius: 2 }}` e `DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}`.
+  - Confirmação de inativação/ativação encapsulada em diálogo modal nativo.
+
 
 ### Adicionado
 - **Fluxo de Criação e Homologação de Usuários por Alçadas Canônicas:**

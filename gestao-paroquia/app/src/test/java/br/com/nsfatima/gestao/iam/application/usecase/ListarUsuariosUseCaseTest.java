@@ -8,7 +8,6 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,6 @@ import static org.mockito.Mockito.when;
 class ListarUsuariosUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
     private ClerigoJpaRepository clerigoRepository;
     private ListarUsuariosUseCase useCase;
@@ -31,18 +29,16 @@ class ListarUsuariosUseCaseTest {
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
         clerigoRepository = mock(ClerigoJpaRepository.class);
         useCase = new ListarUsuariosUseCase(
                 usuarioRepository,
-                grupoParoquialRepository,
                 fielRepository,
                 clerigoRepository);
     }
 
     @Test
-    void deveResolverDadosCadastraisDeCadaUsuarioAPartirDoFielVinculado() {
+    void deveResolverNomeDeCadaUsuarioAPartirDoFielVinculado() {
         UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
@@ -70,12 +66,12 @@ class ListarUsuariosUseCaseTest {
 
         assertThat(responses).hasSize(1);
         assertThat(responses.getFirst().nome()).isEqualTo("Carlos Eduardo");
-        assertThat(responses.getFirst().telefone()).isEqualTo("11933332222");
-        assertThat(responses.getFirst().dataNascimento()).isEqualTo(LocalDate.of(1978, 9, 3));
+        assertThat(responses.getFirst().fielId()).isEqualTo(fielId);
+        assertThat(responses.getFirst().username()).isEqualTo("usuario.teste");
     }
 
     @Test
-    void deveResolverDadosCadastraisDeClerigoVinculado() {
+    void deveResolverNomeDeClerigoVinculado() {
         UUID usuarioId = UUID.randomUUID();
         UUID clerigoId = UUID.randomUUID();
 
@@ -99,7 +95,7 @@ class ListarUsuariosUseCaseTest {
 
         assertThat(responses).hasSize(1);
         assertThat(responses.getFirst().nome()).isEqualTo("Padre Pedro");
-        assertThat(responses.getFirst().telefone()).isEqualTo("11988887777");
+        assertThat(responses.getFirst().clerigoId()).isEqualTo(clerigoId);
     }
 
     @Test
@@ -114,7 +110,7 @@ class ListarUsuariosUseCaseTest {
     }
 
     @Test
-    void deveRetornarCamposNulosQuandoFielNaoEncontrado() {
+    void deveRetornarNomeNuloQuandoFielNaoEncontrado() {
         UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 

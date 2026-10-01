@@ -244,6 +244,15 @@ export const canManageUsuarios = (user: User | null): boolean => {
 };
 
 /**
+ * Quem pode editar ou inativar/ativar usuários:
+ * Exclusivamente ADMIN e Pároco/Bispo Diocesano. Secretaria Paroquial NÃO possui essa alçada.
+ */
+export const canEditOrInactivateUser = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user);
+};
+
+/**
  * Quem pode gerir Unidades Territoriais (Matriz, Comunidades) e Governo Eclesiástico:
  * Estritamente restrito a Pároco e Bispo Diocesano conforme o Direito Canônico.
  */

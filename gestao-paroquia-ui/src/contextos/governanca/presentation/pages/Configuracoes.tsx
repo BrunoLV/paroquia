@@ -4,6 +4,7 @@ import {
   Alert,
   Autocomplete,
   Box,
+  Card,
   CircularProgress,
   Container,
   Dialog,
@@ -31,13 +32,16 @@ import {
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyIcon from '@mui/icons-material/Key';
 import LinkIcon from '@mui/icons-material/Link';
 import LockIcon from '@mui/icons-material/Lock';
+import SaveIcon from '@mui/icons-material/Save';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { getAnosParoquiais, updateAnoParoquialStatus } from '@/contextos/governanca/infrastructure/http/anosParoquiais';
@@ -45,14 +49,17 @@ import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/org
 import {
   adicionarVinculo,
   AdicionarVinculoRequest,
+  alternarStatusUsuario,
   approveUsuario,
   createUsuario,
   CreateUsuarioRequest,
   getUsuarios,
   getVinculos,
   removerVinculo,
+  updateUsuario,
   Usuario,
 } from '@/contextos/iam/infrastructure/http/usuarios';
+import { alterarMinhaSenha } from '@/contextos/iam/infrastructure/http/auth';
 import { getFieis } from '@/contextos/fiel/infrastructure/http/fieis';
 import {
   createPastoralOficial,
@@ -63,53 +70,43 @@ import {
 import { AnoParoquialStatus, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial } from '@/shared/domain/types/types';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
-import { formatDateBr } from '@/shared/utils/masks';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import {
   canApproveUsuario,
   canCreateUsuario,
+  canEditOrInactivateUser,
   canManageAnoParoquial,
   canManageUsuarios,
   isAdmin,
-  isParoco,
 } from '@/contextos/iam/presentation/auth/permissions';
 import ImportModal from '@/contextos/importacao/presentation/components/ImportModal';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
-import SacramentoIcon from '@/shared/presentation/components/SacramentoIcon';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import { getAnoParoquialStatusMeta } from '@/shared/utils/statusMeta/anoParoquialStatus';
-import { SACRAMENTO_META } from '@/shared/utils/statusMeta/sacramentos';
-import { getOrganismoTipoMeta } from '@/shared/utils/statusMeta/organismoTipoStatus';
-import { getSituacaoAtivoMeta, getUsuarioSituacaoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
-import { FormattedEmail, FormattedPhone } from '@/shared/presentation/components/FormattedCell';
+import { getUsuarioSituacaoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
+import { FormattedEmail } from '@/shared/presentation/components/FormattedCell';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: number;
-  value: number;
+  value: string;
+  currentValue: string;
 }
 
-const CustomTabPanel = (props: TabPanelProps) => {
-  const { children, value, index, ...other } = props;
+const CustomTabPanel = ({ children, value, currentValue }: TabPanelProps) => {
+  if (value !== currentValue) return null;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`settings-tabpanel-${index}`}
-      aria-labelledby={`settings-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    <div role="tabpanel" id={`settings-tabpanel-${value}`} aria-labelledby={`settings-tab-${value}`}>
+      <Box sx={{ py: 3 }}>{children}</Box>
     </div>
   );
 };
 
-const a11yProps = (index: number) => ({
-  id: `settings-tab-${index}`,
-  'aria-controls': `settings-tabpanel-${index}`,
+const a11yProps = (value: string) => ({
+  id: `settings-tab-${value}`,
+  'aria-controls': `settings-tabpanel-${value}`,
 });
 
 export const Configuracoes = () => {
@@ -119,7 +116,7 @@ export const Configuracoes = () => {
   const isAuthorizedAno = canManageAnoParoquial(user);
   const isAuthorizedUsers = canManageUsuarios(user);
 
-  const [tabValue, setTabValue] = useState<number>(0);
+  const [tabValue, setTabValue] = useState<string>('ano');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
@@ -145,6 +142,21 @@ export const Configuracoes = () => {
   const [adminRegisterUsername, setAdminRegisterUsername] = useState('');
   const [adminRegisterPassword, setAdminRegisterPassword] = useState('');
 
+  // Edit User states
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState<Usuario | null>(null);
+  const [editUsername, setEditUsername] = useState('');
+  const [editUserEnabled, setEditUserEnabled] = useState(true);
+
+  // Inactivate/Activate User confirmation states
+  const [isConfirmStatusModalOpen, setIsConfirmStatusModalOpen] = useState(false);
+  const [userForStatusToggle, setUserForStatusToggle] = useState<Usuario | null>(null);
+
+  // Change Password states (Self user)
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmacaoNovaSenha, setConfirmacaoNovaSenha] = useState('');
+
   // Catalog states
   const [poModalOpen, setPoModalOpen] = useState(false);
   const [selectedPO, setSelectedPO] = useState<PastoralMovimentoOficial | null>(null);
@@ -155,7 +167,7 @@ export const Configuracoes = () => {
   const { data: years = [], isLoading: isLoadingYears, isError: isErrorYears } = useQuery({
     queryKey: ['anosParoquiais'],
     queryFn: getAnosParoquiais,
-    enabled: tabValue === 0,
+    enabled: tabValue === 'ano',
   });
 
   const updateAnoMutation = useMutation({
@@ -163,15 +175,24 @@ export const Configuracoes = () => {
       updateAnoParoquialStatus(ano, status),
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ['anosParoquiais'] });
+      setConfirmOpen(false);
       showSuccess(`Ano paroquial ${updated.ano} atualizado com sucesso!`);
-      setConfirmOpen(false);
-      setSelectedYear(null);
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao atualizar o ano paroquial.'));
-      setConfirmOpen(false);
-      setSelectedYear(null);
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao atualizar o status do ano paroquial.'));
     },
+  });
+
+  const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsuarios,
+    enabled: isAuthorizedUsers && tabValue === 'usuarios',
+  });
+
+  const { data: vinculos = [], isLoading: isLoadingVinculos } = useQuery({
+    queryKey: ['userVinculos', selectedUserForVinculos?.id],
+    queryFn: () => getVinculos(selectedUserForVinculos!.id),
+    enabled: !!selectedUserForVinculos && isVinculosModalOpen,
   });
 
   const { data: orgs = [] } = useQuery({
@@ -180,98 +201,151 @@ export const Configuracoes = () => {
     enabled: isVinculosModalOpen,
   });
 
-  const { data: users = [], isLoading: isLoadingUsers, isError: isErrorUsers } = useQuery({
-    queryKey: ['usuarios'],
-    queryFn: getUsuarios,
-    enabled: tabValue === 1 && isAuthorizedUsers,
-  });
-
-  const approveUserMutation = useMutation({
-    mutationFn: (id: string) => approveUsuario(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      showSuccess('Usuário aprovado com sucesso!');
-    },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao aprovar usuário.'));
-    },
-  });
-
-  const { data: vinculos = [], isLoading: isLoadingVinculos } = useQuery({
-    queryKey: ['vinculos', selectedUserForVinculos?.id],
-    queryFn: () => getVinculos(selectedUserForVinculos!.id),
-    enabled: !!selectedUserForVinculos && isVinculosModalOpen,
+  const { data: fieisList = [], isLoading: isLoadingFieis } = useQuery({
+    queryKey: ['fieis', 'list'],
+    queryFn: () => getFieis(),
+    enabled: isAdminRegisterModalOpen,
   });
 
   const addVinculoMutation = useMutation({
     mutationFn: (request: AdicionarVinculoRequest) => adicionarVinculo(selectedUserForVinculos!.id, request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vinculos', selectedUserForVinculos?.id] });
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
-      showSuccess('Vínculo adicionado com sucesso!');
+      queryClient.invalidateQueries({ queryKey: ['userVinculos', selectedUserForVinculos?.id] });
       setNewVinculoOrgId('');
       setNewVinculoPapel('');
       setNewVinculoChurchId('');
+      showSuccess('Vínculo adicionado com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao adicionar vínculo.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao adicionar vínculo.'));
     },
   });
 
   const removeVinculoMutation = useMutation({
     mutationFn: (vinculoId: string) => removerVinculo(selectedUserForVinculos!.id, vinculoId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vinculos', selectedUserForVinculos?.id] });
-      queryClient.invalidateQueries({ queryKey: ['organizacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['userVinculos', selectedUserForVinculos?.id] });
       showSuccess('Vínculo removido com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao remover vínculo.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao remover vínculo.'));
     },
-  });
-
-  const { data: fieisList = [], isLoading: isLoadingFieis } = useQuery({
-    queryKey: ['fieis'],
-    queryFn: getFieis,
-    enabled: isAdminRegisterModalOpen,
   });
 
   const registerUserMutation = useMutation({
     mutationFn: (request: CreateUsuarioRequest) => createUsuario(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      const isSec = user && !isAdmin(user) && !isParoco(user);
-      if (isSec) {
-        showSuccess('Usuário cadastrado com sucesso! A solicitação foi encaminhada para aprovação do Pároco ou Administrador.');
-      } else {
-        showSuccess('Usuário cadastrado com sucesso!');
-      }
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setIsAdminRegisterModalOpen(false);
       setAdminRegisterFielId('');
       setAdminRegisterUsername('');
       setAdminRegisterPassword('');
+      showSuccess('Usuário cadastrado com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao cadastrar usuário.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao cadastrar usuário.'));
     },
   });
 
+  const updateUserMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { username?: string; enabled?: boolean } }) =>
+      updateUsuario(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsEditUserModalOpen(false);
+      setSelectedUserForEdit(null);
+      showSuccess('Usuário atualizado com sucesso!');
+    },
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao atualizar dados do usuário.'));
+    },
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
+      alternarStatusUsuario(id, enabled),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsConfirmStatusModalOpen(false);
+      setUserForStatusToggle(null);
+      showSuccess('Status do usuário alterado com sucesso!');
+    },
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao alterar status do usuário.'));
+    },
+  });
+
+  const approveUserMutation = useMutation({
+    mutationFn: (userId: string) => approveUsuario(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['notificacoes'] });
+      queryClient.invalidateQueries({ queryKey: ['aprovacoesPendentesCount'] });
+      showSuccess('Usuário e vínculos aprovados com sucesso!');
+    },
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao aprovar usuário.'));
+    },
+  });
+
+  const alterarSenhaMutation = useMutation({
+    mutationFn: (data: { senhaAtual: string; novaSenha: string }) => alterarMinhaSenha(data),
+    onSuccess: () => {
+      setSenhaAtual('');
+      setNovaSenha('');
+      setConfirmacaoNovaSenha('');
+      showSuccess('Sua senha foi alterada com sucesso!');
+    },
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Falha ao alterar senha. Verifique a senha atual.'));
+    },
+  });
+
+  const handleOpenEditUser = (u: Usuario) => {
+    setSelectedUserForEdit(u);
+    setEditUsername(u.username);
+    setEditUserEnabled(u.enabled);
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleOpenConfirmStatus = (u: Usuario) => {
+    setUserForStatusToggle(u);
+    setIsConfirmStatusModalOpen(true);
+  };
+
+  const handleSalvarSenha = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!senhaAtual) {
+      showError('Informe a senha atual.');
+      return;
+    }
+    if (!novaSenha || novaSenha.length < 6) {
+      showError('A nova senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+    if (novaSenha !== confirmacaoNovaSenha) {
+      showError('A nova senha e a confirmação não conferem.');
+      return;
+    }
+    alterarSenhaMutation.mutate({ senhaAtual, novaSenha });
+  };
+
+  // Official Pastorals and Movements
   const { data: pastoraisOficiais = [], isLoading: isLoadingPO, isError: isErrorPO } = useQuery({
     queryKey: ['pastoraisOficiais'],
     queryFn: getPastoraisOficiais,
-    enabled: tabValue === 2 && isAdmin(user),
+    enabled: isAdmin(user) && tabValue === 'catalogo',
   });
 
   const createPOMutation = useMutation({
-    mutationFn: (data: Omit<PastoralMovimentoOficial, 'id'>) => createPastoralOficial(data),
+    mutationFn: createPastoralOficial,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
-      showSuccess('Tipo oficial criado com sucesso!');
       setPoModalOpen(false);
-      setSelectedPO(null);
+      showSuccess('Tipo oficial cadastrado com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao cadastrar tipo oficial.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao cadastrar tipo oficial.'));
     },
   });
 
@@ -280,23 +354,22 @@ export const Configuracoes = () => {
       updatePastoralOficial(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
-      showSuccess('Tipo oficial atualizado com sucesso!');
       setPoModalOpen(false);
-      setSelectedPO(null);
+      showSuccess('Tipo oficial atualizado com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao atualizar tipo oficial.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao atualizar tipo oficial.'));
     },
   });
 
   const deletePOMutation = useMutation({
-    mutationFn: (id: string) => deletePastoralOficial(id),
+    mutationFn: deletePastoralOficial,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pastoraisOficiais'] });
-      showSuccess('Tipo oficial removido com sucesso!');
+      showSuccess('Tipo oficial excluído com sucesso!');
     },
-    onError: (error: unknown) => {
-      showError(extractErrorMessage(error, 'Erro ao remover tipo oficial.'));
+    onError: (err) => {
+      showError(extractErrorMessage(err, 'Erro ao excluir tipo oficial.'));
     },
   });
 
@@ -318,9 +391,7 @@ export const Configuracoes = () => {
 
   const handleSavePO = () => {
     const errors: { nome?: string } = {};
-    if (!poNome.trim()) {
-      errors.nome = 'O nome é obrigatório';
-    }
+    if (!poNome.trim()) errors.nome = 'Nome é obrigatório.';
     if (Object.keys(errors).length > 0) {
       setPoErrors(errors);
       return;
@@ -357,29 +428,30 @@ export const Configuracoes = () => {
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
         <Tabs value={tabValue} onChange={(_, val) => setTabValue(val)} aria-label="Abas de Configurações">
-          <Tab label="Ano Paroquial" {...a11yProps(0)} sx={{ fontWeight: 600 }} />
+          <Tab value="ano" label="Ano Paroquial" {...a11yProps('ano')} sx={{ fontWeight: 600 }} />
           {isAuthorizedUsers && (
-            <Tab label="Membros / Usuários" {...a11yProps(1)} sx={{ fontWeight: 600 }} />
+            <Tab value="usuarios" label="Membros / Usuários" {...a11yProps('usuarios')} sx={{ fontWeight: 600 }} />
           )}
           {isAdmin(user) && (
-            <Tab label="Catálogo Oficial" {...a11yProps(2)} sx={{ fontWeight: 600 }} />
+            <Tab value="catalogo" label="Catálogo Oficial" {...a11yProps('catalogo')} sx={{ fontWeight: 600 }} />
           )}
+          <Tab value="minha-senha" label="Minha Senha" {...a11yProps('minha-senha')} sx={{ fontWeight: 600 }} />
         </Tabs>
       </Box>
 
-      {/* Tab 0: Ano Paroquial */}
-      <CustomTabPanel value={tabValue} index={0}>
+      {/* Tab: Ano Paroquial */}
+      <CustomTabPanel value="ano" currentValue={tabValue}>
         {isLoadingYears ? (
           <Box sx={{ my: 4 }}>
             <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} variant="rectangular" height={40} sx={{ mb: 1 }} />
+              <Skeleton key={i} variant="rectangular" height={48} sx={{ mb: 1.5 }} />
             ))}
           </Box>
         ) : isErrorYears ? (
-          <Alert severity="error">Erro ao carregar as informações dos anos paroquiais.</Alert>
+          <Alert severity="error">Erro ao carregar os anos paroquiais.</Alert>
         ) : (
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead sx={{ backgroundColor: 'action.hover' }}>
@@ -464,9 +536,9 @@ export const Configuracoes = () => {
         )}
       </CustomTabPanel>
 
-      {/* Tab 1: Membros / Usuários */}
+      {/* Tab: Membros / Usuários */}
       {isAuthorizedUsers && (
-        <CustomTabPanel value={tabValue} index={1}>
+        <CustomTabPanel value="usuarios" currentValue={tabValue}>
           {isLoadingUsers ? (
             <Box sx={{ py: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
@@ -493,11 +565,7 @@ export const Configuracoes = () => {
                   <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Data de Nascimento</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Sacramentos</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>E-mail / Username</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                     </TableRow>
@@ -507,26 +575,36 @@ export const Configuracoes = () => {
                       .slice(usersPage * usersRowsPerPage, usersPage * usersRowsPerPage + usersRowsPerPage)
                       .map((u) => (
                         <TableRow key={u.id} hover>
-                          <TableCell sx={{ fontWeight: 500 }}>{u.nome}</TableCell>
+                          <TableCell sx={{ fontWeight: 500 }}>{u.nome || '-'}</TableCell>
                           <TableCell><FormattedEmail value={u.username} /></TableCell>
-                          <TableCell>{u.igrejaNome || '-'}</TableCell>
-                          <TableCell><FormattedPhone value={u.telefone} /></TableCell>
-                          <TableCell>{formatDateBr(u.dataNascimento) || '-'}</TableCell>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                              {u.batizado && <SacramentoIcon {...SACRAMENTO_META.batizado} color="info" />}
-                              {u.primeiraComunhao && <SacramentoIcon {...SACRAMENTO_META.primeiraComunhao} color="success" />}
-                              {u.crismado && <SacramentoIcon {...SACRAMENTO_META.crismado} color="secondary" />}
-                              {u.casadoIgrejaCatolica && <SacramentoIcon {...SACRAMENTO_META.casadoIgrejaCatolica} color="warning" />}
-                              {!u.batizado && !u.primeiraComunhao && !u.crismado && !u.casadoIgrejaCatolica && '-'}
-                            </Box>
-                          </TableCell>
                           <TableCell><StatusIcon {...getUsuarioSituacaoMeta(u.enabled)} /></TableCell>
                           <TableCell align="right">
                             <TableActionMenu
                               actions={[
-                                ...(!u.enabled && canApproveUsuario(user) ? [{ label: 'Aprovar', icon: <CheckCircleIcon fontSize="small" />, onClick: () => approveUserMutation.mutate(u.id), disabled: approveUserMutation.isPending }] : []),
-                                { label: 'Gerenciar vínculos', icon: <LinkIcon fontSize="small" />, onClick: () => { setSelectedUserForVinculos(u); setIsVinculosModalOpen(true); } },
+                                ...(user && canEditOrInactivateUser(user) ? [{
+                                  label: 'Editar',
+                                  icon: <EditIcon fontSize="small" />,
+                                  onClick: () => handleOpenEditUser(u),
+                                }] : []),
+                                {
+                                  label: 'Gerenciar vínculos',
+                                  icon: <LinkIcon fontSize="small" />,
+                                  onClick: () => {
+                                    setSelectedUserForVinculos(u);
+                                    setIsVinculosModalOpen(true);
+                                  },
+                                },
+                                ...(user && canEditOrInactivateUser(user) ? [{
+                                  label: u.enabled ? 'Inativar Usuário' : 'Ativar Usuário',
+                                  icon: u.enabled ? <BlockIcon fontSize="small" color="error" /> : <CheckCircleIcon fontSize="small" color="success" />,
+                                  onClick: () => handleOpenConfirmStatus(u),
+                                }] : []),
+                                ...(!u.enabled && canApproveUsuario(user) ? [{
+                                  label: 'Aprovar',
+                                  icon: <CheckCircleIcon fontSize="small" />,
+                                  onClick: () => approveUserMutation.mutate(u.id),
+                                  disabled: approveUserMutation.isPending,
+                                }] : []),
                               ]}
                             />
                           </TableCell>
@@ -534,7 +612,7 @@ export const Configuracoes = () => {
                       ))}
                     {users.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                        <TableCell colSpan={4} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                           Nenhum usuário encontrado.
                         </TableCell>
                       </TableRow>
@@ -563,9 +641,9 @@ export const Configuracoes = () => {
         </CustomTabPanel>
       )}
 
-      {/* Tab 2: Catálogo Oficial */}
+      {/* Tab: Catálogo Oficial */}
       {isAdmin(user) && (
-        <CustomTabPanel value={tabValue} index={2}>
+        <CustomTabPanel value="catalogo" currentValue={tabValue}>
           {isLoadingPO ? (
             <Box sx={{ py: 4 }}>
               <Skeleton variant="text" width={260} height={32} sx={{ mb: 2 }} />
@@ -646,60 +724,231 @@ export const Configuracoes = () => {
         </CustomTabPanel>
       )}
 
-      {/* User Vinculos Dialog */}
+      {/* Tab: Minha Senha */}
+      <CustomTabPanel value="minha-senha" currentValue={tabValue}>
+        <Box sx={{ maxWidth: 500 }}>
+          <Card variant="outlined" sx={{ borderRadius: 2, p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+              <KeyIcon color="primary" />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Alterar Minha Senha
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Mantenha sua conta protegida atualizando sua senha periodicamente.
+            </Typography>
+
+            <Box component="form" onSubmit={handleSalvarSenha} noValidate>
+              <Stack spacing={2.5}>
+                <TextField
+                  label="Senha Atual"
+                  type="password"
+                  fullWidth
+                  size="small"
+                  required
+                  value={senhaAtual}
+                  onChange={(e) => setSenhaAtual(e.target.value)}
+                  autoComplete="current-password"
+                />
+
+                <TextField
+                  label="Nova Senha"
+                  type="password"
+                  fullWidth
+                  size="small"
+                  required
+                  value={novaSenha}
+                  onChange={(e) => setNovaSenha(e.target.value)}
+                  autoComplete="new-password"
+                  helperText="Mínimo de 6 caracteres"
+                />
+
+                <TextField
+                  label="Confirmar Nova Senha"
+                  type="password"
+                  fullWidth
+                  size="small"
+                  required
+                  value={confirmacaoNovaSenha}
+                  onChange={(e) => setConfirmacaoNovaSenha(e.target.value)}
+                  autoComplete="new-password"
+                />
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 1 }}>
+                  <ActionButton
+                    title="Alterar Senha"
+                    type="submit"
+                    icon={alterarSenhaMutation.isPending ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                    color="primary"
+                    disabled={!senhaAtual || !novaSenha || !confirmacaoNovaSenha || alterarSenhaMutation.isPending}
+                  />
+                </Box>
+              </Stack>
+            </Box>
+          </Card>
+        </Box>
+      </CustomTabPanel>
+
+      {/* Modal de Edição de Usuário */}
       <Dialog
-        open={isVinculosModalOpen}
-        onClose={() => {
-          setIsVinculosModalOpen(false);
-          setSelectedUserForVinculos(null);
-          setNewVinculoOrgId('');
-          setNewVinculoPapel('');
-          setNewVinculoChurchId('');
-        }}
-        maxWidth="md"
+        open={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        maxWidth="xs"
         fullWidth
       >
-        <DialogTitle>Gerenciar Vínculos - {selectedUserForVinculos?.nome}</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle>Editar Usuário</DialogTitle>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Card variant="outlined" sx={{ borderRadius: 2, p: 2, mt: 1 }}>
+            <Stack spacing={2.5}>
+              <Box>
+                <Typography variant="caption" color="text.secondary">
+                  Fiel Vinculado
+                </Typography>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                  {selectedUserForEdit?.nome || 'Não associado'}
+                </Typography>
+              </Box>
+
+              <TextField
+                label="E-mail / Username"
+                size="small"
+                fullWidth
+                value={editUsername}
+                onChange={(e) => setEditUsername(e.target.value)}
+                required
+              />
+
+              <FormControl fullWidth size="small">
+                <InputLabel id="edit-user-status-label">Status da Conta</InputLabel>
+                <Select
+                  labelId="edit-user-status-label"
+                  label="Status da Conta"
+                  value={editUserEnabled ? 'true' : 'false'}
+                  onChange={(e) => setEditUserEnabled(e.target.value === 'true')}
+                >
+                  <MenuItem value="true">Ativo</MenuItem>
+                  <MenuItem value="false">Inativo</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </Card>
+        </DialogContent>
+        <DialogActions>
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
+            color="secondary"
+            onClick={() => setIsEditUserModalOpen(false)}
+          />
+          <ActionButton
+            title="Salvar Alterações"
+            icon={updateUserMutation.isPending ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+            color="primary"
+            onClick={() => {
+              if (!selectedUserForEdit) return;
+              updateUserMutation.mutate({
+                id: selectedUserForEdit.id,
+                data: {
+                  username: editUsername.trim(),
+                  enabled: editUserEnabled,
+                },
+              });
+            }}
+            disabled={!editUsername.trim() || updateUserMutation.isPending}
+          />
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de Confirmação de Inativação / Reativação */}
+      <Dialog
+        open={isConfirmStatusModalOpen}
+        onClose={() => setIsConfirmStatusModalOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>
+          {userForStatusToggle?.enabled ? 'Inativar Usuário' : 'Ativar Usuário'}
+        </DialogTitle>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Typography variant="body2">
+            Tem certeza de que deseja {userForStatusToggle?.enabled ? 'inativar' : 'ativar'} o acesso do usuário{' '}
+            <strong>{userForStatusToggle?.nome || userForStatusToggle?.username}</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
+            color="secondary"
+            onClick={() => setIsConfirmStatusModalOpen(false)}
+          />
+          <ActionButton
+            title={userForStatusToggle?.enabled ? 'Inativar' : 'Ativar'}
+            icon={toggleStatusMutation.isPending ? <CircularProgress size={20} color="inherit" /> : (userForStatusToggle?.enabled ? <BlockIcon /> : <CheckCircleIcon />)}
+            color={userForStatusToggle?.enabled ? 'error' : 'success'}
+            onClick={() => {
+              if (!userForStatusToggle) return;
+              toggleStatusMutation.mutate({
+                id: userForStatusToggle.id,
+                enabled: !userForStatusToggle.enabled,
+              });
+            }}
+            disabled={toggleStatusMutation.isPending}
+          />
+        </DialogActions>
+      </Dialog>
+
+      {/* Vinculos Management Modal */}
+      <Dialog open={isVinculosModalOpen} onClose={() => setIsVinculosModalOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          Vínculos com Pastorais e Movimentos: {selectedUserForVinculos?.nome || selectedUserForVinculos?.username}
+        </DialogTitle>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           {isLoadingVinculos ? (
-            <Box sx={{ py: 2 }}>
-              <Skeleton variant="text" width={200} height={28} sx={{ mb: 1.5 }} />
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rectangular" height={36} sx={{ mb: 1 }} />
-              ))}
+            <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress size={24} />
             </Box>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Vínculos Atuais:</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
               <TableContainer component={Paper} variant="outlined">
                 <Table size="small">
-                  <TableHead sx={{ bgcolor: 'action.hover' }}>
+                  <TableHead sx={{ backgroundColor: 'action.hover' }}>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Organização</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Igreja / Comunidade</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Igreja de Atuação</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(vinculos || []).map((m) => (
-                      <TableRow key={m.id}>
-                        <TableCell sx={{ fontWeight: 500 }}>{m.organizacaoNome || orgs.find((o) => o.id === m.organizacaoId)?.nome || '-'}</TableCell>
-                        <TableCell>{m.igrejaVinculoNome || orgs.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
-                        <TableCell><StatusIcon {...getOrganismoTipoMeta(m.tipoOrganizacao)} /></TableCell>
-                        <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
-                        <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
+                    {vinculos.map((v) => (
+                      <TableRow key={v.id}>
+                        <TableCell>{v.organizacaoNome || 'Organização'}</TableCell>
+                        <TableCell>{v.tipoOrganizacao}</TableCell>
+                        <TableCell>{PAPEL_ECLESIAL_LABELS[v.papel] || v.papel}</TableCell>
+                        <TableCell>{v.igrejaVinculoNome || '-'}</TableCell>
+                        <TableCell>
+                          <Typography variant="caption" color={v.ativo ? 'success.main' : 'warning.main'} sx={{ fontWeight: 600 }}>
+                            {v.ativo ? 'Ativo' : 'Pendente de Aprovação'}
+                          </Typography>
+                        </TableCell>
                         <TableCell align="right">
-                          <TableActionMenu actions={[{ label: 'Remover', icon: <DeleteIcon fontSize="small" />, onClick: () => removeVinculoMutation.mutate(m.id), disabled: removeVinculoMutation.isPending }]} />
+                          <ActionButton
+                            title="Remover Vínculo"
+                            icon={<DeleteIcon fontSize="small" />}
+                            color="error"
+                            onClick={() => removeVinculoMutation.mutate(v.id)}
+                            disabled={removeVinculoMutation.isPending}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
-                    {(vinculos || []).length === 0 && (
+                    {vinculos.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={6} align="center" sx={{ py: 2, color: 'text.secondary' }}>
-                          Nenhum vínculo ativo encontrado para este usuário.
+                          Nenhum vínculo organizacional associado.
                         </TableCell>
                       </TableRow>
                     )}
@@ -707,28 +956,23 @@ export const Configuracoes = () => {
                 </Table>
               </TableContainer>
 
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 1 }} />
-
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Adicionar Novo Vínculo:</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                Adicionar Novo Vínculo
+              </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-                <FormControl sx={{ minWidth: 250 }} size="small">
+                <FormControl sx={{ minWidth: 200 }} size="small">
                   <InputLabel id="add-vinculo-org-label">Organização</InputLabel>
                   <Select
                     labelId="add-vinculo-org-label"
                     value={newVinculoOrgId}
                     label="Organização"
-                    onChange={(e) => setNewVinculoOrgId(e.target.value)}
+                    onChange={(e) => {
+                      setNewVinculoOrgId(e.target.value);
+                      setNewVinculoChurchId('');
+                    }}
                   >
                     {orgs
-                      .filter((o) => {
-                        if (!o.ativo) return false;
-                        if (!selectedUserForVinculos?.igrejaId) return true;
-                        const userChurch = selectedUserForVinculos.igrejaId;
-                        if (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') {
-                          return o.id === userChurch;
-                        }
-                        return o.parentId === userChurch || !o.parentId;
-                      })
+                      .filter((o) => o.ativo && o.tipo !== 'MATRIZ' && o.tipo !== 'COMUNIDADE')
                       .map((o) => (
                         <MenuItem key={o.id} value={o.id}>
                           {o.nome}
@@ -768,7 +1012,7 @@ export const Configuracoes = () => {
                         inputProps={{ 'data-testid': 'add-vinculo-church-select' }}
                       >
                         {orgs
-                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE') && (!selectedUserForVinculos?.igrejaId || o.id === selectedUserForVinculos.igrejaId))
+                          .filter((o) => o.ativo && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'))
                           .map((o) => (
                             <MenuItem key={o.id} value={o.id}>
                               {o.nome}
@@ -826,69 +1070,71 @@ export const Configuracoes = () => {
       <Dialog open={isAdminRegisterModalOpen} onClose={() => setIsAdminRegisterModalOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Cadastrar Novo Usuário do Sistema</DialogTitle>
         <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
-          <Stack spacing={2.5} sx={{ pt: 1 }}>
-            <Autocomplete
-              size="small"
-              fullWidth
-              options={fieisList}
-              loading={isLoadingFieis}
-              getOptionLabel={(option) => {
-                const cpf = option.dadosIdentificacao?.cpfFormatado ?? option.cpf;
-                return cpf ? `${option.nome} (${cpf})` : (option.nome || '');
-              }}
-              isOptionEqualToValue={(option, val) => {
-                const optId = option.fielId ?? option.id;
-                const valId = val.fielId ?? val.id;
-                return optId === valId;
-              }}
-              value={fieisList.find((f) => (f.fielId ?? f.id) === adminRegisterFielId) || null}
-              onChange={(_, newValue) => {
-                const fid = newValue ? (newValue.fielId ?? newValue.id) : '';
-                setAdminRegisterFielId(fid);
-                const email = newValue?.contato?.email ?? newValue?.email;
-                if (email) {
-                  setAdminRegisterUsername(email);
-                }
-              }}
-              noOptionsText="Nenhum fiel encontrado"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Vincular a Fiel Cadastrado"
-                  size="small"
-                  required
-                  placeholder="Pesquise o fiel por nome ou CPF..."
-                  slotProps={{
-                    ...params.slotProps,
-                    htmlInput: {
-                      ...params.slotProps.htmlInput,
-                      'data-testid': 'admin-reg-fiel-autocomplete',
-                    },
-                  }}
-                />
-              )}
-            />
+          <Card variant="outlined" sx={{ borderRadius: 2, p: 2, mt: 1 }}>
+            <Stack spacing={2.5}>
+              <Autocomplete
+                size="small"
+                fullWidth
+                options={fieisList}
+                loading={isLoadingFieis}
+                getOptionLabel={(option) => {
+                  const cpf = option.dadosIdentificacao?.cpfFormatado ?? option.cpf;
+                  return cpf ? `${option.nome} (${cpf})` : (option.nome || '');
+                }}
+                isOptionEqualToValue={(option, val) => {
+                  const optId = option.fielId ?? option.id;
+                  const valId = val.fielId ?? val.id;
+                  return optId === valId;
+                }}
+                value={fieisList.find((f) => (f.fielId ?? f.id) === adminRegisterFielId) || null}
+                onChange={(_, newValue) => {
+                  const fid = newValue ? (newValue.fielId ?? newValue.id) : '';
+                  setAdminRegisterFielId(fid);
+                  const email = newValue?.contato?.email ?? newValue?.email;
+                  if (email) {
+                    setAdminRegisterUsername(email);
+                  }
+                }}
+                noOptionsText="Nenhum fiel encontrado"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Vincular a Fiel Cadastrado"
+                    size="small"
+                    required
+                    placeholder="Pesquise o fiel por nome ou CPF..."
+                    slotProps={{
+                      ...params.slotProps,
+                      htmlInput: {
+                        ...params.slotProps.htmlInput,
+                        'data-testid': 'admin-reg-fiel-autocomplete',
+                      },
+                    }}
+                  />
+                )}
+              />
 
-            <TextField
-              label="E-mail / Username"
-              type="email"
-              fullWidth
-              size="small"
-              required
-              value={adminRegisterUsername}
-              onChange={(e) => setAdminRegisterUsername(e.target.value)}
-            />
+              <TextField
+                label="E-mail / Username"
+                type="email"
+                fullWidth
+                size="small"
+                required
+                value={adminRegisterUsername}
+                onChange={(e) => setAdminRegisterUsername(e.target.value)}
+              />
 
-            <TextField
-              label="Senha de Acesso"
-              type="password"
-              fullWidth
-              size="small"
-              required
-              value={adminRegisterPassword}
-              onChange={(e) => setAdminRegisterPassword(e.target.value)}
-            />
-          </Stack>
+              <TextField
+                label="Senha de Acesso"
+                type="password"
+                fullWidth
+                size="small"
+                required
+                value={adminRegisterPassword}
+                onChange={(e) => setAdminRegisterPassword(e.target.value)}
+              />
+            </Stack>
+          </Card>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setIsAdminRegisterModalOpen(false)} />
@@ -916,30 +1162,32 @@ export const Configuracoes = () => {
       <Dialog open={poModalOpen} onClose={() => setPoModalOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{selectedPO ? 'Editar Tipo Oficial' : 'Novo Tipo Oficial'}</DialogTitle>
         <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
-          <Stack spacing={2.5} sx={{ pt: 1 }}>
-            <TextField
-              label="Nome do Tipo Oficial"
-              fullWidth
-              size="small"
-              required
-              value={poNome}
-              onChange={(e) => setPoNome(e.target.value)}
-              error={!!poErrors.nome}
-              helperText={poErrors.nome}
-            />
-            <FormControl fullWidth size="small">
-              <InputLabel id="po-tipo-label">Tipo</InputLabel>
-              <Select
-                labelId="po-tipo-label"
-                value={poTipo}
-                label="Tipo"
-                onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
-              >
-                <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
+          <Card variant="outlined" sx={{ borderRadius: 2, p: 2, mt: 1 }}>
+            <Stack spacing={2.5}>
+              <TextField
+                label="Nome do Tipo Oficial"
+                fullWidth
+                size="small"
+                required
+                value={poNome}
+                onChange={(e) => setPoNome(e.target.value)}
+                error={!!poErrors.nome}
+                helperText={poErrors.nome}
+              />
+              <FormControl fullWidth size="small">
+                <InputLabel id="po-tipo-label">Tipo</InputLabel>
+                <Select
+                  labelId="po-tipo-label"
+                  value={poTipo}
+                  label="Tipo"
+                  onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
+                >
+                  <MenuItem value="PASTORAL">Pastoral</MenuItem>
+                  <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </Card>
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />

@@ -2,16 +2,14 @@ package br.com.nsfatima.gestao.iam.api.v1.dto;
 
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Visão pública de um usuário: identidade, estado de habilitação, papéis globais ({@code roles}) e
- * organizações às quais possui vínculo ativo ({@code organizations}), além dos dados cadastrais pastorais
- * (nome, telefone, data de nascimento e situação sacramental). Os campos criptografados na entidade
- * ({@code nome}, {@code telefone}, {@code dataNascimento}) já chegam decifrados aqui.
+ * Visão pública de um usuário para autenticação, auditoria e gestão IAM.
+ * Lida estritamente com dados de conta/usuário (identidade, estado, credenciais, papéis e organizações),
+ * além exclusivamente do nome da pessoa física associada para rotulagem.
  */
 public record UsuarioResponse(
         UUID id,
@@ -20,32 +18,25 @@ public record UsuarioResponse(
         Collection<String> roles,
         Collection<GrupoParoquialResponse> organizations,
         String nome,
-        String telefone,
-        LocalDate dataNascimento,
-        UUID igrejaId,
-        String igrejaNome,
-        boolean batizado,
-        boolean primeiraComunhao,
-        boolean crismado,
-        boolean casadoIgrejaCatolica
+        UUID fielId,
+        UUID clerigoId
 ) {
     /**
-     * Construtor de conveniência sem organizações nem dados cadastrais pastorais, usado onde apenas
+     * Construtor de conveniência sem organizações nem dados de pessoas, usado onde apenas
      * identidade/papéis são relevantes.
      */
     public UsuarioResponse(UUID id, String username, boolean enabled, Collection<String> roles) {
-        this(id, username, enabled, roles, List.of(), null, null, null, null, null, false, false, false, false);
+        this(id, username, enabled, roles, List.of(), null, null, null);
     }
 
     /**
-     * Construtor de conveniência sem dados cadastrais pastorais, usado onde identidade, papéis e
-     * organizações vinculadas bastam.
+     * Construtor de conveniência com organizações vinculadas.
      */
     public UsuarioResponse(UUID id,
-                           String username, boolean enabled, Collection<String> roles,
+                           String username,
+                           boolean enabled,
+                           Collection<String> roles,
                            Collection<GrupoParoquialResponse> organizations) {
-
-        this(id, username, enabled, roles, organizations, null, null, null, null, null, false, false, false, false);
+        this(id, username, enabled, roles, organizations, null, null, null);
     }
 }
-

@@ -124,9 +124,7 @@ public class UsuarioAuthorizationService {
                         || "ROLE_CLERO_PAROCO".equals(a.getAuthority())
                         || "ROLE_GLOBAL_PAROCO".equals(a.getAuthority())
                         || "ROLE_BISPO_DIOCESANO".equals(a.getAuthority())
-                        || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority())
-                        || "ROLE_SECRETARIA_PAROQUIAL".equals(a.getAuthority())
-                        || "ROLE_GLOBAL_SECRETARIA_PAROQUIAL".equals(a.getAuthority()));
+                        || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority()));
         if (adminPorAuthority) {
             return true;
         }
