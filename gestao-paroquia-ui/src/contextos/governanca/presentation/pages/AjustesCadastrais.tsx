@@ -1,3 +1,4 @@
+import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useState } from 'react';
 import BlockIcon from '@mui/icons-material/Block';
@@ -144,40 +145,35 @@ const AjustesCadastrais = () => {
                           />
                         </TableCell>
                         <TableCell align="right">
-                          <ActionButton
-                            size="small"
-                            color="primary"
-                            title="Analisar solicitação"
-                            label="Analisar"
-                            icon={<VisibilityIcon fontSize="small" />}
-                            onClick={() => {
+                          <TableActionMenu actions={[{
+                            label: "Analisar solicitação", icon: <VisibilityIcon fontSize="small" color="primary" />,
+                            onClick: () => {
                               setSelecionado(a);
                               setJustificativa('');
-                            }}
-                          />
+                            },
+                          }]} />
                         </TableCell>
                       </TableRow>
                     ))
                 )}
               </TableBody>
+              <SearchableTablePagination colSpan={4}
+                rowsPerPageOptions={[5, 10, 25]}
+                count={lista.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
+              />
             </Table>
           </TableContainer>
-          <SearchableTablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={lista.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(_, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            labelRowsPerPage="Linhas por página:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-            }
-          />
         </CardContent>
       </Card>
 

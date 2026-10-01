@@ -79,3 +79,15 @@ Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estr
 Todo modal e componente de tela DEVE conter bloco JSDoc especificando:
 - A regra de negócio ou canônica atendida.
 - A justificativa da decisão de UX (ex.: tamanho de modal, agrupamento de seções, acessibilidade).
+
+## 4. Paginação de Tabelas
+
+Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
+
+## 5. Ações de Linha
+
+Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha. Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
+
+## 6. Navegação Lateral
+
+Aplicar a seção 10 do Design System e a configuração central `navigation.ts`. Agrupar por finalidade, sem ordenação alfabética global nem menus paralelos. Preservar rotas/permissões, omitir grupos vazios e validar `SidebarNavigation.test.tsx`/`navigation.test.ts`. Cabeçalhos legíveis e recolhíveis, recuo dos itens, links acessíveis e mesma organização no desktop, compacto e mobile.

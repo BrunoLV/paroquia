@@ -280,24 +280,23 @@ const Clerigos: React.FC = () => {
                   ))
                 )}
               </TableBody>
+              <SearchableTablePagination colSpan={7}
+                rowsPerPageOptions={[5, 10, 25]}
+                count={linhas.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
+              />
             </Table>
           </TableContainer>
-          <SearchableTablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={linhas.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(_, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            labelRowsPerPage="Linhas por página:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-            }
-          />
         </CardContent>
       </Card>
 

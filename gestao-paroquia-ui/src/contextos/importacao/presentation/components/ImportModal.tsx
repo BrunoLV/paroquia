@@ -222,21 +222,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                       </TableRow>
                     ))}
                 </TableBody>
+                <SearchableTablePagination colSpan={3}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={validationResult.itens.length}
+                  rowsPerPage={importRowsPerPage}
+                  page={importPage}
+                  onPageChange={(_, newPage) => setImportPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setImportRowsPerPage(parseInt(e.target.value, 10));
+                    setImportPage(0);
+                  }}
+                  labelRowsPerPage="Linhas por página:"
+                  labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
+                />
               </Table>
-              <SearchableTablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={validationResult.itens.length}
-                rowsPerPage={importRowsPerPage}
-                page={importPage}
-                onPageChange={(_, newPage) => setImportPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setImportRowsPerPage(parseInt(e.target.value, 10));
-                  setImportPage(0);
-                }}
-                labelRowsPerPage="Linhas por página:"
-                labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
-              />
             </TableContainer>
           </Stack>
         )}

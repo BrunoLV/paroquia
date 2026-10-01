@@ -144,10 +144,12 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 
 * **Isolamento de Ações na Linha:** Cliques em botões de ação ou menus internos da linha DEVEM chamar `event.stopPropagation()` para não acionar a navegação do `TableRow`:
 ```tsx
-<TableActionMenu onClick={(e) => e.stopPropagation()} ... />
+<TableActionMenu actions={actions} /> // O componente isola clique e teclado da linha.
 ```
 
+* **Ações de linha:** Usar exclusivamente `TableActionMenu`, inclusive ação única: gatilho pequeno delineado `⋮` vertical, sem texto visível, tooltip e nome acessível “Ações”. Preservar permissões, callbacks e estados. Validar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
 * **Paginação Obrigatória:** Toda tabela do sistema deve implementar `SearchableTablePagination` com:
+  * Posição, densidade e semântica conforme a seção 7 do Design System: dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca fora da tabela. Seletor e anterior/próximo têm mesma altura; estilo compacto exclusivo da paginação, sem afetar formulários. Executar `tablePaginationArchitecture.test.ts`.
   * `rowsPerPageOptions={[5, 10, 25]}`
   * `labelRowsPerPage="Linhas por página:"`
   * `labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}`

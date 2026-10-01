@@ -648,7 +648,8 @@ describe('Aprovacoes page', () => {
       expect(screen.getByText('Maria Silva')).toBeInTheDocument();
     });
 
-    const aprovarBtn = screen.getByRole('button', { name: /Aprovar Usuário/i });
+    fireEvent.click(screen.getAllByRole('button', { name: /^Ações$/i })[0]);
+    const aprovarBtn = screen.getByRole('menuitem', { name: /Aprovar Usuário/i });
     fireEvent.click(aprovarBtn);
 
     await waitFor(() => {

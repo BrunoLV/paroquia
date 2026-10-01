@@ -69,6 +69,8 @@ Descreva sucintamente o problema resolvido, o objetivo de negócio ou a motivaç
 
 ## 📸 Evidências / Screenshots (Obrigatório para Frontend)
 - [ ] **Listas pesquisáveis:** Campos, filtros, seleção múltipla e Linhas por página seguem a seção 2.1 do Design System; suíte estrutural do frontend passando.
+- [ ] **Rodapé das tabelas:** Paginação dentro do `Table`, com `colSpan` correto; Linhas por página e anterior/próximo com mesma altura, sem afetar formulários. Suíte `tablePaginationArchitecture.test.ts` passando.
+- [ ] **Ações de linha:** `TableActionMenu` pequeno delineado `⋮`, sem texto visível, inclusive ação única; acessibilidade, permissões e estados preservados. Suítes `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts` passando.
 *Insira capturas de tela ou gravações demonstrando o comportamento visual e validações.*
 ```
 

@@ -85,22 +85,21 @@ export const VinculosPendentesPanel: React.FC = () => {
                   </TableRow>
                 ))}
               </TableBody>
+              <SearchableTablePagination colSpan={6}
+                rowsPerPageOptions={[5, 10, 25]}
+                count={pendentes.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, p) => setPage(p)}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
+              />
             </Table>
           </TableContainer>
-          <SearchableTablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={pendentes.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(_, p) => setPage(p)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            labelRowsPerPage="Linhas por página:"
-            labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
-          />
         </>
       )}
       {/* Drawer de detalhes, no padrão das demais solicitações: a decisão (aprovar/rejeitar) só existe aqui,

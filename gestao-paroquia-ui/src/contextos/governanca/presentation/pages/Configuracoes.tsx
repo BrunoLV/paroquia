@@ -448,27 +448,19 @@ export const Configuracoes = () => {
                         {isAuthorizedAno && (
                           <TableCell align="right">
                             {ano.status === 'EM_PLANEJAMENTO' && (
-                              <ActionButton
-                                title="Fechar Ano"
-                                label="Fechar Ano"
-                                icon={<LockIcon />}
-                                color="warning"
-                                onClick={() => updateAnoMutation.mutate({ ano: ano.ano, status: 'FECHADO' })}
-                                disabled={updateAnoMutation.isPending}
-                              />
+                              <TableActionMenu actions={[{
+                                label: "Fechar Ano", icon: <LockIcon color="warning" />,
+                                onClick: () => updateAnoMutation.mutate({ ano: ano.ano, status: 'FECHADO' }), disabled: updateAnoMutation.isPending,
+                              }]} />
                             )}
                             {ano.status === 'FECHADO' && (
-                              <ActionButton
-                                title="Concluir Ano"
-                                label="Concluir Ano"
-                                icon={<CheckCircleIcon />}
-                                color="secondary"
-                                onClick={() => {
+                              <TableActionMenu actions={[{
+                                label: "Concluir Ano", icon: <CheckCircleIcon color="secondary" />,
+                                onClick: () => {
                                   setSelectedYear(ano.ano);
                                   setConfirmOpen(true);
-                                }}
-                                disabled={updateAnoMutation.isPending}
-                              />
+                                }, disabled: updateAnoMutation.isPending,
+                              }]} />
                             )}
                             {ano.status === 'CONCLUIDO' && (
                               <Typography variant="body2" color="text.secondary">
@@ -487,24 +479,23 @@ export const Configuracoes = () => {
                     </TableRow>
                   )}
                 </TableBody>
+                <SearchableTablePagination colSpan={isAuthorizedAno ? 5 : 4}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={years.length}
+                  rowsPerPage={anoRowsPerPage}
+                  page={anoPage}
+                  onPageChange={(_, newPage) => setAnoPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setAnoRowsPerPage(parseInt(e.target.value, 10));
+                    setAnoPage(0);
+                  }}
+                  labelRowsPerPage="Linhas por página:"
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                  }
+                />
               </Table>
             </TableContainer>
-            <SearchableTablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={years.length}
-              rowsPerPage={anoRowsPerPage}
-              page={anoPage}
-              onPageChange={(_, newPage) => setAnoPage(newPage)}
-              onRowsPerPageChange={(e) => {
-                setAnoRowsPerPage(parseInt(e.target.value, 10));
-                setAnoPage(0);
-              }}
-              labelRowsPerPage="Linhas por página:"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-              }
-            />
           </Box>
         )}
       </CustomTabPanel>
@@ -591,24 +582,23 @@ export const Configuracoes = () => {
                       </TableRow>
                     )}
                   </TableBody>
+                  <SearchableTablePagination colSpan={4}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    count={users.length}
+                    rowsPerPage={usersRowsPerPage}
+                    page={usersPage}
+                    onPageChange={(_, newPage) => setUsersPage(newPage)}
+                    onRowsPerPageChange={(e) => {
+                      setUsersRowsPerPage(parseInt(e.target.value, 10));
+                      setUsersPage(0);
+                    }}
+                    labelRowsPerPage="Linhas por página:"
+                    labelDisplayedRows={({ from, to, count }) =>
+                      `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                    }
+                  />
                 </Table>
               </TableContainer>
-              <SearchableTablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={users.length}
-                rowsPerPage={usersRowsPerPage}
-                page={usersPage}
-                onPageChange={(_, newPage) => setUsersPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setUsersRowsPerPage(parseInt(e.target.value, 10));
-                  setUsersPage(0);
-                }}
-                labelRowsPerPage="Linhas por página:"
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-                }
-              />
             </Box>
           )}
         </CustomTabPanel>
@@ -674,24 +664,23 @@ export const Configuracoes = () => {
                       </TableRow>
                     )}
                   </TableBody>
+                  <SearchableTablePagination colSpan={3}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    count={pastoraisOficiais.length}
+                    rowsPerPage={poRowsPerPage}
+                    page={poPage}
+                    onPageChange={(_, newPage) => setPoPage(newPage)}
+                    onRowsPerPageChange={(e) => {
+                      setPoRowsPerPage(parseInt(e.target.value, 10));
+                      setPoPage(0);
+                    }}
+                    labelRowsPerPage="Linhas por página:"
+                    labelDisplayedRows={({ from, to, count }) =>
+                      `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                    }
+                  />
                 </Table>
               </TableContainer>
-              <SearchableTablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={pastoraisOficiais.length}
-                rowsPerPage={poRowsPerPage}
-                page={poPage}
-                onPageChange={(_, newPage) => setPoPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setPoRowsPerPage(parseInt(e.target.value, 10));
-                  setPoPage(0);
-                }}
-                labelRowsPerPage="Linhas por página:"
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-                }
-              />
             </Box>
           )}
         </CustomTabPanel>
@@ -908,13 +897,10 @@ export const Configuracoes = () => {
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <ActionButton
-                            title="Remover Vínculo"
-                            icon={<DeleteIcon fontSize="small" />}
-                            color="error"
-                            onClick={() => removeVinculoMutation.mutate(v.id)}
-                            disabled={removeVinculoMutation.isPending}
-                          />
+                          <TableActionMenu actions={[{
+                            label: "Remover Vínculo", icon: <DeleteIcon fontSize="small" color="error" />,
+                            onClick: () => removeVinculoMutation.mutate(v.id), disabled: removeVinculoMutation.isPending,
+                          }]} />
                         </TableCell>
                       </TableRow>
                     ))}

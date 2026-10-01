@@ -90,22 +90,21 @@ export const AssentosTable: React.FC<AssentosTableProps> = ({
               </TableRow>
             )}
           </TableBody>
+          <SearchableTablePagination colSpan={6}
+            rowsPerPageOptions={[5, 10, 25]}
+            count={assentos.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, p) => onPageChange(p)}
+            onRowsPerPageChange={(e) => {
+              onRowsPerPageChange(parseInt(e.target.value, 10));
+              onPageChange(0);
+            }}
+            labelRowsPerPage="Linhas por página:"
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
+          />
         </Table>
       </TableContainer>
-      <SearchableTablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={assentos.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_, p) => onPageChange(p)}
-        onRowsPerPageChange={(e) => {
-          onRowsPerPageChange(parseInt(e.target.value, 10));
-          onPageChange(0);
-        }}
-        labelRowsPerPage="Linhas por página:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
-      />
     </>
   );
 };

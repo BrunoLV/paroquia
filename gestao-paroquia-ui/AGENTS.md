@@ -37,6 +37,8 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 ## 3. Padrão Visual Oficial (*Padrão Arrojado*)
 
 * **Listas pesquisáveis obrigatórias:** Toda lista de valores, inclusive filtros, seleção múltipla e Linhas por página, segue a seção 2.1 do `DESIGN_SYSTEM.md`. Use `SearchableSelect`/`SearchableAutocomplete` e `SearchableTablePagination`; proibidos seletores sem pesquisa. A suíte estrutural do frontend valida esta diretiva.
+* **Paginação no rodapé:** Aplicar a seção 7 do Design System: `SearchableTablePagination` dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Seletor e botões anterior/próximo com mesma altura, estilo compacto restrito à paginação. Validar `tablePaginationArchitecture.test.ts`; não modificar a densidade dos formulários.
+* **Ações de linha:** `TableActionMenu` obrigatório, inclusive ação única, com gatilho pequeno delineado `⋮`, sem texto visível, tooltip e nome acessível “Ações”. Preservar permissões e estados. Validar teclado/foco e `tableActionsArchitecture.test.ts`.
 
 👉 **Fonte única e obrigatória: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).** Leia-o antes de criar ou alterar qualquer tela, modal, formulário ou componente visual. Não duplicar seu conteúdo aqui — qualquer divergência entre este arquivo e `DESIGN_SYSTEM.md` resolve-se a favor do `DESIGN_SYSTEM.md`.
 

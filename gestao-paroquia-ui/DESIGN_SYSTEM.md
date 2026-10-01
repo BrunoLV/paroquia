@@ -40,6 +40,7 @@ Componente único: `src/shared/presentation/components/SearchField.tsx`. Nunca r
 Toda lista de seleção permite digitar para pesquisar, independentemente da quantidade de opções. A regra abrange todas as telas, filtros, formulários, modais, drawers, seleção múltipla e **Linhas por página**. São proibidos `Select`, `TextField select` e `<select>` nativo sem pesquisa. Menus de ações, abas, switches e seletores de data mantêm sua função.
 
 - Base única: `SearchableAutocomplete` em `src/shared/presentation/components/`. Usa MUI Autocomplete com `size="small"`, mensagens em português e `freeSolo={false}`. A pesquisa local ignora maiúsculas e acentos e considera o rótulo visível.
+- Aparência integrada ao `TextField outlined small`: altura, padding, tipografia, superfície e borda seguem o tema compartilhado (`MuiAutocomplete` em `createAppTheme`), em ambos os modos. Seta e limpeza são adornos sem borda de botão; preservam foco e acessibilidade. Seleção múltipla cresce para acomodar chips, sem altura fixa nem corte de conteúdo. Não compactar o autocomplete isoladamente nem aplicar estilos por tela.
 - Para códigos, enums e IDs: `SearchableSelect`. Recebe `value`, `label`, opções declarativas e `onChange({ target: { value, name } })`; suporta `multiple`, `disabled`, `required`, `error`, `helperText` e referência ao input. Integrar formulários por `Controller` do React Hook Form.
 - `MenuItem` dentro de `SearchableSelect` descreve uma opção com valor, rótulo e disponibilidade; não renderiza um Select. `StatusIcon` conserva ícone e texto nas opções e é pesquisado pelo texto.
 - Digitar pesquisa nunca altera o código selecionado. Selecionar ou remover uma opção atualiza o valor. Não cadastrar valores livres pelo autocomplete.
@@ -160,8 +161,22 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 
 - Cabeçalho: `TableHead` com `backgroundColor: 'action.hover'` e células `fontWeight: 600/700`.
 - Linha clicável: `role="button"`, `tabIndex={0}`, `onKeyDown` tratando `Enter`/`Espaço`.
-- Ações de linha (`IconActionButton`, menu): sempre `event.stopPropagation()` no `onClick`.
+- Ações de linha: usar exclusivamente `TableActionMenu`, inclusive para uma única ação. Gatilho `IconActionButton` pequeno, delineado, com `MoreVert` (`⋮`), sem texto visível ou preenchimento; proibido o botão `… Ações` e ações textuais diretamente na célula. Tooltip e nome acessível “Ações”, `aria-haspopup`, `aria-expanded` e vínculo ao menu são obrigatórios. Preservar permissões, estados desabilitados e callbacks.
+- O menu compartilhado impede propagação de clique e teclado para a linha, permite navegação por teclado e restaura foco ao fechar. Validar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts` nos novos componentes.
 - Paginação obrigatória: `SearchableTablePagination` com `[5, 10, 25]`. A quantidade é pesquisável e sua alteração retorna à primeira página. `onRowsPerPageChange` recebe `{ target: { value: string } }`; `onPageChange` mantém o contrato MUI. O seletor simples interno do MUI fica desabilitado. Proibido TablePagination direto em telas.
+- `SearchableTablePagination` é o rodapé semântico (`TableFooter`/`TableRow`/`TableCell`): montar **dentro do `Table`, após o `TableBody`**, nunca após `TableContainer`, Card ou Paper. Informar `colSpan` com o número de colunas visíveis, respeitando colunas condicionais por permissão.
+- No rodapé, “Linhas por página” usa rótulo externo acessível e autocomplete compacto: seletor, anterior e próximo têm **38 px de altura** no zoom 100%. Estilo local ao componente de paginação; proibido reduzir inputs de formulários, filtros ou modais para esse tamanho. Em viewport estreito, os grupos podem quebrar linha dentro do rodapé, sem sair da tabela.
+- A suíte `tablePaginationArchitecture.test.ts` verifica posição e `colSpan`; testes e QA no navegador verificam pesquisa, navegação e igualdade de altura.
+
+```tsx
+<Table>
+  <TableHead>{/* cabeçalho */}</TableHead>
+  <TableBody>{/* linhas */}</TableBody>
+  <SearchableTablePagination colSpan={4} count={total} page={pagina} rowsPerPage={linhas}
+    onPageChange={(_, proxima) => setPagina(proxima)}
+    onRowsPerPageChange={({ target }) => setLinhas(Number(target.value))} />
+</Table>
+```
 
 ## 8. Tokens e Estilo
 
@@ -177,6 +192,26 @@ O sistema tem tema claro/escuro (`createAppTheme(mode)` em `src/shared/presentat
 - Nunca hardcode um hex ou `theme.palette.grey[N]` assumindo fundo claro — ambos os modos precisam ficar legíveis; se a cor depende do modo, calcule a partir de `theme.palette.mode === 'dark'` ou de um token em `customTokensByMode` (`src/shared/presentation/theme/theme.ts`).
 
 ---
+
+## 10. Navegação Lateral
+
+A configuração única reside em `src/shared/presentation/components/navigation/navigation.ts`. Ordem por finalidade, não alfabética:
+
+| Seção | Ordem dos itens |
+| --- | --- |
+| Visão geral | Painel, Notificações, Relatórios |
+| Pessoas e comunidades | Fiéis, Clero, Pastorais e Movimentos |
+| Vida pastoral | Calendário, Projetos, Sacramentos |
+| Governo paroquial | Governo & Território, Organograma, Conselhos & Atas |
+| Espaços e recursos | Locais, Patrimônio, Reservas |
+| Administração | Aprovações, Ajustes cadastrais, Configurações |
+
+- Preservar os predicados existentes de permissão e as rotas. Omitir seções vazias após filtragem.
+- Cabeçalhos em caixa normal, legíveis, com fundo sutil do tema e controle de expandir/recolher. Itens recuados com linha divisória discreta; destaque da rota ativa distinto do cabeçalho.
+- Cabeçalhos operáveis por teclado com `aria-expanded` e `aria-controls`; links reais com `aria-current="page"` na rota ativa.
+- Ao mudar de rota, abrir o grupo correspondente; respeitar recolhimento manual enquanto a rota não mudar. Outros grupos conservam seu estado.
+- Modo compacto mantém agrupamento por separadores, ícones, nomes acessíveis e tooltips. Mobile usa a mesma configuração e fecha a gaveta após navegação. Rolagem ocorre apenas na área de links, sem cortar o cabeçalho da aplicação.
+- Validar agrupamento, paridade dos 14 papéis, teclado, foco, links e responsividade nos temas claro/escuro. Não criar menus independentes por módulo.
 
 ## Componentes-fonte desta doc
 

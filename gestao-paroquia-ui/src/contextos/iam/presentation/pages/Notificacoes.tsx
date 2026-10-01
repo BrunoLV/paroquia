@@ -1,3 +1,4 @@
+import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useState } from 'react';
 import LidaIcon from '@mui/icons-material/MarkEmailRead';
@@ -7,7 +8,6 @@ import { Card, CardContent, Skeleton, Stack, Table, TableBody, TableCell, TableC
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listarNotificacoes, marcarNotificacaoLida } from '@/contextos/iam/infrastructure/http/notificacoes';
 import PageHeader from '@/shared/presentation/components/PageHeader';
-import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 
@@ -100,15 +100,10 @@ const Notificacoes = () => {
                           </TableCell>
                           <TableCell align="right">
                             {!lida && (
-                              <ActionButton
-                                size="small"
-                                color="primary"
-                                title="Marcar notificação como lida"
-                                label="Marcar lida"
-                                icon={<LidaIcon fontSize="small" />}
-                                disabled={marcar.isPending}
-                                onClick={() => marcar.mutate(n.id)}
-                              />
+                              <TableActionMenu actions={[{
+                                label: "Marcar notificação como lida", icon: <LidaIcon fontSize="small" color="primary" />,
+                                onClick: () => marcar.mutate(n.id), disabled: marcar.isPending,
+                              }]} />
                             )}
                           </TableCell>
                         </TableRow>
@@ -116,24 +111,23 @@ const Notificacoes = () => {
                     })
                 )}
               </TableBody>
+              <SearchableTablePagination colSpan={4}
+                rowsPerPageOptions={[5, 10, 25]}
+                count={lista.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                labelRowsPerPage="Linhas por página:"
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                }
+              />
             </Table>
           </TableContainer>
-          <SearchableTablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={lista.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(_, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            labelRowsPerPage="Linhas por página:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-            }
-          />
         </CardContent>
       </Card>
     </Stack>
