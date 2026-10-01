@@ -8,6 +8,21 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-01
+
+### Adicionado
+- **Módulo de Gerenciamento de Sacramentos (`sacramento`):**
+  - Livro de assentos de Batismo, Confirmação, Matrimônio e Ordem Sacra com ciclo `DRAFT → SEALED` (homologação privativa do Pároco), cancelamento motivado e nenhuma exclusão física (triggers no banco).
+  - Snapshot textual dos participantes com vínculo tardio opcional a Fiel/Clérigo, que nunca altera o texto lavrado; endpoint de visão por vínculo.
+  - Averbações marginais append-only no Batismo (digitação pela Secretaria, homologação pelo Pároco), ressalvas de retificação material, notificações canônicas e certidão narrativa com omissão de dados sensíveis.
+  - Livro reservado (matrimônio secreto) invisível à Secretaria.
+  - Trilha estrita `assento_historico` (autor, perfil, IP, valores anteriores e posteriores) e matriz de alçadas `AlcadaSacramentalPolicy`; `ADMIN` sem acesso.
+  - Frontend: página `/sacramentos` com abas por sacramento, formulário de rascunho, ficha com ações por alçada, vínculo, averbação, retificação, cancelamento e certidão.
+  - Seção "Vida sacramental" nas fichas de Fiel e Clérigo, somente consulta, com o tipo de participação da pessoa em cada assento.
+  - Vínculo de fiel/clérigo feito exclusivamente a partir do registro do sacramento, informando o tipo de participação (padrinho, testemunha, ministro etc.). O vínculo da Secretaria fica pendente; o Pároco aprova ou rejeita na nova aba "Vínculos Sacramentais" da tela de Aprovações e recebe notificação `SACRAMENTO_VINCULO_PENDENTE`; só o Pároco desvincula (migração `V024`).
+  - Seed de desenvolvimento com 9 assentos de cenários (4 sacramentos; rascunho, homologado e cancelado; livro reservado; dado sensível; vínculos aprovados, pendentes e sem cadastro; averbações, ressalva, notificações canônicas, trilha e notificação ao Pároco), validado por `SeedDataSqlIntegrityTest` contra as policies do domínio.
+  - Documentação `docs/business-rules/sacramento.md` (RN-SAC-01 a RN-SAC-10).
+
 ## [0.6.0] - 2026-10-01
 
 ### Adicionado

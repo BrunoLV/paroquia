@@ -37,6 +37,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -44,7 +45,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, canManageUnidadesTerritoriais, isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
+import { canApprove, canManageAnoParoquial, canManageLocais, canManageOrganizacoes, canManageUnidadesTerritoriais, canViewSacramentos, isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
 import { useThemeMode } from '@/shared/presentation/context/ThemeModeContext';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import IconActionButton from './IconActionButton';
@@ -116,6 +117,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       : []),
     { label: 'Projetos', path: '/projetos', icon: <AssignmentIcon sx={{ fontSize: '1.25rem' }} /> },
     { label: 'Reservas', path: '/reservas', icon: <ReservasIcon sx={{ fontSize: '1.25rem' }} /> },
+    ...(canViewSacramentos(user)
+      ? [{ label: 'Sacramentos', path: '/sacramentos', icon: <AutoStoriesIcon sx={{ fontSize: '1.25rem' }} /> }]
+      : []),
   ].sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
 
   const administrativeItems: NavigationItem[] = [

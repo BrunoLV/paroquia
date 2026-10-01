@@ -43,7 +43,8 @@ import {getLocais} from '@/contextos/local/infrastructure/http/locais';
 import {getAtivos} from '@/contextos/patrimonio/infrastructure/http/ativos';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
 import {approveUsuario, getUsuarios} from '@/contextos/iam/infrastructure/http/usuarios';
-import {canApproveUsuario} from '@/contextos/iam/presentation/auth/permissions';
+import {canApproveUsuario, canHomologarSacramento} from '@/contextos/iam/presentation/auth/permissions';
+import VinculosPendentesPanel from '@/contextos/sacramento/presentation/components/VinculosPendentesPanel';
 import {useAuth} from '@/contextos/iam/presentation/auth/AuthContext';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/shared/domain/types/types';
 import {getFormatoEventoLabel, getFormatoEventoIcon} from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
@@ -78,7 +79,7 @@ const Aprovacoes = () => {
   const { showError, showSuccess } = useNotification();
   // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos x usuários); tabValue
   // filtra por status dentro dessa fonte (ver array `statuses`).
-  const [tipoAprovacao, setTipoAprovacao] = useState<'EVENTOS' | 'PROJETOS' | 'USUARIOS'>('EVENTOS');
+  const [tipoAprovacao, setTipoAprovacao] = useState<'EVENTOS' | 'PROJETOS' | 'USUARIOS' | 'VINCULOS_SACRAMENTAIS'>('EVENTOS');
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
@@ -363,9 +364,15 @@ const Aprovacoes = () => {
             {canApproveUsuario(user) && (
               <Tab label="Solicitações de Usuários" value="USUARIOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
             )}
+            {canHomologarSacramento(user) && (
+              <Tab label="Vínculos Sacramentais" value="VINCULOS_SACRAMENTAIS" sx={{ textTransform: 'none', fontWeight: 600 }} />
+            )}
           </Tabs>
         </Box>
 
+        {tipoAprovacao === 'VINCULOS_SACRAMENTAIS' && <VinculosPendentesPanel />}
+
+        {tipoAprovacao !== 'VINCULOS_SACRAMENTAIS' && (
         <Card sx={{ width: '100%', mb: 4, overflow: 'hidden' }}>
           <Tabs
             value={tabValue}
@@ -688,6 +695,7 @@ const Aprovacoes = () => {
             })()
           )}
         </Card>
+        )}
 
       {/* Details Drawer: mostra o payload da solicitação de evento/ativo e, apenas
           quando status === PENDENTE, expõe os botões Aprovar/Rejeitar — solicitações

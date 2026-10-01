@@ -45,4 +45,5 @@ Manter o livro de registro pastoral, sacramental e cadastral dos membros da comu
 ## 5. Integrações com outros Bounded Contexts
 - **`membro`:** O fiel é vinculado como membro em uma ou mais pastorais.
 - **`clero`:** Clérigos também possuem registro de pessoa física/fiel para amarração sacramental canônica.
+- **`sacramento`:** Os assentos sacramentais (livro paroquial com fé pública) pertencem ao módulo `sacramento`; o `Fiel` é apenas um ponteiro opcional e tardio dos participantes, sem sincronização com `DadosSacramentais`.
 - **`painel`:** Cálculo do indicador executivo "Fiéis ativos" e contagem de "novos fiéis no mês".

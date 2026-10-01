@@ -55,6 +55,7 @@ import {
   formatarEndereco,
   obterNomePais,
 } from './fielConstants';
+import VidaSacramentalCard from '@/contextos/sacramento/presentation/components/VidaSacramentalCard';
 
 interface FielViewModalProps {
   open: boolean;
@@ -353,6 +354,9 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
               )}
             </CardContent>
           </Card>
+
+          {/* Vida sacramental: assentos do módulo `sacramento` vinculados a este fiel; a API serializa o identificador como `fielId` */}
+          {fiel && <VidaSacramentalCard pessoaId={fiel.fielId ?? fiel.id} />}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
