@@ -3,8 +3,10 @@ import { Card, CardContent, Divider, Skeleton, Stack, Typography } from '@mui/ma
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canManageSacramentos, canViewSacramentos } from '@/contextos/iam/presentation/auth/permissions';
+import { canHomologarSacramento, canManageSacramentos, canViewSacramentos } from '@/contextos/iam/presentation/auth/permissions';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { PAPEL_LABEL } from '@/contextos/sacramento/domain/sacramento';
@@ -20,12 +22,14 @@ interface VidaSacramentalCardProps {
 /**
  * Seção "Vida sacramental" das fichas de Fiel e Clérigo. Os cadastros seguem módulos separados: aqui só
  * se exibem os assentos do módulo `sacramento` em que a pessoa está vinculada e se criam/removem vínculos
- * tardios (Cân. 535), sem copiar dado sacramental para o cadastro. Oculta-se a quem não lê o livro.
+ * tardios (Cân. 535), sem copiar dado sacramental para o cadastro. A Secretaria propõe o vínculo (pendente);
+ * o Pároco vincula direto, aprova, rejeita e desvincula. Oculta-se a quem não lê o livro.
  */
 export const VidaSacramentalCard: React.FC<VidaSacramentalCardProps> = ({ pessoaId, tipoPessoa }) => {
   const { user } = useAuth();
   const podeVer = canViewSacramentos(user);
   const podeGerir = canManageSacramentos(user);
+  const podeAprovar = canHomologarSacramento(user);
   const [vinculando, setVinculando] = useState(false);
   const { data: assentos = [], isLoading } = useAssentosVinculados(pessoaId, podeVer);
   const m = useAssentoMutations();
@@ -54,21 +58,31 @@ export const VidaSacramentalCard: React.FC<VidaSacramentalCardProps> = ({ pessoa
               <Stack spacing={0.5}>
                 <StatusIcon {...getTipoSacramentoMeta(a.tipo)} />
                 <Typography variant="caption" color="text.secondary">
-                  {a.papelVinculado ? PAPEL_LABEL[a.papelVinculado] : 'Vinculado'} em «{a.sujeito ?? 'sem identificação'}»
+                  {a.papelVinculado ? PAPEL_LABEL[a.papelVinculado] : 'Vinculado'} em «{a.sujeito ?? 'sem identificação'}»{a.vinculoPendente ? ' — pendente de aprovação do Pároco' : ''}
                   {[a.livro, a.folha, a.termo].every(Boolean) ? ` · ${a.livro}/${a.folha}/${a.termo}` : ''}
                 </Typography>
                 <StatusIcon {...getStatusAssentoMeta(a.status)} />
               </Stack>
-              {podeGerir && a.participanteId && (
-                <ActionButton
-                  title={`Desvincular de ${a.sujeito ?? 'registro'}`}
-                  label="Desvincular"
-                  icon={<LinkOffIcon />}
-                  color="secondary"
-                  variant="outlined"
-                  disabled={m.desvincular.isPending}
-                  onClick={() => m.desvincular.mutate({ id: a.id, participanteId: a.participanteId as string })}
-                />
+              {a.participanteId && (
+                <Stack direction="row" spacing={1}>
+                  {podeAprovar && a.vinculoPendente && (
+                    <>
+                      <ActionButton title={`Aprovar vínculo em ${a.sujeito ?? 'registro'}`} label="Aprovar" icon={<VerifiedIcon />} color="primary" disabled={m.aprovarVinculo.isPending} onClick={() => m.aprovarVinculo.mutate({ id: a.id, participanteId: a.participanteId as string })} />
+                      <ActionButton title={`Rejeitar vínculo em ${a.sujeito ?? 'registro'}`} label="Rejeitar" icon={<CancelIcon />} color="error" variant="outlined" disabled={m.rejeitarVinculo.isPending} onClick={() => m.rejeitarVinculo.mutate({ id: a.id, participanteId: a.participanteId as string })} />
+                    </>
+                  )}
+                  {podeAprovar && !a.vinculoPendente && (
+                    <ActionButton
+                      title={`Desvincular de ${a.sujeito ?? 'registro'}`}
+                      label="Desvincular"
+                      icon={<LinkOffIcon />}
+                      color="secondary"
+                      variant="outlined"
+                      disabled={m.desvincular.isPending}
+                      onClick={() => m.desvincular.mutate({ id: a.id, participanteId: a.participanteId as string })}
+                    />
+                  )}
+                </Stack>
               )}
             </Stack>
           ))}

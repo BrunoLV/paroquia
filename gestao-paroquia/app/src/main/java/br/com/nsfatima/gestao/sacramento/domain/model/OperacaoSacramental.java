@@ -5,6 +5,8 @@ public enum OperacaoSacramental {
     LER,
     LAVRAR_RASCUNHO,
     VINCULAR,
+    APROVAR_VINCULO,
+    DESVINCULAR,
     AVERBAR_DIGITAR,
     EMITIR_CERTIDAO,
     HOMOLOGAR,

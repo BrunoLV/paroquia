@@ -32,6 +32,8 @@ Manter o livro de assentos da paróquia com natureza jurídica e probatória, se
 
 ### RN-SAC-02: Desacoplamento Cadastral e Associação Tardia (Late Binding)
 - O cadastro de Fiel ou Clérigo **não é pré-requisito** para lavrar o assento.
+- Vincular é ação restrita a Secretaria e Pároco. O vínculo do **Pároco vale de imediato**; o da **Secretaria nasce pendente** e só passa a valer quando o Pároco o aprova. Rejeitar remove o ponteiro. Participante com vínculo (aprovado ou pendente) não aceita outro: é preciso desvincular antes.
+- Desvincular, aprovar e rejeitar são atos privativos do Pároco. A edição de rascunho pela Secretaria não remove nem troca um vínculo existente.
 - Cada participante grava em texto o que foi atestado na celebração. `fielId` (leigos) e `clerigoId` (ministros, ordenado, bispo ordenante) são opcionais; o vínculo pode ser criado ou removido a qualquer tempo, inclusive em termo selado, e **nunca altera o snapshot textual**.
 - Ao informar o cadastro na lavratura com nome em branco, o snapshot do nome é preenchido a partir dele.
 
@@ -48,7 +50,9 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 | Operação | Secretaria | Pároco | Bispo Diocesano | Admin |
 | :--- | :---: | :---: | :---: | :---: |
 | Ler / listar | sim | sim | sim | não |
-| Lavrar e editar rascunho, vincular/desvincular, digitar averbação, registrar notificação, emitir certidão | sim | sim | não | não |
+| Lavrar e editar rascunho, digitar averbação, registrar notificação, emitir certidão | sim | sim | não | não |
+| Vincular a fiel/clérigo | propõe (pendente) | sim (direto) | não | não |
+| Aprovar ou rejeitar vínculo proposto, desvincular | não | sim | não | não |
 | Homologar assento e averbação, retificar, cancelar, consultar trilha | não | sim | não | não |
 | Excluir fisicamente | proibido | proibido | proibido | proibido |
 
@@ -81,7 +85,7 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 
 ### RN-SAC-10: Vida Sacramental nas Fichas de Fiel e Clérigo
 - As fichas de Fiel e de Clérigo exibem a seção "Vida sacramental" com os assentos do módulo `sacramento` em que a pessoa está vinculada e o papel que ocupa. Os cadastros continuam módulos separados: nenhum dado sacramental é copiado para `fiel` ou `clero`.
-- A partir da ficha, Pároco e Secretaria vinculam a pessoa a uma posição ainda sem cadastro de um assento existente e podem desvincular. Fiéis ocupam posições leigas; clérigos, posições ministeriais (ministro celebrante, ministro assistente, ordenado, bispo ordenante).
+- A partir da ficha, Pároco e Secretaria vinculam a pessoa a uma posição ainda sem cadastro de um assento existente. O vínculo da Secretaria aparece como pendente de aprovação; o Pároco o aprova ou rejeita e é o único que desvincula. Fiéis ocupam posições leigas; clérigos, posições ministeriais (ministro celebrante, ministro assistente, ordenado, bispo ordenante).
 - A seção é visível a Pároco, Secretaria e Bispo Diocesano (este só consulta); demais perfis não a veem. Assentos cancelados não são oferecidos para novo vínculo.
 
 ---
@@ -93,7 +97,7 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 4. **Retificação:** Pároco registra ressalva justificada sobre termo selado.
 5. **Certidão:** extração narrativa do assento homologado.
 
-Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `GET /{id}`, `PUT /{id}` (rascunho), `POST /{id}/homologacao`, `PATCH /{id}/participantes/{participanteId}/vinculo`, `POST /{id}/participantes/{participanteId}/desvinculo`, `POST /{id}/averbacoes`, `POST /{id}/averbacoes/{averbacaoId}/homologacao`, `POST /{id}/retificacoes`, `POST /{id}/cancelamento`, `POST /{id}/notificacoes`, `GET /{id}/certidao`, `GET /{id}/historico`, `GET /vinculados/{pessoaId}`.
+Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `GET /{id}`, `PUT /{id}` (rascunho), `POST /{id}/homologacao`, `PATCH /{id}/participantes/{participanteId}/vinculo`, `POST /{id}/participantes/{participanteId}/vinculo/aprovacao`, `POST /{id}/participantes/{participanteId}/vinculo/rejeicao`, `POST /{id}/participantes/{participanteId}/desvinculo`, `POST /{id}/averbacoes`, `POST /{id}/averbacoes/{averbacaoId}/homologacao`, `POST /{id}/retificacoes`, `POST /{id}/cancelamento`, `POST /{id}/notificacoes`, `GET /{id}/certidao`, `GET /{id}/historico`, `GET /vinculados/{pessoaId}`.
 
 ---
 

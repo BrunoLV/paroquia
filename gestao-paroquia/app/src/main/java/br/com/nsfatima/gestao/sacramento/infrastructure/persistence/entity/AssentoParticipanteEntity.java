@@ -61,6 +61,9 @@ public class AssentoParticipanteEntity extends BaseAuditableEntity {
     @Column(name = "clerigo_id")
     private UUID clerigoId;
 
+    @Column(name = "vinculo_pendente", nullable = false)
+    private boolean vinculoPendente;
+
     public AssentoParticipanteEntity() {
     }
 
@@ -151,5 +154,13 @@ public class AssentoParticipanteEntity extends BaseAuditableEntity {
 
     public void setClerigoId(UUID clerigoId) {
         this.clerigoId = clerigoId;
+    }
+
+    public boolean isVinculoPendente() {
+        return vinculoPendente;
+    }
+
+    public void setVinculoPendente(boolean vinculoPendente) {
+        this.vinculoPendente = vinculoPendente;
     }
 }

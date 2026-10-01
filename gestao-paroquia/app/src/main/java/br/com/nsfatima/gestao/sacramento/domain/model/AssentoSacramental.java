@@ -126,12 +126,39 @@ public class AssentoSacramental {
         return ressalva;
     }
 
-    public void vincularFiel(UUID participanteId, UUID fielId) {
-        trocarParticipante(participanteId, p -> p.comFiel(fielId));
+    /**
+     * Vincula o participante a um fiel. Vínculo da Secretaria entra pendente e só vale após o Pároco aprovar;
+     * o do Pároco já nasce aprovado. Participante com vínculo (aprovado ou pendente) não aceita outro.
+     */
+    public void vincularFiel(UUID participanteId, UUID fielId, boolean pendente) {
+        trocarParticipante(participanteId, p -> {
+            exigirSemVinculo(p);
+            return p.comFiel(fielId, pendente);
+        });
     }
 
-    public void vincularClerigo(UUID participanteId, UUID clerigoId) {
-        trocarParticipante(participanteId, p -> p.comClerigo(clerigoId));
+    /** Idem {@link #vincularFiel}, para clérigos. */
+    public void vincularClerigo(UUID participanteId, UUID clerigoId, boolean pendente) {
+        trocarParticipante(participanteId, p -> {
+            exigirSemVinculo(p);
+            return p.comClerigo(clerigoId, pendente);
+        });
+    }
+
+    /** Pároco aprova um vínculo proposto pela Secretaria. */
+    public void aprovarVinculo(UUID participanteId) {
+        trocarParticipante(participanteId, p -> {
+            exigirPendente(p);
+            return p.comVinculoAprovado();
+        });
+    }
+
+    /** Pároco rejeita um vínculo proposto: o ponteiro é removido e o texto lavrado permanece. */
+    public void rejeitarVinculo(UUID participanteId) {
+        trocarParticipante(participanteId, p -> {
+            exigirPendente(p);
+            return p.semVinculo();
+        });
     }
 
     public void desvincular(UUID participanteId) {
@@ -168,6 +195,18 @@ public class AssentoSacramental {
         }
         notificacoes.add(notificacao);
         return notificacao;
+    }
+
+    private static void exigirSemVinculo(Participante p) {
+        if (p.vinculado()) {
+            throw new AssentoImutavelException("Participante já possui vínculo; desvincule antes de vincular de novo.");
+        }
+    }
+
+    private static void exigirPendente(Participante p) {
+        if (!p.vinculoPendente()) {
+            throw new AssentoImutavelException("Participante não possui vínculo pendente de aprovação.");
+        }
     }
 
     private void trocarParticipante(UUID participanteId, UnaryOperator<Participante> troca) {

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 /** Lavra um novo rascunho de assento (Secretaria ou Pároco); a fé pública só nasce na homologação. */
@@ -48,7 +49,7 @@ public class LavrarAssentoUseCase {
         Visibilidade visibilidade = Objects.requireNonNullElse(request.visibilidade(), Visibilidade.COMUM);
         acesso.exigir(ator, OperacaoSacramental.LAVRAR_RASCUNHO, visibilidade);
 
-        TeorAssento teor = teorFactory.criar(request.teor());
+        TeorAssento teor = teorFactory.criar(request.teor(), acesso.podeAprovarVinculo(ator, visibilidade), List.of());
         unicidade.garantir(request.tipo(), teor, null);
         AssentoSacramental assento = AssentoSacramental.lavrar(AssentoSacramentalId.gerar(), request.tipo(),
                 visibilidade, teor, ator.actor(), Instant.now());

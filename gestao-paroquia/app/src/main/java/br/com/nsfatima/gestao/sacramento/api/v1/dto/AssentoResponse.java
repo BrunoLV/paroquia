@@ -43,11 +43,11 @@ public record AssentoResponse(
     public record ParticipanteResponse(UUID id, String papel, String nomeHistorico, String documento,
                                        String localNascimento, Boolean catolico, Boolean crismado,
                                        Integer idadeNaCelebracao, String condicaoCanonica, UUID fielId,
-                                       UUID clerigoId) {
+                                       UUID clerigoId, boolean vinculoPendente) {
         static ParticipanteResponse de(Participante p) {
             return new ParticipanteResponse(p.id(), p.papel().name(), p.nomeHistorico(), p.documento(),
                     p.localNascimento(), p.catolico(), p.crismado(), p.idadeNaCelebracao(), p.condicaoCanonica(),
-                    p.fielId(), p.clerigoId());
+                    p.fielId(), p.clerigoId(), p.vinculoPendente());
         }
     }
 

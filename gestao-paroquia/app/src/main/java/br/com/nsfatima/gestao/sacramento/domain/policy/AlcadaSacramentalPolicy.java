@@ -29,6 +29,8 @@ public final class AlcadaSacramentalPolicy {
         MATRIZ.put(OperacaoSacramental.LER, LEITURA);
         MATRIZ.put(OperacaoSacramental.LAVRAR_RASCUNHO, PAROCO_E_SECRETARIA);
         MATRIZ.put(OperacaoSacramental.VINCULAR, PAROCO_E_SECRETARIA);
+        MATRIZ.put(OperacaoSacramental.APROVAR_VINCULO, PAROCO);
+        MATRIZ.put(OperacaoSacramental.DESVINCULAR, PAROCO);
         MATRIZ.put(OperacaoSacramental.AVERBAR_DIGITAR, PAROCO_E_SECRETARIA);
         MATRIZ.put(OperacaoSacramental.EMITIR_CERTIDAO, PAROCO_E_SECRETARIA);
         MATRIZ.put(OperacaoSacramental.HOMOLOGAR, PAROCO);

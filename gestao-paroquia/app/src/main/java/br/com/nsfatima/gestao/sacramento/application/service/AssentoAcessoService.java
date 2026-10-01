@@ -42,6 +42,11 @@ public class AssentoAcessoService {
         }
     }
 
+    /** Indica se o ator aprova vínculos (Pároco); os vínculos da Secretaria ficam pendentes até a aprovação. */
+    public boolean podeAprovarVinculo(EventoActorContext ator, Visibilidade visibilidade) {
+        return alcada.permitida(ator.role(), OperacaoSacramental.APROVAR_VINCULO, visibilidade);
+    }
+
     public boolean incluirReservados(EventoActorContext ator) {
         return alcada.acessaLivroReservado(ator.role());
     }

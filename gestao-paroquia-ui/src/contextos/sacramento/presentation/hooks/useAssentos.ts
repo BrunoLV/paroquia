@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  aprovarVinculo,
   atualizarRascunho,
   averbarBatismo,
   cancelarAssento,
@@ -12,6 +13,7 @@ import {
   listarAssentosVinculados,
   obterAssento,
   obterHistorico,
+  rejeitarVinculo,
   retificarAssento,
   vincularParticipante,
 } from '@/contextos/sacramento/infrastructure/http/sacramentos';
@@ -89,8 +91,18 @@ export const useAssentoMutations = () => {
     vincular: useMutacaoSacramento(
       ({ id, participanteId, fielId, clerigoId }: { id: string; participanteId: string; fielId?: string; clerigoId?: string }) =>
         vincularParticipante(id, participanteId, { fielId, clerigoId }),
-      'Vínculo registrado.',
+      'Vínculo registrado (pendente de aprovação do Pároco, se proposto pela Secretaria).',
       'Erro ao vincular o participante.',
+    ),
+    aprovarVinculo: useMutacaoSacramento(
+      ({ id, participanteId }: { id: string; participanteId: string }) => aprovarVinculo(id, participanteId),
+      'Vínculo aprovado.',
+      'Erro ao aprovar o vínculo.',
+    ),
+    rejeitarVinculo: useMutacaoSacramento(
+      ({ id, participanteId }: { id: string; participanteId: string }) => rejeitarVinculo(id, participanteId),
+      'Vínculo rejeitado.',
+      'Erro ao rejeitar o vínculo.',
     ),
     desvincular: useMutacaoSacramento(
       ({ id, participanteId }: { id: string; participanteId: string }) => desvincularParticipante(id, participanteId),

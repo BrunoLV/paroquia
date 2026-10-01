@@ -24,7 +24,8 @@ public record AssentoResumoResponse(
         LocalDateTime dataCelebracao,
         String sujeito,
         UUID participanteId,
-        String papelVinculado) {
+        String papelVinculado,
+        boolean vinculoPendente) {
 
     public static AssentoResumoResponse de(AssentoSacramental a) {
         return de(a, null);
@@ -49,7 +50,8 @@ public record AssentoResumoResponse(
         return new AssentoResumoResponse(a.getId().value(), a.getTipo(), a.getStatus(), a.getVisibilidade(),
                 a.getTeor().referenciaLivro().livro(), a.getTeor().referenciaLivro().folha(),
                 a.getTeor().referenciaLivro().termo(), a.getTeor().dataCelebracao(), sujeito,
-                vinculado.map(p -> p.id()).orElse(null), vinculado.map(p -> p.papel().name()).orElse(null));
+                vinculado.map(p -> p.id()).orElse(null), vinculado.map(p -> p.papel().name()).orElse(null),
+                vinculado.map(p -> p.vinculoPendente()).orElse(false));
     }
 
     private static boolean sujeitoPrincipal(PapelParticipante papel) {

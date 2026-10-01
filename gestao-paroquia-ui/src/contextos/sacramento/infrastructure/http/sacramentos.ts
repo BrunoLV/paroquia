@@ -42,6 +42,14 @@ export const vincularParticipante = async (
 ): Promise<Assento> =>
   (await apiClient.patch<Assento>(`${BASE}/${id}/participantes/${participanteId}/vinculo`, vinculo)).data;
 
+/** Ato do Pároco: aprova o vínculo proposto pela Secretaria. */
+export const aprovarVinculo = async (id: string, participanteId: string): Promise<Assento> =>
+  (await apiClient.post<Assento>(`${BASE}/${id}/participantes/${participanteId}/vinculo/aprovacao`)).data;
+
+/** Ato do Pároco: rejeita o vínculo proposto, removendo o ponteiro. */
+export const rejeitarVinculo = async (id: string, participanteId: string): Promise<Assento> =>
+  (await apiClient.post<Assento>(`${BASE}/${id}/participantes/${participanteId}/vinculo/rejeicao`)).data;
+
 export const desvincularParticipante = async (id: string, participanteId: string): Promise<Assento> =>
   (await apiClient.post<Assento>(`${BASE}/${id}/participantes/${participanteId}/desvinculo`)).data;
 

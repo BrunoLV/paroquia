@@ -45,7 +45,8 @@ public class AtualizarRascunhoUseCase {
         AssentoSacramental assento = acesso.carregar(id, ator, OperacaoSacramental.LAVRAR_RASCUNHO);
         String antes = auditoria.capturar(assento);
 
-        TeorAssento teor = teorFactory.criar(request.teor());
+        TeorAssento teor = teorFactory.criar(request.teor(),
+                acesso.podeAprovarVinculo(ator, assento.getVisibilidade()), assento.getTeor().participantes());
         unicidade.garantir(assento.getTipo(), teor, id);
         assento.substituirTeor(teor);
         AssentoSacramental salvo = repository.save(assento);

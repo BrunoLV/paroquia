@@ -42,4 +42,16 @@ class AlcadaSacramentalPolicyTest {
         assertThat(policy.permitida("BISPO_DIOCESANO", OperacaoSacramental.LER, Visibilidade.RESERVADO)).isTrue();
         assertThat(policy.acessaLivroReservado("SECRETARIA_PAROQUIAL")).isFalse();
     }
+
+    @Test
+    void secretariaVinculaMasSoParocoAprovaRejeitaEDesvincula() {
+        assertThat(policy.permitida("SECRETARIA_PAROQUIAL", OperacaoSacramental.VINCULAR, Visibilidade.COMUM)).isTrue();
+        assertThat(policy.permitida("SECRETARIA_PAROQUIAL", OperacaoSacramental.APROVAR_VINCULO, Visibilidade.COMUM))
+                .isFalse();
+        assertThat(policy.permitida("SECRETARIA_PAROQUIAL", OperacaoSacramental.DESVINCULAR, Visibilidade.COMUM))
+                .isFalse();
+        assertThat(policy.permitida("PAROCO", OperacaoSacramental.APROVAR_VINCULO, Visibilidade.COMUM)).isTrue();
+        assertThat(policy.permitida("PAROCO", OperacaoSacramental.DESVINCULAR, Visibilidade.COMUM)).isTrue();
+        assertThat(policy.permitida("BISPO_DIOCESANO", OperacaoSacramental.VINCULAR, Visibilidade.COMUM)).isFalse();
+    }
 }

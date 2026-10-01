@@ -37,6 +37,8 @@ export interface AssentoViewAcoes {
   onCertidao: (a: Assento) => void;
   onVincular: (a: Assento, p: Participante) => void;
   onDesvincular: (a: Assento, p: Participante) => void;
+  onAprovarVinculo: (a: Assento, p: Participante) => void;
+  onRejeitarVinculo: (a: Assento, p: Participante) => void;
   onAverbar: (a: Assento) => void;
   onHomologarAverbacao: (a: Assento, av: Averbacao) => void;
 }
@@ -92,7 +94,10 @@ export const AssentoViewModal: React.FC<AssentoViewModalProps> = ({ assentoId, o
               participantes={assento.participantes}
               podeVincular={acoes.podeGerir && assento.status !== 'CANCELADO'}
               onVincular={(p) => acoes.onVincular(assento, p)}
+              podeAprovar={acoes.podeHomologar && assento.status !== 'CANCELADO'}
               onDesvincular={(p) => acoes.onDesvincular(assento, p)}
+              onAprovar={(p) => acoes.onAprovarVinculo(assento, p)}
+              onRejeitar={(p) => acoes.onRejeitarVinculo(assento, p)}
             />
 
             {assento.tipo === 'BATISMO' && (

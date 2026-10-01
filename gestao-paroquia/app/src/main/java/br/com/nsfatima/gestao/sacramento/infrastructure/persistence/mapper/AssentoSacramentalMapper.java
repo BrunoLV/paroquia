@@ -95,6 +95,7 @@ public class AssentoSacramentalMapper {
             pe.setCondicaoCanonica(p.condicaoCanonica());
             pe.setFielId(p.fielId());
             pe.setClerigoId(p.clerigoId());
+            pe.setVinculoPendente(p.vinculoPendente());
         }
     }
 
@@ -140,7 +141,7 @@ public class AssentoSacramentalMapper {
     private static Participante toParticipante(AssentoParticipanteEntity p) {
         return new Participante(p.getId(), p.getPapel(), p.getNomeHistorico(), p.getDocumento(),
                 p.getLocalNascimento(), p.getCatolico(), p.getCrismado(), p.getIdadeNaCelebracao(),
-                p.getCondicaoCanonica(), p.getFielId(), p.getClerigoId());
+                p.getCondicaoCanonica(), p.getFielId(), p.getClerigoId(), p.isVinculoPendente());
     }
 
     private static Averbacao toAverbacao(AverbacaoBatismoEntity a) {

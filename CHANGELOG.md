@@ -16,7 +16,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Livro reservado (matrimônio secreto) invisível à Secretaria.
   - Trilha estrita `assento_historico` (autor, perfil, IP, valores anteriores e posteriores) e matriz de alçadas `AlcadaSacramentalPolicy`; `ADMIN` sem acesso.
   - Frontend: página `/sacramentos` com abas por sacramento, formulário de rascunho, ficha com ações por alçada, vínculo, averbação, retificação, cancelamento e certidão.
-  - Seção "Vida sacramental" nas fichas de Fiel e Clérigo: lista os assentos vinculados com o papel da pessoa e permite vincular/desvincular a partir da ficha, mantendo `fiel`, `clero` e `sacramento` como módulos separados.
+  - Seção "Vida sacramental" nas fichas de Fiel e Clérigo: lista os assentos vinculados com o papel da pessoa e permite vincular a partir da ficha, mantendo `fiel`, `clero` e `sacramento` como módulos separados.
+  - Aprovação de vínculos: o vínculo proposto pela Secretaria fica pendente até o Pároco aprovar ou rejeitar; só o Pároco vincula direto e desvincula (migração `V024`).
   - Documentação `docs/business-rules/sacramento.md` (RN-SAC-01 a RN-SAC-10).
 
 ## [0.6.0] - 2026-10-01

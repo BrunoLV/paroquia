@@ -162,6 +162,8 @@ const Sacramentos = () => {
         onCertidao={(a) => void abrirCertidao(a.id)}
         onVincular={(assento, participante) => setVinculo({ assento, participante })}
         onDesvincular={(a, p) => m.desvincular.mutate({ id: a.id, participanteId: p.id })}
+        onAprovarVinculo={(a, p) => m.aprovarVinculo.mutate({ id: a.id, participanteId: p.id })}
+        onRejeitarVinculo={(a, p) => m.rejeitarVinculo.mutate({ id: a.id, participanteId: p.id })}
         onAverbar={setAverbarAssento}
         onHomologarAverbacao={(a: Assento, av: Averbacao) => m.homologarAverbacao.mutate({ id: a.id, averbacaoId: av.id })}
       />

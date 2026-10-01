@@ -17,13 +17,14 @@ vi.mock('@/shared/presentation/context/NotificationContext', () => ({
 
 const vinculados = [{
   id: 'a1', tipo: 'BATISMO', status: 'SEALED', visibilidade: 'COMUM', livro: '7', folha: '3', termo: '9',
-  dataCelebracao: null, sujeito: 'Maria da Silva', participanteId: 'p1', papelVinculado: 'BATIZANDO',
+  dataCelebracao: null, sujeito: 'Maria da Silva', participanteId: 'p1', papelVinculado: 'BATIZANDO', vinculoPendente: false,
 }];
+const pendentes = [{ ...vinculados[0], vinculoPendente: true }];
 
-const renderCard = async (roles: string[], tipoPessoa: 'FIEL' | 'CLERIGO' = 'FIEL') => {
+const renderCard = async (roles: string[], dados = vinculados, tipoPessoa: 'FIEL' | 'CLERIGO' = 'FIEL') => {
   mockedApiClient.get.mockImplementation((url: string) => {
     if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: { id: '1', name: 'U', roles, organizations: [] } });
-    if (url === '/sacramentos/vinculados/pessoa-1') return Promise.resolve({ data: vinculados });
+    if (url === '/sacramentos/vinculados/pessoa-1') return Promise.resolve({ data: dados });
     return Promise.reject(new Error(`Não mockado: ${url}`));
   });
   await act(async () => {
@@ -44,11 +45,29 @@ const renderCard = async (roles: string[], tipoPessoa: 'FIEL' | 'CLERIGO' = 'FIE
 describe('VidaSacramentalCard', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  test('lista os assentos vinculados com a posição da pessoa e permite vincular/desvincular à secretaria', async () => {
+  test('secretaria propõe vínculo mas não desvincula nem aprova', async () => {
     await renderCard(['SECRETARIA_PAROQUIAL']);
     expect(await screen.findByText(/Batizando em «Maria da Silva»/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Vincular a registro' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Desvincular de Maria da Silva/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Desvincular de/ })).not.toBeInTheDocument();
+  });
+
+  test('pároco desvincula vínculo aprovado', async () => {
+    await renderCard(['PAROCO']);
+    expect(await screen.findByRole('button', { name: /Desvincular de Maria da Silva/ })).toBeInTheDocument();
+  });
+
+  test('vínculo pendente: pároco aprova/rejeita; secretaria só vê o aviso', async () => {
+    await renderCard(['PAROCO'], pendentes);
+    expect(await screen.findByText(/pendente de aprovação do Pároco/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Aprovar vínculo em Maria da Silva/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rejeitar vínculo em Maria da Silva/ })).toBeInTheDocument();
+  });
+
+  test('vínculo pendente não oferece aprovação à secretaria', async () => {
+    await renderCard(['SECRETARIA_PAROQUIAL'], pendentes);
+    expect(await screen.findByText(/pendente de aprovação do Pároco/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Aprovar vínculo/ })).not.toBeInTheDocument();
   });
 
   test('bispo diocesano apenas consulta: sem ações de vínculo', async () => {

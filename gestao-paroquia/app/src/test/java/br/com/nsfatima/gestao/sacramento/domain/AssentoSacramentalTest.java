@@ -100,7 +100,7 @@ class AssentoSacramentalTest {
         Participante batizando = pessoa(PapelParticipante.BATIZANDO, "Maria da Silva");
         AssentoSacramental assento = rascunho(teorBatismoValido(batizando));
         UUID fielId = UUID.randomUUID();
-        assento.vincularFiel(batizando.id(), fielId);
+        assento.vincularFiel(batizando.id(), fielId, false);
         Participante vinculado = assento.getTeor().participantes().stream()
                 .filter(p -> p.id().equals(batizando.id())).findFirst().orElseThrow();
         assertThat(vinculado.fielId()).isEqualTo(fielId);
@@ -111,9 +111,47 @@ class AssentoSacramentalTest {
     }
 
     @Test
+    void vinculoDaSecretariaFicaPendenteAteOParocoAprovar() {
+        Participante batizando = pessoa(PapelParticipante.BATIZANDO, "Maria da Silva");
+        AssentoSacramental assento = rascunho(teorBatismoValido(batizando));
+        UUID fielId = UUID.randomUUID();
+        assento.vincularFiel(batizando.id(), fielId, true);
+        assertThat(participante(assento, batizando)).matches(p -> p.vinculoPendente() && fielId.equals(p.fielId()));
+
+        assento.aprovarVinculo(batizando.id());
+        assertThat(participante(assento, batizando)).matches(p -> !p.vinculoPendente() && fielId.equals(p.fielId()));
+        assertThatThrownBy(() -> assento.aprovarVinculo(batizando.id())).isInstanceOf(AssentoImutavelException.class);
+    }
+
+    @Test
+    void rejeicaoRemoveOPonteiroEPreservaOTexto() {
+        Participante batizando = pessoa(PapelParticipante.BATIZANDO, "Maria da Silva");
+        AssentoSacramental assento = rascunho(teorBatismoValido(batizando));
+        assento.vincularFiel(batizando.id(), UUID.randomUUID(), true);
+        assento.rejeitarVinculo(batizando.id());
+        assertThat(participante(assento, batizando))
+                .matches(p -> p.fielId() == null && !p.vinculoPendente() && p.nomeHistorico().equals("Maria da Silva"));
+    }
+
+    @Test
+    void participanteJaVinculadoNaoAceitaNovoVinculo() {
+        Participante batizando = pessoa(PapelParticipante.BATIZANDO, "Maria da Silva");
+        AssentoSacramental assento = rascunho(teorBatismoValido(batizando));
+        assento.vincularFiel(batizando.id(), UUID.randomUUID(), true);
+        assertThatThrownBy(() -> assento.vincularFiel(batizando.id(), UUID.randomUUID(), false))
+                .isInstanceOf(AssentoImutavelException.class);
+    }
+
+    private static Participante participante(AssentoSacramental assento, Participante alvo) {
+        return assento.getTeor().participantes().stream()
+                .filter(p -> p.id().equals(alvo.id())).findFirst().orElseThrow();
+    }
+
+    @Test
     void ministroNaoVinculaAFiel() {
         Participante ministro = pessoa(PapelParticipante.MINISTRO_CELEBRANTE, "Pe. João");
-        assertThatThrownBy(() -> ministro.comFiel(UUID.randomUUID())).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> ministro.comFiel(UUID.randomUUID(), false))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

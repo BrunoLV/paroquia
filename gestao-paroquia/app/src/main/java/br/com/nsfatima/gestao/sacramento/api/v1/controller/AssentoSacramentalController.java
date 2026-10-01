@@ -60,6 +60,7 @@ public class AssentoSacramentalController {
             + " 'GLOBAL_SECRETARIA_PAROQUIAL')";
     private static final String PAROCO = "hasAnyRole('PAROCO', 'GLOBAL_PAROCO')";
     private static final String ID_ASSENTO = "Identificador do assento sacramental";
+    private static final String ID_PARTICIPANTE = "Identificador do participante";
     private static final String R_OK = "Operação realizada";
     private static final String R_400 = "Requisição inválida";
     private static final String R_401 = "Não autenticado";
@@ -163,25 +164,48 @@ public class AssentoSacramentalController {
 
     @PatchMapping("/{id}/participantes/{participanteId}/vinculo")
     @PreAuthorize(ESCRITURACAO)
-    @Operation(summary = "Vincula participante a fiel ou clérigo", description = "Altera só o ponteiro, nunca o snapshot.")
+    @Operation(summary = "Vincula participante a fiel ou clérigo",
+            description = "Pároco vincula direto; o vínculo da Secretaria fica pendente de aprovação.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = R_OK),
             @ApiResponse(responseCode = "400", description = R_400), @ApiResponse(responseCode = "401", description = R_401),
             @ApiResponse(responseCode = "403", description = R_403), @ApiResponse(responseCode = "404", description = R_404),
             @ApiResponse(responseCode = "409", description = R_409)})
     public AssentoResponse vincular(@Parameter(description = ID_ASSENTO) @PathVariable UUID id,
-                                    @Parameter(description = "Identificador do participante") @PathVariable UUID participanteId,
+                                    @Parameter(description = ID_PARTICIPANTE) @PathVariable UUID participanteId,
                                     @RequestBody VincularParticipanteRequest request) {
         return vincularUseCase.vincular(id, participanteId, request);
     }
 
+    @PostMapping("/{id}/participantes/{participanteId}/vinculo/aprovacao")
+    @PreAuthorize(PAROCO)
+    @Operation(summary = "Aprova vínculo proposto pela Secretaria", description = "Ato privativo do Pároco.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = R_OK),
+            @ApiResponse(responseCode = "401", description = R_401), @ApiResponse(responseCode = "403", description = R_403),
+            @ApiResponse(responseCode = "404", description = R_404), @ApiResponse(responseCode = "409", description = R_409)})
+    public AssentoResponse aprovarVinculo(@Parameter(description = ID_ASSENTO) @PathVariable UUID id,
+                                          @Parameter(description = ID_PARTICIPANTE) @PathVariable UUID participanteId) {
+        return vincularUseCase.aprovar(id, participanteId);
+    }
+
+    @PostMapping("/{id}/participantes/{participanteId}/vinculo/rejeicao")
+    @PreAuthorize(PAROCO)
+    @Operation(summary = "Rejeita vínculo proposto pela Secretaria", description = "Remove o ponteiro; ato do Pároco.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = R_OK),
+            @ApiResponse(responseCode = "401", description = R_401), @ApiResponse(responseCode = "403", description = R_403),
+            @ApiResponse(responseCode = "404", description = R_404), @ApiResponse(responseCode = "409", description = R_409)})
+    public AssentoResponse rejeitarVinculo(@Parameter(description = ID_ASSENTO) @PathVariable UUID id,
+                                           @Parameter(description = ID_PARTICIPANTE) @PathVariable UUID participanteId) {
+        return vincularUseCase.rejeitar(id, participanteId);
+    }
+
     @PostMapping("/{id}/participantes/{participanteId}/desvinculo")
-    @PreAuthorize(ESCRITURACAO)
-    @Operation(summary = "Desvincula participante", description = "Remove só o ponteiro; o texto lavrado permanece.")
+    @PreAuthorize(PAROCO)
+    @Operation(summary = "Desvincula participante", description = "Ato do Pároco; remove só o ponteiro, o texto permanece.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = R_OK),
             @ApiResponse(responseCode = "401", description = R_401), @ApiResponse(responseCode = "403", description = R_403),
             @ApiResponse(responseCode = "404", description = R_404), @ApiResponse(responseCode = "409", description = R_409)})
     public AssentoResponse desvincular(@Parameter(description = ID_ASSENTO) @PathVariable UUID id,
-                                       @Parameter(description = "Identificador do participante") @PathVariable UUID participanteId) {
+                                       @Parameter(description = ID_PARTICIPANTE) @PathVariable UUID participanteId) {
         return vincularUseCase.desvincular(id, participanteId);
     }
 

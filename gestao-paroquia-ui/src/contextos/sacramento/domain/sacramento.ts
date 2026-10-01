@@ -137,6 +137,8 @@ export interface Participante {
   condicaoCanonica: CondicaoCanonica | null;
   fielId: string | null;
   clerigoId: string | null;
+  /** Vínculo proposto pela Secretaria, ainda sem aprovação do Pároco. */
+  vinculoPendente: boolean;
 }
 
 export interface Averbacao {
@@ -204,6 +206,7 @@ export interface AssentoResumo {
   /** Preenchidos só na consulta por vínculo: posição da pessoa consultada no termo. */
   participanteId: string | null;
   papelVinculado: PapelParticipante | null;
+  vinculoPendente: boolean;
 }
 
 export interface HistoricoEntrada {

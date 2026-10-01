@@ -14,11 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
- * Vincula ou desvincula tardiamente um participante a um cadastro de fiel/clérigo. Altera apenas o
- * ponteiro relacional (inclusive em termo selado); o snapshot textual permanece intocado.
+ * Vínculo tardio de participante a fiel/clérigo. A Secretaria propõe (pendente) e o Pároco aprova, rejeita ou
+ * desvincula; o Pároco vincula direto. Altera apenas o ponteiro (inclusive em termo selado); o snapshot
+ * textual permanece intocado.
  */
 @Service
 public class VincularParticipanteUseCase {
@@ -39,34 +40,54 @@ public class VincularParticipanteUseCase {
         this.auditoria = auditoria;
     }
 
+    /**
+     * Vincula o participante. Pároco: vale de imediato. Secretaria: fica pendente até o Pároco aprovar.
+     */
     @Transactional
     public AssentoResponse vincular(UUID assentoId, UUID participanteId, VincularParticipanteRequest request) {
         if ((request.fielId() == null) == (request.clerigoId() == null)) {
             throw new IllegalArgumentException("Informe exatamente um entre fielId e clerigoId.");
         }
-        return executar(assentoId, "vincular", assento -> {
+        return executar(assentoId, OperacaoSacramental.VINCULAR, "vincular", (assento, pendente) -> {
             if (request.fielId() != null) {
                 pessoas.nomeDoFiel(request.fielId())
                         .orElseThrow(() -> new IllegalArgumentException("Fiel informado não está cadastrado."));
-                assento.vincularFiel(participanteId, request.fielId());
+                assento.vincularFiel(participanteId, request.fielId(), pendente);
             } else {
                 pessoas.nomeDoClerigo(request.clerigoId())
                         .orElseThrow(() -> new IllegalArgumentException("Clérigo informado não está cadastrado."));
-                assento.vincularClerigo(participanteId, request.clerigoId());
+                assento.vincularClerigo(participanteId, request.clerigoId(), pendente);
             }
         });
     }
 
+    /** Ato do Pároco: aprova o vínculo proposto pela Secretaria. */
     @Transactional
-    public AssentoResponse desvincular(UUID assentoId, UUID participanteId) {
-        return executar(assentoId, "desvincular", assento -> assento.desvincular(participanteId));
+    public AssentoResponse aprovar(UUID assentoId, UUID participanteId) {
+        return executar(assentoId, OperacaoSacramental.APROVAR_VINCULO, "aprovar-vinculo",
+                (assento, pendente) -> assento.aprovarVinculo(participanteId));
     }
 
-    private AssentoResponse executar(UUID assentoId, String acao, Consumer<AssentoSacramental> op) {
+    /** Ato do Pároco: rejeita o vínculo proposto, removendo o ponteiro. */
+    @Transactional
+    public AssentoResponse rejeitar(UUID assentoId, UUID participanteId) {
+        return executar(assentoId, OperacaoSacramental.APROVAR_VINCULO, "rejeitar-vinculo",
+                (assento, pendente) -> assento.rejeitarVinculo(participanteId));
+    }
+
+    /** Ato do Pároco: remove um vínculo já estabelecido; o texto lavrado permanece. */
+    @Transactional
+    public AssentoResponse desvincular(UUID assentoId, UUID participanteId) {
+        return executar(assentoId, OperacaoSacramental.DESVINCULAR, "desvincular",
+                (assento, pendente) -> assento.desvincular(participanteId));
+    }
+
+    private AssentoResponse executar(UUID assentoId, OperacaoSacramental operacao, String acao,
+                                     BiConsumer<AssentoSacramental, Boolean> op) {
         EventoActorContext ator = actorResolver.resolveRequired();
-        AssentoSacramental assento = acesso.carregar(assentoId, ator, OperacaoSacramental.VINCULAR);
+        AssentoSacramental assento = acesso.carregar(assentoId, ator, operacao);
         String antes = auditoria.capturar(assento);
-        op.accept(assento);
+        op.accept(assento, !acesso.podeAprovarVinculo(ator, assento.getVisibilidade()));
         AssentoSacramental salvo = repository.save(assento);
         auditoria.registrar(ator, acao, antes, salvo);
         return AssentoResponse.de(salvo);
