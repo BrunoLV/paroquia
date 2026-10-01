@@ -1330,3 +1330,168 @@ INSERT INTO calendario.notificacoes (
     )
 ON CONFLICT (id) DO NOTHING;
 
+
+-- ============================================================================
+-- SACRAMENTOS: assentos, participantes, averbações, ressalvas, notificações canônicas e histórico
+-- Cenários cobertos:
+--   01 Batismo homologado, vínculos tardios mistos (aprovados e participante sem cadastro), averbação
+--      homologada + pendente e ressalva de retificação
+--   02 Batismo homologado de filiação adotiva (dado sensível) com averbação reservada
+--   03 Batismo em rascunho incompleto, com vínculo PENDENTE de aprovação do Pároco (fila de Aprovações)
+--   04 Batismo cancelado por duplicidade (libera livro/folha/termo do assento 01)
+--   05 Confirmação homologada com notificação canônica enviada
+--   06 Confirmação em rascunho com vínculo PENDENTE
+--   07 Matrimônio homologado com duas notificações canônicas
+--   08 Matrimônio em livro RESERVADO (secreto), invisível à Secretaria
+--   09 Ordem Sacra (diaconato permanente) homologada, ordenado vinculado ao clérigo
+-- ============================================================================
+INSERT INTO calendario.assentos_sacramentais (
+    id, tipo, status, visibilidade, data_lavratura, lavrado_por, livro, folha, termo, paroquia_custodiante,
+    data_celebracao, local_celebracao, dado_sensivel, dados_especificos, homologado_por, homologado_em_utc,
+    motivo_cancelamento, cancelado_por, cancelado_em_utc,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por, version
+) VALUES
+    ('5a000000-0000-0000-0000-000000000001', 'BATISMO', 'SEALED', 'COMUM', '2025-03-16', 'secretaria.paroquial', '1', '10', '100',
+     'Paróquia Nossa Senhora de Fátima', '2025-03-15 10:00:00', 'Igreja Matriz', FALSE,
+     '{"certidaoNascimentoCartorio": "1º Cartório de Registro Civil de São Paulo", "certidaoNascimentoTermo": "55120", "estadoFiliacao": "MATRIMONIAL"}'::jsonb,
+     'padre.pedro', '2025-03-17 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000002', 'BATISMO', 'SEALED', 'COMUM', '2025-05-11', 'secretaria.paroquial', '1', '10', '101',
+     'Paróquia Nossa Senhora de Fátima', '2025-05-10 16:00:00', 'Capela Santo Agostinho', TRUE,
+     '{"certidaoNascimentoCartorio": "2º Cartório de Registro Civil de São Paulo", "certidaoNascimentoTermo": "81234", "estadoFiliacao": "ADOTIVA"}'::jsonb,
+     'padre.pedro', '2025-05-12 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000003', 'BATISMO', 'DRAFT', 'COMUM', '2026-02-02', 'secretaria.paroquial', NULL, NULL, NULL,
+     'Paróquia Nossa Senhora de Fátima', '2026-02-01 10:00:00', 'Igreja Matriz', FALSE,
+     '{"estadoFiliacao": "NAO_CASADOS"}'::jsonb,
+     NULL, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial', 0),
+    ('5a000000-0000-0000-0000-000000000004', 'BATISMO', 'CANCELADO', 'COMUM', '2025-03-16', 'secretaria.paroquial', '1', '10', '100',
+     'Paróquia Nossa Senhora de Fátima', '2025-03-15 10:00:00', 'Igreja Matriz', FALSE,
+     '{"certidaoNascimentoCartorio": "1º Cartório de Registro Civil de São Paulo", "certidaoNascimentoTermo": "55120", "estadoFiliacao": "MATRIMONIAL"}'::jsonb,
+     'padre.pedro', '2025-03-16 18:00:00+00', 'Termo lavrado em duplicidade; prevalece o assento de livro 1, folha 10, termo 100.', 'padre.pedro',
+     '2025-03-18 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000005', 'CONFIRMACAO', 'SEALED', 'COMUM', '2025-11-02', 'secretaria.paroquial', '2', '5', '20',
+     'Paróquia Nossa Senhora de Fátima', '2025-11-01 19:00:00', 'Igreja Matriz', FALSE,
+     '{"batismoParoquia": "Paróquia Santa Luzia", "batismoDiocese": "Diocese de São Miguel Paulista", "batismoLivro": "12", "batismoFolha": "3", "batismoTermo": "88"}'::jsonb,
+     'padre.pedro', '2025-11-03 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000006', 'CONFIRMACAO', 'DRAFT', 'COMUM', '2026-03-10', 'secretaria.paroquial', NULL, NULL, NULL,
+     'Paróquia Nossa Senhora de Fátima', '2026-03-08 19:00:00', 'Igreja Matriz', FALSE,
+     '{"batismoParoquia": "Paróquia Nossa Senhora de Fátima"}'::jsonb,
+     NULL, NULL, NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial', 0),
+    ('5a000000-0000-0000-0000-000000000007', 'MATRIMONIO', 'SEALED', 'COMUM', '2025-09-21', 'secretaria.paroquial', '3', '1', '7',
+     'Paróquia Nossa Senhora de Fátima', '2025-09-20 17:00:00', 'Igreja Matriz', FALSE,
+     '{"numeroProcessoHabilitacao": "HAB-2025-031"}'::jsonb,
+     'padre.pedro', '2025-09-22 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000008', 'MATRIMONIO', 'SEALED', 'RESERVADO', '2025-10-05', 'padre.pedro', 'R1', '1', '1',
+     'Paróquia Nossa Senhora de Fátima', '2025-10-04 08:00:00', 'Capela da Matriz', FALSE,
+     '{"numeroProcessoHabilitacao": "HAB-RES-001"}'::jsonb,
+     'padre.pedro', '2025-10-05 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro', 0),
+    ('5a000000-0000-0000-0000-000000000009', 'ORDEM', 'SEALED', 'COMUM', '2024-12-09', 'secretaria.paroquial', '4', '2', '3',
+     'Paróquia Nossa Senhora de Fátima', '2024-12-08 10:00:00', 'Catedral Diocesana', FALSE,
+     '{"grau": "DIACONATO_PERMANENTE", "incardinacao": "Diocese de São Miguel Paulista"}'::jsonb,
+     'padre.pedro', '2024-12-10 12:00:00+00', NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro', 0)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.assento_participantes (
+    id, assento_id, papel, nome_historico, documento, local_nascimento, catolico, crismado, idade_na_celebracao,
+    condicao_canonica, fiel_id, clerigo_id, vinculo_pendente, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    -- 01 Batismo: batizando sem cadastro (late binding) e demais vinculados
+    ('5b000000-0000-0000-0000-000000000101', '5a000000-0000-0000-0000-000000000001', 'BATIZANDO', 'Sofia Oliveira', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5b000000-0000-0000-0000-000000000102', '5a000000-0000-0000-0000-000000000001', 'MAE', 'Maria Oliveira', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000002', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000103', '5a000000-0000-0000-0000-000000000001', 'PAI', 'Carlos de Oliveira', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000010', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000104', '5a000000-0000-0000-0000-000000000001', 'PADRINHO', 'Pedro Junior', NULL, NULL, TRUE, TRUE, 30, NULL, '1f000000-0000-0000-0000-000000000004', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000105', '5a000000-0000-0000-0000-000000000001', 'MADRINHA', 'Lúcia de Oliveira', NULL, NULL, TRUE, TRUE, 35, NULL, '1f000000-0000-0000-0000-000000000009', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000106', '5a000000-0000-0000-0000-000000000001', 'MINISTRO_CELEBRANTE', 'Pe. Pedro da Silva', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, '1c000000-0000-0000-0000-000000000001', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    -- 02 Batismo adotivo (dado sensível): adotantes e padrinho vinculados, batizando sem cadastro
+    ('5b000000-0000-0000-0000-000000000201', '5a000000-0000-0000-0000-000000000002', 'BATIZANDO', 'Miguel Acolhida', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5b000000-0000-0000-0000-000000000202', '5a000000-0000-0000-0000-000000000002', 'ADOTANTE', 'Marta Acolhida São José', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000021', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000203', '5a000000-0000-0000-0000-000000000002', 'ADOTANTE', 'Paulo Dízimo São José', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000022', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000204', '5a000000-0000-0000-0000-000000000002', 'PADRINHO', 'Mateus Tesoureiro Santo Agostinho', NULL, NULL, TRUE, TRUE, 43, NULL, '1f000000-0000-0000-0000-000000000018', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000205', '5a000000-0000-0000-0000-000000000002', 'MINISTRO_CELEBRANTE', 'Pe. João Batista', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, '1c000000-0000-0000-0000-000000000006', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    -- 03 Batismo rascunho: batizando com vínculo PENDENTE (aguarda Aprovações), demais sem cadastro
+    ('5b000000-0000-0000-0000-000000000301', '5a000000-0000-0000-0000-000000000003', 'BATIZANDO', 'Lucas Fiel São José', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000024', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5b000000-0000-0000-0000-000000000302', '5a000000-0000-0000-0000-000000000003', 'MAE', 'Rosa Fiel São José', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    -- 04 Batismo cancelado (duplicidade)
+    ('5b000000-0000-0000-0000-000000000401', '5a000000-0000-0000-0000-000000000004', 'BATIZANDO', 'Sofia Oliveira', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5b000000-0000-0000-0000-000000000402', '5a000000-0000-0000-0000-000000000004', 'MAE', 'Maria Oliveira', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    -- 05 Confirmação
+    ('5b000000-0000-0000-0000-000000000501', '5a000000-0000-0000-0000-000000000005', 'CRISMANDO', 'Clara Fiel Santo Agostinho', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000025', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000502', '5a000000-0000-0000-0000-000000000005', 'PADRINHO', 'Carlos de Oliveira', NULL, NULL, TRUE, TRUE, 45, NULL, '1f000000-0000-0000-0000-000000000010', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000503', '5a000000-0000-0000-0000-000000000005', 'MINISTRO_CELEBRANTE', 'Pe. João Batista', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, '1c000000-0000-0000-0000-000000000006', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    -- 06 Confirmação rascunho: crismando com vínculo PENDENTE
+    ('5b000000-0000-0000-0000-000000000601', '5a000000-0000-0000-0000-000000000006', 'CRISMANDO', 'Rafael Secretário São José', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000016', NULL, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5b000000-0000-0000-0000-000000000602', '5a000000-0000-0000-0000-000000000006', 'MINISTRO_CELEBRANTE', 'Pe. Pedro da Silva', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    -- 07 Matrimônio
+    ('5b000000-0000-0000-0000-000000000701', '5a000000-0000-0000-0000-000000000007', 'CONJUGE', 'João Santos', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000003', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000702', '5a000000-0000-0000-0000-000000000007', 'CONJUGE', 'Lúcia de Oliveira', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000009', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000703', '5a000000-0000-0000-0000-000000000007', 'TESTEMUNHA', 'Marcos Tesoureiro São José', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000017', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000704', '5a000000-0000-0000-0000-000000000007', 'TESTEMUNHA', 'Tiago Pascom', NULL, NULL, NULL, NULL, NULL, NULL, '1f000000-0000-0000-0000-000000000019', NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000705', '5a000000-0000-0000-0000-000000000007', 'MINISTRO_ASSISTENTE', 'Pe. Pedro da Silva', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, '1c000000-0000-0000-0000-000000000001', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    -- 08 Matrimônio reservado (secreto): nubentes e testemunhas sem cadastro; ministro vinculado
+    ('5b000000-0000-0000-0000-000000000801', '5a000000-0000-0000-0000-000000000008', 'CONJUGE', 'Nubente Reservado A', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000802', '5a000000-0000-0000-0000-000000000008', 'CONJUGE', 'Nubente Reservado B', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000803', '5a000000-0000-0000-0000-000000000008', 'TESTEMUNHA', 'Testemunha Reservada 1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000804', '5a000000-0000-0000-0000-000000000008', 'TESTEMUNHA', 'Testemunha Reservada 2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000805', '5a000000-0000-0000-0000-000000000008', 'MINISTRO_ASSISTENTE', 'Pe. Pedro da Silva', NULL, NULL, NULL, NULL, NULL, 'PRESBITERO', NULL, '1c000000-0000-0000-0000-000000000001', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    -- 09 Ordem
+    ('5b000000-0000-0000-0000-000000000901', '5a000000-0000-0000-0000-000000000009', 'ORDENADO', 'Francisco de Assis Costa', NULL, 'São Paulo/SP/BR', NULL, NULL, NULL, 'DIACONO', NULL, '1c000000-0000-0000-0000-000000000007', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5b000000-0000-0000-0000-000000000902', '5a000000-0000-0000-0000-000000000009', 'BISPO_ORDENANTE', 'Dom Aparecido Ribeiro', NULL, NULL, NULL, NULL, NULL, 'BISPO', NULL, NULL, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.averbacoes_batismo (
+    id, assento_id, tipo_evento, data_averbacao, numero_documento, teor_nota, reservada, inserida_por, status,
+    homologada_por, homologada_em_utc, criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    ('5c000000-0000-0000-0000-000000000001', '5a000000-0000-0000-0000-000000000001', 'CONFIRMACAO', '2025-11-05', 'NOT-2025-014',
+     'Confirmada em 01/11/2025 na Paróquia Nossa Senhora de Fátima, livro 2, folha 5, termo 20.', FALSE, 'secretaria.paroquial', 'HOMOLOGADA',
+     'padre.pedro', '2025-11-06 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'padre.pedro'),
+    ('5c000000-0000-0000-0000-000000000002', '5a000000-0000-0000-0000-000000000001', 'MATRIMONIO', '2026-02-20', 'NOT-2026-003',
+     'Matrimônio celebrado em 14/02/2026 na Paróquia São Judas Tadeu, conforme notificação recebida.', FALSE, 'secretaria.paroquial', 'PENDENTE_HOMOLOGACAO',
+     NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5c000000-0000-0000-0000-000000000003', '5a000000-0000-0000-0000-000000000002', 'ANOTACAO_DISCIPLINAR', '2025-06-01', 'DEC-2025-007',
+     'Anotação reservada por determinação do Ordinário.', TRUE, 'padre.pedro', 'HOMOLOGADA',
+     'padre.pedro', '2025-06-01 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.assento_ressalvas (
+    id, assento_id, campo, valor_original, valor_corrigido, justificativa, atestada_por, atestada_em_utc,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    ('5d000000-0000-0000-0000-000000000001', '5a000000-0000-0000-0000-000000000001', 'localNascimento', 'São Paulo/SP/BR', 'Guarulhos/SP/BR',
+     'Erro material de grafia apurado na certidão de nascimento apresentada.', 'padre.pedro', '2025-04-02 12:00:00+00',
+     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.assento_notificacoes (
+    id, assento_id, destinatario_paroquia, emitida_em, enviada_em, registrada_por,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    ('5e000000-0000-0000-0000-000000000001', '5a000000-0000-0000-0000-000000000005', 'Paróquia Santa Luzia', '2025-11-02', '2025-11-05', 'secretaria.paroquial', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5e000000-0000-0000-0000-000000000002', '5a000000-0000-0000-0000-000000000007', 'Paróquia Santa Luzia', '2025-09-21', '2025-09-24', 'secretaria.paroquial', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5e000000-0000-0000-0000-000000000003', '5a000000-0000-0000-0000-000000000007', 'Paróquia São Judas Tadeu', '2025-09-21', NULL, 'secretaria.paroquial', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5e000000-0000-0000-0000-000000000004', '5a000000-0000-0000-0000-000000000009', 'Paróquia Santa Luzia', '2024-12-09', '2024-12-12', 'secretaria.paroquial', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.assento_historico (
+    id, assento_id, acao, usuario_id, ator, perfil, endereco_ip, valores_anteriores, valores_posteriores, ocorrido_em_utc,
+    criado_em_utc, atualizado_em_utc, criado_por, atualizado_por
+) VALUES
+    ('5f000000-0000-0000-0000-000000000001', '5a000000-0000-0000-0000-000000000001', 'lavrar', '10000000-0000-0000-0000-000000000027', 'secretaria.paroquial', 'secretaria-paroquial', '10.0.0.15',
+     NULL, '{"status":"DRAFT"}', '2025-03-16 14:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5f000000-0000-0000-0000-000000000002', '5a000000-0000-0000-0000-000000000001', 'homologar', '10000000-0000-0000-0000-000000000001', 'padre.pedro', 'paroco', '10.0.0.7',
+     '{"status":"DRAFT"}', '{"status":"SEALED","homologadoPor":"padre.pedro"}', '2025-03-17 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5f000000-0000-0000-0000-000000000003', '5a000000-0000-0000-0000-000000000001', 'retificar', '10000000-0000-0000-0000-000000000001', 'padre.pedro', 'paroco', '10.0.0.7',
+     '{"ressalvas":[]}', '{"ressalvas":[{"campo":"localNascimento"}]}', '2025-04-02 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro'),
+    ('5f000000-0000-0000-0000-000000000004', '5a000000-0000-0000-0000-000000000003', 'lavrar', '10000000-0000-0000-0000-000000000027', 'secretaria.paroquial', 'secretaria-paroquial', '10.0.0.15',
+     NULL, '{"status":"DRAFT","vinculoPendente":true}', '2026-02-02 14:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'secretaria.paroquial', 'secretaria.paroquial'),
+    ('5f000000-0000-0000-0000-000000000005', '5a000000-0000-0000-0000-000000000004', 'cancelar', '10000000-0000-0000-0000-000000000001', 'padre.pedro', 'paroco', '10.0.0.7',
+     '{"status":"SEALED"}', '{"status":"CANCELADO"}', '2025-03-18 12:00:00+00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'padre.pedro', 'padre.pedro')
+ON CONFLICT (id) DO NOTHING;
+
+-- Notificações aos Párocos pelos vínculos propostos pela Secretaria (assentos 03 e 06)
+INSERT INTO calendario.notificacoes (id, usuario_id, tipo, mensagem, criado_em_utc, lida_em_utc)
+VALUES
+    ('88000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000001', 'SACRAMENTO_VINCULO_PENDENTE',
+     '1 vínculo(s) de fiel/clérigo em assento de BATISMO proposto(s) por ''secretaria.paroquial'' aguardam aprovação do Pároco.', CURRENT_TIMESTAMP, NULL),
+    ('88000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000001', 'SACRAMENTO_VINCULO_PENDENTE',
+     '1 vínculo(s) de fiel/clérigo em assento de CONFIRMACAO proposto(s) por ''secretaria.paroquial'' aguardam aprovação do Pároco.', CURRENT_TIMESTAMP, NULL)
+ON CONFLICT (id) DO NOTHING;

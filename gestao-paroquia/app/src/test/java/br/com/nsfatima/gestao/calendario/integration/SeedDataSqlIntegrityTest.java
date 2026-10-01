@@ -8,12 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+import br.com.nsfatima.gestao.sacramento.application.service.RequisitosAssentoRegistry;
+import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
+import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramentalId;
+import br.com.nsfatima.gestao.sacramento.domain.model.StatusAssento;
+import br.com.nsfatima.gestao.sacramento.domain.model.Visibilidade;
+import br.com.nsfatima.gestao.sacramento.domain.repository.AssentoSacramentalRepository;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +39,15 @@ public class SeedDataSqlIntegrityTest {
 
     @Autowired
     private Flyway flyway;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private AssentoSacramentalRepository assentoRepository;
+
+    @Autowired
+    private RequisitosAssentoRegistry requisitosAssento;
 
     @BeforeEach
     @AfterEach
@@ -197,6 +216,68 @@ public class SeedDataSqlIntegrityTest {
                 "Seed deve incluir eventos no formato ONLINE");
         assertTrue(eventosHibridoCount != null && eventosHibridoCount >= 1,
                 "Seed deve incluir eventos no formato HIBRIDO");
+
+        verificarCenariosDeSacramentos();
+    }
+
+    /**
+     * Cenários do módulo de sacramentos: cobertura de tipos, estados, livro reservado, vínculos pendentes,
+     * averbações, ressalvas, notificações canônicas e trilha; e prova de que todo assento homologado do seed
+     * satisfaz os requisitos canônicos do domínio.
+     */
+    private void verificarCenariosDeSacramentos() {
+        assertEquals(4, contar("SELECT COUNT(DISTINCT tipo) FROM calendario.assentos_sacramentais"),
+                "Seed deve cobrir Batismo, Confirmação, Matrimônio e Ordem");
+        assertEquals(3, contar("SELECT COUNT(DISTINCT status) FROM calendario.assentos_sacramentais"),
+                "Seed deve cobrir DRAFT, SEALED e CANCELADO");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assentos_sacramentais "
+                + "WHERE visibilidade = 'RESERVADO'") >= 1,
+                "Seed deve incluir assento de livro reservado");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assentos_sacramentais WHERE dado_sensivel") >= 1,
+                "Seed deve incluir assento com dado sensível (filiação adotiva)");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_participantes WHERE vinculo_pendente") >= 2,
+                "Seed deve incluir vínculos pendentes de aprovação do Pároco");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_participantes "
+                + "WHERE fiel_id IS NOT NULL AND NOT vinculo_pendente") >= 1
+                && contar("SELECT COUNT(*) FROM calendario.assento_participantes "
+                + "WHERE clerigo_id IS NOT NULL AND NOT vinculo_pendente") >= 1,
+                "Seed deve incluir vínculos aprovados a fiel e a clérigo");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_participantes "
+                + "WHERE fiel_id IS NULL AND clerigo_id IS NULL") >= 1,
+                "Seed deve incluir participantes sem cadastro (late binding)");
+        assertEquals(2, contar("SELECT COUNT(DISTINCT status) FROM calendario.averbacoes_batismo"),
+                "Seed deve incluir averbações pendentes e homologadas");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.averbacoes_batismo WHERE reservada") >= 1,
+                "Seed deve incluir averbação reservada");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_ressalvas") >= 1, "Seed deve incluir ressalva");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_notificacoes WHERE enviada_em IS NULL") >= 1
+                && contar("SELECT COUNT(*) FROM calendario.assento_notificacoes WHERE enviada_em IS NOT NULL") >= 1,
+                "Seed deve incluir notificações canônicas enviadas e ainda não enviadas");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.assento_historico") >= 1, "Seed deve incluir trilha");
+        assertTrue(contar("SELECT COUNT(*) FROM calendario.notificacoes "
+                + "WHERE tipo = 'SACRAMENTO_VINCULO_PENDENTE'") >= 1,
+                "Seed deve notificar o Pároco dos vínculos pendentes");
+
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+            List<UUID> homologados = jdbcTemplate.queryForList(
+                    "SELECT id FROM calendario.assentos_sacramentais WHERE status = 'SEALED'", UUID.class);
+            assertThat(homologados).isNotEmpty();
+            for (UUID id : homologados) {
+                AssentoSacramental assento = assentoRepository.findById(
+                        new AssentoSacramentalId(id)).orElseThrow();
+                assertThat(requisitosAssento.para(assento.getTipo()).pendencias(assento.getTeor()))
+                        .as("Assento homologado do seed deve cumprir os requisitos canônicos: %s", id).isEmpty();
+                assertThat(assento.getStatus()).isEqualTo(StatusAssento.SEALED);
+            }
+            assertThat(assentoRepository.listar(null, false))
+                    .as("Livro reservado não aparece na listagem da Secretaria")
+                    .noneMatch(a -> a.getVisibilidade() == Visibilidade.RESERVADO);
+        });
+    }
+
+    private int contar(String sql) {
+        Integer total = jdbcTemplate.queryForObject(sql, Integer.class);
+        return total == null ? 0 : total;
     }
 
     /**
