@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-30
+
 ### Removido
 - **Saneamento e Limpeza da Suíte de Testes (Backend e Frontend):**
   - Remoção de testes obsoletos preliminares BDD/SDD (`SddCenario1CadastroSemLoginIntegrationTest`, `SddCenario2ConsultaFielUsuarioIntegrationTest`, `SddCenario3AcessoVigarioIntegrationTest`), superados pela suíte canônica de testes de domínio de Fiel, Membro e IAM.
