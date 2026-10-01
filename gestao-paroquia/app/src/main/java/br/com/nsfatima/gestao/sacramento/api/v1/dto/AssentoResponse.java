@@ -40,13 +40,14 @@ public record AssentoResponse(
         String motivoCancelamento) {
 
     /** Participante com snapshot textual e ponteiros opcionais de vínculo. */
-    public record ParticipanteResponse(UUID id, String papel, String nomeHistorico, String localNascimento,
-                                       Boolean catolico, Boolean crismado, Integer idadeNaCelebracao,
-                                       String condicaoCanonica, UUID fielId, UUID clerigoId) {
+    public record ParticipanteResponse(UUID id, String papel, String nomeHistorico, String documento,
+                                       String localNascimento, Boolean catolico, Boolean crismado,
+                                       Integer idadeNaCelebracao, String condicaoCanonica, UUID fielId,
+                                       UUID clerigoId) {
         static ParticipanteResponse de(Participante p) {
-            return new ParticipanteResponse(p.id(), p.papel().name(), p.nomeHistorico(), p.localNascimento(),
-                    p.catolico(), p.crismado(), p.idadeNaCelebracao(), p.condicaoCanonica(), p.fielId(),
-                    p.clerigoId());
+            return new ParticipanteResponse(p.id(), p.papel().name(), p.nomeHistorico(), p.documento(),
+                    p.localNascimento(), p.catolico(), p.crismado(), p.idadeNaCelebracao(), p.condicaoCanonica(),
+                    p.fielId(), p.clerigoId());
         }
     }
 

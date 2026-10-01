@@ -313,3 +313,30 @@ export const isUnlinkedUser = (user: User | null): boolean => {
 
   return false;
 };
+
+/**
+ * Escrituração preparatória de assentos sacramentais (rascunho, vínculo, averbação, certidão):
+ * Pároco e Secretaria Paroquial. ADMIN não atua em atos de fé pública (RN-IAM-04).
+ */
+export const canManageSacramentos = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'PAROCO', 'SECRETARIA_PAROQUIAL');
+};
+
+/** Leitura do livro sacramental: Pároco, Secretaria e Bispo Diocesano (visitas pastorais, Cân. 535 §4). */
+export const canViewSacramentos = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'PAROCO', 'SECRETARIA_PAROQUIAL', 'BISPO_DIOCESANO');
+};
+
+/** Fé pública: homologar, retificar, cancelar e consultar a trilha do assento — exclusivamente o Pároco (Cân. 535 §1). */
+export const canHomologarSacramento = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'PAROCO');
+};
+
+/** Livro reservado (matrimônio secreto): Pároco sob licença e Bispo Diocesano; nunca a Secretaria. */
+export const canAcessarLivroReservado = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'PAROCO', 'BISPO_DIOCESANO');
+};

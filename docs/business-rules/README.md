@@ -45,3 +45,4 @@ Este diretório centraliza a documentação viva (*Living Documentation*) das re
 | **Patrimônio** | [`patrimonio.md`](./patrimonio.md) | Tombamento de bens móveis e imóveis, conservação, alocação de ativos em eventos e responsabilidade. |
 | **Projeto** | [`projeto.md`](./projeto.md) | Gestão de projetos pastorais, metas, status, métricas de progresso e diagnósticos preditivos de risco. |
 | **Reserva** | [`reserva.md`](./reserva.md) | Bloqueios temporários e conciliação de espaços paroquiais para eventos externos e comunitários. |
+| **Sacramento** | [`sacramento.md`](./sacramento.md) | Assentos de Batismo, Confirmação, Matrimônio e Ordem com fé pública, vínculo tardio a fiel/clérigo, averbações, retificação, certidões e livro reservado. |

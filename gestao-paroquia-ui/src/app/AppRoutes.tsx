@@ -12,6 +12,7 @@ const Calendario = lazy(() => import('@/contextos/calendario/presentation/pages/
 const Painel = lazy(() => import('@/contextos/painel/presentation/pages/Painel'));
 const Aprovacoes = lazy(() => import('@/contextos/aprovacao/presentation/pages/Aprovacoes'));
 const Projetos = lazy(() => import('@/contextos/projeto/presentation/pages/Projetos'));
+const Sacramentos = lazy(() => import('@/contextos/sacramento/presentation/pages/Sacramentos'));
 const Ativos = lazy(() => import('@/contextos/patrimonio/presentation/pages/Ativos'));
 const Configuracoes = lazy(() => import('@/contextos/governanca/presentation/pages/Configuracoes'));
 const Organograma = lazy(() => import('@/contextos/organizacao/presentation/pages/Organograma'));
@@ -99,6 +100,7 @@ const AppRoutes = () => {
                 />
                 <Route path="projetos" element={<Projetos />} />
                 <Route path="reservas" element={<Reservas />} />
+                <Route path="sacramentos" element={<Sacramentos />} />
                 <Route path="ativos" element={<Ativos />} />
                 <Route path="locais" element={<CadastroRoute tipo="locais"><Locais /></CadastroRoute>} />
                 <Route path="organizacoes" element={<CadastroRoute tipo="organizacoes"><Organizacoes /></CadastroRoute>} />

@@ -8,6 +8,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Adicionado
+- **Módulo de Gerenciamento de Sacramentos (`sacramento`):**
+  - Livro de assentos de Batismo, Confirmação, Matrimônio e Ordem Sacra com ciclo `DRAFT → SEALED` (homologação privativa do Pároco), cancelamento motivado e nenhuma exclusão física (triggers no banco).
+  - Snapshot textual dos participantes com vínculo tardio opcional a Fiel/Clérigo, que nunca altera o texto lavrado; endpoint de visão por vínculo.
+  - Averbações marginais append-only no Batismo (digitação pela Secretaria, homologação pelo Pároco), ressalvas de retificação material, notificações canônicas e certidão narrativa com omissão de dados sensíveis.
+  - Livro reservado (matrimônio secreto) invisível à Secretaria.
+  - Trilha estrita `assento_historico` (autor, perfil, IP, valores anteriores e posteriores) e matriz de alçadas `AlcadaSacramentalPolicy`; `ADMIN` sem acesso.
+  - Frontend: página `/sacramentos` com abas por sacramento, formulário de rascunho, ficha com ações por alçada, vínculo, averbação, retificação, cancelamento e certidão.
+  - Documentação `docs/business-rules/sacramento.md` (RN-SAC-01 a RN-SAC-09).
+
 ## [0.6.0] - 2026-10-01
 
 ### Adicionado
