@@ -67,7 +67,7 @@ export const VinculoDialog: React.FC<VinculoDialogProps> = ({
     queryFn: async (): Promise<Candidato[]> =>
       clerical
         ? (await listarClerigos()).map((c) => ({ id: c.clerigoId, nome: c.nomeCivil }))
-        : (await getFieis()).flatMap((f) => (f.nome ? [{ id: f.id, nome: f.nome }] : [])),
+        : (await getFieis()).flatMap((f) => (f.nome ? [{ id: f.fielId ?? f.id, nome: f.nome }] : [])),
     enabled: open && papel !== '',
   });
 

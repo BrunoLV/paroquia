@@ -355,8 +355,8 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
             </CardContent>
           </Card>
 
-          {/* Vida sacramental: assentos do módulo `sacramento` vinculados a este fiel */}
-          {fiel && <VidaSacramentalCard pessoaId={fiel.id} />}
+          {/* Vida sacramental: assentos do módulo `sacramento` vinculados a este fiel; a API serializa o identificador como `fielId` */}
+          {fiel && <VidaSacramentalCard pessoaId={fiel.fielId ?? fiel.id} />}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
