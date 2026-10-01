@@ -48,12 +48,27 @@ describe('VinculosPendentesPanel', () => {
     expect(screen.getByText(/Carlos de Souza \(fiel\)/)).toBeInTheDocument();
   });
 
-  test('aprova e rejeita pelos endpoints do Pároco', async () => {
+  test('a tabela não tem botões de decisão: só o menu de ações com Visualizar detalhes', async () => {
     const user = userEvent.setup();
     await renderPainel([pendente]);
-    await user.click(await screen.findByRole('button', { name: /Aprovar vínculo de Carlos Souza/ }));
+    await screen.findByText('Padrinho');
+    expect(screen.queryByRole('button', { name: /Aprovar vínculo/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Rejeitar vínculo/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Ações' }));
+    expect(screen.getByRole('menuitem', { name: /Visualizar detalhes/ })).toBeInTheDocument();
+  });
+
+  test('aprova e rejeita pelo drawer de detalhes, nos endpoints do Pároco', async () => {
+    const user = userEvent.setup();
+    await renderPainel([pendente]);
+    await user.click(await screen.findByRole('button', { name: 'Ações' }));
+    await user.click(screen.getByRole('menuitem', { name: /Visualizar detalhes/ }));
+    expect(await screen.findByText('TOMADA DE DECISÃO')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Aprovar vínculo' }));
     expect(mockedApiClient.post).toHaveBeenCalledWith('/sacramentos/a1/participantes/p1/vinculo/aprovacao');
-    await user.click(screen.getByRole('button', { name: /Rejeitar vínculo de Carlos Souza/ }));
+    await user.click(await screen.findByRole('button', { name: 'Ações' }));
+    await user.click(screen.getByRole('menuitem', { name: /Visualizar detalhes/ }));
+    await user.click(await screen.findByRole('button', { name: 'Rejeitar vínculo' }));
     expect(mockedApiClient.post).toHaveBeenCalledWith('/sacramentos/a1/participantes/p1/vinculo/rejeicao');
   });
 

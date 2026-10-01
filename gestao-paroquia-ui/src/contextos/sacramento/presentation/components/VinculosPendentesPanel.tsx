@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import {
-  Alert, Box, Card, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead,
-  TablePagination, TableRow, Typography,
+  Alert, Box, Card, Divider, Drawer, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer,
+  TableHead, TablePagination, TableRow, Typography,
 } from '@mui/material';
+import BadgeIcon from '@mui/icons-material/Badge';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CategoryIcon from '@mui/icons-material/Category';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import PersonIcon from '@mui/icons-material/Person';
 import LinkIcon from '@mui/icons-material/Link';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
-import { PAPEL_LABEL, TIPO_SACRAMENTO_LABEL } from '@/contextos/sacramento/domain/sacramento';
+import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
+import { InfoField } from '@/contextos/fiel/presentation/components/fieis/fielConstants';
+import { PAPEL_LABEL, TIPO_SACRAMENTO_LABEL, VinculoPendente } from '@/contextos/sacramento/domain/sacramento';
 import { useAssentoMutations, useVinculosPendentes } from '@/contextos/sacramento/presentation/hooks/useAssentos';
 import { getTipoSacramentoMeta } from '@/contextos/sacramento/presentation/assentoMeta';
 
@@ -22,6 +30,7 @@ export const VinculosPendentesPanel: React.FC = () => {
   const m = useAssentoMutations();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selecionado, setSelecionado] = useState<VinculoPendente | null>(null);
   const paginados = pendentes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -73,25 +82,7 @@ export const VinculosPendentesPanel: React.FC = () => {
                     <TableCell sx={{ fontWeight: 600 }}>{v.nomeHistorico}</TableCell>
                     <TableCell>{v.pessoaNome ?? '—'} ({v.tipoPessoa === 'FIEL' ? 'fiel' : 'clérigo'})</TableCell>
                     <TableCell align="right">
-                      <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
-                        <ActionButton
-                          title={`Aprovar vínculo de ${v.nomeHistorico}`}
-                          label="Aprovar"
-                          icon={<VerifiedIcon />}
-                          color="primary"
-                          disabled={m.aprovarVinculo.isPending}
-                          onClick={() => m.aprovarVinculo.mutate({ id: v.assentoId, participanteId: v.participanteId })}
-                        />
-                        <ActionButton
-                          title={`Rejeitar vínculo de ${v.nomeHistorico}`}
-                          label="Rejeitar"
-                          icon={<CancelIcon />}
-                          color="error"
-                          variant="outlined"
-                          disabled={m.rejeitarVinculo.isPending}
-                          onClick={() => m.rejeitarVinculo.mutate({ id: v.assentoId, participanteId: v.participanteId })}
-                        />
-                      </Stack>
+                      <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setSelecionado(v) }]} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -114,6 +105,61 @@ export const VinculosPendentesPanel: React.FC = () => {
           />
         </>
       )}
+      {/* Drawer de detalhes, no padrão das demais solicitações: a decisão (aprovar/rejeitar) só existe aqui,
+          nunca como botões soltos na tabela. */}
+      <Drawer
+        anchor="right"
+        open={selecionado !== null}
+        onClose={() => setSelecionado(null)}
+        slotProps={{ paper: { sx: { width: { xs: '100%', sm: 580, md: 680 }, p: { xs: 2.5, sm: 3.5 }, overflowY: 'auto' } } }}
+      >
+        {selecionado && (
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>Detalhes do Vínculo Sacramental</Typography>
+              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setSelecionado(null)} />
+            </Box>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Sacramento" icon={<CategoryIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(selecionado.tipoSacramento)} />} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Termo" icon={<MenuBookIcon fontSize="inherit" />} value={`${selecionado.sujeito ?? 'Sem identificação'}${[selecionado.livro, selecionado.folha, selecionado.termo].every(Boolean) ? ` (${selecionado.livro}/${selecionado.folha}/${selecionado.termo})` : ''}`} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Tipo de participação" icon={<BadgeIcon fontSize="inherit" />} value={PAPEL_LABEL[selecionado.papel]} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Nome no termo" icon={<PersonIcon fontSize="inherit" />} value={selecionado.nomeHistorico} /></Grid>
+              <Grid size={{ xs: 12 }}><InfoField label={selecionado.tipoPessoa === 'FIEL' ? 'Fiel proposto' : 'Clérigo proposto'} icon={<LinkIcon fontSize="inherit" />} value={selecionado.pessoaNome ?? '—'} /></Grid>
+            </Grid>
+            <Box sx={{ mt: 4 }}>
+              <Divider sx={{ mb: 3 }} />
+              <Typography variant="subtitle2" color="textSecondary" gutterBottom>TOMADA DE DECISÃO</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Confira se o cadastro proposto corresponde à pessoa atestada no termo. Rejeitar remove o vínculo e preserva o texto lavrado.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <ActionButton
+                  title="Aprovar vínculo"
+                  icon={<VerifiedIcon />}
+                  color="success"
+                  disabled={m.aprovarVinculo.isPending || m.rejeitarVinculo.isPending}
+                  onClick={() => m.aprovarVinculo.mutate(
+                    { id: selecionado.assentoId, participanteId: selecionado.participanteId },
+                    { onSuccess: () => setSelecionado(null) },
+                  )}
+                  sx={{ border: '1px solid', borderColor: 'success.main' }}
+                />
+                <ActionButton
+                  title="Rejeitar vínculo"
+                  icon={<CancelIcon />}
+                  color="error"
+                  disabled={m.aprovarVinculo.isPending || m.rejeitarVinculo.isPending}
+                  onClick={() => m.rejeitarVinculo.mutate(
+                    { id: selecionado.assentoId, participanteId: selecionado.participanteId },
+                    { onSuccess: () => setSelecionado(null) },
+                  )}
+                  sx={{ border: '1px solid', borderColor: 'error.main' }}
+                />
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </Drawer>
     </Card>
   );
 };

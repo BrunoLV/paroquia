@@ -85,7 +85,7 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 
 ### RN-SAC-10: Vida Sacramental nas Fichas e Aprovação de Vínculos
 - As fichas de Fiel e de Clérigo exibem a seção "Vida sacramental" **somente para consulta**: assentos do módulo `sacramento` em que a pessoa está vinculada e o tipo de participação que teve. Os cadastros seguem módulos separados e nenhum dado sacramental é copiado para `fiel` ou `clero`. Não há vincular, aprovar nem desvincular a partir da ficha. A seção é visível a Pároco, Secretaria e Bispo Diocesano; demais perfis não a veem.
-- **Tela de Aprovações:** a aba "Vínculos Sacramentais" (visível ao Pároco) lista os vínculos propostos pela Secretaria com o sacramento, o termo, o tipo de participação, o nome atestado e o cadastro proposto para conferência. O Pároco aprova ou rejeita ali (`GET /api/v1/sacramentos/vinculos-pendentes`).
+- **Tela de Aprovações:** a aba "Vínculos Sacramentais" (visível ao Pároco) lista os vínculos propostos pela Secretaria com o sacramento, o termo, o tipo de participação, o nome atestado e o cadastro proposto para conferência. Como nas demais solicitações da tela, a linha tem apenas o menu "Ações" (Visualizar detalhes); a decisão do Pároco (aprovar ou rejeitar) é tomada no painel de detalhes, na seção "Tomada de decisão" (`GET /api/v1/sacramentos/vinculos-pendentes`).
 - **Notificação:** quando a Secretaria cria vínculos pendentes (ao vincular, lavrar ou editar rascunho), cada Pároco ativo recebe uma notificação persistente `SACRAMENTO_VINCULO_PENDENTE` com a quantidade e o tipo do sacramento, sem dados pessoais.
 - O Pároco é o único que desvincula, a partir do registro do sacramento. Assentos cancelados não aceitam novos vínculos.
 
