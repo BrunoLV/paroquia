@@ -6,6 +6,8 @@ import br.com.nsfatima.gestao.sacramento.api.v1.dto.AssentoResponse;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.VincularParticipanteRequest;
 import br.com.nsfatima.gestao.sacramento.application.port.out.ConsultaPessoaPort;
 import br.com.nsfatima.gestao.sacramento.application.service.AssentoAcessoService;
+import br.com.nsfatima.gestao.sacramento.application.port.out.NotificadorVinculoPort;
+import br.com.nsfatima.gestao.sacramento.application.service.NotificacaoVinculoService;
 import br.com.nsfatima.gestao.sacramento.application.service.SacramentoAuditoriaService;
 import br.com.nsfatima.gestao.sacramento.application.usecase.VincularParticipanteUseCase;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
@@ -30,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class VincularParticipanteUseCaseTest {
@@ -38,6 +42,7 @@ class VincularParticipanteUseCaseTest {
     private final AssentoSacramentalRepository repository = mock(AssentoSacramentalRepository.class);
     private final ConsultaPessoaPort pessoas = mock(ConsultaPessoaPort.class);
     private final SacramentoAuditoriaService auditoria = mock(SacramentoAuditoriaService.class);
+    private final NotificadorVinculoPort notificador = mock(NotificadorVinculoPort.class);
     private VincularParticipanteUseCase useCase;
     private AssentoSacramental assento;
     private Participante batizando;
@@ -54,11 +59,16 @@ class VincularParticipanteUseCaseTest {
         when(pessoas.nomeDoFiel(fielId)).thenReturn(Optional.of("Maria"));
         when(auditoria.capturar(any())).thenReturn("{}");
         AssentoAcessoService acesso = new AssentoAcessoService(repository, new AlcadaSacramentalPolicy());
-        useCase = new VincularParticipanteUseCase(resolver, acesso, pessoas, repository, auditoria);
+        useCase = new VincularParticipanteUseCase(resolver, acesso, pessoas, repository, auditoria,
+                new NotificacaoVinculoService(notificador));
     }
 
     private void como(String papel) {
         when(resolver.resolveRequired()).thenReturn(new EventoActorContext("u", papel, "CLERO", null, null, null));
+    }
+
+    private VincularParticipanteRequest comoBatizando() {
+        return new VincularParticipanteRequest(fielId, null, PapelParticipante.BATIZANDO);
     }
 
     private boolean pendente(AssentoResponse r) {
@@ -69,23 +79,46 @@ class VincularParticipanteUseCaseTest {
     void vinculoDaSecretariaNasceUmPendente() {
         como("secretaria-paroquial");
         AssentoResponse r = useCase.vincular(assento.getId().value(), batizando.id(),
-                new VincularParticipanteRequest(fielId, null));
+                comoBatizando());
         assertThat(pendente(r)).isTrue();
         assertThat(r.participantes().getFirst().fielId()).isEqualTo(fielId);
+    }
+
+    @Test
+    void vinculoDaSecretariaNotificaOsParocosUmaVez() {
+        como("secretaria-paroquial");
+        useCase.vincular(assento.getId().value(), batizando.id(), comoBatizando());
+        verify(notificador).notificarParocos("u", "BATISMO", 1);
+    }
+
+    @Test
+    void tipoDeParticipacaoDeveCoincidirComAPosicaoEscolhida() {
+        como("paroco");
+        UUID id = assento.getId().value();
+        assertThatThrownBy(() -> useCase.vincular(id, batizando.id(),
+                new VincularParticipanteRequest(fielId, null, PapelParticipante.PADRINHO)))
+                .hasMessageContaining("tipo de participação");
+    }
+
+    @Test
+    void vinculoDoParocoNaoGeraNotificacao() {
+        como("paroco");
+        useCase.vincular(assento.getId().value(), batizando.id(), comoBatizando());
+        verifyNoInteractions(notificador);
     }
 
     @Test
     void vinculoDoParocoNasceAprovado() {
         como("paroco");
         AssentoResponse r = useCase.vincular(assento.getId().value(), batizando.id(),
-                new VincularParticipanteRequest(fielId, null));
+                comoBatizando());
         assertThat(pendente(r)).isFalse();
     }
 
     @Test
     void secretariaNaoAprovaNemRejeitaNemDesvincula() {
         como("paroco");
-        useCase.vincular(assento.getId().value(), batizando.id(), new VincularParticipanteRequest(fielId, null));
+        useCase.vincular(assento.getId().value(), batizando.id(), comoBatizando());
         como("secretaria-paroquial");
         UUID id = assento.getId().value();
         assertThatThrownBy(() -> useCase.aprovar(id, batizando.id())).hasMessageContaining("APROVAR_VINCULO");
@@ -96,7 +129,7 @@ class VincularParticipanteUseCaseTest {
     @Test
     void parocoAprovaVinculoPendenteDaSecretaria() {
         como("secretaria-paroquial");
-        useCase.vincular(assento.getId().value(), batizando.id(), new VincularParticipanteRequest(fielId, null));
+        useCase.vincular(assento.getId().value(), batizando.id(), comoBatizando());
         como("paroco");
         AssentoResponse r = useCase.aprovar(assento.getId().value(), batizando.id());
         assertThat(pendente(r)).isFalse();
@@ -106,7 +139,7 @@ class VincularParticipanteUseCaseTest {
     @Test
     void parocoRejeitaERemoveOPonteiro() {
         como("secretaria-paroquial");
-        useCase.vincular(assento.getId().value(), batizando.id(), new VincularParticipanteRequest(fielId, null));
+        useCase.vincular(assento.getId().value(), batizando.id(), comoBatizando());
         como("paroco");
         AssentoResponse r = useCase.rejeitar(assento.getId().value(), batizando.id());
         assertThat(r.participantes().getFirst().fielId()).isNull();

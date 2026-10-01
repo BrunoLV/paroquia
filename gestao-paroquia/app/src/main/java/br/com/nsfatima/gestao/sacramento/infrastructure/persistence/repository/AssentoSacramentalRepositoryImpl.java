@@ -55,6 +55,11 @@ public class AssentoSacramentalRepositoryImpl implements AssentoSacramentalRepos
         return jpa.buscarPorVinculo(pessoaId, visiveis(incluirReservados)).stream().map(mapper::toDomain).toList();
     }
 
+    @Override
+    public List<AssentoSacramental> listarComVinculoPendente(boolean incluirReservados) {
+        return jpa.listarComVinculoPendente(visiveis(incluirReservados)).stream().map(mapper::toDomain).toList();
+    }
+
     private static Set<Visibilidade> visiveis(boolean incluirReservados) {
         return incluirReservados ? EnumSet.allOf(Visibilidade.class) : EnumSet.of(Visibilidade.COMUM);
     }

@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.AssentoResponse;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.LavrarAssentoRequest;
 import br.com.nsfatima.gestao.sacramento.application.service.AssentoAcessoService;
+import br.com.nsfatima.gestao.sacramento.application.service.NotificacaoVinculoService;
 import br.com.nsfatima.gestao.sacramento.application.service.SacramentoAuditoriaService;
 import br.com.nsfatima.gestao.sacramento.application.service.TeorAssentoFactory;
 import br.com.nsfatima.gestao.sacramento.application.service.UnicidadeTermoService;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** Lavra um novo rascunho de assento (Secretaria ou Pároco); a fé pública só nasce na homologação. */
 @Service
@@ -31,16 +33,19 @@ public class LavrarAssentoUseCase {
     private final UnicidadeTermoService unicidade;
     private final AssentoSacramentalRepository repository;
     private final SacramentoAuditoriaService auditoria;
+    private final NotificacaoVinculoService notificacaoVinculo;
 
     public LavrarAssentoUseCase(EventoActorContextResolver actorResolver, AssentoAcessoService acesso,
                                 TeorAssentoFactory teorFactory, UnicidadeTermoService unicidade,
-                                AssentoSacramentalRepository repository, SacramentoAuditoriaService auditoria) {
+                                AssentoSacramentalRepository repository, SacramentoAuditoriaService auditoria,
+                                NotificacaoVinculoService notificacaoVinculo) {
         this.actorResolver = actorResolver;
         this.acesso = acesso;
         this.teorFactory = teorFactory;
         this.unicidade = unicidade;
         this.repository = repository;
         this.auditoria = auditoria;
+        this.notificacaoVinculo = notificacaoVinculo;
     }
 
     @Transactional
@@ -55,6 +60,7 @@ public class LavrarAssentoUseCase {
                 visibilidade, teor, ator.actor(), Instant.now());
         AssentoSacramental salvo = repository.save(assento);
         auditoria.registrar(ator, "lavrar", null, salvo);
+        notificacaoVinculo.notificarNovos(ator.actor(), Set.of(), salvo);
         return AssentoResponse.de(salvo);
     }
 }

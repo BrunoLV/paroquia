@@ -65,7 +65,7 @@ const Sacramentos = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [visualizarId, setVisualizarId] = useState<string | null>(null);
   const [form, setForm] = useState<{ edicao: Assento | null; aberto: boolean }>({ edicao: null, aberto: false });
-  const [vinculo, setVinculo] = useState<{ assento: Assento; participante: Participante } | null>(null);
+  const [vinculo, setVinculo] = useState<{ assento: Assento; participante: Participante | null } | null>(null);
   const [averbarAssento, setAverbarAssento] = useState<Assento | null>(null);
   const [retificarAssento, setRetificarAssento] = useState<Assento | null>(null);
   const [cancelarAssento, setCancelarAssento] = useState<Assento | null>(null);
@@ -160,10 +160,8 @@ const Sacramentos = () => {
         onRetificar={setRetificarAssento}
         onCancelar={setCancelarAssento}
         onCertidao={(a) => void abrirCertidao(a.id)}
-        onVincular={(assento, participante) => setVinculo({ assento, participante })}
+        onVincular={(assento, participante) => setVinculo({ assento, participante: participante ?? null })}
         onDesvincular={(a, p) => m.desvincular.mutate({ id: a.id, participanteId: p.id })}
-        onAprovarVinculo={(a, p) => m.aprovarVinculo.mutate({ id: a.id, participanteId: p.id })}
-        onRejeitarVinculo={(a, p) => m.rejeitarVinculo.mutate({ id: a.id, participanteId: p.id })}
         onAverbar={setAverbarAssento}
         onHomologarAverbacao={(a: Assento, av: Averbacao) => m.homologarAverbacao.mutate({ id: a.id, averbacaoId: av.id })}
       />
@@ -181,11 +179,13 @@ const Sacramentos = () => {
 
       <VinculoDialog
         open={vinculo !== null}
-        participante={vinculo?.participante ?? null}
+        semVinculo={(vinculo?.assento.participantes ?? []).filter((p) => !p.fielId && !p.clerigoId)}
+        inicial={vinculo?.participante ?? null}
+        propoe={!podeHomologar}
         isPending={m.vincular.isPending}
         onClose={() => setVinculo(null)}
         onConfirm={(v) => {
-          if (vinculo) m.vincular.mutate({ id: vinculo.assento.id, participanteId: vinculo.participante.id, ...v }, { onSuccess: () => setVinculo(null) });
+          if (vinculo) m.vincular.mutate({ id: vinculo.assento.id, ...v }, { onSuccess: () => setVinculo(null) });
         }}
       />
 

@@ -32,7 +32,7 @@ Manter o livro de assentos da paróquia com natureza jurídica e probatória, se
 
 ### RN-SAC-02: Desacoplamento Cadastral e Associação Tardia (Late Binding)
 - O cadastro de Fiel ou Clérigo **não é pré-requisito** para lavrar o assento.
-- Vincular é ação restrita a Secretaria e Pároco. O vínculo do **Pároco vale de imediato**; o da **Secretaria nasce pendente** e só passa a valer quando o Pároco o aprova. Rejeitar remove o ponteiro. Participante com vínculo (aprovado ou pendente) não aceita outro: é preciso desvincular antes.
+- Vincular é ação restrita a Secretaria e Pároco e é feita **exclusivamente a partir do registro do sacramento**, nunca pelas fichas de Fiel e Clérigo. O pedido informa o **tipo de participação** (padrinho, testemunha, ministro celebrante etc.), que deve coincidir com o papel da posição escolhida no termo; fiéis ocupam posições leigas e clérigos, posições ministeriais. O vínculo do **Pároco vale de imediato**; o da **Secretaria nasce pendente** e só passa a valer quando o Pároco o aprova **na tela de Aprovações**. Rejeitar remove o ponteiro e preserva o texto lavrado. Participante com vínculo (aprovado ou pendente) não aceita outro: é preciso desvincular antes.
 - Desvincular, aprovar e rejeitar são atos privativos do Pároco. A edição de rascunho pela Secretaria não remove nem troca um vínculo existente.
 - Cada participante grava em texto o que foi atestado na celebração. `fielId` (leigos) e `clerigoId` (ministros, ordenado, bispo ordenante) são opcionais; o vínculo pode ser criado ou removido a qualquer tempo, inclusive em termo selado, e **nunca altera o snapshot textual**.
 - Ao informar o cadastro na lavratura com nome em branco, o snapshot do nome é preenchido a partir dele.
@@ -83,10 +83,11 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 - O documento de cada participante é cifrado em repouso.
 - Visão 360º: `GET /api/v1/sacramentos/vinculados/{pessoaId}` lista os assentos em que o fiel ou clérigo está vinculado, respeitando a visibilidade do ator; cada item informa o participante e o papel que a pessoa ocupa no termo.
 
-### RN-SAC-10: Vida Sacramental nas Fichas de Fiel e Clérigo
-- As fichas de Fiel e de Clérigo exibem a seção "Vida sacramental" com os assentos do módulo `sacramento` em que a pessoa está vinculada e o papel que ocupa. Os cadastros continuam módulos separados: nenhum dado sacramental é copiado para `fiel` ou `clero`.
-- A partir da ficha, Pároco e Secretaria vinculam a pessoa a uma posição ainda sem cadastro de um assento existente. O vínculo da Secretaria aparece como pendente de aprovação; o Pároco o aprova ou rejeita e é o único que desvincula. Fiéis ocupam posições leigas; clérigos, posições ministeriais (ministro celebrante, ministro assistente, ordenado, bispo ordenante).
-- A seção é visível a Pároco, Secretaria e Bispo Diocesano (este só consulta); demais perfis não a veem. Assentos cancelados não são oferecidos para novo vínculo.
+### RN-SAC-10: Vida Sacramental nas Fichas e Aprovação de Vínculos
+- As fichas de Fiel e de Clérigo exibem a seção "Vida sacramental" **somente para consulta**: assentos do módulo `sacramento` em que a pessoa está vinculada e o tipo de participação que teve. Os cadastros seguem módulos separados e nenhum dado sacramental é copiado para `fiel` ou `clero`. Não há vincular, aprovar nem desvincular a partir da ficha. A seção é visível a Pároco, Secretaria e Bispo Diocesano; demais perfis não a veem.
+- **Tela de Aprovações:** a aba "Vínculos Sacramentais" (visível ao Pároco) lista os vínculos propostos pela Secretaria com o sacramento, o termo, o tipo de participação, o nome atestado e o cadastro proposto para conferência. O Pároco aprova ou rejeita ali (`GET /api/v1/sacramentos/vinculos-pendentes`).
+- **Notificação:** quando a Secretaria cria vínculos pendentes (ao vincular, lavrar ou editar rascunho), cada Pároco ativo recebe uma notificação persistente `SACRAMENTO_VINCULO_PENDENTE` com a quantidade e o tipo do sacramento, sem dados pessoais.
+- O Pároco é o único que desvincula, a partir do registro do sacramento. Assentos cancelados não aceitam novos vínculos.
 
 ---
 
@@ -97,7 +98,7 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 4. **Retificação:** Pároco registra ressalva justificada sobre termo selado.
 5. **Certidão:** extração narrativa do assento homologado.
 
-Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `GET /{id}`, `PUT /{id}` (rascunho), `POST /{id}/homologacao`, `PATCH /{id}/participantes/{participanteId}/vinculo`, `POST /{id}/participantes/{participanteId}/vinculo/aprovacao`, `POST /{id}/participantes/{participanteId}/vinculo/rejeicao`, `POST /{id}/participantes/{participanteId}/desvinculo`, `POST /{id}/averbacoes`, `POST /{id}/averbacoes/{averbacaoId}/homologacao`, `POST /{id}/retificacoes`, `POST /{id}/cancelamento`, `POST /{id}/notificacoes`, `GET /{id}/certidao`, `GET /{id}/historico`, `GET /vinculados/{pessoaId}`.
+Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `GET /{id}`, `PUT /{id}` (rascunho), `POST /{id}/homologacao`, `PATCH /{id}/participantes/{participanteId}/vinculo`, `GET /vinculos-pendentes`, `POST /{id}/participantes/{participanteId}/vinculo/aprovacao`, `POST /{id}/participantes/{participanteId}/vinculo/rejeicao`, `POST /{id}/participantes/{participanteId}/desvinculo`, `POST /{id}/averbacoes`, `POST /{id}/averbacoes/{averbacaoId}/homologacao`, `POST /{id}/retificacoes`, `POST /{id}/cancelamento`, `POST /{id}/notificacoes`, `GET /{id}/certidao`, `GET /{id}/historico`, `GET /vinculados/{pessoaId}`.
 
 ---
 
@@ -105,6 +106,7 @@ Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `
 
 ## 5. Integração e Bounded Contexts Relacionados
 - **`fiel` / `clero`:** leitura do nome civil por porta (`ConsultaPessoaPort`) apenas para validar o vínculo e preencher o snapshot; o contexto não depende de entidades desses módulos.
+- **`aprovacao` / `fiel` (notificações):** a fila de vínculos aparece na tela de Aprovações e a pendência gera notificação persistente aos Párocos.
 - **`iam`:** papéis `PAROCO`, `SECRETARIA_PAROQUIAL` e `BISPO_DIOCESANO` definem as alçadas; `ADMIN` é excluído.
 - **`observabilidade`:** ações registradas com identificadores opacos.
 

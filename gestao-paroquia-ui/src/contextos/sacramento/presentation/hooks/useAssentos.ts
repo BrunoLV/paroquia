@@ -11,6 +11,7 @@ import {
   lavrarAssento,
   listarAssentos,
   listarAssentosVinculados,
+  listarVinculosPendentes,
   obterAssento,
   obterHistorico,
   rejeitarVinculo,
@@ -20,6 +21,7 @@ import {
 import {
   AverbacaoPayload,
   LavrarAssentoPayload,
+  PapelParticipante,
   RetificacaoPayload,
   TeorPayload,
   TipoSacramento,
@@ -32,6 +34,7 @@ export const sacramentoKeys = {
   todos: ['sacramentos'] as const,
   lista: (tipo: TipoSacramento) => ['sacramentos', 'lista', tipo] as const,
   detalhe: (id: string) => ['sacramentos', 'detalhe', id] as const,
+  vinculosPendentes: ['sacramentos', 'vinculos-pendentes'] as const,
   vinculados: (pessoaId: string) => ['sacramentos', 'vinculados', pessoaId] as const,
   historico: (id: string) => ['sacramentos', 'historico', id] as const,
 };
@@ -46,6 +49,10 @@ export const useAssentosVinculados = (pessoaId: string | null, habilitado: boole
     queryFn: () => listarAssentosVinculados(pessoaId as string),
     enabled: Boolean(pessoaId) && habilitado,
   });
+
+/** Fila do Pároco; só consulta quando o perfil pode decidir vínculos. */
+export const useVinculosPendentes = (habilitado: boolean) =>
+  useQuery({ queryKey: sacramentoKeys.vinculosPendentes, queryFn: listarVinculosPendentes, enabled: habilitado });
 
 export const useAssento = (id: string | null) =>
   useQuery({ queryKey: sacramentoKeys.detalhe(id ?? ''), queryFn: () => obterAssento(id as string), enabled: Boolean(id) });
@@ -89,8 +96,9 @@ export const useAssentoMutations = () => {
     ),
     homologar: useMutacaoSacramento((id: string) => homologarAssento(id), 'Assento homologado.', 'Erro ao homologar o assento.'),
     vincular: useMutacaoSacramento(
-      ({ id, participanteId, fielId, clerigoId }: { id: string; participanteId: string; fielId?: string; clerigoId?: string }) =>
-        vincularParticipante(id, participanteId, { fielId, clerigoId }),
+      ({ id, participanteId, fielId, clerigoId, papel }: {
+        id: string; participanteId: string; fielId?: string; clerigoId?: string; papel: PapelParticipante;
+      }) => vincularParticipante(id, participanteId, { fielId, clerigoId, papel }),
       'Vínculo registrado (pendente de aprovação do Pároco, se proposto pela Secretaria).',
       'Erro ao vincular o participante.',
     ),

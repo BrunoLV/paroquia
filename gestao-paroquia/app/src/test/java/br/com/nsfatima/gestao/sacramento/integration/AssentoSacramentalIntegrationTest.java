@@ -143,4 +143,12 @@ class AssentoSacramentalIntegrationTest {
         mockMvc.perform(get(BASE + "/" + id).with(user("secretaria").roles("SECRETARIA_PAROQUIAL")))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("fila de vínculos pendentes: pároco consulta; secretaria é negada")
+    void filaDeVinculosPendentes_soParoco() throws Exception {
+        comoParoco(get(BASE + "/vinculos-pendentes")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
+        mockMvc.perform(get(BASE + "/vinculos-pendentes").with(user("secretaria").roles("SECRETARIA_PAROQUIAL")))
+                .andExpect(status().isForbidden());
+    }
 }

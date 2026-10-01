@@ -299,7 +299,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
           )}
 
           {/* Vida sacramental: assentos do módulo `sacramento` em que o clérigo é ministro ou ordenado */}
-          <VidaSacramentalCard pessoaId={clerigo.clerigoId} tipoPessoa="CLERIGO" />
+          <VidaSacramentalCard pessoaId={clerigo.clerigoId} />
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>

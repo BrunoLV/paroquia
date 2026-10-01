@@ -11,12 +11,14 @@ import br.com.nsfatima.gestao.sacramento.api.v1.dto.LavrarAssentoRequest;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.NotificacaoRequest;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.RetificacaoRequest;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.VincularParticipanteRequest;
+import br.com.nsfatima.gestao.sacramento.api.v1.dto.VinculoPendenteResponse;
 import br.com.nsfatima.gestao.sacramento.application.usecase.AtualizarRascunhoUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.AverbarBatismoUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.CancelarAssentoUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.ConsultarAssentosUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.EmitirCertidaoUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.HomologarAssentoUseCase;
+import br.com.nsfatima.gestao.sacramento.application.usecase.ListarVinculosPendentesUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.LavrarAssentoUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.RegistrarNotificacaoCanonicaUseCase;
 import br.com.nsfatima.gestao.sacramento.application.usecase.RetificarAssentoUseCase;
@@ -79,12 +81,14 @@ public class AssentoSacramentalController {
     private final RegistrarNotificacaoCanonicaUseCase notificarUseCase;
     private final ConsultarAssentosUseCase consultar;
     private final EmitirCertidaoUseCase certidaoUseCase;
+    private final ListarVinculosPendentesUseCase vinculosPendentesUseCase;
 
     public AssentoSacramentalController(LavrarAssentoUseCase lavrar, AtualizarRascunhoUseCase atualizar,
                                         HomologarAssentoUseCase homologar, VincularParticipanteUseCase vincular,
                                         AverbarBatismoUseCase averbar, RetificarAssentoUseCase retificar,
                                         CancelarAssentoUseCase cancelar, RegistrarNotificacaoCanonicaUseCase notificar,
-                                        ConsultarAssentosUseCase consultar, EmitirCertidaoUseCase certidao) {
+                                        ConsultarAssentosUseCase consultar, EmitirCertidaoUseCase certidao,
+                                        ListarVinculosPendentesUseCase vinculosPendentes) {
         this.lavrarUseCase = lavrar;
         this.atualizarUseCase = atualizar;
         this.homologarUseCase = homologar;
@@ -95,6 +99,7 @@ public class AssentoSacramentalController {
         this.notificarUseCase = notificar;
         this.consultar = consultar;
         this.certidaoUseCase = certidao;
+        this.vinculosPendentesUseCase = vinculosPendentes;
     }
 
     @PostMapping
@@ -117,6 +122,15 @@ public class AssentoSacramentalController {
     public List<AssentoResumoResponse> listar(
             @Parameter(description = "Filtra por sacramento") @RequestParam(required = false) TipoSacramento tipo) {
         return consultar.listar(tipo);
+    }
+
+    @GetMapping("/vinculos-pendentes")
+    @PreAuthorize(PAROCO)
+    @Operation(summary = "Vínculos propostos aguardando aprovação", description = "Fila da tela de Aprovações; exclusiva do Pároco.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = R_OK),
+            @ApiResponse(responseCode = "401", description = R_401), @ApiResponse(responseCode = "403", description = R_403)})
+    public List<VinculoPendenteResponse> vinculosPendentes() {
+        return vinculosPendentesUseCase.execute();
     }
 
     @GetMapping("/{id}")

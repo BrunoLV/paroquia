@@ -6,9 +6,11 @@ import {
   Certidao,
   HistoricoEntrada,
   LavrarAssentoPayload,
+  PapelParticipante,
   RetificacaoPayload,
   TeorPayload,
   TipoSacramento,
+  VinculoPendente,
 } from '@/contextos/sacramento/domain/sacramento';
 
 const BASE = '/sacramentos';
@@ -20,6 +22,10 @@ export const listarAssentos = async (tipo?: TipoSacramento): Promise<AssentoResu
 /** Visão 360º: assentos em que o fiel ou clérigo está vinculado (respeita a visibilidade do ator). */
 export const listarAssentosVinculados = async (pessoaId: string): Promise<AssentoResumo[]> =>
   (await apiClient.get<AssentoResumo[]>(`${BASE}/vinculados/${pessoaId}`)).data;
+
+/** Fila de vínculos aguardando o Pároco (tela de Aprovações). */
+export const listarVinculosPendentes = async (): Promise<VinculoPendente[]> =>
+  (await apiClient.get<VinculoPendente[]>(`${BASE}/vinculos-pendentes`)).data;
 
 export const obterAssento = async (id: string): Promise<Assento> =>
   (await apiClient.get<Assento>(`${BASE}/${id}`)).data;
@@ -38,7 +44,7 @@ export const homologarAssento = async (id: string): Promise<Assento> =>
 export const vincularParticipante = async (
   id: string,
   participanteId: string,
-  vinculo: { fielId?: string; clerigoId?: string },
+  vinculo: { fielId?: string; clerigoId?: string; papel: PapelParticipante },
 ): Promise<Assento> =>
   (await apiClient.patch<Assento>(`${BASE}/${id}/participantes/${participanteId}/vinculo`, vinculo)).data;
 

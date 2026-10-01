@@ -271,3 +271,19 @@ export interface RetificacaoPayload {
   valorCorrigido: string;
   justificativa: string;
 }
+
+/** Vínculo proposto pela Secretaria aguardando decisão do Pároco na tela de Aprovações. */
+export interface VinculoPendente {
+  assentoId: string;
+  tipoSacramento: TipoSacramento;
+  sujeito: string | null;
+  livro: string | null;
+  folha: string | null;
+  termo: string | null;
+  participanteId: string;
+  papel: PapelParticipante;
+  nomeHistorico: string;
+  tipoPessoa: 'FIEL' | 'CLERIGO';
+  pessoaId: string;
+  pessoaNome: string | null;
+}

@@ -29,4 +29,12 @@ public interface AssentoSacramentalRepository {
 
     /** Visão 360º: assentos em que o fiel ou clérigo está vinculado. */
     List<AssentoSacramental> buscarPorVinculo(UUID pessoaId, boolean incluirReservados);
+
+    /**
+     * Assentos não cancelados com ao menos um vínculo proposto aguardando aprovação do Pároco.
+     *
+     * @param incluirReservados {@code false} oculta o livro reservado
+     * @return assentos com vínculo pendente
+     */
+    List<AssentoSacramental> listarComVinculoPendente(boolean incluirReservados);
 }

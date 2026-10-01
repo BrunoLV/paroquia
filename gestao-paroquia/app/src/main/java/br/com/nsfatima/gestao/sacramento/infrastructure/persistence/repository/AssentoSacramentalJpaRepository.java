@@ -38,4 +38,12 @@ public interface AssentoSacramentalJpaRepository extends JpaRepository<AssentoSa
             """)
     List<AssentoSacramentalEntity> buscarPorVinculo(@Param("pessoaId") UUID pessoaId,
                                                    @Param("visibilidades") Collection<Visibilidade> visibilidades);
+
+    @Query("""
+            SELECT DISTINCT a FROM AssentoSacramentalEntity a JOIN a.participantes p
+            WHERE p.vinculoPendente = true AND a.status <> 'CANCELADO' AND a.visibilidade IN :visibilidades
+            ORDER BY a.dataLavratura DESC
+            """)
+    List<AssentoSacramentalEntity> listarComVinculoPendente(
+            @Param("visibilidades") Collection<Visibilidade> visibilidades);
 }

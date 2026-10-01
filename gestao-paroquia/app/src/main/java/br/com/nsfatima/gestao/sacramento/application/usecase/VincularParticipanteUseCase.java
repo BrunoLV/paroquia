@@ -6,13 +6,17 @@ import br.com.nsfatima.gestao.sacramento.api.v1.dto.AssentoResponse;
 import br.com.nsfatima.gestao.sacramento.api.v1.dto.VincularParticipanteRequest;
 import br.com.nsfatima.gestao.sacramento.application.port.out.ConsultaPessoaPort;
 import br.com.nsfatima.gestao.sacramento.application.service.AssentoAcessoService;
+import br.com.nsfatima.gestao.sacramento.application.service.NotificacaoVinculoService;
 import br.com.nsfatima.gestao.sacramento.application.service.SacramentoAuditoriaService;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
 import br.com.nsfatima.gestao.sacramento.domain.model.OperacaoSacramental;
+import br.com.nsfatima.gestao.sacramento.domain.model.PapelParticipante;
+import br.com.nsfatima.gestao.sacramento.domain.model.Participante;
 import br.com.nsfatima.gestao.sacramento.domain.repository.AssentoSacramentalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -29,15 +33,18 @@ public class VincularParticipanteUseCase {
     private final ConsultaPessoaPort pessoas;
     private final AssentoSacramentalRepository repository;
     private final SacramentoAuditoriaService auditoria;
+    private final NotificacaoVinculoService notificacaoVinculo;
 
     public VincularParticipanteUseCase(EventoActorContextResolver actorResolver, AssentoAcessoService acesso,
                                        ConsultaPessoaPort pessoas, AssentoSacramentalRepository repository,
-                                       SacramentoAuditoriaService auditoria) {
+                                       SacramentoAuditoriaService auditoria,
+                                       NotificacaoVinculoService notificacaoVinculo) {
         this.actorResolver = actorResolver;
         this.acesso = acesso;
         this.pessoas = pessoas;
         this.repository = repository;
         this.auditoria = auditoria;
+        this.notificacaoVinculo = notificacaoVinculo;
     }
 
     /**
@@ -49,6 +56,7 @@ public class VincularParticipanteUseCase {
             throw new IllegalArgumentException("Informe exatamente um entre fielId e clerigoId.");
         }
         return executar(assentoId, OperacaoSacramental.VINCULAR, "vincular", (assento, pendente) -> {
+            exigirParticipacao(assento, participanteId, request.papel());
             if (request.fielId() != null) {
                 pessoas.nomeDoFiel(request.fielId())
                         .orElseThrow(() -> new IllegalArgumentException("Fiel informado não está cadastrado."));
@@ -59,6 +67,17 @@ public class VincularParticipanteUseCase {
                 assento.vincularClerigo(participanteId, request.clerigoId(), pendente);
             }
         });
+    }
+
+    /** A participação informada deve ser a da posição escolhida no termo (ex.: padrinho, testemunha). */
+    private static void exigirParticipacao(AssentoSacramental assento, UUID participanteId, PapelParticipante papel) {
+        Participante alvo = assento.getTeor().participantes().stream()
+                .filter(p -> p.id().equals(participanteId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Participante não encontrado neste assento."));
+        if (alvo.papel() != papel) {
+            throw new IllegalArgumentException("O tipo de participação informado (" + papel
+                    + ") difere do da posição escolhida (" + alvo.papel() + ").");
+        }
     }
 
     /** Ato do Pároco: aprova o vínculo proposto pela Secretaria. */
@@ -87,9 +106,11 @@ public class VincularParticipanteUseCase {
         EventoActorContext ator = actorResolver.resolveRequired();
         AssentoSacramental assento = acesso.carregar(assentoId, ator, operacao);
         String antes = auditoria.capturar(assento);
+        Set<String> pendentesAntes = notificacaoVinculo.pendentes(assento);
         op.accept(assento, !acesso.podeAprovarVinculo(ator, assento.getVisibilidade()));
         AssentoSacramental salvo = repository.save(assento);
         auditoria.registrar(ator, acao, antes, salvo);
+        notificacaoVinculo.notificarNovos(ator.actor(), pendentesAntes, salvo);
         return AssentoResponse.de(salvo);
     }
 }
