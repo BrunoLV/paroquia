@@ -9,6 +9,7 @@ import {
   homologarAverbacao,
   lavrarAssento,
   listarAssentos,
+  listarAssentosVinculados,
   obterAssento,
   obterHistorico,
   retificarAssento,
@@ -29,11 +30,20 @@ export const sacramentoKeys = {
   todos: ['sacramentos'] as const,
   lista: (tipo: TipoSacramento) => ['sacramentos', 'lista', tipo] as const,
   detalhe: (id: string) => ['sacramentos', 'detalhe', id] as const,
+  vinculados: (pessoaId: string) => ['sacramentos', 'vinculados', pessoaId] as const,
   historico: (id: string) => ['sacramentos', 'historico', id] as const,
 };
 
 export const useAssentos = (tipo: TipoSacramento) =>
   useQuery({ queryKey: sacramentoKeys.lista(tipo), queryFn: () => listarAssentos(tipo) });
+
+/** Assentos vinculados a um fiel/clérigo; só consulta quando o perfil pode ler o livro sacramental. */
+export const useAssentosVinculados = (pessoaId: string | null, habilitado: boolean) =>
+  useQuery({
+    queryKey: sacramentoKeys.vinculados(pessoaId ?? ''),
+    queryFn: () => listarAssentosVinculados(pessoaId as string),
+    enabled: Boolean(pessoaId) && habilitado,
+  });
 
 export const useAssento = (id: string | null) =>
   useQuery({ queryKey: sacramentoKeys.detalhe(id ?? ''), queryFn: () => obterAssento(id as string), enabled: Boolean(id) });

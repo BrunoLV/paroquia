@@ -77,7 +77,12 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 ### RN-SAC-09: LGPD e Certidões
 - A certidão só é emitida de assento `SEALED`. Em assento marcado como `dadoSensivel` (filiação adotiva) a certidão omite pai, mãe e adotantes; averbações reservadas ou pendentes de homologação também são omitidas.
 - O documento de cada participante é cifrado em repouso.
-- Visão 360º: `GET /api/v1/sacramentos/vinculados/{pessoaId}` lista os assentos em que o fiel ou clérigo está vinculado, respeitando a visibilidade do ator.
+- Visão 360º: `GET /api/v1/sacramentos/vinculados/{pessoaId}` lista os assentos em que o fiel ou clérigo está vinculado, respeitando a visibilidade do ator; cada item informa o participante e o papel que a pessoa ocupa no termo.
+
+### RN-SAC-10: Vida Sacramental nas Fichas de Fiel e Clérigo
+- As fichas de Fiel e de Clérigo exibem a seção "Vida sacramental" com os assentos do módulo `sacramento` em que a pessoa está vinculada e o papel que ocupa. Os cadastros continuam módulos separados: nenhum dado sacramental é copiado para `fiel` ou `clero`.
+- A partir da ficha, Pároco e Secretaria vinculam a pessoa a uma posição ainda sem cadastro de um assento existente e podem desvincular. Fiéis ocupam posições leigas; clérigos, posições ministeriais (ministro celebrante, ministro assistente, ordenado, bispo ordenante).
+- A seção é visível a Pároco, Secretaria e Bispo Diocesano (este só consulta); demais perfis não a veem. Assentos cancelados não são oferecidos para novo vínculo.
 
 ---
 
@@ -89,6 +94,8 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 5. **Certidão:** extração narrativa do assento homologado.
 
 Endpoints em `/api/v1/sacramentos`: `POST` (lavrar), `GET` (listar, `?tipo=`), `GET /{id}`, `PUT /{id}` (rascunho), `POST /{id}/homologacao`, `PATCH /{id}/participantes/{participanteId}/vinculo`, `POST /{id}/participantes/{participanteId}/desvinculo`, `POST /{id}/averbacoes`, `POST /{id}/averbacoes/{averbacaoId}/homologacao`, `POST /{id}/retificacoes`, `POST /{id}/cancelamento`, `POST /{id}/notificacoes`, `GET /{id}/certidao`, `GET /{id}/historico`, `GET /vinculados/{pessoaId}`.
+
+---
 
 ---
 

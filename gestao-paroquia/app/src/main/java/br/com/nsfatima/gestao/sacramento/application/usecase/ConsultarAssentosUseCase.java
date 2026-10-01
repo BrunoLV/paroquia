@@ -53,7 +53,7 @@ public class ConsultarAssentosUseCase {
         EventoActorContext ator = actorResolver.resolveRequired();
         acesso.exigir(ator, OperacaoSacramental.LER, Visibilidade.COMUM);
         return repository.buscarPorVinculo(pessoaId, acesso.incluirReservados(ator)).stream()
-                .map(AssentoResumoResponse::de).toList();
+                .map(a -> AssentoResumoResponse.de(a, pessoaId)).toList();
     }
 
     @Transactional(readOnly = true)

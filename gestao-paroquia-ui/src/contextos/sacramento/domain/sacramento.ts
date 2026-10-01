@@ -201,6 +201,9 @@ export interface AssentoResumo {
   termo: string | null;
   dataCelebracao: string | null;
   sujeito: string | null;
+  /** Preenchidos só na consulta por vínculo: posição da pessoa consultada no termo. */
+  participanteId: string | null;
+  papelVinculado: PapelParticipante | null;
 }
 
 export interface HistoricoEntrada {

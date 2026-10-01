@@ -17,6 +17,10 @@ const BASE = '/sacramentos';
 export const listarAssentos = async (tipo?: TipoSacramento): Promise<AssentoResumo[]> =>
   (await apiClient.get<AssentoResumo[]>(BASE, { params: tipo ? { tipo } : undefined })).data;
 
+/** Visão 360º: assentos em que o fiel ou clérigo está vinculado (respeita a visibilidade do ator). */
+export const listarAssentosVinculados = async (pessoaId: string): Promise<AssentoResumo[]> =>
+  (await apiClient.get<AssentoResumo[]>(`${BASE}/vinculados/${pessoaId}`)).data;
+
 export const obterAssento = async (id: string): Promise<Assento> =>
   (await apiClient.get<Assento>(`${BASE}/${id}`)).data;
 

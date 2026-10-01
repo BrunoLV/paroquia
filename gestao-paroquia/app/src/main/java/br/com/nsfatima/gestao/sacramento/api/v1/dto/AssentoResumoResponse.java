@@ -9,7 +9,10 @@ import br.com.nsfatima.gestao.sacramento.domain.model.Visibilidade;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/** Linha de listagem: identifica o assento pelo sujeito principal sem expor o teor completo. */
+/**
+ * Linha de listagem: identifica o assento pelo sujeito principal sem expor o teor completo. Na consulta por
+ * vínculo, {@code participanteId} e {@code papelVinculado} indicam a posição da pessoa consultada no termo.
+ */
 public record AssentoResumoResponse(
         UUID id,
         TipoSacramento tipo,
@@ -19,9 +22,25 @@ public record AssentoResumoResponse(
         String folha,
         String termo,
         LocalDateTime dataCelebracao,
-        String sujeito) {
+        String sujeito,
+        UUID participanteId,
+        String papelVinculado) {
 
     public static AssentoResumoResponse de(AssentoSacramental a) {
+        return de(a, null);
+    }
+
+    /**
+     * Resumo do assento destacando a posição de uma pessoa vinculada.
+     *
+     * @param a assento
+     * @param pessoaId fiel ou clérigo vinculado, ou {@code null} fora da consulta por vínculo
+     * @return resumo com o participante correspondente à pessoa, quando houver
+     */
+    public static AssentoResumoResponse de(AssentoSacramental a, UUID pessoaId) {
+        var vinculado = a.getTeor().participantes().stream()
+                .filter(p -> pessoaId != null && (pessoaId.equals(p.fielId()) || pessoaId.equals(p.clerigoId())))
+                .findFirst();
         String sujeito = a.getTeor().participantes().stream()
                 .filter(p -> sujeitoPrincipal(p.papel()))
                 .map(p -> p.nomeHistorico())
@@ -29,7 +48,8 @@ public record AssentoResumoResponse(
                 .orElse(null);
         return new AssentoResumoResponse(a.getId().value(), a.getTipo(), a.getStatus(), a.getVisibilidade(),
                 a.getTeor().referenciaLivro().livro(), a.getTeor().referenciaLivro().folha(),
-                a.getTeor().referenciaLivro().termo(), a.getTeor().dataCelebracao(), sujeito);
+                a.getTeor().referenciaLivro().termo(), a.getTeor().dataCelebracao(), sujeito,
+                vinculado.map(p -> p.id()).orElse(null), vinculado.map(p -> p.papel().name()).orElse(null));
     }
 
     private static boolean sujeitoPrincipal(PapelParticipante papel) {

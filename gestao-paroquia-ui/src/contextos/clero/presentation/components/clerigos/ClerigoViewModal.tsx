@@ -41,6 +41,7 @@ import { getFuncaoEclesiasticaMeta, getGrauOrdemMeta } from '@/shared/utils/stat
 import { getSituacaoAtivoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
 import { formatarEndereco } from '@/contextos/fiel/presentation/components/fieis/fielConstants';
 import { InfoField } from './clerigoConstants';
+import VidaSacramentalCard from '@/contextos/sacramento/presentation/components/VidaSacramentalCard';
 
 interface ClerigoViewModalProps {
   clerigo: Clerigo | ClerigoInstitucional | null;
@@ -296,6 +297,9 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
               </CardContent>
             </Card>
           )}
+
+          {/* Vida sacramental: assentos do módulo `sacramento` em que o clérigo é ministro ou ordenado */}
+          <VidaSacramentalCard pessoaId={clerigo.clerigoId} tipoPessoa="CLERIGO" />
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
