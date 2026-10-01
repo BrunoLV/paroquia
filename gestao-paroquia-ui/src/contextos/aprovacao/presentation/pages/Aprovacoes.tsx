@@ -35,12 +35,16 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PainelConflitosAprovacao from '@/contextos/aprovacao/presentation/components/PainelConflitosAprovacao';
 import OcorrenciasRecorrenciaAprovacao from '@/contextos/aprovacao/presentation/components/OcorrenciasRecorrenciaAprovacao';
 import {decideAprovacao, getAprovacoes, getAprovacaoOcorrencias, reexecutarAprovacao} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
 import {getLocais} from '@/contextos/local/infrastructure/http/locais';
 import {getAtivos} from '@/contextos/patrimonio/infrastructure/http/ativos';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
+import {approveUsuario, getUsuarios} from '@/contextos/iam/infrastructure/http/usuarios';
+import {canApproveUsuario} from '@/contextos/iam/presentation/auth/permissions';
+import {useAuth} from '@/contextos/iam/presentation/auth/AuthContext';
 import {AprovacaoResponse, Projeto, ProjetoAprovacaoResponse} from '@/shared/domain/types/types';
 import {getFormatoEventoLabel, getFormatoEventoIcon} from '@/contextos/calendario/presentation/utils/formatoEventoUtils';
 import {formatarHorarioEvento, obterLabelTurno} from '@/contextos/calendario/presentation/utils/horarioEventoUtils';
@@ -52,6 +56,8 @@ import PageHeader from '@/shared/presentation/components/PageHeader';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
+import {getUsuarioSituacaoMeta} from '@/shared/utils/statusMeta/situacaoStatus';
+import {FormattedPhone} from '@/shared/presentation/components/FormattedCell';
 import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '@/shared/utils/statusMeta/aprovacaoStatus';
 
 /**
@@ -68,16 +74,21 @@ import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from 
 const Aprovacoes = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { showError, showSuccess } = useNotification();
-  // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos); tabValue
+  // tipoAprovacao alterna a fonte de dados exibida (eventos x projetos x usuários); tabValue
   // filtra por status dentro dessa fonte (ver array `statuses`).
-  const [tipoAprovacao, setTipoAprovacao] = useState<'EVENTOS' | 'PROJETOS'>('EVENTOS');
+  const [tipoAprovacao, setTipoAprovacao] = useState<'EVENTOS' | 'PROJETOS' | 'USUARIOS'>('EVENTOS');
   const [tabValue, setTabValue] = useState(0);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
 
   const [projPage, setProjPage] = useState(0);
   const [projRowsPerPage, setProjRowsPerPage] = useState(10);
+
+  const [usersPage, setUsersPage] = useState(0);
+  const [usersRowsPerPage, setUsersRowsPerPage] = useState(10);
   // Solicitação selecionada abre o drawer de detalhes/decisão; cada tipo de
   // aprovação tem seu próprio drawer porque os payloads (actionPayloadJson) e as
   // regras de exibição diferem entre evento e projeto.
@@ -139,6 +150,23 @@ const Aprovacoes = () => {
     enabled: tipoAprovacao === 'PROJETOS',
   });
 
+  const { data: usersData = [], isLoading: isUsersLoading, isError: isUsersError } = useQuery({
+    queryKey: ['usuarios'],
+    queryFn: getUsuarios,
+    enabled: tipoAprovacao === 'USUARIOS',
+  });
+
+  const approveUserMutation = useMutation({
+    mutationFn: (userId: string) => approveUsuario(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+      showSuccess('Usuário aprovado com sucesso!');
+    },
+    onError: (error: unknown) => {
+      showError(extractErrorMessage(error, 'Erro ao aprovar usuário.'));
+    },
+  });
+
   const { data: ocorrenciasFilhas } = useQuery<AprovacaoResponse[]>({
     queryKey: ['aprovacao-ocorrencias', aprovacaoSelecionada?.id],
     queryFn: () => getAprovacaoOcorrencias(aprovacaoSelecionada!.id),
@@ -196,7 +224,6 @@ const Aprovacoes = () => {
     }
   }, [aprovacaoSelecionada]);
 
-  const queryClient = useQueryClient();
   const [observacao, setObservacao] = useState('');
 
   // Decisão de aprovação de EVENTO/ATIVO. No backend isso dispara
@@ -334,6 +361,9 @@ const Aprovacoes = () => {
           >
             <Tab label="Solicitações de Eventos" value="EVENTOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
             <Tab label="Solicitações de Projetos" value="PROJETOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
+            {canApproveUsuario(user) && (
+              <Tab label="Solicitações de Usuários" value="USUARIOS" sx={{ textTransform: 'none', fontWeight: 600 }} />
+            )}
           </Tabs>
         </Box>
 
@@ -346,8 +376,8 @@ const Aprovacoes = () => {
             sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}
           >
             <Tab label="Pendentes" />
-            <Tab label="Aprovadas" />
-            <Tab label="Rejeitadas" />
+            <Tab label={tipoAprovacao === 'USUARIOS' ? 'Ativos' : 'Aprovadas'} />
+            {tipoAprovacao !== 'USUARIOS' && <Tab label="Rejeitadas" />}
             {tipoAprovacao === 'EVENTOS' && <Tab label="Falhas" />}
           </Tabs>
 
@@ -550,6 +580,117 @@ const Aprovacoes = () => {
                 />
               </>
             )
+          )}
+
+          {/* USER APPROVALS VIEW */}
+          {tipoAprovacao === 'USUARIOS' && (
+            <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
+                <PersonAddIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                  Solicitações de Cadastro de Usuários
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+                  Homologue cadastros de usuários submetidos pela secretaria paroquial para liberar o acesso ao sistema.
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
+          {/* USER APPROVALS CONTENT */}
+          {tipoAprovacao === 'USUARIOS' && (
+            isUsersLoading ? (
+              <Box sx={{ p: 3 }}>
+                <Skeleton variant="rounded" height={280} />
+              </Box>
+            ) : isUsersError ? (
+              <Box sx={{ p: 4 }}>
+                <Alert severity="error">Não foi possível carregar os usuários.</Alert>
+              </Box>
+            ) : (() => {
+              const filteredUsers = usersData.filter((u) => (tabValue === 0 ? !u.enabled : u.enabled));
+              return filteredUsers.length === 0 ? (
+                <Box sx={{ p: 8, textAlign: 'center' }}>
+                  <Typography variant="body1" color="textSecondary">
+                    {tabValue === 0
+                      ? 'Nenhum usuário pendente de aprovação.'
+                      : 'Nenhum usuário ativo encontrado.'}
+                  </Typography>
+                </Box>
+              ) : (
+                <>
+                  <TableContainer>
+                    <Table>
+                      <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: 600 }}>Usuário</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Nome Completo</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Comunidade / Igreja</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Vínculo</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Situação</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }} align="right">Ações</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredUsers
+                          .slice(usersPage * usersRowsPerPage, usersPage * usersRowsPerPage + usersRowsPerPage)
+                          .map((u) => {
+                            const situacao = getUsuarioSituacaoMeta(u.enabled);
+                            return (
+                              <TableRow key={u.id} hover>
+                                <TableCell sx={{ fontWeight: 600 }}>{u.username}</TableCell>
+                                <TableCell>{u.nome || '-'}</TableCell>
+                                <TableCell><FormattedPhone value={u.telefone} /></TableCell>
+                                <TableCell>{u.igrejaNome || 'Matriz / Geral'}</TableCell>
+                                <TableCell>
+                                  {u.fielId ? (
+                                    <Chip label="Fiel" size="small" color="primary" variant="outlined" />
+                                  ) : (
+                                    <Typography variant="caption" color="text.secondary">Geral</Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <StatusIcon {...situacao} />
+                                </TableCell>
+                                <TableCell align="right">
+                                  {!u.enabled && canApproveUsuario(user) ? (
+                                    <ActionButton
+                                      title="Aprovar Usuário"
+                                      icon={<CheckCircleIcon />}
+                                      color="success"
+                                      onClick={() => approveUserMutation.mutate(u.id)}
+                                      disabled={approveUserMutation.isPending}
+                                    />
+                                  ) : null}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={filteredUsers.length}
+                    rowsPerPage={usersRowsPerPage}
+                    page={usersPage}
+                    onPageChange={(_, newPage) => setUsersPage(newPage)}
+                    onRowsPerPageChange={(e) => {
+                      setUsersRowsPerPage(parseInt(e.target.value, 10));
+                      setUsersPage(0);
+                    }}
+                    labelRowsPerPage="Linhas por página:"
+                    labelDisplayedRows={({ from, to, count }) =>
+                      `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
+                    }
+                  />
+                </>
+              );
+            })()
           )}
         </Card>
 

@@ -174,7 +174,9 @@ public class EventoActorContextResolver {
             boolean isFiel = usuarioDetails.getAuthorities().stream()
                     .anyMatch(a -> Objects.requireNonNull(a.getAuthority()).equals("ROLE_GLOBAL_FIEL")
                             || a.getAuthority().equals("FIEL")
-                            || a.getAuthority().equals("ROLE_FIEL"));
+                            || a.getAuthority().equals("ROLE_FIEL")
+                            || a.getAuthority().equals("ROLE_USER"))
+                    || usuarioDetails.getVinculos().isEmpty();
 
             boolean hasValidOrganizationalVinculo = usuarioDetails.getVinculos().stream()
                     .anyMatch(m -> aceitaPapel(m.organizationType(), m.role()));

@@ -130,7 +130,7 @@ public class UsuarioEntity extends BaseAuditableEntity {
      */
     public void aprovar(String actor) {
         this.enabled = true;
-        this.roles = papeis().adicionar("ROLE_USER").paraCsv();
+        this.roles = papeis().adicionar("ROLE_USER").adicionar("ROLE_FIEL").paraCsv();
         setAtualizadoPor(actor);
     }
 

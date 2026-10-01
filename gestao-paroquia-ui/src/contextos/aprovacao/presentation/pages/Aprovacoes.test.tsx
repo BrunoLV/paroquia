@@ -5,8 +5,28 @@ import {QueryProvider} from '@/shared/presentation/context/QueryProvider';
 import Aprovacoes from './Aprovacoes';
 import {decideAprovacao, getAprovacoes, reexecutarAprovacao} from '@/contextos/aprovacao/infrastructure/http/aprovacoes';
 import {decidirAprovacaoProjeto, obterAprovacoesProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
+import {approveUsuario, getUsuarios} from '@/contextos/iam/infrastructure/http/usuarios';
 import {MemoryRouter} from 'react-router-dom';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
+
+let mockCurrentUser = {
+  id: '1',
+  name: 'Administrador',
+  roles: ['ROLE_ADMIN', 'ADMIN'],
+  organizations: [],
+};
+
+vi.mock('@/contextos/iam/presentation/auth/AuthContext', () => ({
+  useAuth: () => ({
+    user: mockCurrentUser,
+    isAuthenticated: true,
+  }),
+}));
+
+vi.mock('@/contextos/iam/infrastructure/http/usuarios', () => ({
+  getUsuarios: jest.fn(() => Promise.resolve([])),
+  approveUsuario: jest.fn(() => Promise.resolve({ success: true })),
+}));
 
 vi.mock('@/contextos/aprovacao/infrastructure/http/aprovacoes', () => ({
   getAprovacoes: jest.fn(),
@@ -46,6 +66,8 @@ const mockDecideAprovacao = vi.mocked(decideAprovacao);
 const mockReexecutarAprovacao = vi.mocked(reexecutarAprovacao);
 const mockObterAprovacoesProjeto = vi.mocked(obterAprovacoesProjeto);
 const mockDecidirAprovacaoProjeto = vi.mocked(decidirAprovacaoProjeto);
+const mockGetUsuarios = vi.mocked(getUsuarios);
+const mockApproveUsuario = vi.mocked(approveUsuario);
 
 const abrirDetalhesDaPrimeiraSolicitacao = () => {
   fireEvent.click(screen.getAllByRole('button', { name: /^Ações$/i })[0]);
@@ -599,6 +621,38 @@ describe('Aprovacoes page', () => {
 
     await waitFor(() => {
       expect(mockReexecutarAprovacao).toHaveBeenCalledWith('app-falha-sistemica-1');
+    });
+  });
+
+  it('deve listar usuários pendentes e permitir aprovação por aprovador autorizado', async () => {
+    mockGetUsuarios.mockResolvedValueOnce([
+      {
+        id: 'usr-1',
+        username: 'maria.silva',
+        nome: 'Maria Silva',
+        telefone: '11988887777',
+        enabled: false,
+        fielId: 'fiel-1',
+      },
+    ] as any);
+    mockApproveUsuario.mockResolvedValueOnce({ success: true } as any);
+
+    renderPage();
+
+    const tabUsuarios = screen.getByRole('tab', { name: /Solicitações de Usuários/i });
+    expect(tabUsuarios).toBeInTheDocument();
+    fireEvent.click(tabUsuarios);
+
+    await waitFor(() => {
+      expect(screen.getByText('maria.silva')).toBeInTheDocument();
+      expect(screen.getByText('Maria Silva')).toBeInTheDocument();
+    });
+
+    const aprovarBtn = screen.getByRole('button', { name: /Aprovar Usuário/i });
+    fireEvent.click(aprovarBtn);
+
+    await waitFor(() => {
+      expect(mockApproveUsuario).toHaveBeenCalledWith('usr-1');
     });
   });
 });

@@ -7,6 +7,7 @@ import * as anosApi from '@/contextos/governanca/infrastructure/http/anosParoqui
 import * as usuariosApi from '@/contextos/iam/infrastructure/http/usuarios';
 import * as organizacoesApi from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import * as pastoraisOficiaisApi from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
+import * as fieisApi from '@/contextos/fiel/infrastructure/http/fieis';
 import { NotificationProvider } from '@/shared/presentation/context/NotificationContext';
 import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 
@@ -28,6 +29,7 @@ vi.mock('@/contextos/governanca/infrastructure/http/anosParoquiais');
 vi.mock('@/contextos/iam/infrastructure/http/usuarios');
 vi.mock('@/contextos/organizacao/infrastructure/http/organizacoes');
 vi.mock('@/contextos/organizacao/infrastructure/http/pastoraisOficiais');
+vi.mock('@/contextos/fiel/infrastructure/http/fieis');
 
 const mockAnos = [
   {
@@ -213,5 +215,57 @@ describe('Configuracoes page', () => {
     renderPage();
 
     expect(screen.queryByRole('tab', { name: /Catálogo Oficial/i })).not.toBeInTheDocument();
+  });
+
+  it('allows opening user registration modal and selecting a fiel with fielId and cpf', async () => {
+    vi.spyOn(fieisApi, 'getFieis').mockResolvedValueOnce([
+      {
+        fielId: 'fiel-123',
+        nome: 'Maria da Silva',
+        dadosIdentificacao: { cpfFormatado: '123.456.789-00' },
+        contato: { email: 'maria.silva@paroquia.com' },
+      } as any,
+    ]);
+    const createSpy = vi.spyOn(usuariosApi, 'createUsuario').mockResolvedValueOnce({
+      id: 'usr-new',
+      username: 'maria.silva@paroquia.com',
+      enabled: true,
+    } as any);
+
+    renderPage();
+
+    const usersTab = screen.getByRole('tab', { name: /Membros \/ Usuários/i });
+    fireEvent.click(usersTab);
+
+    const cadastrarBtn = await screen.findByRole('button', { name: /Cadastrar Usuário/i });
+    fireEvent.click(cadastrarBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cadastrar Novo Usuário do Sistema')).toBeInTheDocument();
+    });
+
+    const autocomplete = screen.getByTestId('admin-reg-fiel-autocomplete');
+    fireEvent.focus(autocomplete);
+    fireEvent.change(autocomplete, { target: { value: 'Maria' } });
+
+    const option = await screen.findByRole('option', { name: /Maria da Silva/i });
+    fireEvent.click(option);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('maria.silva@paroquia.com')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByLabelText(/Senha de Acesso/i), { target: { value: 'Senha@123' } });
+
+    const submitBtn = screen.getByRole('button', { name: /^Cadastrar$/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(createSpy).toHaveBeenCalledWith({
+        fielId: 'fiel-123',
+        username: 'maria.silva@paroquia.com',
+        password: 'Senha@123',
+      });
+    });
   });
 });

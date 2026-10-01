@@ -30,6 +30,11 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 ### RN-APR-03: Fila de Urgência Baseada em Proximidade
 - Solicitações cuja data de início do evento esteja a menos de 48 horas recebem classificação `URGENTE`, com destaque visual no topo das esteiras.
 
+### RN-APR-04: Esteira de Homologação de Cadastros de Usuários
+- Contas de acesso submetidas pela Secretaria Paroquial entram na esteira de aprovação com status inativo (`enabled = false`).
+- A tela central de aprovações (`/aprovacoes`) disponibiliza a aba "Solicitações de Usuários" exclusivamente para perfis autorizados (`PAROCO`, `ADMIN`).
+- A deliberação favorável ativa imediatamente o acesso do fiel ao sistema.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
@@ -37,17 +42,17 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Propositor as Coordenador / Secretário Conselho
+    actor Propositor as Coordenador / Secretário Conselho / Secretaria
     participant Modulo as Módulo Aprovação
-    actor Paroco as Pároco (Autoridade Canônica)
-    participant Evento as Módulo Calendário
+    actor Paroco as Pároco / Admin (Autoridade Canônica)
+    participant Evento as Módulo Calendário / IAM
 
-    Propositor->>Modulo: Submeter proposta (evento/projeto/cancelamento)
+    Propositor->>Modulo: Submeter proposta (evento/projeto/usuário)
     Modulo->>Modulo: Classificar criticidade e gerar pendência (HTTP 202)
     Modulo->>Paroco: Notificar pendência na esteira
     alt Aprovado
         Paroco->>Modulo: Homologar / Aprovar
-        Modulo->>Evento: Atualizar evento para CONFIRMADO
+        Modulo->>Evento: Efetivar ato (Evento CONFIRMADO / Usuário HABILITADO)
     else Rejeitado
         Paroco->>Modulo: Rejeitar com justificativa formal
         Modulo->>Evento: Manter status anterior / Rejeitar
@@ -58,4 +63,4 @@ sequenceDiagram
 
 ## 5. Integrações com outros Bounded Contexts
 - **`calendario`:** Mudança de estado do evento (`CONFIRMADO`, `PENDENTE`, `CANCELADO`).
-- **`iam`:** Verificação estrita de que apenas o Pároco decide aprovações.
+- **`iam`:** Notificação de aprovação pendente (`USUARIO_APROVACAO_PENDENTE`) para Párocos/Admins e liberação de acesso de fiéis cadastrados pela secretaria.

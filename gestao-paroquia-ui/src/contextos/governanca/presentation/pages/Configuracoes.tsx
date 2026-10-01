@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Alert,
+  Autocomplete,
   Box,
   CircularProgress,
   Container,
@@ -64,7 +65,14 @@ import { useNotification } from '@/shared/presentation/context/NotificationConte
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import { formatDateBr } from '@/shared/utils/masks';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canManageAnoParoquial, canManageOrganizacoes, isAdmin } from '@/contextos/iam/presentation/auth/permissions';
+import {
+  canApproveUsuario,
+  canCreateUsuario,
+  canManageAnoParoquial,
+  canManageUsuarios,
+  isAdmin,
+  isParoco,
+} from '@/contextos/iam/presentation/auth/permissions';
 import ImportModal from '@/contextos/importacao/presentation/components/ImportModal';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
@@ -109,7 +117,7 @@ export const Configuracoes = () => {
   const { showError, showSuccess } = useNotification();
   const queryClient = useQueryClient();
   const isAuthorizedAno = canManageAnoParoquial(user);
-  const isAuthorizedUsers = canManageOrganizacoes(user);
+  const isAuthorizedUsers = canManageUsuarios(user);
 
   const [tabValue, setTabValue] = useState<number>(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -222,7 +230,7 @@ export const Configuracoes = () => {
     },
   });
 
-  const { data: fieisList = [] } = useQuery({
+  const { data: fieisList = [], isLoading: isLoadingFieis } = useQuery({
     queryKey: ['fieis'],
     queryFn: getFieis,
     enabled: isAdminRegisterModalOpen,
@@ -232,7 +240,12 @@ export const Configuracoes = () => {
     mutationFn: (request: CreateUsuarioRequest) => createUsuario(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['usuarios'] });
-      showSuccess('Usuário cadastrado com sucesso!');
+      const isSec = user && !isAdmin(user) && !isParoco(user);
+      if (isSec) {
+        showSuccess('Usuário cadastrado com sucesso! A solicitação foi encaminhada para aprovação do Pároco ou Administrador.');
+      } else {
+        showSuccess('Usuário cadastrado com sucesso!');
+      }
       setIsAdminRegisterModalOpen(false);
       setAdminRegisterFielId('');
       setAdminRegisterUsername('');
@@ -466,7 +479,7 @@ export const Configuracoes = () => {
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1 }}>
-                {user && user.roles.some((r) => r === 'ADMIN' || r === 'ROLE_ADMIN' || r === 'PAROCO' || r === 'ROLE_CLERO_PAROCO') && (
+                {user && canCreateUsuario(user) && (
                   <ActionButton
                     title="Cadastrar Usuário"
                     icon={<AddIcon />}
@@ -512,7 +525,7 @@ export const Configuracoes = () => {
                           <TableCell align="right">
                             <TableActionMenu
                               actions={[
-                                ...(!u.enabled ? [{ label: 'Aprovar', icon: <CheckCircleIcon fontSize="small" />, onClick: () => approveUserMutation.mutate(u.id), disabled: approveUserMutation.isPending }] : []),
+                                ...(!u.enabled && canApproveUsuario(user) ? [{ label: 'Aprovar', icon: <CheckCircleIcon fontSize="small" />, onClick: () => approveUserMutation.mutate(u.id), disabled: approveUserMutation.isPending }] : []),
                                 { label: 'Gerenciar vínculos', icon: <LinkIcon fontSize="small" />, onClick: () => { setSelectedUserForVinculos(u); setIsVinculosModalOpen(true); } },
                               ]}
                             />
@@ -780,6 +793,7 @@ export const Configuracoes = () => {
                       }
                     }
                     addVinculoMutation.mutate({
+                      grupoParoquialId: newVinculoOrgId,
                       organizacaoId: newVinculoOrgId,
                       tipo: selectedOrgObj.tipo,
                       papel: newVinculoPapel,
@@ -813,27 +827,47 @@ export const Configuracoes = () => {
         <DialogTitle>Cadastrar Novo Usuário do Sistema</DialogTitle>
         <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5} sx={{ pt: 1 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="admin-reg-fiel-label">Vincular a Fiel Cadastrado</InputLabel>
-              <Select
-                labelId="admin-reg-fiel-label"
-                value={adminRegisterFielId}
-                label="Vincular a Fiel Cadastrado"
-                onChange={(e) => {
-                  setAdminRegisterFielId(e.target.value);
-                  const fielSel = fieisList.find((f) => f.id === e.target.value);
-                  if (fielSel && fielSel.email) {
-                    setAdminRegisterUsername(fielSel.email);
-                  }
-                }}
-              >
-                {fieisList.map((f) => (
-                  <MenuItem key={f.id} value={f.id}>
-                    {f.nome} ({f.cpf})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Autocomplete
+              size="small"
+              fullWidth
+              options={fieisList}
+              loading={isLoadingFieis}
+              getOptionLabel={(option) => {
+                const cpf = option.dadosIdentificacao?.cpfFormatado ?? option.cpf;
+                return cpf ? `${option.nome} (${cpf})` : (option.nome || '');
+              }}
+              isOptionEqualToValue={(option, val) => {
+                const optId = option.fielId ?? option.id;
+                const valId = val.fielId ?? val.id;
+                return optId === valId;
+              }}
+              value={fieisList.find((f) => (f.fielId ?? f.id) === adminRegisterFielId) || null}
+              onChange={(_, newValue) => {
+                const fid = newValue ? (newValue.fielId ?? newValue.id) : '';
+                setAdminRegisterFielId(fid);
+                const email = newValue?.contato?.email ?? newValue?.email;
+                if (email) {
+                  setAdminRegisterUsername(email);
+                }
+              }}
+              noOptionsText="Nenhum fiel encontrado"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Vincular a Fiel Cadastrado"
+                  size="small"
+                  required
+                  placeholder="Pesquise o fiel por nome ou CPF..."
+                  slotProps={{
+                    ...params.slotProps,
+                    htmlInput: {
+                      ...params.slotProps.htmlInput,
+                      'data-testid': 'admin-reg-fiel-autocomplete',
+                    },
+                  }}
+                />
+              )}
+            />
 
             <TextField
               label="E-mail / Username"
