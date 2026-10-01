@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-01
+
 ### Adicionado
 - **Módulo de Gerenciamento de Sacramentos (`sacramento`):**
   - Livro de assentos de Batismo, Confirmação, Matrimônio e Ordem Sacra com ciclo `DRAFT → SEALED` (homologação privativa do Pároco), cancelamento motivado e nenhuma exclusão física (triggers no banco).
