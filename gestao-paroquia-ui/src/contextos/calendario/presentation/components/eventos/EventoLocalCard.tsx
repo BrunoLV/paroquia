@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { Box, Card, CardContent, Chip, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Card, CardContent, FormControl, Grid, MenuItem, Stack, Typography } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Controller, type UseFormReturn } from 'react-hook-form';
 import { AtivoPatrimonial, Local } from '@/shared/domain/types/types';
@@ -33,8 +34,8 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="new-locais-label">Local / Espaços Físicos</InputLabel>
-                  <Select
+
+                  <SearchableSelect
                     {...field}
                     labelId="new-locais-label"
                     label="Local / Espaços Físicos"
@@ -42,37 +43,18 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
                     disabled={disabled}
                     value={Array.isArray(field.value) ? field.value : []}
                     onChange={(e) => {
-                      const val = typeof e.target.value === 'string' ? e.target.value.split(',') : (e.target.value as string[]);
+                      const val = e.target.value;
                       field.onChange(val);
                       form.setValue('localId', val.length > 0 ? val[0] : '');
                     }}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {(selected as string[]).map((id) => {
-                          const local = localOptions.find((l) => l.id === id);
-                          return (
-                            <Chip
-                              key={id}
-                              label={local ? local.nome : id}
-                              size="small"
-                              onDelete={disabled ? undefined : () => {
-                                const next = (selected as string[]).filter((x) => x !== id);
-                                field.onChange(next);
-                                form.setValue('localId', next.length > 0 ? next[0] : '');
-                              }}
-                              onMouseDown={(e) => e.stopPropagation()}
-                            />
-                          );
-                        })}
-                      </Box>
-                    )}
+
                   >
                     {localOptions.map((l) => (
                       <MenuItem key={l.id} value={l.id}>
                         {l.nome}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />
@@ -85,22 +67,15 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
                 control={control}
                 render={({ field }) => (
                   <FormControl fullWidth size="small">
-                    <InputLabel id="new-ativos-label">Bens / Ativos Patrimoniais</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       {...field}
                       labelId="new-ativos-label"
                       multiple
                       label="Bens / Ativos Patrimoniais"
                       disabled={disabled}
-                      onChange={(e) => field.onChange(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {(selected as string[]).map((id) => {
-                            const ativo = ativos.find((a) => a.id === id);
-                            return <Chip key={id} label={ativo ? `${ativo.nome} (${ativo.categoria})` : id} size="small" />;
-                          })}
-                        </Box>
-                      )}
+                      onChange={(e) => field.onChange(e.target.value)}
+
                     >
                       {/* Inclui também os já alocados a este evento (status RESERVADO),
                           senão sumiriam das opções ao editar mesmo estando selecionados. */}
@@ -111,7 +86,7 @@ const EventoLocalCard: React.FC<EventoLocalCardProps> = ({ form, disabled, local
                             {a.nome} — {a.categoria}
                           </MenuItem>
                         ))}
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                 )}
               />

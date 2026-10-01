@@ -1,10 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card, CardContent, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel,
-  Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography,
-} from '@mui/material';
+import { Card, CardContent, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import SaveIcon from '@mui/icons-material/Save';
@@ -60,12 +58,12 @@ export const AverbacaoDialog: React.FC<AverbacaoDialogProps> = ({ open, isPendin
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small">
-                          <InputLabel id="averbacao-tipo">Evento</InputLabel>
-                          <Select {...field} labelId="averbacao-tipo" label="Evento">
+
+                          <SearchableSelect {...field} labelId="averbacao-tipo" label="Evento">
                             {(Object.keys(TIPO_EVENTO_AVERBACAO_LABEL) as TipoEventoAverbacao[]).map((t) => (
                               <MenuItem key={t} value={t}>{TIPO_EVENTO_AVERBACAO_LABEL[t]}</MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                         </FormControl>
                       )}
                     />

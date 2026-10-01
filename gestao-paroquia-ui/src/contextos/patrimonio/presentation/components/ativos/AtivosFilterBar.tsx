@@ -1,15 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Switch,
-} from '@mui/material';
+import { Box, FormControl, FormControlLabel, MenuItem, Paper, Stack, Switch } from '@mui/material';
 import SearchField from '@/shared/presentation/components/SearchField';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { getCategoriaAtivoMeta } from '@/shared/utils/statusMeta/categoriaAtivoStatus';
@@ -57,8 +48,8 @@ export const AtivosFilterBar: React.FC<AtivosFilterBarProps> = ({
         sx={{ flexGrow: 1, minWidth: 240 }}
       />
       <FormControl size="small" sx={{ minWidth: 200 }}>
-        <InputLabel id="organizacao-select-label">Organização</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="organizacao-select-label"
           label="Organização"
           value={selectedOrgId}
@@ -69,11 +60,11 @@ export const AtivosFilterBar: React.FC<AtivosFilterBarProps> = ({
               {org.nome}
             </MenuItem>
           ))}
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 170 }}>
-        <InputLabel id="categoria-select-label">Tipo</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="categoria-select-label"
           label="Tipo"
           value={categoryFilter}
@@ -87,11 +78,11 @@ export const AtivosFilterBar: React.FC<AtivosFilterBarProps> = ({
               </Box>
             </MenuItem>
           ))}
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 160 }}>
-        <InputLabel id="status-select-label">Status</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="status-select-label"
           label="Status"
           value={statusFilter}
@@ -105,7 +96,7 @@ export const AtivosFilterBar: React.FC<AtivosFilterBarProps> = ({
               </Box>
             </MenuItem>
           ))}
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControlLabel
         control={

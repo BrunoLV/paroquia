@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { Box, Chip, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, MenuItem } from '@mui/material';
 import { Controller, type Control } from 'react-hook-form';
 import { Organizacao } from '@/shared/domain/types/types';
 import { EventoFormInput } from '@/contextos/calendario/presentation/schemas/eventoSchema';
@@ -18,21 +19,15 @@ const EventoApoioSelect: React.FC<EventoApoioSelectProps> = ({ control, disabled
     control={control}
     render={({ field }) => (
       <FormControl fullWidth size="small">
-        <InputLabel id="new-apoio-label">Organizações de Apoio</InputLabel>
-        <Select
+
+        <SearchableSelect
           {...field}
           labelId="new-apoio-label"
           multiple
           label="Organizações de Apoio"
           disabled={disabled}
-          onChange={(e) => field.onChange(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {(selected as string[]).map((id) => (
-                <Chip key={id} label={organizations.find((o) => o.id === id)?.nome || id} size="small" />
-              ))}
-            </Box>
-          )}
+          onChange={(e) => field.onChange(e.target.value)}
+
         >
           {organizations
             .filter((org) => org.id !== orgId && (org.ativo || field.value.includes(org.id)))
@@ -41,7 +36,7 @@ const EventoApoioSelect: React.FC<EventoApoioSelectProps> = ({ control, disabled
                 {org.nome}
               </MenuItem>
             ))}
-        </Select>
+        </SearchableSelect>
       </FormControl>
     )}
   />

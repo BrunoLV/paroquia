@@ -1,17 +1,7 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
 import { Control, Controller, FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Checkbox, FormControl, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { PAPEIS_CLERICAIS, PAPEL_LABEL, PapelParticipante } from '@/contextos/sacramento/domain/sacramento';
@@ -48,12 +38,12 @@ export const ParticipanteFields: React.FC<ParticipanteFieldsProps> = ({
             control={control}
             render={({ field }) => (
               <FormControl fullWidth size="small">
-                <InputLabel id={`papel-${index}`}>Papel</InputLabel>
-                <Select {...field} labelId={`papel-${index}`} label="Papel">
+
+                <SearchableSelect {...field} labelId={`papel-${index}`} label="Papel">
                   {papeis.map((p) => (
                     <MenuItem key={p} value={p}>{PAPEL_LABEL[p]}</MenuItem>
                   ))}
-                </Select>
+                </SearchableSelect>
               </FormControl>
             )}
           />
@@ -96,13 +86,13 @@ export const ParticipanteFields: React.FC<ParticipanteFieldsProps> = ({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
-                  <InputLabel id={`condicao-${index}`}>Condição canônica</InputLabel>
-                  <Select {...field} labelId={`condicao-${index}`} label="Condição canônica">
+
+                  <SearchableSelect {...field} labelId={`condicao-${index}`} label="Condição canônica">
                     <MenuItem value="">—</MenuItem>
                     <MenuItem value="BISPO">Bispo</MenuItem>
                     <MenuItem value="PRESBITERO">Presbítero</MenuItem>
                     <MenuItem value="DIACONO">Diácono</MenuItem>
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             />

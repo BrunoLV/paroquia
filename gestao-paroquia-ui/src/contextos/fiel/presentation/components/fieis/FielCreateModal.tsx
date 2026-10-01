@@ -1,24 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControlLabel,
-  Grid,
-  InputAdornment,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, InputAdornment, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { confirmDiscard } from '@/shared/utils/confirmDiscard';
@@ -176,11 +160,11 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                       name="sexo"
                       control={control}
                       render={({ field }) => (
-                        <TextField select required fullWidth size="small" label="Sexo" {...field}>
+                        <SearchableSelect  required fullWidth size="small" label="Sexo" {...field}>
                           <MenuItem value="MASCULINO">Masculino</MenuItem>
                           <MenuItem value="FEMININO">Feminino</MenuItem>
                           <MenuItem value="NAO_INFORMADO">Não informado</MenuItem>
-                        </TextField>
+                        </SearchableSelect>
                       )}
                     />
                   </Grid>
@@ -202,8 +186,8 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                       name="paisOrigem"
                       control={control}
                       render={({ field }) => (
-                        <TextField
-                          select
+                        <SearchableSelect
+
                           required
                           fullWidth
                           size="small"
@@ -226,7 +210,7 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                               {pais.nome}
                             </MenuItem>
                           ))}
-                        </TextField>
+                        </SearchableSelect>
                       )}
                     />
                   </Grid>
@@ -237,8 +221,8 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                           name="tipoDocumentoEstrangeiro"
                           control={control}
                           render={({ field }) => (
-                            <TextField
-                              select
+                            <SearchableSelect
+
                               required
                               fullWidth
                               size="small"
@@ -250,7 +234,7 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                             >
                               <MenuItem value="RNE_RNM">RNE / RNM</MenuItem>
                               <MenuItem value="PASSAPORTE">Passaporte</MenuItem>
-                            </TextField>
+                            </SearchableSelect>
                           )}
                         />
                       </Grid>
@@ -594,8 +578,8 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                       name="unidadeTerritorialId"
                       control={control}
                       render={({ field }) => (
-                        <TextField
-                          select
+                        <SearchableSelect
+
                           required
                           fullWidth
                           size="small"
@@ -611,7 +595,7 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
                                 {u.nome}
                               </MenuItem>
                             ))}
-                        </TextField>
+                        </SearchableSelect>
                       )}
                     />
                   </Grid>

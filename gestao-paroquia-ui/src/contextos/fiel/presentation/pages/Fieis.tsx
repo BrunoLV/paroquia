@@ -1,22 +1,7 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Box,
-  Card,
-  CardContent,
-  InputAdornment,
-  Skeleton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -342,7 +327,7 @@ const Fieis: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
+          <SearchableTablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={lista.length}

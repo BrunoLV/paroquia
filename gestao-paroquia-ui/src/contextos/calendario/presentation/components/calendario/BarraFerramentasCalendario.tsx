@@ -1,16 +1,5 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material';
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import { Box, Card, CardContent, CircularProgress, FormControl, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
@@ -399,8 +388,8 @@ export const BarraFerramentasCalendario = ({
             }}
           >
             <FormControl size="small" sx={{ minWidth: 200, maxWidth: 300, flexGrow: 1 }}>
-              <InputLabel id="org-filter-label">Organização</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="org-filter-label"
                 value={selectedOrgFilter}
                 label="Organização"
@@ -414,12 +403,12 @@ export const BarraFerramentasCalendario = ({
                     {org.nome}
                   </MenuItem>
                 ))}
-              </Select>
+              </SearchableSelect>
             </FormControl>
 
             <FormControl size="small" sx={{ minWidth: 180, maxWidth: 260, flexGrow: 1 }}>
-              <InputLabel id="cat-filter-label">Categoria</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="cat-filter-label"
                 value={selectedCategoryFilter}
                 label="Categoria"
@@ -433,7 +422,7 @@ export const BarraFerramentasCalendario = ({
                     {cat}
                   </MenuItem>
                 ))}
-              </Select>
+              </SearchableSelect>
             </FormControl>
 
             <ActionButton

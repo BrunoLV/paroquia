@@ -1,30 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Card,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-  Typography,
-  Stack,
-  useTheme,
-} from '@mui/material';
+import { Card, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Stack, useTheme } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
@@ -156,7 +134,7 @@ export const ConselhosAtas: React.FC = () => {
         sx={{
           p: 2,
           mb: 3,
-          
+
           border: '1px solid',
           borderColor: 'divider',
           backgroundColor: theme.custom?.subtlePanelBg ?? '#F8F9FA',
@@ -164,13 +142,13 @@ export const ConselhosAtas: React.FC = () => {
       >
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
           <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
-            <InputLabel id="filter-comunidade-label">Comunidade de Origem</InputLabel>
-            <Select
+
+            <SearchableSelect
               labelId="filter-comunidade-label"
               value={selectedComunidade}
               label="Comunidade de Origem"
               onChange={(e) => setSelectedComunidade(e.target.value)}
-             
+
             >
               <MenuItem value="">Todas as Comunidades</MenuItem>
               {communities.map((c) => (
@@ -178,23 +156,23 @@ export const ConselhosAtas: React.FC = () => {
                   {c.nome}
                 </MenuItem>
               ))}
-            </Select>
+            </SearchableSelect>
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 220, flex: { xs: 1, sm: 'initial' } }}>
-            <InputLabel id="filter-status-label">Status de Homologação</InputLabel>
-            <Select
+
+            <SearchableSelect
               labelId="filter-status-label"
               value={selectedStatus}
               label="Status de Homologação"
               onChange={(e) => setSelectedStatus(e.target.value)}
-             
+
             >
               <MenuItem value="">Todos os Status</MenuItem>
               <MenuItem value="PENDENTE_HOMOLOGACAO">Pendente de Homologação</MenuItem>
               <MenuItem value="HOMOLOGADO">Homologado</MenuItem>
               <MenuItem value="VETADO">Vetado</MenuItem>
-            </Select>
+            </SearchableSelect>
           </FormControl>
 
           {(selectedComunidade || selectedStatus) && (
@@ -279,7 +257,7 @@ export const ConselhosAtas: React.FC = () => {
               )}
             </TableBody>
           </Table>
-          <TablePagination
+          <SearchableTablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={decisoes.length}

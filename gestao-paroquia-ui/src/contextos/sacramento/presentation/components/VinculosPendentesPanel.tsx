@@ -1,8 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useState } from 'react';
-import {
-  Alert, Box, Card, Divider, Drawer, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer,
-  TableHead, TablePagination, TableRow, Typography,
-} from '@mui/material';
+import { Alert, Box, Card, Divider, Drawer, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BadgeIcon from '@mui/icons-material/Badge';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -89,7 +87,7 @@ export const VinculosPendentesPanel: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
+          <SearchableTablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={pendentes.length}

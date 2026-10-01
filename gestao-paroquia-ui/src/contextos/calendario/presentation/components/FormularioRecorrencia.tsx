@@ -1,21 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import {
-    Box,
-    Checkbox,
-    FormControl,
-    FormControlLabel,
-    FormGroup,
-    FormLabel,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Radio,
-    RadioGroup,
-    Select,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, MenuItem, Radio, RadioGroup, TextField, Typography, useTheme } from '@mui/material';
 
 export type Frequency = 'DIARIA' | 'SEMANAL' | 'MENSAL';
 export type FrequenciaRecorrencia = Frequency;
@@ -113,8 +98,8 @@ export const FormularioRecorrencia: React.FC<FormularioRecorrenciaProps> = ({ ru
       <Grid container spacing={2}>
         <Grid size={{ xs: 6 }}>
           <FormControl fullWidth size="small">
-            <InputLabel id="recurrence-frequency-label">Frequência</InputLabel>
-            <Select
+
+            <SearchableSelect
               labelId="recurrence-frequency-label"
               id="recurrence-frequency-select"
               value={rule.frequencia}
@@ -125,7 +110,7 @@ export const FormularioRecorrencia: React.FC<FormularioRecorrenciaProps> = ({ ru
               <MenuItem value="DIARIA">Diária</MenuItem>
               <MenuItem value="SEMANAL">Semanal</MenuItem>
               <MenuItem value="MENSAL">Mensal</MenuItem>
-            </Select>
+            </SearchableSelect>
           </FormControl>
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -216,8 +201,8 @@ export const FormularioRecorrencia: React.FC<FormularioRecorrenciaProps> = ({ ru
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6 }}>
                   <FormControl fullWidth size="small">
-                    <InputLabel id="recurrence-position-label">Posição</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       labelId="recurrence-position-label"
                       id="recurrence-position-select"
                       value={rule.posicaoNoMes || 'FIRST'}
@@ -231,13 +216,13 @@ export const FormularioRecorrencia: React.FC<FormularioRecorrenciaProps> = ({ ru
                       <MenuItem value="FOURTH">Quarto(a)</MenuItem>
                       <MenuItem value="FIFTH">Quinto(a)</MenuItem>
                       <MenuItem value="LAST">Último(a)</MenuItem>
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
                   <FormControl fullWidth size="small">
-                    <InputLabel id="recurrence-day-label">Dia da semana</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       labelId="recurrence-day-label"
                       id="recurrence-day-select"
                       value={rule.diasDaSemana?.[0] || 'SUNDAY'}
@@ -250,7 +235,7 @@ export const FormularioRecorrencia: React.FC<FormularioRecorrenciaProps> = ({ ru
                           {day.label}
                         </MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                 </Grid>
               </Grid>

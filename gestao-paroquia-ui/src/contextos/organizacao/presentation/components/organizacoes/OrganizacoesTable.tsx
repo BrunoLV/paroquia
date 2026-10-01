@@ -1,17 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import {
-  Box,
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
@@ -112,7 +101,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+      <SearchableTablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={organizacoes.length}

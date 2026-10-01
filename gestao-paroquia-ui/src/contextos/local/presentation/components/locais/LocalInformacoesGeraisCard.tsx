@@ -1,19 +1,7 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Switch,
-  TextField,
-} from '@mui/material';
+import { Card, CardContent, CardHeader, FormControl, FormControlLabel, FormHelperText, Grid, MenuItem, Switch, TextField } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { LocalFormInput } from '@/contextos/local/presentation/schemas/localSchema';
 import { Organizacao } from '@/shared/domain/types/types';
@@ -62,12 +50,12 @@ export const LocalInformacoesGeraisCard: React.FC<LocalInformacoesGeraisCardProp
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <FormControl fullWidth size="small" error={Boolean(errors.tipo)}>
-              <InputLabel id="tipo-local-label">Tipo</InputLabel>
+
               <Controller
                 name="tipo"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} labelId="tipo-local-label" label="Tipo">
+                  <SearchableSelect {...field} labelId="tipo-local-label" label="Tipo">
                     <MenuItem value="SALAO_PAROQUIAL">Salão Paroquial</MenuItem>
                     <MenuItem value="IGREJA">Igreja / Matriz</MenuItem>
                     <MenuItem value="CAPELA">Capela</MenuItem>
@@ -76,7 +64,7 @@ export const LocalInformacoesGeraisCard: React.FC<LocalInformacoesGeraisCardProp
                     <MenuItem value="QUADRA">Quadra</MenuItem>
                     <MenuItem value="SECRETARIA">Secretaria</MenuItem>
                     <MenuItem value="OUTRO">Outro</MenuItem>
-                  </Select>
+                  </SearchableSelect>
                 )}
               />
               {errors.tipo && <FormHelperText>{errors.tipo.message}</FormHelperText>}
@@ -85,18 +73,18 @@ export const LocalInformacoesGeraisCard: React.FC<LocalInformacoesGeraisCardProp
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <FormControl fullWidth size="small" error={Boolean(errors.igrejaId)}>
-              <InputLabel id="igreja-local-label">Igreja / Comunidade</InputLabel>
+
               <Controller
                 name="igrejaId"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} labelId="igreja-local-label" label="Igreja / Comunidade">
+                  <SearchableSelect {...field} labelId="igreja-local-label" label="Igreja / Comunidade">
                     {igrejas.map((org) => (
                       <MenuItem key={org.id} value={org.id}>
                         {org.nome} ({org.tipo})
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SearchableSelect>
                 )}
               />
               {errors.igrejaId && <FormHelperText>{errors.igrejaId.message}</FormHelperText>}

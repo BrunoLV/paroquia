@@ -1,22 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, {useState} from 'react';
-import {
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Radio,
-    RadioGroup,
-    Select,
-    Stack,
-    TextField,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, MenuItem, Radio, RadioGroup, Stack, TextField } from '@mui/material';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -143,8 +127,8 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6 }}>
                   <FormControl fullWidth size="small">
-                    <InputLabel id="export-month-label">Mês</InputLabel>
-                    <Select
+
+                    <SearchableSelect
                       labelId="export-month-label"
                       value={mes}
                       label="Mês"
@@ -162,7 +146,7 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
                       <MenuItem value={10}>Outubro</MenuItem>
                       <MenuItem value={11}>Novembro</MenuItem>
                       <MenuItem value={12}>Dezembro</MenuItem>
-                    </Select>
+                    </SearchableSelect>
                   </FormControl>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
@@ -209,8 +193,8 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
 
           <Box sx={{ borderTop: '1px dashed', borderColor: 'divider', pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <FormControl fullWidth size="small">
-              <InputLabel id="export-org-label">Organização Responsável</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="export-org-label"
                 value={selectedOrg}
                 label="Organização Responsável"
@@ -224,12 +208,12 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
                     {org.nome}
                   </MenuItem>
                 ))}
-              </Select>
+              </SearchableSelect>
             </FormControl>
 
             <FormControl fullWidth size="small">
-              <InputLabel id="export-category-label">Categoria</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="export-category-label"
                 value={selectedCategory}
                 label="Categoria"
@@ -243,7 +227,7 @@ export const DialogExportarCalendario: React.FC<DialogExportarCalendarioProps> =
                     {cat}
                   </MenuItem>
                 ))}
-              </Select>
+              </SearchableSelect>
             </FormControl>
           </Box>
 

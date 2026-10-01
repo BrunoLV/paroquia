@@ -13,7 +13,7 @@ Este documento define as regras Mandatórias, Invariantes e Diretrizes Técnicas
   * Justifique no código contenções de propagação (`stopPropagation`), aprisionamentos de foco (*focus traps*) e escolhas semânticas de ARIA. Comentários triviais (`// renderiza botão`, `// hook`) são proibidos.
 * **Fluxo de Desenvolvimento Mandatório (`fluxo-desenvolvimento`):**
   * Toda intervenção deve seguir o GitHub Flow (branch a partir de `master` atualizada).
-  * Obrigatório atualizar o arquivo do módulo correspondente em `docs/business-rules/<modulo>.md` com as novas regras ou alterações.
+  * Atualizar `docs/business-rules/<modulo>.md` quando houver alteração de regra de negócio ou fluxo operacional. Diretivas técnicas e visuais pertencem ao Design System e às instruções dos agentes.
   * Questionar sobre fechamento de versão ao término e atualizar `CHANGELOG.md` e `package.json`.
 
 ---
@@ -24,17 +24,19 @@ Antes de iniciar qualquer intervenção no frontend, consulte e respeite integra
 
 | Escopo da Tarefa no Frontend | Skills Mandatórias | Invariantes Críticas |
 | :--- | :--- | :--- |
-| **Workflow e Ciclo de Vida (ALWAYS-ON)** | [`fluxo-desenvolvimento`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/fluxo-desenvolvimento/SKILL.md) | • GitHub Flow obrigatório (branch semântica saindo de `master` atualizada).<br>• Consulta e atualização de `docs/business-rules/<modulo>.md`.<br>• Pergunta sobre versão e atualização de `CHANGELOG.md`.<br>• Conventional Commits e submissão via Pull Request para `master`. |
+| **Workflow e Ciclo de Vida (ALWAYS-ON)** | [`fluxo-desenvolvimento`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/fluxo-desenvolvimento/SKILL.md) | • GitHub Flow obrigatório (branch semântica saindo de `master` atualizada).<br>• Consulta das regras de negócio e atualização quando houver mudança de negócio; diretivas visuais ficam no Design System.<br>• Pergunta sobre versão e atualização de `CHANGELOG.md`.<br>• Conventional Commits e submissão via Pull Request para `master`. |
 | **Componentes, Páginas, Telas & Layout** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md)<br>[`DESIGN_SYSTEM.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/gestao-paroquia-ui/DESIGN_SYSTEM.md) | • Leitura de `DESIGN_SYSTEM.md` **obrigatória** antes de tocar em qualquer tela/modal/formulário — é a fonte única do padrão visual (botões, busca, diálogos, tabelas, estados assíncronos).<br>• Semântica MUI 9 pura: **PROIBIDAS** tags HTML cruas (`div`, `span`, `p`) para layout/texto.<br>• Uso exclusivo do novo `<Grid2 container spacing={2}>` e `<Grid2 size={{ xs: 12, ... }}>`.<br>• Limites de linhas: componentes puros (10–60 linhas); formulários densos (máximo 120 linhas).<br>• Cantos arredondados padronizados pelo tema (`shape.borderRadius: 12`). |
 | **Formulários & Entradas de Dados** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Schema Zod obrigatório em `src/contextos/<contexto>/presentation/schemas/`.<br>• Integração mandatória via `react-hook-form` + `@hookform/resolvers/zod`.<br>• Proibida proliferação de `useState` para múltiplos inputs.<br>• Máscaras e formatadores em `src/shared/utils/`. |
 | **Server State & Integração com API** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • TanStack Query v5 exclusivo em `contextos/<contexto>/presentation/hooks/`.<br>• Chaves centralizadas no contexto proprietário.<br>• Adapters HTTP em `infrastructure/http/` implementam portas de `application`.<br>• Proibidas chamadas diretas de `fetch`/`axios` em componentes ou hooks de apresentação. |
-| **Acessibilidade (a11y) & Tabelas** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Linhas de tabela clicáveis devem ter `role="button"`, `tabIndex={0}` e listeners `onKeyDown` (`Enter`/`Space`).<br>• Botões e menus de ações na linha **DEVEM** conter `event.stopPropagation()`.<br>• Paginação obrigatória em todas as listagens (`<TablePagination>`). |
+| **Acessibilidade (a11y) & Tabelas** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md) | • Linhas de tabela clicáveis devem ter `role="button"`, `tabIndex={0}` e listeners `onKeyDown` (`Enter`/`Space`).<br>• Botões e menus de ações na linha **DEVEM** conter `event.stopPropagation()`.<br>• Paginação obrigatória em todas as listagens (`SearchableTablePagination`). |
 | **Segurança e Privacidade (LGPD)** | [`lgpd-privacy-by-design`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/lgpd-privacy-by-design/SKILL.md) | • Paridade absoluta: dados civis de qualquer papel/clérigo isolados em modais de RH/administrativos.<br>• Proibido `console.log` com payloads ou PII exposta.<br>• Mascaramento obrigatório de dados civis (CPF, e-mail, telefone). |
 | **Testes Automatizados de Frontend** | [`react-frontend`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/react-frontend/SKILL.md)<br>[`tdd`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/tdd/SKILL.md) | • Vitest + React Testing Library + `@testing-library/user-event`.<br>• Proibido `fireEvent`; simule interações reais com `userEvent`.<br>• Isolamento de rede: interceptação obrigatória via Mock Service Worker (MSW). |
 
 ---
 
 ## 3. Padrão Visual Oficial (*Padrão Arrojado*)
+
+* **Listas pesquisáveis obrigatórias:** Toda lista de valores, inclusive filtros, seleção múltipla e Linhas por página, segue a seção 2.1 do `DESIGN_SYSTEM.md`. Use `SearchableSelect`/`SearchableAutocomplete` e `SearchableTablePagination`; proibidos seletores sem pesquisa. A suíte estrutural do frontend valida esta diretiva.
 
 👉 **Fonte única e obrigatória: [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).** Leia-o antes de criar ou alterar qualquer tela, modal, formulário ou componente visual. Não duplicar seu conteúdo aqui — qualquer divergência entre este arquivo e `DESIGN_SYSTEM.md` resolve-se a favor do `DESIGN_SYSTEM.md`.
 
@@ -43,7 +45,7 @@ Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), 
 ### 3.1. Invariantes e Anti-patterns Mandatórios de Modais e Diálogos (`Dialog`)
 * **`<DialogTitle>` Limpo:** Sempre string pura (`<DialogTitle>Título</DialogTitle>`). É **TERMINANTEMENTE PROIBIDO** colocar `<Typography>` dentro de `<DialogTitle>`.
 * **`<form noValidate>` Obrigatório:** Toda tag `<form>` em modais deve conter `noValidate` para impedir balões HTML5 nativos que quebram o design system.
-* **`size="small"` em TODOS os Inputs:** É **EXPRESSAMENTE PROIBIDO** gerar `<TextField>`, `<Select>` ou `<FormControl>` sem `size="small"`. O padrão corporativo exige 40px de altura para campos de entrada.
+* **`size="small"` em TODOS os Inputs:** É **EXPRESSAMENTE PROIBIDO** gerar `<TextField>`, autocomplete ou `<FormControl>` sem `size="small"`. O padrão corporativo exige 40px de altura para campos de entrada.
 * **`dividers` + `sx={DIALOG_CONTENT_SCROLL_SX}`:** Obrigatórios em `<DialogContent>`.
 * **Campos em `<Card variant="outlined" sx={{ borderRadius: 2 }}>`:** Proibido campo solto direto no `DialogContent`. Todo agrupamento tem cabeçalho com ícone e `Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}`.
 * **Controle Único de Fechar:** O botão canônico é `ActionButton` "Cancelar" no `DialogActions`. Proibido ícone "X" no cabeçalho quando houver rodapé com ações.

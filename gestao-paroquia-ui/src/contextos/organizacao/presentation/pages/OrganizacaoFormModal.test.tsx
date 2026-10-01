@@ -1,6 +1,7 @@
 import {vi} from "vitest";
 import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import OrganizacaoFormModal from './OrganizacaoFormModal';
 import {ThemeProvider} from '@mui/material/styles';
 import theme from '@/shared/presentation/theme/theme';
@@ -137,40 +138,44 @@ describe('OrganizacaoFormModal', () => {
     ));
   });
 
-  test('displays official type dropdown only for PASTORAL or MOVIMENTO and filters options accordingly', () => {
+  test('displays official type dropdown only for PASTORAL or MOVIMENTO and filters options accordingly', async () => {
+    const user = userEvent.setup();
     renderModal();
 
     // 1. Initially type is PASTORAL. Dropdown should be visible.
     expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
     
     // Open dropdown
-    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
+    await user.click(screen.getByRole('combobox', { name: /Tipo Oficial \/ Movimento/i }));
     // Should show PASTORAL types, but NOT MOVIMENTO types
     expect(screen.getByRole('option', { name: 'Catequese Oficial' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Dízimo Oficial' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'EJC Oficial' })).not.toBeInTheDocument();
 
     // Close options by clicking backdrop or body
-    fireEvent.click(document.body);
+    await user.keyboard('{Escape}');
 
     // 2. Change type to MOVIMENTO
     const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
-    fireEvent.mouseDown(tipoSelect);
-    fireEvent.click(screen.getByRole('option', { name: 'Movimento' }));
+    await user.click(tipoSelect);
+    await user.keyboard('{Control>}a{/Control}{Backspace}');
+    await user.type(tipoSelect, 'Movimento');
+    await user.click(screen.getByRole('option', { name: 'Movimento' }));
 
     // Dropdown should still be visible
     expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
-    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
+    await user.click(screen.getByRole('combobox', { name: /Tipo Oficial \/ Movimento/i }));
     // Should show MOVIMENTO types, but NOT PASTORAL types
     expect(screen.getByRole('option', { name: 'EJC Oficial' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Catequese Oficial' })).not.toBeInTheDocument();
 
     // Close options
-    fireEvent.click(document.body);
+    await user.keyboard('{Escape}');
 
     // 3. Change type to CLERO
-    fireEvent.mouseDown(tipoSelect);
-    fireEvent.click(screen.getByRole('option', { name: 'Clero' }));
+    await user.clear(tipoSelect);
+    await user.type(tipoSelect, 'Clero');
+    await user.click(screen.getByRole('option', { name: 'Clero' }));
 
     // Dropdown should NOT be visible
     expect(screen.queryAllByLabelText(/Tipo Oficial \/ Movimento/i).length).toBe(0);

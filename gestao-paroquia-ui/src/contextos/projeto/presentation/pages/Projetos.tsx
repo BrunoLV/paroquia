@@ -1,38 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import {useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {
-    Alert,
-    Box,
-    Card,
-    Checkbox,
-    CircularProgress,
-    Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Divider,
-    Drawer,
-    FormControl,
-    FormControlLabel,
-    Grid,
-    InputLabel,
-    LinearProgress,
-    MenuItem,
-    Paper,
-    Select,
-    Skeleton,
-    Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Alert, Box, Card, Checkbox, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Drawer, FormControl, FormControlLabel, Grid, LinearProgress, MenuItem, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import WorkIcon from '@mui/icons-material/Assignment';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -90,7 +60,7 @@ interface ProjetoResumo {
 const Projetos = () => {
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
-  
+
   const projetosQuery = useQuery({
     queryKey: ['projetos'],
     queryFn: async () => (await apiClient.get<Projeto[]>('/projetos')).data ?? [],
@@ -170,24 +140,24 @@ const Projetos = () => {
     setFormId('');
     setFormNome('');
     setFormDescricao('');
-    
+
     // Auto-select first available organization if limited
     const selectable = getSelectableOrgs();
     setFormOrgId(selectable.length > 0 ? selectable[0].id : '');
-    
+
     // Set default dates (today to +3 months)
     const today = new Date().toISOString().split('T')[0];
     const threeMonthsLater = new Date();
     threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
     const endDate = threeMonthsLater.toISOString().split('T')[0];
-    
+
     setFormInicio(today);
     setFormFim(endDate);
     setFormStatus('ABERTO');
     setIsEditMode(false);
-    
 
-    
+
+
     setDialogOpen(true);
   };
 
@@ -209,15 +179,15 @@ const Projetos = () => {
     setFormNome(project.nome);
     setFormDescricao(project.descricao || '');
     setFormOrgId(project.grupoParoquialResponsavelId);
-    
+
     // Format dates to YYYY-MM-DD
     setFormInicio(project.inicio ? project.inicio.split('T')[0] : '');
     setFormFim(project.fim ? project.fim.split('T')[0] : '');
     setFormStatus(project.status);
     setIsEditMode(true);
-    
 
-    
+
+
     setDialogOpen(true);
   };
 
@@ -406,7 +376,7 @@ const Projetos = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
+          <SearchableTablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={projects.length}
@@ -455,8 +425,8 @@ const Projetos = () => {
               />
 
               <FormControl fullWidth required size="small">
-                <InputLabel id="org-responsavel-label">Organização Responsável</InputLabel>
-                <Select
+
+                <SearchableSelect
                   labelId="org-responsavel-label"
                   id="org-responsavel-select"
                   value={formOrgId}
@@ -468,7 +438,7 @@ const Projetos = () => {
                       {org.nome}
                     </MenuItem>
                   ))}
-                </Select>
+                </SearchableSelect>
               </FormControl>
 
               <Grid container spacing={2}>
@@ -500,8 +470,8 @@ const Projetos = () => {
 
               {isEditMode && (
                 <FormControl fullWidth size="small">
-                  <InputLabel id="status-label">Status</InputLabel>
-                  <Select
+
+                  <SearchableSelect
                     labelId="status-label"
                     value={formStatus}
                     label="Status"
@@ -511,7 +481,7 @@ const Projetos = () => {
                     <MenuItem value="EM_ANDAMENTO">Em Andamento</MenuItem>
                     <MenuItem value="CANCELADO">Cancelado</MenuItem>
                     <MenuItem value="CONCLUIDO">Concluído</MenuItem>
-                  </Select>
+                  </SearchableSelect>
                 </FormControl>
               )}
             </Stack>
@@ -542,7 +512,7 @@ const Projetos = () => {
                 Visão consolidada de dados e indicadores.
               </Typography>
             </Box>
-            
+
             <Divider />
 
             {/* Basic Info */}
@@ -610,14 +580,14 @@ const Projetos = () => {
               <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 2 }}>
                 Painel de Indicadores
               </Typography>
-              
+
               {isLoadingResumo ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
                   <CircularProgress size={30} />
                 </Box>
               ) : resumo ? (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  
+
                   {/* Saúde Temporal */}
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>

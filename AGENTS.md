@@ -35,6 +35,8 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
 
 ### 2.2. Regras Mandatórias de Fluxo de Desenvolvimento (Plan & Execution)
 
+**Diretiva global de UI:** Todas as listas de valores permitem pesquisa por autocomplete, inclusive filtros, seleção múltipla e Linhas por página. Agentes aplicam a seção 2.1 de [`gestao-paroquia-ui/DESIGN_SYSTEM.md`](gestao-paroquia-ui/DESIGN_SYSTEM.md) e [`.agents/rules/frontend-design-system.md`](.agents/rules/frontend-design-system.md). Proibidos seletores sem pesquisa, independentemente do número de opções.
+
 1. **PLANEJAMENTO OBRIGATÓRIO (PLAN MODE / `/plan`):**
    * Antes de propor qualquer alteração ou gerar código, consulte obrigatoriamente `docs/business-rules/<modulo>.md` para o(s) Bounded Context(s) afetado(s).
    * Especifique o plano de arquitetura, branch prevista via GitHub Flow e testes. Proibido mutar código sem aprovação explícita do plano.
@@ -42,6 +44,7 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
    * Pós-aprovação, acesse `master`, atualize via `git pull origin master` e crie branch semântica: `<tipo>/<descricao-kebab-case>`.
    * **PROIBIDO** codificar diretamente na branch `master`.
 3. **LIVING DOCUMENTATION EM `docs/business-rules/`:**
+   * Esse diretório contém somente regras de negócio e fluxos operacionais. Diretivas técnicas e visuais pertencem ao Design System e às instruções dos agentes.
    * Cada implementação que afete regras de negócio, fluxos ou políticas **DEVE OBRIGATORIAMENTE** atualizar `docs/business-rules/<modulo>.md` no mesmo ciclo de desenvolvimento.
 4. **VERSIONAMENTO SEMÂNTICO & `CHANGELOG.md`:**
    * Versão base atual: `0.1.0`. Ao concluir cada entrega, questione o usuário se fecha versão do sistema.
@@ -59,7 +62,7 @@ Antes de gerar ou refatorar qualquer arquivo, o agente **DEVE** identificar a na
 
 | Escopo / Gatilho | Skills Mandatórias | Diretrizes Críticas |
 | :--- | :--- | :--- |
-| **Planejamento, Execução e Workflow Geral (ALWAYS-ON)** | [`fluxo-desenvolvimento`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/fluxo-desenvolvimento/SKILL.md) | • **Agnóstica a qualquer IA (Claude, Gemini, Antigravity, Cursor, Copilot).**<br>• Consulta obrigatória a `docs/business-rules/` no modo Plan.<br>• GitHub Flow: checkout `master` atualizada -> criação de branch semântica.<br>• Living Documentation: atualização mandatória de `docs/business-rules/<modulo>.md`.<br>• Pergunta obrigatória de encerramento de versão + atualização de `CHANGELOG.md` e build files.<br>• Conventional Commits e submissão via Pull Request padronizado. |
+| **Planejamento, Execução e Workflow Geral (ALWAYS-ON)** | [`fluxo-desenvolvimento`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/fluxo-desenvolvimento/SKILL.md) | • **Agnóstica a qualquer IA (Claude, Gemini, Antigravity, Cursor, Copilot).**<br>• Consulta obrigatória a `docs/business-rules/` no modo Plan.<br>• GitHub Flow: checkout `master` atualizada -> criação de branch semântica.<br>• Living Documentation: atualizar `docs/business-rules/<modulo>.md` ao alterar negócio; diretivas visuais ficam no Design System.<br>• Pergunta obrigatória de encerramento de versão + atualização de `CHANGELOG.md` e build files.<br>• Conventional Commits e submissão via Pull Request padronizado. |
 | **Manipulação de PII, Usuários, Fiéis ou Clérigos** | [`lgpd-privacy-by-design`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/lgpd-privacy-by-design/SKILL.md) | • **Paridade Clérigo/Fiel:** regras idênticas de privacidade para clérigos e leigos.<br>• PII Zero em logs.<br>• Criptografia em repouso de dados civis e prevenção contra IDOR.<br>• DTOs segregados por permissão. |
 | **Modelagem de Domínio Java & Regras de Negócio** | [`ddd`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/ddd/SKILL.md)<br>[`solid`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/solid/SKILL.md)<br>[`java`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/java/SKILL.md) | • Domínio em Java puro sem frameworks (zero anotações Spring/JPA em `domain/`).<br>• Identificadores fortemente tipados com `record` (ex: `FielId`).<br>• Agregados associam-se apenas por ID.<br>• Mutações de estado limitadas a 1 agregado por transação.<br>• Sealed Hierarchies com Pattern Matching sem `default` artificial. |
 | **Implementação de Código Java 25 Geral** | [`java`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/java/SKILL.md)<br>[`solid`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/solid/SKILL.md) | • `record` imutável para DTOs/VOs com validação no construtor compacto.<br>• Proibido `float`/`double` para valores financeiros (use `BigDecimal`).<br>• Virtual Threads para I/O sem `synchronized` (anti-pinning).<br>• `Optional` restrito a retornos de métodos; coleções retornam vazias, nunca `null`.<br>• **Zero imports inline:** proibido usar nomes totalmente qualificados (FQCNs) no corpo do código; declare todos os imports explicitamente no topo do arquivo sem wildcards. |

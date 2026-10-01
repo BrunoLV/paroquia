@@ -79,6 +79,8 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 
 ### 5.1. Layout de Páginas e Cabeçalho
 
+**Listas de valores pesquisáveis:** Aplique a seção 2.1 do [`DESIGN_SYSTEM.md`](../../../gestao-paroquia-ui/DESIGN_SYSTEM.md). Utilize `SearchableSelect` para códigos/IDs, `SearchableAutocomplete` para objetos e `SearchableTablePagination` nas tabelas. A regra inclui filtros, seleção múltipla e Linhas por página, mesmo com poucas opções. Nunca gerar Select, TextField select ou select nativo sem pesquisa. Execute a suíte `searchableListsArchitecture.test.ts`.
+
 * Contêiner raiz de rotas: `<Stack spacing={3}>`.
 * Cabeçalho de página mandatório (`src/components/PageHeader.tsx`):
 ```tsx
@@ -145,7 +147,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 <TableActionMenu onClick={(e) => e.stopPropagation()} ... />
 ```
 
-* **Paginação Obrigatória:** Toda tabela do sistema deve implementar `<TablePagination>` com:
+* **Paginação Obrigatória:** Toda tabela do sistema deve implementar `SearchableTablePagination` com:
   * `rowsPerPageOptions={[5, 10, 25]}`
   * `labelRowsPerPage="Linhas por página:"`
   * `labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}`
@@ -190,7 +192,7 @@ export const MatrimonioFormDrawer: React.FC<MatrimonioFormDrawerProps> = ({ ... 
 * **Invariantes e Anti-patterns Mandatórios de Diálogos:**
   * `<DialogTitle>` simples: apenas string pura, proibido `<Typography>` aninhada.
   * Tag `<form>` sempre com `noValidate`.
-  * `size="small"` mandatório em todos os campos (`TextField`, `Select`, `FormControl`).
+  * `size="small"` mandatório em todos os campos (`TextField`, autocomplete, `FormControl`).
   * `dividers` e `sx={DIALOG_CONTENT_SCROLL_SX}` obrigatórios em `DialogContent`.
   * Botões de ação via `<ActionButton>` (Cancelar = secondary com CloseIcon, Salvar = primary com SaveIcon).
   * Um único botão de fechar (no rodapé, nunca duplicar com 'X' no header).
@@ -446,3 +448,4 @@ Antes de concluir qualquer tarefa ou submeter alterações, valide rigorosamente
 6. [ ] **Tríade de Estados Assíncronos:** A tela implementa Skeleton para loading, EmptyState visual para ausência de registros e alerta com retry para erros?
 7. [ ] **Isolamento de Server-State:** Toda comunicação com a API é intermediada por hooks de TanStack Query com query keys hierárquicas e invalidação pós-mutação?
 8. [ ] **Tokens de Design:** Não existem códigos hexadecimais manuais e o `borderRadius: 12` do tema é preservado?
+9. [ ] **Listas Pesquisáveis:** Campos, filtros, seleção múltipla e Linhas por página seguem a seção 2.1 do Design System e passam na suíte estrutural?

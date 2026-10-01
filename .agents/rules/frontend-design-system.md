@@ -49,7 +49,7 @@ Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estr
 
 ### 1.1. Anti-patterns Terminantemente Proibidos em Modais
 1. **PROIBIDO `<Typography>` aninhada dentro de `<DialogTitle>`:** `<DialogTitle>` já é um elemento tipográfico padronizado do MUI com variante h6. Passe apenas a string direta.
-2. **PROIBIDO omitir `size="small"` em campos de formulário:** TODOS os inputs (`TextField`, `Select`, `FormControl`) DEVEM ter `size="small"`. Inputs no tamanho default (56px) quebram a harmonia visual corporativa do sistema.
+2. **PROIBIDO omitir `size="small"` em campos de formulário:** TODOS os inputs (`TextField`, autocomplete, `FormControl`) DEVEM ter `size="small"`. Inputs no tamanho default (56px) quebram a harmonia visual corporativa do sistema.
 3. **PROIBIDO omitir `noValidate` na tag `<form>`:** O controle de validação é de responsabilidade exclusiva do Zod + React Hook Form. O balão nativo do navegador nunca deve ser exibido.
 4. **PROIBIDO omitir `dividers` e `sx={DIALOG_CONTENT_SCROLL_SX}` em `<DialogContent>`:** Obrigatórios para garantir rolagem segura em telas menores e viewport de baixa resolução.
 5. **PROIBIDO campos soltos fora de `<Card variant="outlined">`:** Todo grupo de campos deve viver dentro de um Card delineado com `CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}` e cabeçalho com ícone e `Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}`.
@@ -60,6 +60,8 @@ Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estr
 ---
 
 ## 2. Formulários, Validação e Máscaras
+
+**Toda lista de valores permite pesquisa por autocomplete**, inclusive filtros, seleção múltipla e Linhas por página. Aplicar a seção 2.1 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md): `SearchableSelect`, `SearchableAutocomplete` e `SearchableTablePagination`. Proibidos Select, TextField select e select nativo sem pesquisa, independentemente do número de opções. Validar a suíte `searchableListsArchitecture.test.ts`.
 
 1. **Zod + React Hook Form:** Obrigatórios para qualquer formulário. Nunca use múltiplos `useState` para inputs.
 2. **Máscaras Obrigatórias:**

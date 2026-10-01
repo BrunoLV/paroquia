@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { Box, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
+import { Box, FormControl, MenuItem, Paper } from '@mui/material';
 import SearchField from '@/shared/presentation/components/SearchField';
 
 interface OrganizacoesFilterBarProps {
@@ -28,8 +29,8 @@ export const OrganizacoesFilterBar: React.FC<OrganizacoesFilterBarProps> = ({
         sx={{ flexGrow: 1, minWidth: 280 }}
       />
       <FormControl size="small" sx={{ minWidth: 180 }}>
-        <InputLabel id="tipo-org-filtro-label">Tipo</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="tipo-org-filtro-label"
           label="Tipo"
           value={tipoFilter}
@@ -42,11 +43,11 @@ export const OrganizacoesFilterBar: React.FC<OrganizacoesFilterBarProps> = ({
           <MenuItem value="COMISSAO">Comissão</MenuItem>
           <MenuItem value="CONSELHO">Conselho</MenuItem>
           <MenuItem value="OUTRO">Outro</MenuItem>
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 140 }}>
-        <InputLabel id="status-org-filtro-label">Status</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="status-org-filtro-label"
           label="Status"
           value={statusFilter}
@@ -55,7 +56,7 @@ export const OrganizacoesFilterBar: React.FC<OrganizacoesFilterBarProps> = ({
           <MenuItem value="TODOS">Todos</MenuItem>
           <MenuItem value="ATIVO">Ativos</MenuItem>
           <MenuItem value="INATIVO">Inativos</MenuItem>
-        </Select>
+        </SearchableSelect>
       </FormControl>
     </Box>
   </Paper>

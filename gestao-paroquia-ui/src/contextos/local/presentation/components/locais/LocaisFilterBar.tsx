@@ -1,5 +1,6 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Paper, Select, Stack } from '@mui/material';
+import { FormControl, MenuItem, Paper, Stack } from '@mui/material';
 import SearchField from '@/shared/presentation/components/SearchField';
 import { Organizacao } from '@/shared/domain/types/types';
 
@@ -35,8 +36,8 @@ export const LocaisFilterBar: React.FC<LocaisFilterBarProps> = ({
         sx={{ flexGrow: 1, minWidth: 260 }}
       />
       <FormControl size="small" sx={{ minWidth: 180 }}>
-        <InputLabel id="igreja-filtro-label">Igreja / Comunidade</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="igreja-filtro-label"
           label="Igreja / Comunidade"
           value={igrejaFilter}
@@ -48,11 +49,11 @@ export const LocaisFilterBar: React.FC<LocaisFilterBarProps> = ({
               {org.nome}
             </MenuItem>
           ))}
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel id="tipo-filtro-label">Tipo de Local</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="tipo-filtro-label"
           label="Tipo de Local"
           value={tipoFilter}
@@ -67,11 +68,11 @@ export const LocaisFilterBar: React.FC<LocaisFilterBarProps> = ({
           <MenuItem value="QUADRA">Quadra</MenuItem>
           <MenuItem value="SECRETARIA">Secretaria</MenuItem>
           <MenuItem value="OUTRO">Outro</MenuItem>
-        </Select>
+        </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 130 }}>
-        <InputLabel id="status-filtro-label">Status</InputLabel>
-        <Select
+
+        <SearchableSelect
           labelId="status-filtro-label"
           label="Status"
           value={statusFilter}
@@ -80,7 +81,7 @@ export const LocaisFilterBar: React.FC<LocaisFilterBarProps> = ({
           <MenuItem value="TODOS">Todos</MenuItem>
           <MenuItem value="ATIVO">Ativos</MenuItem>
           <MenuItem value="INATIVO">Inativos</MenuItem>
-        </Select>
+        </SearchableSelect>
       </FormControl>
     </Stack>
   </Paper>

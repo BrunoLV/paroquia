@@ -1,20 +1,6 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import {
-  Box,
-  Chip,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, Menu, MenuItem, ListItemIcon, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconActionButton from '@/shared/presentation/components/IconActionButton';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -217,7 +203,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
         </Table>
       </TableContainer>
 
-      <TablePagination
+      <SearchableTablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={reservas.length}

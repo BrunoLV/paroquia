@@ -1,21 +1,9 @@
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useState } from 'react';
 import LidaIcon from '@mui/icons-material/MarkEmailRead';
 import NovaIcon from '@mui/icons-material/MarkEmailUnread';
 import NotificacaoIcon from '@mui/icons-material/Notifications';
-import {
-  Card,
-  CardContent,
-  Skeleton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listarNotificacoes, marcarNotificacaoLida } from '@/contextos/iam/infrastructure/http/notificacoes';
 import PageHeader from '@/shared/presentation/components/PageHeader';
@@ -130,7 +118,7 @@ const Notificacoes = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
+          <SearchableTablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={lista.length}

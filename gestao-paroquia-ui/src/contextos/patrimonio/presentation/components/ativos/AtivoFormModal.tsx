@@ -1,26 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Box,
-  Card,
-  CardContent,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardContent, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
@@ -114,14 +96,14 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small" required error={Boolean(errors.grupoParoquialId)}>
-                          <InputLabel id="create-organizacao-select-label">Organização Dona</InputLabel>
-                          <Select {...field} labelId="create-organizacao-select-label" label="Organização Dona">
+
+                          <SearchableSelect {...field} labelId="create-organizacao-select-label" label="Organização Dona">
                             {organizacoes.map((org) => (
                               <MenuItem key={org.id} value={org.id}>
                                 {org.nome}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                           {errors.grupoParoquialId && (
                             <FormHelperText>{errors.grupoParoquialId.message}</FormHelperText>
                           )}
@@ -146,8 +128,8 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small">
-                          <InputLabel id="categoria-select-label">Tipo</InputLabel>
-                          <Select {...field} labelId="categoria-select-label" label="Tipo">
+
+                          <SearchableSelect {...field} labelId="categoria-select-label" label="Tipo">
                             {categorias.map((categoria) => (
                               <MenuItem key={categoria} value={categoria}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -155,7 +137,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
                                 </Box>
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                         </FormControl>
                       )}
                     />

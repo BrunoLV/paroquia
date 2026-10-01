@@ -1,23 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {
-    Card,
-    CardContent,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControl,
-    FormHelperText,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Select,
-    Stack,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
@@ -214,12 +199,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? 6 : 12 }}>
                 <FormControl fullWidth required size="small">
-                  <InputLabel id="tipo-org-label">Tipo</InputLabel>
+
                   <Controller
                     name="tipo"
                     control={control}
                     render={({ field }) => (
-                      <Select
+                      <SearchableSelect
                         labelId="tipo-org-label"
                         label="Tipo"
                         disabled={isPending}
@@ -233,7 +218,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                         <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
                         <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
                         <MenuItem value="OUTRO">Outro</MenuItem>
-                      </Select>
+                      </SearchableSelect>
                     )}
                   />
                 </FormControl>
@@ -242,12 +227,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               {(tipo === 'PASTORAL' || tipo === 'MOVIMENTO') && (
                 <Grid size={{ xs: 6 }}>
                   <FormControl fullWidth required size="small" error={!!errors.pastoralOficialId}>
-                    <InputLabel id="pastoral-oficial-label">Tipo Oficial / Movimento</InputLabel>
+
                     <Controller
                       name="pastoralOficialId"
                       control={control}
                       render={({ field }) => (
-                        <Select
+                        <SearchableSelect
                           labelId="pastoral-oficial-label"
                           label="Tipo Oficial / Movimento"
                           disabled={isPending}
@@ -260,7 +245,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                             .map(po => (
                               <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
                             ))}
-                        </Select>
+                        </SearchableSelect>
                       )}
                     />
                     {errors.pastoralOficialId && (
@@ -275,12 +260,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
             {tipo !== 'CLERO' && (
               <FormControl fullWidth size="small">
-                <InputLabel id="parent-org-label">Organização Pai</InputLabel>
+
                 <Controller
                   name="parentId"
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <SearchableSelect
                       labelId="parent-org-label"
                       label="Organização Pai"
                       disabled={isPending}
@@ -291,7 +276,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                       {parentOptions.map(org => (
                         <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
                       ))}
-                    </Select>
+                    </SearchableSelect>
                   )}
                 />
               </FormControl>
@@ -321,12 +306,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
-                  <InputLabel id="coordenador-select-label">Coordenador</InputLabel>
+
                   <Controller
                     name="coordenador"
                     control={control}
                     render={({ field }) => (
-                      <Select
+                      <SearchableSelect
                         labelId="coordenador-select-label"
                         label="Coordenador"
                         disabled={isPending}
@@ -337,7 +322,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                         {coordinatorOptions.map(opt => (
                           <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
                         ))}
-                      </Select>
+                      </SearchableSelect>
                     )}
                   />
                 </FormControl>
@@ -345,12 +330,12 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
               <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
-                  <InputLabel id="vice-coordenador-select-label">Vice-Coordenador</InputLabel>
+
                   <Controller
                     name="viceCoordenador"
                     control={control}
                     render={({ field }) => (
-                      <Select
+                      <SearchableSelect
                         labelId="vice-coordenador-select-label"
                         label="Vice-Coordenador"
                         disabled={isPending}
@@ -361,7 +346,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                         {coordinatorOptions.map(opt => (
                           <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
                         ))}
-                      </Select>
+                      </SearchableSelect>
                     )}
                   />
                 </FormControl>

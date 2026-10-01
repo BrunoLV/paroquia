@@ -1,33 +1,7 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, {useState} from 'react';
-import {
-    Alert,
-    alpha,
-    Box,
-    Stack,
-    Chip,
-    CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    Step,
-    StepLabel,
-    Stepper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Alert, alpha, Box, Stack, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Step, StepLabel, Stepper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckIcon from '@mui/icons-material/Check';
@@ -166,8 +140,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         {activeStep === 0 && (
           <Stack spacing={2.5} sx={{ mt: 1 }}>
             <FormControl fullWidth size="small">
-              <InputLabel id="import-entity-label">Tipo de Cadastro</InputLabel>
-              <Select
+
+              <SearchableSelect
                 labelId="import-entity-label"
                 value={entityType}
                 label="Tipo de Cadastro"
@@ -177,7 +151,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 <MenuItem value="USUARIO">Usuários do Sistema</MenuItem>
                 <MenuItem value="ORGANIZACAO">Organizações / Pastorais</MenuItem>
                 <MenuItem value="EVENTO">Eventos Paroquiais</MenuItem>
-              </Select>
+              </SearchableSelect>
             </FormControl>
 
             <Alert severity="info">
@@ -249,7 +223,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                     ))}
                 </TableBody>
               </Table>
-              <TablePagination
+              <SearchableTablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
                 count={validationResult.itens.length}

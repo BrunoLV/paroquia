@@ -13,7 +13,7 @@ Esta skill estabelece o fluxo oficial, padronizado e inegociável de engenharia 
 
 1. **PROIBIDO CODIFICAR SEM PLANO APROVADO:** Toda demanda deve ser previamente planejada e aprovada pelo usuário antes de qualquer mutação no código.
 2. **PROIBIDO CODIFICAR DIRETAMENTE NA `master`:** A branch `master` é o ramo estável de produção. O trabalho ocorre sempre em uma branch temporária criada conforme o **GitHub Flow**.
-3. **OBRIGATÓRIO ATUALIZAR `docs/business-rules/<modulo>.md`:** Código e documentação evoluem no mesmo commit. Nenhuma alteração de regra ou fluxo é concluída sem atualizar o respectivo documento em `docs/business-rules/`.
+3. **OBRIGATÓRIO ATUALIZAR `docs/business-rules/<modulo>.md` AO ALTERAR NEGÓCIO:** Código e documentação de negócio evoluem no mesmo commit. Alterações de regra de negócio ou fluxo operacional atualizam o documento do contexto. Diretivas exclusivamente técnicas ou visuais pertencem ao Design System e às instruções dos agentes, não a `docs/business-rules/`.
 4. **OBRIGATÓRIO GESTÃO DE VERSÃO & `CHANGELOG.md`:** A cada finalização de desenvolvimento, o agente deve questionar o usuário se a entrega fecha uma versão, incrementando os arquivos de build ou registrando sob `[Unreleased]`.
 5. **CONVENTIONAL COMMITS MANDATÓRIOS:** Toda mensagem de commit adere estritamente à especificação [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 6. **SUBMISSÃO EXCLUSIVA VIA PULL REQUEST:** O fechamento da demanda se dá por abertura de PR para a `master` seguindo as diretrizes de [`.github/pull-request.instructions.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.github/pull-request.instructions.md).
@@ -33,7 +33,7 @@ Ao receber uma solicitação do usuário no modo de planejamento (ou comando `/p
 3. **Definição da Branch de Trabalho:**
    - Proponha o nome da branch no padrão GitHub Flow: `<tipo>/<descricao-kebab-case>` (ex.: `feat/calculo-dizimo`, `fix/choque-horario-missa`, `chore/atualizar-flyway`).
 4. **Previsão de Impacto na Documentação de Negócio:**
-   - Liste quais seções de `docs/business-rules/<modulo>.md` serão atualizadas.
+   - Liste as seções de negócio afetadas. Para mudanças exclusivamente técnicas ou visuais, indique a documentação técnica ou o Design System; não adicione diretivas em `docs/business-rules/`.
 5. **Geração do Plano & Solicitação de Aprovação:**
    - Crie o artefato de plano com `RequestFeedback: true` e `UserFacing: true`.
    - **PARE e aguarde aprovação explícita** do usuário antes de criar branches, editar código ou rodar comandos modificadores.
@@ -62,7 +62,7 @@ Após o usuário aprovar o plano (ex.: `/plan confirmado`, `/plan faça`, `Proce
 
 ## 📖 Fase 3: Atualização de Living Documentation (`docs/business-rules/`)
 
-Antes de finalizar a implementação:
+Quando a implementação altera regras de negócio ou fluxos operacionais, antes de finalizar:
 1. Abra o(s) arquivo(s) `docs/business-rules/<modulo>.md` afetado(s).
 2. Atualize o texto para refletir exatamente as novas regras, novos enums, exceções, fluxos ou comportamentos implementados.
 3. **Normatividade em Tempo Presente (Zero Histórico):** A redação deve ser estritamente no tempo presente, descrevendo o que o sistema É e COMO ELE FUNCIONA no momento atual. É proibido narrar passado ("o antigo indicador", "foi substituído", "anteriormente era X"). O passado pertence com exclusividade ao `CHANGELOG.md`.

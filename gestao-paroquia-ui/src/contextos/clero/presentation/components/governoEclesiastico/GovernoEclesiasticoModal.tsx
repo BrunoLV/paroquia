@@ -1,23 +1,8 @@
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import ChurchIcon from '@mui/icons-material/Church';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -135,14 +120,14 @@ export const GovernoEclesiasticoModal: React.FC<GovernoEclesiasticoModalProps> =
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small" error={Boolean(errors.dioceseId)}>
-                          <InputLabel id="diocese-select-label">Diocese Circunscricional *</InputLabel>
-                          <Select {...field} labelId="diocese-select-label" label="Diocese Circunscricional *">
+
+                          <SearchableSelect {...field} labelId="diocese-select-label" label="Diocese Circunscricional *">
                             {dioceses.map((d) => (
                               <MenuItem key={d.id} value={d.id}>
                                 {d.nome} - {d.bispoDiocesano} ({d.uf || 'BR'})
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                           {errors.dioceseId && <FormHelperText>{errors.dioceseId.message}</FormHelperText>}
                         </FormControl>
                       )}
@@ -155,8 +140,8 @@ export const GovernoEclesiasticoModal: React.FC<GovernoEclesiasticoModalProps> =
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth size="small">
-                          <InputLabel id="paroco-select-label">Pároco (Administrador Canônico)</InputLabel>
-                          <Select
+
+                          <SearchableSelect
                             {...field}
                             value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value || null)}
@@ -169,7 +154,7 @@ export const GovernoEclesiasticoModal: React.FC<GovernoEclesiasticoModalProps> =
                                 {c.nomeEclesiastico} ({c.grauOrdem})
                               </MenuItem>
                             ))}
-                          </Select>
+                          </SearchableSelect>
                         </FormControl>
                       )}
                     />
