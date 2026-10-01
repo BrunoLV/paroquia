@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.api.v1.controller;
 
+import br.com.nsfatima.gestao.iam.api.v1.dto.AtualizarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.CriarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.application.usecase.AprovarUsuarioUseCase;
@@ -143,7 +144,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO')")
     @Operation(summary = "Atualiza um usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
@@ -154,7 +155,7 @@ public class UsuarioController {
     })
     public void atualizar(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id,
-            @RequestBody UsuarioResponse request) {
+            @RequestBody @Valid AtualizarUsuarioRequest request) {
         atualizarUsuarioUseCase.execute(id, request.username(), request.enabled());
     }
 

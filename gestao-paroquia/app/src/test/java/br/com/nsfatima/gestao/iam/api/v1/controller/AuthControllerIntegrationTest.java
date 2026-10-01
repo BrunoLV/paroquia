@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -36,5 +37,48 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.organizations", notNullValue()))
                 .andExpect(jsonPath("$.organizations", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$.organizations[0].nome", is("Pastoral A")));
+    }
+
+    @Test
+    @WithUserDetails("joao.silva")
+    void deveAlterarPropriaSenhaComSucesso() throws Exception {
+        String payload = """
+                {
+                    "senhaAtual": "senha123",
+                    "novaSenha": "novaSenha@2026"
+                }
+                """;
+        mockMvc.perform(post("/api/v1/autenticacao/alterar-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithUserDetails("joao.silva")
+    void deveRejeitarAlteracaoQuandoSenhaAtualIncorreta() throws Exception {
+        String payload = """
+                {
+                    "senhaAtual": "senhaInvalida",
+                    "novaSenha": "novaSenha@2026"
+                }
+                """;
+        mockMvc.perform(post("/api/v1/autenticacao/alterar-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveAceitarSolicitacaoPublicaDeResetDeSenha() throws Exception {
+        String payload = """
+                {
+                    "username": "joao.silva"
+                }
+                """;
+        mockMvc.perform(post("/api/v1/autenticacao/solicitar-reset-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isNoContent());
     }
 }

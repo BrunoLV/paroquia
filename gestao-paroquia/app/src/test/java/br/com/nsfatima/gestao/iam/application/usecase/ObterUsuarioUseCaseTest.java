@@ -7,7 +7,6 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.iam.api.v1.dto.UsuarioResponse;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.when;
 class ObterUsuarioUseCaseTest {
 
     private UsuarioJpaRepository usuarioRepository;
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
     private FielJpaRepository fielRepository;
     private ClerigoJpaRepository clerigoRepository;
     private ObterUsuarioUseCase useCase;
@@ -30,15 +28,14 @@ class ObterUsuarioUseCaseTest {
     @BeforeEach
     void setUp() {
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
         clerigoRepository = mock(ClerigoJpaRepository.class);
         useCase = new ObterUsuarioUseCase(
-                usuarioRepository, grupoParoquialRepository, fielRepository, clerigoRepository);
+                usuarioRepository, fielRepository, clerigoRepository);
     }
 
     @Test
-    void deveResolverDadosCadastraisAPartirDoFielVinculado() {
+    void deveResolverNomeAPartirDoFielVinculado() {
         UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
@@ -61,17 +58,12 @@ class ObterUsuarioUseCaseTest {
         UsuarioResponse response = useCase.execute(usuarioId);
 
         assertThat(response.nome()).isEqualTo("Maria Aparecida");
-        assertThat(response.telefone()).isEqualTo("11955554444");
-        assertThat(response.dataNascimento()).isEqualTo(LocalDate.of(1985, 4, 12));
-        // O histórico sacramental não integra mais o cadastro civil do fiel.
-        assertThat(response.batizado()).isFalse();
-        assertThat(response.primeiraComunhao()).isFalse();
-        assertThat(response.crismado()).isFalse();
-        assertThat(response.casadoIgrejaCatolica()).isFalse();
+        assertThat(response.fielId()).isEqualTo(fielId);
+        assertThat(response.username()).isEqualTo("usuario.teste");
     }
 
     @Test
-    void deveResolverDadosCadastraisAPartirDoClerigoVinculado() {
+    void deveResolverNomeAPartirDoClerigoVinculado() {
         UUID usuarioId = UUID.randomUUID();
         UUID clerigoId = UUID.randomUUID();
 
@@ -93,11 +85,11 @@ class ObterUsuarioUseCaseTest {
         UsuarioResponse response = useCase.execute(usuarioId);
 
         assertThat(response.nome()).isEqualTo("Padre Pedro");
-        assertThat(response.telefone()).isEqualTo("11988887777");
+        assertThat(response.clerigoId()).isEqualTo(clerigoId);
     }
 
     @Test
-    void deveRetornarCamposNulosQuandoFielNaoEncontrado() {
+    void deveRetornarNomeNuloQuandoFielNaoEncontrado() {
         UUID usuarioId = UUID.randomUUID();
         UUID fielId = UUID.randomUUID();
 
@@ -113,9 +105,6 @@ class ObterUsuarioUseCaseTest {
         UsuarioResponse response = useCase.execute(usuarioId);
 
         assertThat(response.nome()).isNull();
-        assertThat(response.telefone()).isNull();
-        assertThat(response.dataNascimento()).isNull();
-        assertThat(response.batizado()).isFalse();
     }
 
     @Test

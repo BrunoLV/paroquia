@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import {
   Box,
+  Button,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
   TextField,
   Typography,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import LoginIcon from '@mui/icons-material/Login';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-
-import LoginIcon from '@mui/icons-material/Login';
+import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
+import { solicitarResetSenha } from '@/contextos/iam/infrastructure/http/auth';
 
 interface LoginLocationState {
-  from?: {pathname?: string};
+  from?: { pathname?: string };
 }
 
 /**
  * Rotas protegidas que podem ser retomadas com segurança após autenticação.
- *
- * Uma origem preservada pelo guard pode apontar para URL obsoleta de favorito,
- * como `/login`. Reaplicá-la após uma sessão válida deixaria a pessoa em uma
- * rota sem tela; destinos desconhecidos voltam sempre ao painel canônico.
  */
 const rotasRetomaveis = new Set([
   '/painel',
@@ -62,7 +66,12 @@ const Acesso = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { showError } = useNotification();
+  // Reset password states
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [resetUsername, setResetUsername] = useState('');
+  const [isResetLoading, setIsResetLoading] = useState(false);
+
+  const { showError, showSuccess } = useNotification();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -93,6 +102,26 @@ const Acesso = () => {
     }
   };
 
+  const handleSolicitarReset = async () => {
+    if (!resetUsername.trim()) {
+      showError('Informe o nome de usuário ou e-mail.');
+      return;
+    }
+
+    setIsResetLoading(true);
+
+    try {
+      await solicitarResetSenha(resetUsername.trim());
+      showSuccess('Solicitação de redefinição enviada com sucesso! Entre em contato com a secretaria paroquial ou pároco para a liberação.');
+      setIsResetModalOpen(false);
+      setResetUsername('');
+    } catch (err: unknown) {
+      showError(extractErrorMessage(err, 'Erro ao solicitar redefinição de senha.'));
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
   return (
     <Box
       data-testid="login-layout-wrapper"
@@ -118,7 +147,7 @@ const Acesso = () => {
             alignItems: 'center',
           }}
         >
-          <Paper elevation={0} sx={(theme) => ({ p: {xs: 3, sm: 4}, width: '100%', textAlign: 'center', border: '1px solid', borderColor: 'divider', boxShadow: theme.shadows[8] })}>
+          <Paper elevation={0} sx={(theme) => ({ p: { xs: 3, sm: 4 }, width: '100%', textAlign: 'center', border: '1px solid', borderColor: 'divider', boxShadow: theme.shadows[8] })}>
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2.5 }}>
               <img
                 src="/logo-paroquia.png"
@@ -166,13 +195,66 @@ const Acesso = () => {
                 color="primary"
                 icon={isLoading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
                 label={isLoading ? 'Entrando...' : 'Entrar'}
-                sx={{ mt: 3, mb: 0.5, fontWeight: 700, py: 1.2, textTransform: 'none' }}
+                sx={{ mt: 3, mb: 1, fontWeight: 700, py: 1.2, textTransform: 'none' }}
                 disabled={isLoading}
               />
+
+              <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={() => {
+                    setResetUsername(username);
+                    setIsResetModalOpen(true);
+                  }}
+                  sx={{ textTransform: 'none', fontWeight: 500 }}
+                >
+                  Esqueci minha senha
+                </Button>
+              </Box>
             </Box>
           </Paper>
         </Box>
       </Container>
+
+      {/* Modal de Solicitação de Redefinição de Senha */}
+      <Dialog
+        open={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Recuperação de Acesso</DialogTitle>
+        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Informe seu nome de usuário ou e-mail cadastrado. Uma solicitação de redefinição será registrada para liberação pela administração da paróquia.
+          </Typography>
+          <TextField
+            label="Nome de Usuário ou E-mail"
+            size="small"
+            fullWidth
+            required
+            autoFocus
+            value={resetUsername}
+            onChange={(e) => setResetUsername(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <ActionButton
+            title="Cancelar"
+            icon={<CloseIcon />}
+            color="secondary"
+            onClick={() => setIsResetModalOpen(false)}
+          />
+          <ActionButton
+            title="Solicitar Redefinição"
+            icon={isResetLoading ? <CircularProgress size={20} color="inherit" /> : <LockResetIcon />}
+            color="primary"
+            onClick={handleSolicitarReset}
+            disabled={!resetUsername.trim() || isResetLoading}
+          />
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

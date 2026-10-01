@@ -12,6 +12,7 @@ import {
     canCreateUsuario,
     canApproveUsuario,
     canManageUsuarios,
+    canEditOrInactivateUser,
     canTransitionProjeto,
     hasCoordenadorScope,
     isAdmin,
@@ -509,6 +510,13 @@ describe('canCreateUsuario, canApproveUsuario, canManageUsuarios', () => {
     expect(canManageUsuarios(paroco)).toBe(true);
     expect(canManageUsuarios(secretaria)).toBe(true);
     expect(canManageUsuarios(fiel)).toBe(false);
+  });
+
+  it('restringe edição e inativação de usuários estritamente a Admin e Pároco (vedado à Secretaria)', () => {
+    expect(canEditOrInactivateUser(admin)).toBe(true);
+    expect(canEditOrInactivateUser(paroco)).toBe(true);
+    expect(canEditOrInactivateUser(secretaria)).toBe(false);
+    expect(canEditOrInactivateUser(fiel)).toBe(false);
   });
 });
 

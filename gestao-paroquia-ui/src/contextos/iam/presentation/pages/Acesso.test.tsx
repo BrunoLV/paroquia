@@ -174,3 +174,42 @@ test('renders layout wrapper with vertical centering, full viewport height, and 
     alignItems: 'center',
   });
 });
+
+test('opens forgot password dialog and submits reset request successfully', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+  mockedApiClient.post.mockResolvedValueOnce({ data: { message: 'Solicitação registrada com sucesso' } });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Acesso />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const forgotPasswordBtn = screen.getByRole('button', { name: /Esqueci minha senha/i });
+  await act(async () => {
+    fireEvent.click(forgotPasswordBtn);
+  });
+
+  expect(screen.getByText('Recuperação de Acesso')).toBeInTheDocument();
+
+  const resetInput = screen.getByLabelText(/Nome de Usuário ou E-mail/i);
+  fireEvent.change(resetInput, { target: { value: 'usuario.teste' } });
+
+  const confirmBtn = screen.getByRole('button', { name: /Solicitar Redefinição/i });
+  await act(async () => {
+    fireEvent.click(confirmBtn);
+  });
+
+  expect(mockedApiClient.post).toHaveBeenCalledWith('/autenticacao/solicitar-reset-senha', {
+    username: 'usuario.teste',
+  });
+  expect(mockShowSuccess).toHaveBeenCalledWith(
+    expect.stringContaining('Solicitação de redefinição enviada com sucesso')
+  );
+});

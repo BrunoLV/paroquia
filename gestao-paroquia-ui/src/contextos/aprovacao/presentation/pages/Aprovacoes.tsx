@@ -57,7 +57,6 @@ import ActionButton from '@/shared/presentation/components/ActionButton';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import {getUsuarioSituacaoMeta} from '@/shared/utils/statusMeta/situacaoStatus';
-import {FormattedPhone} from '@/shared/presentation/components/FormattedCell';
 import {getAprovacaoDetalhe, getAprovacaoStatusMeta, getAprovacaoTipoMeta} from '@/shared/utils/statusMeta/aprovacaoStatus';
 
 /**
@@ -627,8 +626,6 @@ const Aprovacoes = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: 600 }}>Usuário</TableCell>
                           <TableCell sx={{ fontWeight: 600 }}>Nome Completo</TableCell>
-                          <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
-                          <TableCell sx={{ fontWeight: 600 }}>Comunidade / Igreja</TableCell>
                           <TableCell sx={{ fontWeight: 600 }}>Vínculo</TableCell>
                           <TableCell sx={{ fontWeight: 600 }}>Situação</TableCell>
                           <TableCell sx={{ fontWeight: 600 }} align="right">Ações</TableCell>
@@ -643,8 +640,6 @@ const Aprovacoes = () => {
                               <TableRow key={u.id} hover>
                                 <TableCell sx={{ fontWeight: 600 }}>{u.username}</TableCell>
                                 <TableCell>{u.nome || '-'}</TableCell>
-                                <TableCell><FormattedPhone value={u.telefone} /></TableCell>
-                                <TableCell>{u.igrejaNome || 'Matriz / Geral'}</TableCell>
                                 <TableCell>
                                   {u.fielId ? (
                                     <Chip label="Fiel" size="small" color="primary" variant="outlined" />

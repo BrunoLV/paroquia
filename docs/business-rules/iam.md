@@ -63,12 +63,25 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 - **Aprovação Privativa:** A deliberação e habilitação da conta (`PUT /api/v1/usuarios/{id}/aprovar`) é restrita privativamente a `ADMIN`, `PAROCO` e `BISPO_DIOCESANO`.
 - **Interoperabilidade de Vínculos:** O endpoint de vinculação a grupos (`POST /api/v1/usuarios/{id}/membros`) aceita tanto `grupoParoquialId` quanto o alias `organizacaoId` via DTO `AdicionarVinculoRequest`, prevenindo erros de validação Jackson de campo desconhecido.
 
+### RN-IAM-06: Pureza do Bounded Context IAM e Segregação de Dados Pastorais
+- As APIs e telas do módulo IAM (`/api/v1/usuarios`, `Configuracoes.tsx`) lidam estritamente com **dados de conta e autenticação** (username, status ativo/inativo, roles, id da conta e vínculo de entidade).
+- **Expurgo de Dados Pastorais e Sacramentais:** Com exceção do `nome` da pessoa física vinculada (usado exclusivamente como rótulo legível de identificação), é **estritamente vedado** expor ou trafegar dados pessoais, civis, de contato ou sacramentais do fiel/clérigo (como telefone, data de nascimento, comunidade/igreja, batismo, primeira comunhão, crisma ou matrimônio) na API de usuários ou na tela de gerenciamento de usuários. Tais atributos pertencem aos Bounded Contexts de `fiel`, `clero` ou `sacramento`.
+
+### RN-IAM-07: Alçada Exclusiva de Edição e Inativação de Usuários
+- **ADMIN e PAROCO:** São as **únicas autoridades** autorizadas a editar dados de contas de usuários (`PATCH /api/v1/usuarios/{id}`) e alterar seu status operacional de ativação/inativação (`PATCH /api/v1/usuarios-admin/{id}/status`).
+- **Vedação à Secretaria Paroquial:** A Secretaria Paroquial tem prerrogativa apenas para criação inicial de contas leigas com aprovação pendente. É **terminantemente vedado à Secretaria Paroquial** editar contas existentes, alterar permissões ou inativar/reativar usuários no sistema (tanto via API protegida por `@PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO')")` quanto na interface gráfica, onde as ações não são exibidas).
+
+### RN-IAM-08: Fluxos de Redefinição e Autoatendimento de Senhas
+- **Alteração de Senha por Usuário Autenticado:** Qualquer usuário logado pode alterar sua própria senha através da aba "Minha Senha" no módulo de configurações (`POST /api/v1/autenticacao/alterar-senha`), exigindo validação prévia da senha atual antes de gravar a nova credencial criptografada com BCrypt.
+- **Solicitação Pública de Redefinição de Acesso:** Usuários não autenticados ou impossibilitados de logar podem registrar uma solicitação pública de redefinição na tela de login (`POST /api/v1/autenticacao/solicitar-reset-senha`), informando seu username ou e-mail. A solicitação fica registrada para liberação controlada pela administração paroquial.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
 1. **Autenticação:** Login com credenciais -> Validação de hash -> Sessão/Authorities unificadas (globais + vínculos ativos).
 2. **Resolução Dinâmica de Contexto de Atores:** O ator é resolvido com tipagem canônica estrita (`EventoActorContextResolver`).
 3. **Provisão Canônica de Liderança:** Elevação de fiel a coordenador mediante provisão canônica privativa do Pároco.
+4. **Autoatendimento de Credenciais:** Troca de senha pelo próprio usuário autenticado e solicitação anônima de redefinição de acesso na tela inicial.
 
 ---
 

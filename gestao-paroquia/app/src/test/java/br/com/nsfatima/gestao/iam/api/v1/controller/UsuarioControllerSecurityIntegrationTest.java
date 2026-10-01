@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -145,5 +146,45 @@ class UsuarioControllerSecurityIntegrationTest {
                         .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(containsString("Usuario nao encontrado")));
+    }
+
+    @Test
+    @WithMockUser(roles = "PAROCO")
+    void devePermitirParocoEditarUsuario() throws Exception {
+        UUID id = UUID.randomUUID();
+        mockMvc.perform(patch("/api/v1/usuarios/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"paroco.editado\", \"enabled\": true}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIA_PAROQUIAL")
+    void deveNegarSecretariaEditarUsuario() throws Exception {
+        UUID id = UUID.randomUUID();
+        mockMvc.perform(patch("/api/v1/usuarios/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"secretaria.editado\", \"enabled\": true}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "PAROCO")
+    void devePermitirParocoInativarUsuario() throws Exception {
+        UUID id = UUID.randomUUID();
+        mockMvc.perform(patch("/api/v1/usuarios/" + id + "/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"enabled\": false}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "SECRETARIA_PAROQUIAL")
+    void deveNegarSecretariaInativarUsuario() throws Exception {
+        UUID id = UUID.randomUUID();
+        mockMvc.perform(patch("/api/v1/usuarios/" + id + "/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"enabled\": false}"))
+                .andExpect(status().isForbidden());
     }
 }

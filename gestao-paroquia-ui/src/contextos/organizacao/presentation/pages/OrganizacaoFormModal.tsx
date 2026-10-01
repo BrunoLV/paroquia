@@ -133,15 +133,14 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
           nome: m.usuarioNome
         }));
       }
-      const filteredByChurch = usuarios.filter(u => !u.igrejaId || u.igrejaId === churchId);
-      return filteredByChurch.map(u => ({
-        id: u.nome,
-        nome: u.nome
+      return usuarios.map(u => ({
+        id: u.nome || u.username,
+        nome: u.nome || u.username
       }));
     }
     return usuarios.map(u => ({
-      id: u.nome,
-      nome: u.nome
+      id: u.nome || u.username,
+      nome: u.nome || u.username
     }));
   };
 
