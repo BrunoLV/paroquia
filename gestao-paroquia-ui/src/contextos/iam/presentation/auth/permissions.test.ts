@@ -9,6 +9,9 @@ import {
     canManageLocais,
     canManageOrganizacoes,
     canManageProjetos,
+    canCreateUsuario,
+    canApproveUsuario,
+    canManageUsuarios,
     canTransitionProjeto,
     hasCoordenadorScope,
     isAdmin,
@@ -480,3 +483,32 @@ describe('isUnlinkedUser', () => {
     expect(isUnlinkedUser(user)).toBe(false);
   });
 });
+
+describe('canCreateUsuario, canApproveUsuario, canManageUsuarios', () => {
+  const admin: User = { id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] };
+  const paroco: User = { id: '2', username: 'paroco', name: 'Pároco', roles: ['GLOBAL_PAROCO'] };
+  const secretaria: User = { id: '3', username: 'sec', name: 'Secretaria', roles: ['SECRETARIA_PAROQUIAL'] };
+  const fiel: User = { id: '4', username: 'fiel', name: 'Fiel', roles: ['FIEL'] };
+
+  it('permite Admin, Pároco e Secretaria criarem usuários', () => {
+    expect(canCreateUsuario(admin)).toBe(true);
+    expect(canCreateUsuario(paroco)).toBe(true);
+    expect(canCreateUsuario(secretaria)).toBe(true);
+    expect(canCreateUsuario(fiel)).toBe(false);
+  });
+
+  it('restringe aprovação de usuários estritamente a Admin e Pároco', () => {
+    expect(canApproveUsuario(admin)).toBe(true);
+    expect(canApproveUsuario(paroco)).toBe(true);
+    expect(canApproveUsuario(secretaria)).toBe(false);
+    expect(canApproveUsuario(fiel)).toBe(false);
+  });
+
+  it('permite Admin, Pároco e Secretaria gerenciarem lista de usuários', () => {
+    expect(canManageUsuarios(admin)).toBe(true);
+    expect(canManageUsuarios(paroco)).toBe(true);
+    expect(canManageUsuarios(secretaria)).toBe(true);
+    expect(canManageUsuarios(fiel)).toBe(false);
+  });
+});
+

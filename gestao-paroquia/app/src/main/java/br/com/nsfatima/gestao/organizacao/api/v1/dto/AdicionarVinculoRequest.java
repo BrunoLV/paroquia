@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
  * movimentos por não terem hierarquia territorial própria.
  */
 public record AdicionarVinculoRequest(
+        @JsonAlias({"organizacaoId", "grupoParoquialId"})
         @NotNull UUID grupoParoquialId,
         @NotNull TipoGrupo tipo,
         @NotNull PapelOrganizacional papel,

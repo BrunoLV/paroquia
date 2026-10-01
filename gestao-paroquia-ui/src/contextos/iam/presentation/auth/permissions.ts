@@ -217,6 +217,33 @@ export const canManageOrganizacoes = (user: User | null): boolean => {
 };
 
 /**
+ * Quem pode criar novos usuários:
+ * ADMIN e Pároco/Bispo (criação direta ativa) e Secretaria Paroquial (criação pendente de aprovação).
+ */
+export const canCreateUsuario = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
+};
+
+/**
+ * Quem pode aprovar solicitações de criação de novos usuários:
+ * Exclusivamente ADMIN e Pároco/Bispo Diocesano.
+ */
+export const canApproveUsuario = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user);
+};
+
+/**
+ * Quem pode visualizar e gerenciar a lista de usuários:
+ * ADMIN, Pároco/Bispo e Secretaria Paroquial.
+ */
+export const canManageUsuarios = (user: User | null): boolean => {
+  if (!user) return false;
+  return isAdmin(user) || isParoco(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
+};
+
+/**
  * Quem pode gerir Unidades Territoriais (Matriz, Comunidades) e Governo Eclesiástico:
  * Estritamente restrito a Pároco e Bispo Diocesano conforme o Direito Canônico.
  */

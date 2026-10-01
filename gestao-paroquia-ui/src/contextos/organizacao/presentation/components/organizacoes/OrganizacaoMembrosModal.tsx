@@ -101,6 +101,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
     addMembroMutation.mutate({
       userId: novoUsuarioId,
       request: {
+        grupoParoquialId: organizacao.id,
         organizacaoId: organizacao.id,
         tipo: organizacao.tipo,
         papel: novoPapel,

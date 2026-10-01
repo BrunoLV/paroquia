@@ -55,6 +55,14 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 ### RN-IAM-04: Isolamento Técnico do Administrador
 - O papel `ADMIN` tem alçada estritamente restrita a infraestrutura, suporte técnico, auditoria e gestão de usuários. É **terminantemente proibido** ao `ADMIN` aprovar eventos, fechar o ano paroquial ou assinar atos de governo eclesial.
 
+### RN-IAM-05: Alçada de Criação e Homologação de Usuários
+- **ADMIN e PAROCO:** Possuem alçada para criar contas de usuário vinculadas tanto a clérigos (`clerigoId`) quanto a fiéis leigos (`fielId`). As contas criadas por Administrador ou Pároco nascem ativas (`enabled = true`).
+- **SECRETARIA_PAROQUIAL:** Possui permissão para criar contas de acesso exclusivamente para fiéis leigos (`fielId`). É estritamente vedada à Secretaria Paroquial a criação de contas associadas a clérigos.
+- **Pendência e Notificação de Homologação:** As contas criadas pela Secretaria Paroquial nascem desabilitadas (`enabled = false`). O sistema emite automaticamente uma notificação persistente (`tipo = "USUARIO_APROVACAO_PENDENTE"`) para todos os Párocos e Administradores ativos da paróquia.
+- **Papel Base e Acesso Inicial:** Todo usuário associado a um Fiel leigo nasce com a autoridade `ROLE_FIEL` atribuída. Usuários fiéis que ainda não possuam vínculo organizacional ativo em pastorais/movimentos navegam em escopo paroquial padrão (`PAROQUIA`), garantindo acesso ao dashboard pessoal sem falhas de escopo (`ROLE_SCOPE_INVALID`).
+- **Aprovação Privativa:** A deliberação e habilitação da conta (`PUT /api/v1/usuarios/{id}/aprovar`) é restrita privativamente a `ADMIN`, `PAROCO` e `BISPO_DIOCESANO`.
+- **Interoperabilidade de Vínculos:** O endpoint de vinculação a grupos (`POST /api/v1/usuarios/{id}/membros`) aceita tanto `grupoParoquialId` quanto o alias `organizacaoId` via DTO `AdicionarVinculoRequest`, prevenindo erros de validação Jackson de campo desconhecido.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso

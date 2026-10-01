@@ -21,10 +21,22 @@ public class GerenciarNotificacaoUseCase {
 
     @Transactional
     public void publicar(UUID usuarioId, String mensagem) {
+        publicar(usuarioId, "AJUSTE_CADASTRAL_DECIDIDO", mensagem);
+    }
+
+    /**
+     * Publica uma notificação persistente tipada para um usuário.
+     *
+     * @param usuarioId identificador único do usuário destinatário
+     * @param tipo categoria semântica da notificação
+     * @param mensagem conteúdo textual da notificação
+     */
+    @Transactional
+    public void publicar(UUID usuarioId, String tipo, String mensagem) {
         var notificacao = new NotificacaoEntity();
         notificacao.setId(UUID.randomUUID());
         notificacao.setUsuarioId(usuarioId);
-        notificacao.setTipo("AJUSTE_CADASTRAL_DECIDIDO");
+        notificacao.setTipo(tipo != null ? tipo : "GERAL");
         notificacao.setMensagem(mensagem);
         notificacao.setCriadoEmUtc(Instant.now());
         repository.save(notificacao);

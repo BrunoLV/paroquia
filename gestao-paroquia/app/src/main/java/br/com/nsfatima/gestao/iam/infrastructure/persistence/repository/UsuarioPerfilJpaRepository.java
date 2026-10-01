@@ -1,8 +1,10 @@
 package br.com.nsfatima.gestao.iam.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,5 +25,15 @@ public interface UsuarioPerfilJpaRepository {
 
     /** Busca o {@code Usuario} vinculado a um {@code Clerigo}. */
     Optional<UsuarioEntity> findByClerigoId(UUID clerigoId);
+
+    /**
+     * Busca usuários ativos que possuem competência deliberativa para homologação de novos acessos
+     * (administradores do sistema e párocos/bispos diocesanos).
+     *
+     * @return lista de usuários aprovadores ativos
+     */
+    @Query("SELECT u FROM UsuarioEntity u WHERE u.enabled = true AND (u.roles LIKE '%ADMIN%' OR u.roles LIKE '%PAROCO%')")
+    List<UsuarioEntity> findAprovadoresAtivos();
 }
+
 

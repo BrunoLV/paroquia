@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,6 +28,36 @@ class FormLoginIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase criarUsuarioUseCase;
+
+    @Autowired
+    private br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository fielRepository;
+
+    @Test
+    void deveLogarComNovoUsuarioCriadoParaFielEAcessarPainel() throws Exception {
+        UUID fielId = br.com.nsfatima.gestao.fiel.support.FielTestFixtures.criarFiel(fielRepository);
+        criarUsuarioUseCase.execute("novousuario.teste", "senhaSegura123!", fielId, null, false);
+
+        MvcResult result = mockMvc.perform(post("/api/v1/autenticacao/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "novousuario.teste",
+                                  "password": "senhaSegura123!"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("novousuario.teste"))
+                .andReturn();
+
+        var session = (org.springframework.mock.web.MockHttpSession) result.getRequest().getSession(false);
+        assertNotNull(session);
+
+        mockMvc.perform(get("/api/v1/painel/metricas").session(session))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void deveLoginComValidoCredenciaisERetornarSessaoCookie() throws Exception {

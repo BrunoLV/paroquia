@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "br.com.nsfatima"
-version = "0.4.1"
+version = "0.5.0"
 
 
 checkstyle {

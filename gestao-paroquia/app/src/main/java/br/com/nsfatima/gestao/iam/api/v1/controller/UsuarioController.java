@@ -24,6 +24,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -96,7 +98,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO', 'SECRETARIA_PAROQUIAL', 'GLOBAL_SECRETARIA_PAROQUIAL')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cria um novo usuário")
     @ApiResponses(value = {
@@ -107,12 +109,21 @@ public class UsuarioController {
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "409", description = "Conflito de username ou já vinculado")
     })
-    public UUID criar(@RequestBody @Valid CriarUsuarioRequest request) {
+    public UUID criar(@RequestBody @Valid CriarUsuarioRequest request, Authentication authentication) {
+        boolean isSecretaria = authentication != null && authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.contains("SECRETARIA_PAROQUIAL"));
+        boolean isAdminOrParoco = authentication != null && authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.contains("ADMIN") || a.contains("PAROCO") || a.contains("BISPO_DIOCESANO"));
+        boolean pendenteAprovacao = isSecretaria && !isAdminOrParoco;
+
         return criarUsuarioUseCase.execute(
                 request.username(),
                 request.password(),
                 request.fielId(),
-                request.clerigoId());
+                request.clerigoId(),
+                pendenteAprovacao);
     }
 
     @GetMapping("/{id}")
@@ -148,7 +159,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}/aprovar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'VIGARIO', 'SECRETARIA_PAROQUIAL', 'COORDENADOR', 'SECRETARIO_CONSELHO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO', 'BISPO_DIOCESANO', 'GLOBAL_BISPO_DIOCESANO')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Aprova um novo usuário e ativa suas solicitações de pastorais")
     @ApiResponses(value = {

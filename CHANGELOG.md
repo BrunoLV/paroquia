@@ -8,6 +8,26 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-01
+
+### Adicionado
+- **Fluxo de Criação e Homologação de Usuários por Alçadas Canônicas:**
+  - Habilitação dos papéis `PAROCO` e `SECRETARIA_PAROQUIAL` no cadastro de usuários (`POST /api/v1/usuarios`).
+  - Contas criadas por `ADMIN` e `PAROCO` nascem ativas (`enabled = true`) e podem ser vinculadas a fiéis ou clérigos.
+  - Contas criadas por `SECRETARIA_PAROQUIAL` nascem pendentes de homologação (`enabled = false`) e vinculadas exclusivamente a fiéis leigos.
+  - Disparo de notificação persistente (`tipo = "USUARIO_APROVACAO_PENDENTE"`) para todos os Párocos e Administradores ativos após submissão de cadastro por secretaria.
+  - Nova aba "Solicitações de Usuários" na tela de Aprovações (`/aprovacoes`), restrita a `ADMIN` e `PAROCO`, permitindo homologar cadastros e liberar acesso com feedback em tempo real.
+  - Regra canônica formalizada em `docs/business-rules/iam.md` (`RN-IAM-05`) e `docs/business-rules/aprovacao.md` (`RN-APR-04`).
+
+### Corrigido
+- **Interoperabilidade de Vínculos Organizacionais (`grupoParoquialId` e `organizacaoId`):**
+  - Adicionado alias `@JsonAlias({"organizacaoId", "grupoParoquialId"})` no record component `grupoParoquialId` de `AdicionarVinculoRequest` no backend, eliminando o erro `400 Bad Request` (`Unknown field 'organizacaoId'`).
+  - Alinhamento do frontend (`usuarios.ts`, `OrganizacaoMembrosModal.tsx` e `Configuracoes.tsx`) para enviar transparentemente tanto `grupoParoquialId` quanto `organizacaoId`.
+- **Autenticação e Escopo de Acesso de Novos Usuários:**
+  - Atribuição automática do papel `ROLE_FIEL` no use case `CriarUsuarioUseCase` para contas associadas a fiéis leigos e `ROLE_CLERO` para clérigos.
+  - Atualização do método `UsuarioEntity.aprovar` para garantir a atribuição de `ROLE_FIEL` ao homologar usuários.
+  - Adequação do `EventoActorContextResolver` para reconhecer fiéis e usuários recém-criados que ainda não possuem vínculos em `membro_grupo`, resolvendo o escopo paroquial padrão (`PAROQUIA`) e evitando exceções `403 Forbidden` (`ROLE_SCOPE_INVALID`) no painel.
+
 ## [0.4.1] - 2026-09-30
 
 ### Removido
