@@ -1,5 +1,27 @@
 import apiClient from '@/shared/infrastructure/http/client';
 
+export interface ParoquiaConfiguracaoRaw {
+  id: string;
+  nome: string;
+  diocese: string | null;
+  endereco: string | null;
+  telefone: string | null;
+  email: string | null;
+  cnpj: string | null;
+  corPrimariaHex?: string;
+  corSecundariaHex?: string;
+  corPrimaria?: string;
+  corSecundaria?: string;
+  possuiLogoFundoClaro?: boolean;
+  possuiLogoFundoEscuro?: boolean;
+  temLogoFundoClaro?: boolean;
+  temLogoFundoEscuro?: boolean;
+  urlLogoFundoClaro?: string;
+  urlLogoFundoEscuro?: string;
+  logoFundoClaroUrl?: string;
+  logoFundoEscuroUrl?: string;
+}
+
 export interface ParoquiaConfiguracao {
   id: string;
   nome: string;
@@ -21,16 +43,36 @@ export interface AtualizarIdentidadeVisualPayload {
   corSecundaria: string;
 }
 
+export const normalizarConfiguracao = (data: ParoquiaConfiguracaoRaw): ParoquiaConfiguracao => ({
+  id: data.id,
+  nome: data.nome,
+  diocese: data.diocese ?? null,
+  endereco: data.endereco ?? null,
+  telefone: data.telefone ?? null,
+  email: data.email ?? null,
+  cnpj: data.cnpj ?? null,
+  corPrimaria: data.corPrimariaHex || data.corPrimaria || '#1A237E',
+  corSecundaria: data.corSecundariaHex || data.corSecundaria || '#808080',
+  temLogoFundoClaro: data.possuiLogoFundoClaro ?? data.temLogoFundoClaro ?? false,
+  temLogoFundoEscuro: data.possuiLogoFundoEscuro ?? data.temLogoFundoEscuro ?? false,
+  logoFundoClaroUrl: data.urlLogoFundoClaro || data.logoFundoClaroUrl || '/api/v1/configuracao-paroquia/logo/claro',
+  logoFundoEscuroUrl: data.urlLogoFundoEscuro || data.logoFundoEscuroUrl || '/api/v1/configuracao-paroquia/logo/escuro',
+});
+
 export const obterConfiguracaoParoquia = async (): Promise<ParoquiaConfiguracao> => {
-  const response = await apiClient.get<ParoquiaConfiguracao>('/configuracao-paroquia');
-  return response.data;
+  const response = await apiClient.get<ParoquiaConfiguracaoRaw>('/configuracao-paroquia');
+  return normalizarConfiguracao(response.data);
 };
 
 export const atualizarIdentidadeVisual = async (
   payload: AtualizarIdentidadeVisualPayload
 ): Promise<ParoquiaConfiguracao> => {
-  const response = await apiClient.put<ParoquiaConfiguracao>('/configuracao-paroquia', payload);
-  return response.data;
+  const requestBody = {
+    corPrimariaHex: payload.corPrimaria,
+    corSecundariaHex: payload.corSecundaria,
+  };
+  const response = await apiClient.put<ParoquiaConfiguracaoRaw>('/configuracao-paroquia', requestBody);
+  return normalizarConfiguracao(response.data);
 };
 
 export const atualizarLogoParoquia = async (

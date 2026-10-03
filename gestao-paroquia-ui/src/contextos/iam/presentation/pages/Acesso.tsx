@@ -23,6 +23,10 @@ import ActionButton from '@/shared/presentation/components/ActionButton';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { solicitarResetSenha } from '@/contextos/iam/infrastructure/http/auth';
 import { useConfiguracaoParoquia } from '@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia';
+import { useThemeMode } from '@/shared/presentation/context/ThemeModeContext';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import IconActionButton from '@/shared/presentation/components/IconActionButton';
 
 interface LoginLocationState {
   from?: { pathname?: string };
@@ -74,13 +78,16 @@ const Acesso = () => {
 
   const { showError, showSuccess } = useNotification();
   const { login } = useAuth();
+  const { mode, toggleMode } = useThemeMode();
   const { configuracao } = useConfiguracaoParoquia();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const logoClaroSrc = configuracao?.temLogoFundoClaro
-    ? '/api/v1/configuracao-paroquia/logo/claro'
-    : '/logo-paroquia-claro.png';
+  const isDark = mode === 'dark';
+  const logoSrc = isDark
+    ? (configuracao?.temLogoFundoEscuro ? '/api/v1/configuracao-paroquia/logo/escuro' : '/logo-paroquia-escuro.png')
+    : (configuracao?.temLogoFundoClaro ? '/api/v1/configuracao-paroquia/logo/claro' : '/logo-paroquia-claro.png');
+  const fallbackLogo = isDark ? '/logo-paroquia-escuro.png' : '/logo-paroquia-claro.png';
   const paroquiaNome = configuracao?.nome || 'Nossa Senhora de Fátima';
   const paroquiaSubtitulo = configuracao?.diocese || 'Gestão Paroquial';
 
@@ -134,6 +141,7 @@ const Acesso = () => {
     <Box
       data-testid="login-layout-wrapper"
       sx={{
+        position: 'relative',
         minHeight: '100vh',
         width: '100%',
         bgcolor: 'background.default',
@@ -147,6 +155,15 @@ const Acesso = () => {
         background: (theme) => `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.custom.surfaceMuted} 100%)`,
       }}
     >
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <IconActionButton
+          title={isDark ? "Mudar para tema claro" : "Mudar para tema escuro"}
+          icon={isDark ? <LightModeIcon /> : <DarkModeIcon />}
+          color="inherit"
+          onClick={toggleMode}
+        />
+      </Box>
+
       <Container maxWidth="xs">
         <Box
           sx={{
@@ -158,12 +175,12 @@ const Acesso = () => {
           <Paper elevation={0} sx={(theme) => ({ p: { xs: 3, sm: 4 }, width: '100%', textAlign: 'center', border: '1px solid', borderColor: 'divider', boxShadow: theme.shadows[8] })}>
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2.5 }}>
               <img
-                src={logoClaroSrc}
+                src={logoSrc}
                 alt={paroquiaNome}
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (target.src !== '/logo-paroquia-claro.png') {
-                    target.src = '/logo-paroquia-claro.png';
+                  if (target.src !== fallbackLogo) {
+                    target.src = fallbackLogo;
                   }
                 }}
                 style={{ width: '112px', height: '112px', objectFit: 'contain' }}
