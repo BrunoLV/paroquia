@@ -4,6 +4,8 @@ import br.com.nsfatima.gestao.calendario.api.v1.dto.ParoquiaConfiguracaoResponse
 import br.com.nsfatima.gestao.calendario.application.port.out.ConsultaInstitucionalPort;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +25,15 @@ public class ObterConfiguracaoParoquiaUseCase {
 
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final ConsultaInstitucionalPort consultaInstitucionalPort;
+    private final ResourceLoader resourceLoader;
 
     public ObterConfiguracaoParoquiaUseCase(
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
-            ConsultaInstitucionalPort consultaInstitucionalPort) {
+            ConsultaInstitucionalPort consultaInstitucionalPort,
+            ResourceLoader resourceLoader) {
         this.paroquiaConfigRepository = paroquiaConfigRepository;
         this.consultaInstitucionalPort = consultaInstitucionalPort;
+        this.resourceLoader = resourceLoader;
     }
 
     @Transactional(readOnly = true)
@@ -46,10 +51,10 @@ public class ObterConfiguracaoParoquiaUseCase {
                 ? config.getCorSecundariaHex()
                 : DEFAULT_COR_SECUNDARIA;
 
-        boolean temClaro = config != null && config.getLogoFundoClaroBytes() != null
-                && config.getLogoFundoClaroBytes().length > 0;
-        boolean temEscuro = config != null && config.getLogoFundoEscuroBytes() != null
-                && config.getLogoFundoEscuroBytes().length > 0;
+        boolean temClaro = (config != null && config.getLogoFundoClaroBytes() != null
+                && config.getLogoFundoClaroBytes().length > 0) || existeNoClasspath("logo-paroquia-claro.png");
+        boolean temEscuro = (config != null && config.getLogoFundoEscuroBytes() != null
+                && config.getLogoFundoEscuroBytes().length > 0) || existeNoClasspath("logo-paroquia-escuro.png");
 
         return new ParoquiaConfiguracaoResponse(
                 configId,
@@ -66,5 +71,14 @@ public class ObterConfiguracaoParoquiaUseCase {
                 "/api/v1/configuracao-paroquia/logo/claro",
                 "/api/v1/configuracao-paroquia/logo/escuro"
         );
+    }
+
+    private boolean existeNoClasspath(String path) {
+        try {
+            Resource r = resourceLoader.getResource("classpath:" + path);
+            return r != null && r.exists();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

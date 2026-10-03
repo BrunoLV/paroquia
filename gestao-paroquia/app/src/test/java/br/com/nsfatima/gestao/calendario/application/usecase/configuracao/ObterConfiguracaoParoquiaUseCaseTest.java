@@ -10,11 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +29,9 @@ class ObterConfiguracaoParoquiaUseCaseTest {
 
     @Mock
     private ConsultaInstitucionalPort consultaInstitucionalPort;
+
+    @Mock
+    private ResourceLoader resourceLoader;
 
     @InjectMocks
     private ObterConfiguracaoParoquiaUseCase useCase;
@@ -83,5 +89,23 @@ class ObterConfiguracaoParoquiaUseCaseTest {
         assertThat(response.corSecundariaHex()).isEqualTo("#808080");
         assertThat(response.possuiLogoFundoClaro()).isFalse();
         assertThat(response.possuiLogoFundoEscuro()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar possuiLogo true se houver imagem no classpath via ResourceLoader")
+    void deveRetornarPossuiLogoTrueSeHouverNoClasspath() {
+        ConsultaInstitucionalPort.DadosInstitucionais dados = ConsultaInstitucionalPort.DadosInstitucionais.padrao();
+        when(consultaInstitucionalPort.obterDadosInstitucionais()).thenReturn(dados);
+        when(paroquiaConfigRepository.findAll()).thenReturn(List.of());
+
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.exists()).thenReturn(true);
+        when(resourceLoader.getResource("classpath:logo-paroquia-claro.png")).thenReturn(mockResource);
+        when(resourceLoader.getResource("classpath:logo-paroquia-escuro.png")).thenReturn(mockResource);
+
+        ParoquiaConfiguracaoResponse response = useCase.execute();
+
+        assertThat(response.possuiLogoFundoClaro()).isTrue();
+        assertThat(response.possuiLogoFundoEscuro()).isTrue();
     }
 }
