@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useConfiguracaoParoquia } from '@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia';
 
-export const API_LOGO_CLARO_URL = '/api/v1/configuracao-paroquia/logo/claro';
-export const API_LOGO_ESCURO_URL = '/api/v1/configuracao-paroquia/logo/escuro';
+export const API_LOGO_CLARO_URL = '/api/v1/configuracao-paroquia/logo/claro.png';
+export const API_LOGO_ESCURO_URL = '/api/v1/configuracao-paroquia/logo/escuro.png';
 export const STATIC_FAVICON_CLARO = '/logo-paroquia-claro.png';
 export const STATIC_FAVICON_ESCURO = '/logo-paroquia-escuro.png';
 
@@ -24,8 +24,9 @@ export const resolveFaviconUrls = (options?: ResolveFaviconOptions) => {
 };
 
 /**
- * Atualiza no DOM os elementos <link rel="icon"> e <link rel="apple-touch-icon">
- * correspondentes aos media queries de tema claro/escuro e fallback genérico.
+ * Atualiza no DOM os elementos <link rel="icon"> e <link rel="apple-touch-icon">.
+ * Remove os nós antigos e insere novos nós recém-criados para forçar o repaint do
+ * favicon no motor Blink (Google Chrome / Chromium).
  */
 export const applyFaviconToDocument = (
   lightUrl: string,
@@ -34,32 +35,27 @@ export const applyFaviconToDocument = (
 ) => {
   if (typeof document === 'undefined') return;
 
-  const lightLinks = document.querySelectorAll<HTMLLinkElement>('link[rel*="icon"][media*="light"]');
-  lightLinks.forEach((link) => {
-    link.href = lightUrl;
-  });
-
-  const darkLinks = document.querySelectorAll<HTMLLinkElement>('link[rel*="icon"][media*="dark"]');
-  darkLinks.forEach((link) => {
-    link.href = darkUrl;
-  });
-
   const activeUrl = isBrowserDark ? darkUrl : lightUrl;
 
-  const genericLinks = document.querySelectorAll<HTMLLinkElement>(
-    'link[rel="icon"]:not([media]), link[rel="shortcut icon"]:not([media]), link[rel="apple-touch-icon"]:not([media])'
+  const existingLinks = document.querySelectorAll<HTMLLinkElement>(
+    'link[rel*="icon"], link[rel="apple-touch-icon"]'
   );
-  if (genericLinks.length > 0) {
-    genericLinks.forEach((link) => {
-      link.href = activeUrl;
-    });
-  } else if (lightLinks.length === 0 && darkLinks.length === 0) {
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    link.type = 'image/png';
-    link.href = activeUrl;
-    document.head.appendChild(link);
-  }
+  existingLinks.forEach((link) => {
+    link.remove();
+  });
+
+  const newFavicon = document.createElement('link');
+  newFavicon.id = 'app-favicon';
+  newFavicon.rel = 'icon';
+  newFavicon.type = 'image/png';
+  newFavicon.href = activeUrl;
+  document.head.appendChild(newFavicon);
+
+  const newAppleTouchIcon = document.createElement('link');
+  newAppleTouchIcon.id = 'app-apple-touch-icon';
+  newAppleTouchIcon.rel = 'apple-touch-icon';
+  newAppleTouchIcon.href = activeUrl;
+  document.head.appendChild(newAppleTouchIcon);
 };
 
 /**

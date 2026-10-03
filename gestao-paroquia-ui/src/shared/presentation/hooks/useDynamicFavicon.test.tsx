@@ -32,9 +32,8 @@ describe('useDynamicFavicon', () => {
   describe('applyFaviconToDocument', () => {
     beforeEach(() => {
       document.head.innerHTML = `
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro" media="(prefers-color-scheme: light)" />
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/escuro" media="(prefers-color-scheme: dark)" />
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro" />
+        <link id="app-favicon" rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro.png" />
+        <link id="app-apple-touch-icon" rel="apple-touch-icon" href="/api/v1/configuracao-paroquia/logo/claro.png" />
       `;
     });
 
@@ -42,37 +41,36 @@ describe('useDynamicFavicon', () => {
       document.head.innerHTML = '';
     });
 
-    it('deve atualizar hrefs das tags com media query e tag geral quando navegador estiver em tema claro', () => {
-      applyFaviconToDocument('/api/v1/configuracao-paroquia/logo/claro', '/api/v1/configuracao-paroquia/logo/escuro', false);
+    it('deve recriar os elementos de link e aplicar favicon claro quando navegador estiver em tema claro', () => {
+      applyFaviconToDocument(API_LOGO_CLARO_URL, API_LOGO_ESCURO_URL, false);
 
-      const lightLink = document.querySelector<HTMLLinkElement>('link[media*="light"]');
-      const darkLink = document.querySelector<HTMLLinkElement>('link[media*="dark"]');
-      const generalLink = document.querySelector<HTMLLinkElement>('link:not([media])');
+      const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+      const appleIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
 
-      expect(lightLink?.href).toContain(API_LOGO_CLARO_URL);
-      expect(darkLink?.href).toContain(API_LOGO_ESCURO_URL);
-      expect(generalLink?.href).toContain(API_LOGO_CLARO_URL);
+      expect(favicon?.href).toContain(API_LOGO_CLARO_URL);
+      expect(appleIcon?.href).toContain(API_LOGO_CLARO_URL);
     });
 
-    it('deve atualizar tag geral com darkUrl quando navegador estiver em tema escuro', () => {
-      applyFaviconToDocument('/api/v1/configuracao-paroquia/logo/claro', '/api/v1/configuracao-paroquia/logo/escuro', true);
+    it('deve recriar os elementos de link e aplicar favicon escuro quando navegador estiver em tema escuro', () => {
+      applyFaviconToDocument(API_LOGO_CLARO_URL, API_LOGO_ESCURO_URL, true);
 
-      const lightLink = document.querySelector<HTMLLinkElement>('link[media*="light"]');
-      const darkLink = document.querySelector<HTMLLinkElement>('link[media*="dark"]');
-      const generalLink = document.querySelector<HTMLLinkElement>('link:not([media])');
+      const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+      const appleIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
 
-      expect(lightLink?.href).toContain(API_LOGO_CLARO_URL);
-      expect(darkLink?.href).toContain(API_LOGO_ESCURO_URL);
-      expect(generalLink?.href).toContain(API_LOGO_ESCURO_URL);
+      expect(favicon?.href).toContain(API_LOGO_ESCURO_URL);
+      expect(appleIcon?.href).toContain(API_LOGO_ESCURO_URL);
     });
 
-    it('deve criar link se o documento estiver sem nenhuma tag de favicon', () => {
+    it('deve criar links no head se o documento estiver sem nenhuma tag de favicon', () => {
       document.head.innerHTML = '';
       applyFaviconToDocument(API_LOGO_CLARO_URL, API_LOGO_ESCURO_URL, false);
 
       const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+      const appleIcon = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
       expect(link).not.toBeNull();
       expect(link?.href).toContain(API_LOGO_CLARO_URL);
+      expect(appleIcon).not.toBeNull();
+      expect(appleIcon?.href).toContain(API_LOGO_CLARO_URL);
     });
   });
 
@@ -82,9 +80,7 @@ describe('useDynamicFavicon', () => {
 
     beforeEach(() => {
       document.head.innerHTML = `
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro" media="(prefers-color-scheme: light)" />
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/escuro" media="(prefers-color-scheme: dark)" />
-        <link rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro" />
+        <link id="app-favicon" rel="icon" type="image/png" href="/api/v1/configuracao-paroquia/logo/claro.png" />
       `;
 
       addEventListenerSpy = vi.fn();
@@ -141,9 +137,9 @@ describe('useDynamicFavicon', () => {
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('change', expect.any(Function));
 
-      const generalLink = document.querySelector<HTMLLinkElement>('link:not([media])');
+      const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
       // matches=true para dark, então deve conter API_LOGO_ESCURO_URL
-      expect(generalLink?.href).toContain(API_LOGO_ESCURO_URL);
+      expect(favicon?.href).toContain(API_LOGO_ESCURO_URL);
 
       unmount();
       expect(removeEventListenerSpy).toHaveBeenCalledWith('change', expect.any(Function));

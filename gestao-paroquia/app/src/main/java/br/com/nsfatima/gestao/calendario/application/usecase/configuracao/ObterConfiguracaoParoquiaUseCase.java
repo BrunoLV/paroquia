@@ -68,8 +68,8 @@ public class ObterConfiguracaoParoquiaUseCase {
                 corSecundaria,
                 temClaro,
                 temEscuro,
-                "/api/v1/configuracao-paroquia/logo/claro",
-                "/api/v1/configuracao-paroquia/logo/escuro"
+                "/api/v1/configuracao-paroquia/logo/claro.png",
+                "/api/v1/configuracao-paroquia/logo/escuro.png"
         );
     }
 

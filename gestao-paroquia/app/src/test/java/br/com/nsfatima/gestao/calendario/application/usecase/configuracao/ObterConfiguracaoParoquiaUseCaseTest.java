@@ -71,8 +71,8 @@ class ObterConfiguracaoParoquiaUseCaseTest {
         assertThat(response.corSecundariaHex()).isEqualTo("#334455");
         assertThat(response.possuiLogoFundoClaro()).isTrue();
         assertThat(response.possuiLogoFundoEscuro()).isTrue();
-        assertThat(response.urlLogoFundoClaro()).isEqualTo("/api/v1/configuracao-paroquia/logo/claro");
-        assertThat(response.urlLogoFundoEscuro()).isEqualTo("/api/v1/configuracao-paroquia/logo/escuro");
+        assertThat(response.urlLogoFundoClaro()).isEqualTo("/api/v1/configuracao-paroquia/logo/claro.png");
+        assertThat(response.urlLogoFundoEscuro()).isEqualTo("/api/v1/configuracao-paroquia/logo/escuro.png");
     }
 
     @Test

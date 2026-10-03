@@ -20,7 +20,7 @@ public enum VarianteFundoLogo {
         if (valor == null || valor.isBlank()) {
             throw new IllegalArgumentException("Variante do logotipo não pode ser nula ou vazia.");
         }
-        String normalizado = valor.trim().toUpperCase();
+        String normalizado = valor.trim().replaceFirst("(?i)\\.(png|jpe?g|webp|ico)$", "").toUpperCase();
         for (VarianteFundoLogo variante : values()) {
             if (variante.name().equals(normalizado)) {
                 return variante;

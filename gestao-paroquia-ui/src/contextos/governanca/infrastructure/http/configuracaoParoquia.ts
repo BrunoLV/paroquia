@@ -55,8 +55,8 @@ export const normalizarConfiguracao = (data: ParoquiaConfiguracaoRaw): ParoquiaC
   corSecundaria: data.corSecundariaHex || data.corSecundaria || '#808080',
   temLogoFundoClaro: data.possuiLogoFundoClaro ?? data.temLogoFundoClaro ?? false,
   temLogoFundoEscuro: data.possuiLogoFundoEscuro ?? data.temLogoFundoEscuro ?? false,
-  logoFundoClaroUrl: data.urlLogoFundoClaro || data.logoFundoClaroUrl || '/api/v1/configuracao-paroquia/logo/claro',
-  logoFundoEscuroUrl: data.urlLogoFundoEscuro || data.logoFundoEscuroUrl || '/api/v1/configuracao-paroquia/logo/escuro',
+  logoFundoClaroUrl: data.urlLogoFundoClaro || data.logoFundoClaroUrl || '/api/v1/configuracao-paroquia/logo/claro.png',
+  logoFundoEscuroUrl: data.urlLogoFundoEscuro || data.logoFundoEscuroUrl || '/api/v1/configuracao-paroquia/logo/escuro.png',
 });
 
 export const obterConfiguracaoParoquia = async (): Promise<ParoquiaConfiguracao> => {
