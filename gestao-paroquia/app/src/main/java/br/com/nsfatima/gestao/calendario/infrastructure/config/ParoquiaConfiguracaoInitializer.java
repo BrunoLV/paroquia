@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.calendario.infrastructure.config;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -10,57 +12,70 @@ import java.io.InputStream;
 import java.util.UUID;
 
 /**
- * Garante, na inicialização da aplicação, que exista sempre uma linha de configuração da
- * paróquia ({@link ParoquiaConfiguracaoEntity}) persistida no banco, semeada a partir dos valores
- * padrão definidos em {@link ParoquiaProperties}. Isso evita que telas e relatórios que dependem
- * dessa configuração (nome, diocese, cores, logo) encontrem um estado vazio em um banco novo.
+ * Garante, na inicialização da aplicação, que exista sempre a linha de identidade visual da paróquia
+ * ({@link ParoquiaConfiguracaoEntity}) persistida no banco, semeada com as cores institucionais padrão
+ * e os logotipos oficiais binarizados para fundo claro e escuro.
  */
 @Component
 public class ParoquiaConfiguracaoInitializer implements ApplicationRunner {
 
-    private final ParoquiaConfiguracaoRepository repository;
-    private final ParoquiaProperties properties;
+    private static final Logger log = LoggerFactory.getLogger(ParoquiaConfiguracaoInitializer.class);
+    private static final UUID CONFIG_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final String DEFAULT_COR_PRIMARIA = "#1A237E";
+    private static final String DEFAULT_COR_SECUNDARIA = "#808080";
+    private static final String PATH_LOGO_CLARO = "/logo-paroquia-claro.png";
+    private static final String PATH_LOGO_ESCURO = "/logo-paroquia-escuro.png";
 
-    public ParoquiaConfiguracaoInitializer(
-            ParoquiaConfiguracaoRepository repository,
-            ParoquiaProperties properties) {
+    private final ParoquiaConfiguracaoRepository repository;
+
+    public ParoquiaConfiguracaoInitializer(ParoquiaConfiguracaoRepository repository) {
         this.repository = repository;
-        this.properties = properties;
     }
 
-    /**
-     * Executado uma única vez na subida da aplicação: se ainda não houver nenhuma configuração
-     * de paróquia persistida, cria a linha padrão com ID fixo, copiando os valores de
-     * {@link ParoquiaProperties} e tentando carregar o logo a partir do classpath. Falhas ao
-     * carregar o logo são silenciosamente ignoradas para não impedir a subida da aplicação.
-     *
-     * @param args argumentos de inicialização da aplicação Spring Boot
-     */
     @Override
     public void run(ApplicationArguments args) {
-        if (repository.count() == 0) {
-            ParoquiaConfiguracaoEntity config = new ParoquiaConfiguracaoEntity();
-            config.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
-            config.setNome(properties.getNome());
-            config.setDiocese(properties.getDiocese());
-            config.setEndereco(properties.getEndereco());
-            config.setCorPrimariaHex(properties.getCorPrimariaHex());
-            config.setCorSecundariaHex(properties.getCorSecundariaHex());
+        ParoquiaConfiguracaoEntity config = repository.findById(CONFIG_ID).orElseGet(() -> {
+            ParoquiaConfiguracaoEntity nova = new ParoquiaConfiguracaoEntity();
+            nova.setId(CONFIG_ID);
+            nova.setCorPrimariaHex(DEFAULT_COR_PRIMARIA);
+            nova.setCorSecundariaHex(DEFAULT_COR_SECUNDARIA);
+            return nova;
+        });
 
-            byte[] logoBytes = null;
-            String logoPath = properties.getLogoPath();
-            if (logoPath != null && !logoPath.isBlank()) {
-                try (InputStream is = getClass().getResourceAsStream(logoPath)) {
-                    if (is != null) {
-                        logoBytes = is.readAllBytes();
-                    }
-                } catch (Exception e) {
-                    // Silently ignore to guarantee resilience if logo file doesn't exist
-                }
+        boolean mudou = false;
+
+        if (config.getLogoFundoClaroBytes() == null || config.getLogoFundoClaroBytes().length == 0) {
+            byte[] bytesClaro = carregarBytesDoClasspath(PATH_LOGO_CLARO);
+            if (bytesClaro != null && bytesClaro.length > 0) {
+                config.setLogoFundoClaroBytes(bytesClaro);
+                config.setLogoFundoClaroTipoMime("image/png");
+                mudou = true;
             }
-            config.setLogoBytes(logoBytes);
-
-            repository.save(config);
         }
+
+        if (config.getLogoFundoEscuroBytes() == null || config.getLogoFundoEscuroBytes().length == 0) {
+            byte[] bytesEscuro = carregarBytesDoClasspath(PATH_LOGO_ESCURO);
+            if (bytesEscuro != null && bytesEscuro.length > 0) {
+                config.setLogoFundoEscuroBytes(bytesEscuro);
+                config.setLogoFundoEscuroTipoMime("image/png");
+                mudou = true;
+            }
+        }
+
+        if (mudou || repository.count() == 0) {
+            repository.save(config);
+            log.info("Identidade visual da paróquia inicializada com sucesso no banco de dados.");
+        }
+    }
+
+    private byte[] carregarBytesDoClasspath(String path) {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is != null) {
+                return is.readAllBytes();
+            }
+        } catch (Exception e) {
+            log.warn("Falha ao carregar semente de imagem do classpath '{}': {}", path, e.getMessage());
+        }
+        return new byte[0];
     }
 }

@@ -7,7 +7,6 @@ import br.com.nsfatima.gestao.clero.domain.model.Clerigo;
 import br.com.nsfatima.gestao.clero.domain.model.EnderecoClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /** Aplica máscaras somente na saída autorizada da API. */
@@ -15,8 +14,12 @@ import org.springframework.stereotype.Component;
 public class ClerigoMapper {
     private final String paroquia;
 
-    public ClerigoMapper(@Value("${app.paroquia.nome:Paróquia Nossa Senhora de Fátima}") String paroquia) {
-        this.paroquia = paroquia;
+    public ClerigoMapper() {
+        this("Paróquia Nossa Senhora de Fátima");
+    }
+
+    public ClerigoMapper(String paroquia) {
+        this.paroquia = paroquia != null ? paroquia : "Paróquia Nossa Senhora de Fátima";
     }
 
     public ClerigoResponse completo(ClerigoEntity clerigo, FuncaoEclesiastica funcao) {

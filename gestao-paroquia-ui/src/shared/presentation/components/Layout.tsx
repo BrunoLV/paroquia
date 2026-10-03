@@ -21,6 +21,7 @@ import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
 import SidebarNavigation from './navigation/SidebarNavigation';
 import { useThemeMode } from '@/shared/presentation/context/ThemeModeContext';
+import { useConfiguracaoParoquia } from '@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import IconActionButton from './IconActionButton';
 
@@ -30,10 +31,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const location = useLocation();
   const { user, logout } = useAuth();
   const { mode, toggleMode } = useThemeMode();
+  const { configuracao } = useConfiguracaoParoquia();
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(true);
+
+  const isDark = mode === 'dark';
+  const logoSrc = isDark
+    ? (configuracao?.temLogoFundoEscuro ? '/api/v1/configuracao-paroquia/logo/escuro' : '/logo-paroquia-escuro.png')
+    : (configuracao?.temLogoFundoClaro ? '/api/v1/configuracao-paroquia/logo/claro' : '/logo-paroquia-claro.png');
+  const fallbackLogo = isDark ? '/logo-paroquia-escuro.png' : '/logo-paroquia-claro.png';
+  const paroquiaNome = configuracao?.nome || 'N. S. de Fátima';
+  const paroquiaDiocese = configuracao?.diocese || 'Gestão Paroquial';
+
   const handleMobileDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -82,17 +93,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 }}
               >
                 <img
-                  src="/logo-paroquia.png"
-                  alt="Logo da Paróquia"
+                  src={logoSrc}
+                  alt={paroquiaNome}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== fallbackLogo) {
+                      target.src = fallbackLogo;
+                    }
+                  }}
                   style={{ width: '90%', height: '90%', objectFit: 'contain' }}
                 />
               </Box>
               <Box sx={{ overflow: 'hidden' }}>
                 <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700, color: 'primary.main', lineHeight: 1.2 }}>
-                  N. S. de Fátima
+                  {paroquiaNome}
                 </Typography>
                 <Typography variant="caption" noWrap sx={{ color: 'text.secondary', display: 'block' }}>
-                  Gestão Paroquial
+                  {paroquiaDiocese}
                 </Typography>
               </Box>
             </Box>

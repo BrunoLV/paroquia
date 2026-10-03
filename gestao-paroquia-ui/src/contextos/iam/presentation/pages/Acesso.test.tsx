@@ -21,6 +21,22 @@ vi.mock('@/shared/presentation/context/NotificationContext', () => ({
   NotificationProvider: ({ children }: any) => <div>{children}</div>,
 }));
 
+vi.mock('@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia', () => ({
+  useConfiguracaoParoquia: () => ({
+    configuracao: {
+      id: 'uuid-1',
+      nome: 'Nossa Senhora de Fátima',
+      diocese: 'Gestão Paroquial',
+      temLogoFundoClaro: true,
+      temLogoFundoEscuro: true,
+      logoFundoClaroUrl: '/api/v1/configuracao-paroquia/logo/claro',
+      logoFundoEscuroUrl: '/api/v1/configuracao-paroquia/logo/escuro',
+    },
+    isLoading: false,
+    isError: false,
+  }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });

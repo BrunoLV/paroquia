@@ -49,9 +49,11 @@ import {
   canCreateUsuario,
   canEditOrInactivateUser,
   canManageAnoParoquial,
+  canManageIdentidadeVisual,
   canManageUsuarios,
   isAdmin,
 } from '@/contextos/iam/presentation/auth/permissions';
+import { IdentidadeVisualTab } from '@/contextos/governanca/presentation/components/configuracoes/IdentidadeVisualTab';
 import ImportModal from '@/contextos/importacao/presentation/components/ImportModal';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
@@ -402,6 +404,9 @@ export const Configuracoes = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
         <Tabs value={tabValue} onChange={(_, val) => setTabValue(val)} aria-label="Abas de Configurações">
           <Tab value="ano" label="Ano Paroquial" {...a11yProps('ano')} sx={{ fontWeight: 600 }} />
+          {canManageIdentidadeVisual(user) && (
+            <Tab value="identidade-visual" label="Identidade Visual" {...a11yProps('identidade-visual')} sx={{ fontWeight: 600 }} />
+          )}
           {isAuthorizedUsers && (
             <Tab value="usuarios" label="Membros / Usuários" {...a11yProps('usuarios')} sx={{ fontWeight: 600 }} />
           )}
@@ -499,6 +504,13 @@ export const Configuracoes = () => {
           </Box>
         )}
       </CustomTabPanel>
+      
+      {/* Tab: Identidade Visual */}
+      {canManageIdentidadeVisual(user) && (
+        <CustomTabPanel value="identidade-visual" currentValue={tabValue}>
+          <IdentidadeVisualTab />
+        </CustomTabPanel>
+      )}
 
       {/* Tab: Membros / Usuários */}
       {isAuthorizedUsers && (

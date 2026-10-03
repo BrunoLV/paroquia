@@ -88,6 +88,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/autenticacao/solicitar-reset-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/observabilidade/logs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/organizacoes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/configuracao-paroquia").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/configuracao-paroquia/logo/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

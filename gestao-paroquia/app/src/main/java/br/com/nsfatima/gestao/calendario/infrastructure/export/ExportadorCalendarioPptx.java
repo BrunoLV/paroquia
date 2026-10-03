@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.export;
 
 import br.com.nsfatima.gestao.calendario.application.export.ExportadorCalendario;
+import br.com.nsfatima.gestao.calendario.domain.model.VarianteFundoLogo;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
@@ -142,7 +143,7 @@ public class ExportadorCalendarioPptx implements ExportadorCalendario {
         faixa.setFillColor(primaryColor);
         faixa.setLineColor(null);
 
-        byte[] logoBytes = config != null ? config.getLogoBytes() : null;
+        byte[] logoBytes = config != null ? config.getLogoBytesPorVariante(VarianteFundoLogo.ESCURO) : null;
         if (logoBytes != null && logoBytes.length > 0) {
             try {
                 XSLFPictureData pictureData = slideShow.addPicture(logoBytes, PictureData.PictureType.PNG);
