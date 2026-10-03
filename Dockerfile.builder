@@ -21,5 +21,6 @@ ENV SONAR_TOKEN=
 # Ensure shared directory exists
 RUN mkdir -p /shared
 
-# The entrypoint will run the build skipping tests (for fast container startup), then copy the jar to the shared volume
-ENTRYPOINT ["/bin/sh", "-c", "./gradlew :app:bootJar -x test --build-cache && cp app/build/libs/app.jar /shared/app.jar"]
+# The entrypoint checks if a pre-compiled jar exists in app/build/libs/app.jar (mounted from host workspace)
+# to avoid network downloads inside the container; otherwise runs gradle build.
+ENTRYPOINT ["/bin/sh", "-c", "if [ -f app/build/libs/app.jar ]; then echo 'Utilizando app.jar pre-compilado...' && cp app/build/libs/app.jar /shared/app.jar; else ./gradlew :app:bootJar -x test --build-cache && cp app/build/libs/app.jar /shared/app.jar; fi"]
