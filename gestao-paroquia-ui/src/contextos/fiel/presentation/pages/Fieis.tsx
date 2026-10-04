@@ -2,10 +2,10 @@ import SearchableTablePagination from '@/shared/presentation/components/Searchab
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -192,7 +192,7 @@ const Fieis: React.FC = () => {
           podeGerirCadastro ? (
             <ActionButton
               title="Novo Fiel"
-              icon={<AddIcon />}
+              icon={<PersonAddIcon />}
               color="primary"
               onClick={() => setNovo(true)}
             />
@@ -304,14 +304,14 @@ const Fieis: React.FC = () => {
                                       ? [
                                           {
                                             label: 'Desativar',
-                                            icon: <BlockIcon fontSize="small" />,
+                                            icon: <BlockIcon fontSize="small" color="error" />,
                                             onClick: () => setFielParaInativar(fiel),
                                           },
                                         ]
                                       : [
                                           {
                                             label: 'Reativar',
-                                            icon: <CheckCircleIcon fontSize="small" />,
+                                            icon: <CheckCircleIcon fontSize="small" color="success" />,
                                             onClick: () => status.mutate({ id: fid, ativo: true }),
                                           },
                                         ]),

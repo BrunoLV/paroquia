@@ -13,8 +13,8 @@ import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyl
 import { confirmDiscard } from '@/shared/utils/confirmDiscard';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
-import EditIcon from '@mui/icons-material/Edit';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import SaveIcon from '@mui/icons-material/Save';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { Fiel, Organizacao, UpdateFielPayload } from '@/shared/domain/types/types';
 import {
@@ -813,7 +813,7 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
             type="submit"
             color="primary"
             title="Salvar alterações"
-            icon={<EditIcon />}
+            icon={<SaveIcon />}
             disabled={isPending}
           />
         </DialogActions>

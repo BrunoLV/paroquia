@@ -1,9 +1,9 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useMemo, useState } from 'react';
 import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BadgeIcon from '@mui/icons-material/Badge';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -131,7 +131,7 @@ const Clerigos: React.FC = () => {
           podeGerenciarClero ? (
             <ActionButton
               title="Novo clérigo"
-              icon={<AddIcon />}
+              icon={<PersonAddIcon />}
               color="primary"
               onClick={() => setDialogCadastroAberto(true)}
             />
@@ -266,7 +266,7 @@ const Clerigos: React.FC = () => {
                                     ? [
                                         {
                                           label: 'Inativar',
-                                          icon: <BlockIcon fontSize="small" />,
+                                          icon: <BlockIcon fontSize="small" color="error" />,
                                           onClick: () => setClerigoParaInativar(clerigo as Clerigo),
                                         },
                                       ]

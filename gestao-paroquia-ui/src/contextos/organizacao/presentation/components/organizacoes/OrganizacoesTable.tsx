@@ -82,7 +82,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
                       { label: 'Membros', icon: <GroupsIcon fontSize="small" />, onClick: () => onViewMembers(org) },
                       ...(canManage ? [
                         { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => onEdit(org), disabled: isTogglePending },
-                        { label: org.ativo ? 'Inativar' : 'Ativar', icon: org.ativo ? <ToggleOffIcon fontSize="small" /> : <ToggleOnIcon fontSize="small" />, onClick: () => onToggleStatus(org), disabled: isTogglePending },
+                        { label: org.ativo ? 'Inativar' : 'Ativar', icon: org.ativo ? <ToggleOffIcon fontSize="small" color="error" /> : <ToggleOnIcon fontSize="small" color="success" />, onClick: () => onToggleStatus(org), disabled: isTogglePending },
                       ] : []),
                     ]}
                   />

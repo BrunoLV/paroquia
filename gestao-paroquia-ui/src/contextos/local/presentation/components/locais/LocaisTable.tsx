@@ -127,7 +127,7 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
                           },
                           {
                             label: 'Excluir',
-                            icon: <DeleteIcon fontSize="small" />,
+                            icon: <DeleteIcon fontSize="small" color="error" />,
                             onClick: () => onDelete(local),
                             disabled: isDeletePending,
                           },

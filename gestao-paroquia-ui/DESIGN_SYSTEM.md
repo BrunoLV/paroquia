@@ -66,13 +66,34 @@ A suíte `searchableListsArchitecture.test.ts` impede seletores sem pesquisa e u
 - Texto: `ActionButton` (`src/shared/presentation/components/ActionButton.tsx`) — props `title`, `icon`, `color`, `variant`, `type`, `form?`, `disabled`, `fullWidth`, `component`.
 - Só ícone: `IconActionButton` (`src/shared/presentation/components/IconActionButton.tsx`) — sempre com `Tooltip` (`title`) e `aria-label`.
 
-Semântica de cor obrigatória:
+### 3.1. Semântica Obrigatória de Cores e Ícones
 
-| Ação | Cor | Ícone típico |
-| --- | --- | --- |
-| Salvar / Criar / Confirmar / Submeter | `primary` | `SaveIcon`, `AddIcon`, `CheckCircleIcon` |
-| Cancelar / Fechar / Voltar | `secondary` | `CloseIcon`, `ArrowBackIcon` |
-| Inativar / Excluir / Rejeitar / Vetar | `error` | `BlockIcon`, `CancelIcon`, `DeleteIcon` |
+Todos os botões normais (`ActionButton`), de ícone (`IconActionButton`) e itens de menu de ação (`TableActionMenu`) devem seguir estritamente o catálogo canônico de cores e ícones:
+
+| Ação / Propósito | Cor | Variante Padrão | Ícones Canônicos |
+| :--- | :--- | :--- | :--- |
+| **Criar / Novo Fiel / Clérigo** | `primary` | `contained` | `PersonAddIcon` |
+| **Criar / Nova Pastoral / Movimento** | `primary` | `contained` | `GroupAddIcon` |
+| **Criar / Nova Unidade Territorial** | `primary` | `contained` | `AddHomeWorkIcon` |
+| **Criar / Novo Local / Espaço** | `primary` | `contained` | `AddLocationAltIcon` |
+| **Criar / Novo Evento de Calendário** | `primary` | `contained` | `EventNoteIcon` |
+| **Criar / Novo Assento / Ata / Projeto** | `primary` | `contained` | `PostAddIcon` |
+| **Criar Genérico / Novo Parâmetro** | `primary` | `contained` | `AddIcon` |
+| **Salvar / Gravar Registro** | `primary` | `contained` | `SaveIcon` |
+| **Confirmar / Submeter / Entrar** | `primary` | `contained` | `CheckCircleIcon`, `LoginIcon` |
+| **Aprovar / Homologar / Concluir** | `success` | `contained` ou item de menu | `CheckCircleIcon`, `VerifiedIcon` |
+| **Ativar / Reativar Registro** | `success` | item de menu ou `outlined` | `ToggleOnIcon`, `CheckCircleIcon` |
+| **Cancelar / Fechar Diálogo / Voltar** | `secondary` | `outlined` ou `text` | `CloseIcon`, `ArrowBackIcon` |
+| **Limpar Filtros / Desmarcar** | `secondary` | `outlined` | `ClearAllIcon`, `FilterAltOffIcon` |
+| **Filtrar / Aplicar Busca** | `primary` | `contained` | `FilterListIcon`, `FilterAltIcon` |
+| **Visualizar / Detalhes** | `primary` | item de menu ou `text` | `VisibilityIcon` |
+| **Editar / Alterar / Ressalva** | `primary` | item de menu ou `outlined` | `EditIcon`, `EditNoteIcon` |
+| **Vincular / Relacionar Membro/Organização** | `primary` | `contained` ou `outlined` | `LinkIcon` |
+| **Download / Exportar (PDF, CSV, Excel)** | `primary` | `outlined` | `DownloadIcon`, `PictureAsPdfIcon`, `FileDownloadIcon` |
+| **Atualizar / Sincronizar** | `primary` | `outlined` ou `IconActionButton` | `RefreshIcon` |
+| **Inativar / Desativar** | `error` | item de menu ou `contained` | `ToggleOffIcon`, `BlockIcon`, `PersonOffIcon` |
+| **Vetar / Rejeitar Proposta** | `error` | `contained` ou item de menu | `BlockIcon`, `CancelIcon` |
+| **Excluir / Deletar / Remover** | `error` | item de menu ou `contained` (diálogo) | `DeleteIcon` |
 
 Submissão a partir de um botão fora do `<form>` (ex.: rodapé de `Drawer`): usar `form="id-do-form"` no `ActionButton`, nunca sair do componente para isso.
 
@@ -162,6 +183,10 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 - Cabeçalho: `TableHead` com `backgroundColor: 'action.hover'` e células `fontWeight: 600/700`.
 - Linha clicável: `role="button"`, `tabIndex={0}`, `onKeyDown` tratando `Enter`/`Espaço`.
 - Ações de linha: usar exclusivamente `TableActionMenu`, inclusive para uma única ação. Gatilho `IconActionButton` pequeno, delineado, com `MoreVert` (`⋮`), sem texto visível ou preenchimento; proibido o botão `… Ações` e ações textuais diretamente na célula. Tooltip e nome acessível “Ações”, `aria-haspopup`, `aria-expanded` e vínculo ao menu são obrigatórios. Preservar permissões, estados desabilitados e callbacks.
+- **Cores semânticas obrigatórias nos itens do menu de ação (`TableActionMenu`):**
+  - **Ações destrutivas / restritivas:** Excluir, Inativar, Desativar, Vetar, Rejeitar devem utilizar `color="error"` no ícone/menu item (ex.: `DeleteIcon color="error"`, `ToggleOffIcon color="error"`, `BlockIcon color="error"`).
+  - **Ações de sucesso / homologação / ativação:** Aprovar, Homologar, Ativar, Reativar, Concluir devem utilizar `color="success"` no ícone/menu item (ex.: `CheckCircleIcon color="success"`, `VerifiedIcon color="success"`, `ToggleOnIcon color="success"`).
+  - **Ações informativas e de edição:** Detalhes, Visualizar, Editar, Imprimir, Exportar utilizam cor neutra/primária padrão (ex.: `VisibilityIcon`, `EditIcon`, `DownloadIcon`).
 - O menu compartilhado impede propagação de clique e teclado para a linha, permite navegação por teclado e restaura foco ao fechar. Validar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts` nos novos componentes.
 - Paginação obrigatória: `SearchableTablePagination` com `[5, 10, 25]`. A quantidade é pesquisável e sua alteração retorna à primeira página. `onRowsPerPageChange` recebe `{ target: { value: string } }`; `onPageChange` mantém o contrato MUI. O seletor simples interno do MUI fica desabilitado. Proibido TablePagination direto em telas.
 - `SearchableTablePagination` é o rodapé semântico (`TableFooter`/`TableRow`/`TableCell`): montar **dentro do `Table`, após o `TableBody`**, nunca após `TableContainer`, Card ou Paper. Informar `colSpan` com o número de colunas visíveis, respeitando colunas condicionais por permissão.

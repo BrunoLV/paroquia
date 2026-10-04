@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Stack, Tab, Tabs } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -127,7 +127,7 @@ const Sacramentos = () => {
         actions={podeGerir && (
           <ActionButton
             title="Novo Assento"
-            icon={<AddIcon />}
+            icon={<PostAddIcon />}
             color="primary"
             onClick={() => setForm({ edicao: null, aberto: true })}
             sx={{ border: '1px solid', borderColor: 'primary.main' }}

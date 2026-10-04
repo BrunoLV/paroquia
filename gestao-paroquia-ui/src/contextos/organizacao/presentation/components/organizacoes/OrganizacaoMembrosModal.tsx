@@ -2,9 +2,9 @@ import SearchableSelect from '@/shared/presentation/components/SearchableSelect'
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LinkIcon from '@mui/icons-material/Link';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { getOrganizacaoMembros } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { adicionarVinculo, AdicionarVinculoRequest, removerVinculo, Usuario } from '@/contextos/iam/infrastructure/http/usuarios';
@@ -215,7 +215,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
 
               <ActionButton
                 title="Adicionar Vínculo"
-                icon={addMembroMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
+                icon={addMembroMutation.isPending ? <CircularProgress size={20} /> : <LinkIcon />}
                 color="primary"
                 onClick={handleAddMembro}
                 disabled={!novoUsuarioId || !novoPapel || (isPastoralOuMovimento && !novaIgrejaId) || addMembroMutation.isPending}

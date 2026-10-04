@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import { createOrganizacao, deleteOrganizacao, getOrganizacoes, updateOrganizacao } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { getUsuarios } from '@/contextos/iam/infrastructure/http/usuarios';
@@ -112,7 +112,7 @@ const Organizacoes: React.FC = () => {
           isAuthorized && (
             <ActionButton
               title="Nova Pastoral / Movimento"
-              icon={<AddIcon />}
+              icon={<GroupAddIcon />}
               color="primary"
               onClick={() => {
                 setSelectedOrg(null);

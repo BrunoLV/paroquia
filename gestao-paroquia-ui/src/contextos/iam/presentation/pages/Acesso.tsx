@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Button,
   CircularProgress,
   Container,
   Dialog,
@@ -231,17 +230,18 @@ const Acesso = () => {
               />
 
               <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'center' }}>
-                <Button
+                <ActionButton
+                  title="Esqueci minha senha"
                   variant="text"
                   size="small"
+                  color="primary"
+                  icon={<LockResetIcon fontSize="small" />}
                   onClick={() => {
                     setResetUsername(username);
                     setIsResetModalOpen(true);
                   }}
                   sx={{ textTransform: 'none', fontWeight: 500 }}
-                >
-                  Esqueci minha senha
-                </Button>
+                />
               </Box>
             </Box>
           </Paper>

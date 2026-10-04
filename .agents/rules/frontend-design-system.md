@@ -57,6 +57,22 @@ Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estr
 7. **PROIBIDO overrides arbitrários de padding em `<DialogActions>`:** Use `<DialogActions>` limpo com espaçamento padrão do tema.
 8. **PROIBIDO `<Button>` ou `<IconButton>` crus:** Use exclusivamente `<ActionButton>` e `<IconActionButton>`.
 
+### 1.2. Padronização Obrigatória de Ícones e Cores em Botões (`ActionButton` / `IconActionButton`)
+Todos os botões devem aderir estritamente à semântica de cores e catálogo de ícones de `DESIGN_SYSTEM.md`:
+1. **Criação / Cadastro (`color="primary"` variant="contained"):** Ícone específico da entidade:
+   - Fiel / Clérigo: `PersonAddIcon`
+   - Pastoral / Movimento: `GroupAddIcon`
+   - Unidade Territorial: `AddHomeWorkIcon`
+   - Local / Espaço: `AddLocationAltIcon`
+   - Evento de Calendário: `EventNoteIcon`
+   - Assento / Ata / Projeto: `PostAddIcon`
+   - Genérico / Parâmetro: `AddIcon`
+2. **Gravação e Submissão (`color="primary"`):** `SaveIcon` para salvar/gravar; `CheckCircleIcon` para confirmar/submeter; `LoginIcon` para autenticação.
+3. **Cancelamento e Fechamento (`color="secondary"`):** `CloseIcon` para cancelar/fechar; `ArrowBackIcon` para voltar; `ClearAllIcon`/`FilterAltOffIcon` para limpar filtros.
+4. **Ações de Sucesso e Homologação (`color="success"`):** `CheckCircleIcon` (aprovar/concluir), `VerifiedIcon` (homologar), `ToggleOnIcon` (ativar/reativar).
+5. **Ações Destrutivas e Restritivas (`color="error"`):** `DeleteIcon` (excluir), `BlockIcon`/`CancelIcon` (vetar/rejeitar), `ToggleOffIcon`/`PersonOffIcon` (inativar/desativar).
+6. **Ações Neutras e Utilitárias (`color="primary"` ou default):** `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (editar/ressalva), `LinkIcon` (vincular), `DownloadIcon` (exportar), `RefreshIcon` (atualizar).
+
 ---
 
 ## 2. Formulários, Validação e Máscaras
@@ -86,7 +102,9 @@ Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYST
 
 ## 5. Ações de Linha
 
-Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha. Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
+Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha.
+- **Cores semânticas obrigatórias nos itens:** Ações destrutivas (exclusão, inativação, veto, cancelamento) usam obrigatoriamente `color="error"`; ações de sucesso (aprovação, homologação, reativação) usam `color="success"`; ações neutras de visualização ou edição usam cor primária/neutra padrão.
+- Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
 
 ## 6. Navegação Lateral
 

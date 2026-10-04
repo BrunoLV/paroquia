@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Box, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import AddIcon from '@mui/icons-material/Add';
+import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -222,7 +222,7 @@ export const UnidadesTerritoriais: React.FC = () => {
               />
               <ActionButton
                 title="Nova Unidade Territorial"
-                icon={<AddIcon />}
+                icon={<AddHomeWorkIcon />}
                 variant="contained"
                 color="primary"
                 onClick={handleOpenNovaUnidade}
@@ -425,7 +425,7 @@ export const UnidadesTerritoriais: React.FC = () => {
                                   },
                                   {
                                     label: 'Excluir unidade',
-                                    icon: <DeleteIcon fontSize="small" />,
+                                    icon: <DeleteIcon fontSize="small" color="error" />,
                                     onClick: () => handleOpenConfirmDelete(u),
                                   },
                                 ]

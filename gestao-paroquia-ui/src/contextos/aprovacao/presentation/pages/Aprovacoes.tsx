@@ -690,7 +690,7 @@ const Aprovacoes = () => {
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Detalhes da Solicitação
               </Typography>
-              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setAprovacaoSelecionada(null)} />
+              <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={() => setAprovacaoSelecionada(null)} />
             </Box>
             <Divider sx={{ mb: 3 }} />
 
@@ -1032,6 +1032,7 @@ const Aprovacoes = () => {
               <ActionButton
                 title="Fechar painel"
                 icon={<CloseIcon />}
+                color="secondary"
                 onClick={() => setAprovacaoProjetoSelecionada(null)}
               />
             </Box>

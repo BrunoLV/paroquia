@@ -31,6 +31,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - Patrimônio: `InventoryIcon` substituído por `AccountBalanceIcon` em `AtivoViewModal` e `AtivoFormModal`.
     - Alçadas e Aprovações: `ALTERACAO_HORARIO` com `ScheduleIcon`, `RECLASSIFICACAO` com `CategoryIcon`, solicitações de projetos pastorais com `AssignmentTurnedInIcon`.
     - Eclesiásticos: `PADRE_DIOCESANO` com `BadgeIcon`; ordenações e graus da ordem unificados com `WorkspacePremiumIcon` em `ClerigoViewModal`.
+- **Padronização Visual e Semântica de Botões e Cores de Ação:**
+  - Botões de criação/cadastro (`primary`, `contained`) alinhados aos arquétipos de entidade: `PersonAddIcon` (Fiel, Clérigo, Usuário), `GroupAddIcon` (Pastoral, Tipo Oficial), `AddHomeWorkIcon` (Unidade Territorial), `AddLocationAltIcon` (Local/Espaço), `EventNoteIcon` (Evento de Calendário), `PostAddIcon` (Assento, Ata, Projeto).
+  - Botões e ações de confirmação/gravação: `SaveIcon` padronizado em modais de criação/edição e formulários; `CheckCircleIcon` e `LoginIcon` para submissão e autenticação.
+  - Botões de cancelamento/fechamento: `CloseIcon` com `color="secondary"` (`variant="outlined"` ou `"text"`).
+  - Padronização de cores semânticas em botões normais e menus de ação de tabelas (`TableActionMenu`):
+    - Ações destrutivas/restritivas com `color="error"`: `DeleteIcon` (exclusão), `ToggleOffIcon`/`PersonOffIcon` (inativação/desativação), `BlockIcon` (veto).
+    - Ações de sucesso/homologação com `color="success"`: `CheckCircleIcon` (aprovação/conclusão), `VerifiedIcon` (homologação), `ToggleOnIcon` (ativação/reativação).
+    - Ações neutras/informativas com cor primária/neutra padrão: `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (edição/ressalva), `LinkIcon` (vínculos), `DownloadIcon` (exportação).
+  - Atualização do Design System (`gestao-paroquia-ui/DESIGN_SYSTEM.md`) e regras de agentes (`.agents/rules/frontend-design-system.md`) para governança obrigatória nos próximos desenvolvimentos.
 
 ## [0.8.0] - 2026-10-04
 
