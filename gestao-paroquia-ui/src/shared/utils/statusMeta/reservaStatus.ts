@@ -1,8 +1,8 @@
 import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import OutboxIcon from '@mui/icons-material/Outbox';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import type { ChipProps, SvgIconProps } from '@mui/material';
@@ -35,14 +35,14 @@ export const getReservaStatusMeta = (status: StatusReserva): ReservaStatusMeta =
       return {
         label: 'Em Custódia',
         color: 'info',
-        icon: React.createElement(LocalShippingIcon),
+        icon: React.createElement(OutboxIcon),
         tooltip: 'Bem retirado fisicamente para uso',
       };
     case 'FINALIZADA':
       return {
         label: 'Finalizada',
         color: 'default',
-        icon: React.createElement(DoneAllIcon),
+        icon: React.createElement(TaskAltIcon),
         tooltip: 'Uso e devolução concluídos',
       };
     case 'CANCELADA':

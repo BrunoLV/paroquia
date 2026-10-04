@@ -1,5 +1,6 @@
 import React from 'react';
 import ChurchIcon from '@mui/icons-material/Church';
+import BadgeIcon from '@mui/icons-material/Badge';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import ShieldIcon from '@mui/icons-material/Shield';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
@@ -33,7 +34,7 @@ const GRAU_ORDEM_META: Record<GrauOrdem, CleroMeta> = {
   PADRE_DIOCESANO: {
     label: 'Padre Diocesano',
     color: 'primary',
-    icon: React.createElement(ChurchIcon),
+    icon: React.createElement(BadgeIcon),
     tooltip: 'Padre Diocesano',
   },
   PADRE_RELIGIOSO: {

@@ -4,7 +4,7 @@ import { Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, Tabl
 import TableActionMenu, { type TableAction } from '@/shared/presentation/components/TableActionMenu';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import OutboxIcon from '@mui/icons-material/Outbox';
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 import BlockIcon from '@mui/icons-material/Block';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -78,7 +78,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
       { label: 'Rejeitar Solicitação', icon: <HighlightOffIcon fontSize="small" color="error" />, onClick: () => onRejeitar(reserva) },
     ] : []),
     ...(reserva.status === 'CONFIRMADA' && reserva.tipoItem === 'ATIVO' ? [
-      { label: 'Registrar Saída (Retirada)', icon: <LocalShippingIcon fontSize="small" color="info" />, onClick: () => onRetirar(reserva) },
+      { label: 'Registrar Saída (Retirada)', icon: <OutboxIcon fontSize="small" color="info" />, onClick: () => onRetirar(reserva) },
     ] : []),
     ...(reserva.status === 'RETIRADO' && reserva.tipoItem === 'ATIVO' ? [
       { label: 'Registrar Devolução', icon: <AssignmentReturnIcon fontSize="small" color="primary" />, onClick: () => onDevolver(reserva) },

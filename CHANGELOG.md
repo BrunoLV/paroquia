@@ -23,8 +23,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - Assentos: `DRAFT` utiliza `EditNoteIcon` (escrituração em rascunho) e `ORDEM` utiliza `WorkspacePremiumIcon` (ordenação sacerdotal/ordem sagrada).
     - Clero e Vocações: `PADRE_RELIGIOSO` e `RELIGIOSO` utilizam `ShieldIcon` (ordem religiosa / hábito / carisma consagrado); `EMERITO` e `SACERDOTE` utilizam `WorkspacePremiumIcon` (mérito e dignidade canônica jubilada).
     - Calendário: `SOLENIDADE` utiliza `FlareIcon` (resplendor litúrgico solene); `MOVIMENTO` utiliza `Diversity1Icon` (movimento eclesial comunitário).
-    - Território e Organismos: `COMUNIDADE` utiliza `PlaceIcon` e `Sacrário` utiliza `FlareIcon` (presença real eucarística).
     - Fiel: Data de aniversário de nascimento no modal utiliza `CakeIcon`.
+  - Harmonização de Status e Informações do Mesmo Tipo:
+    - Ciclo de vida e fluxos: `HourglassEmptyIcon` padronizado para pendências gerais e cadastrais (`situacaoStatus`, `assentoMeta`); `VerifiedIcon` para homologações canônicas oficiais (`homologacaoStatus`, `AssentoViewModal`); `TaskAltIcon` para finalização/devolução de reservas; `EventBusyIcon` para cancelamento de eventos na agenda.
+    - Empréstimo e custódia de bens: substituição de `LocalShippingIcon` por `OutboxIcon` em `reservaStatus`, `ReservasTable` e `aprovacaoStatus` (`ALOCACAO_ATIVO_EMPRESTIMO`), alinhando com as métricas de reservas.
+    - Sacramentos: Crisma/Confirmação padronizado com `WhatshotIcon` (fogo/chama de Pentecostes); Matrimônio com `Diversity1Icon` (aliança de amor mútuo e comunhão familiar indissolúvel) em `sacramentos` e `assentoMeta`.
+    - Patrimônio: `InventoryIcon` substituído por `AccountBalanceIcon` em `AtivoViewModal` e `AtivoFormModal`.
+    - Alçadas e Aprovações: `ALTERACAO_HORARIO` com `ScheduleIcon`, `RECLASSIFICACAO` com `CategoryIcon`, solicitações de projetos pastorais com `AssignmentTurnedInIcon`.
+    - Eclesiásticos: `PADRE_DIOCESANO` com `BadgeIcon`; ordenações e graus da ordem unificados com `WorkspacePremiumIcon` em `ClerigoViewModal`.
 
 ## [0.8.0] - 2026-10-04
 

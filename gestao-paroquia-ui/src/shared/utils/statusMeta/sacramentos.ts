@@ -1,7 +1,7 @@
 import React from 'react';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import Diversity1Icon from '@mui/icons-material/Diversity1';
 import type { SvgIconProps } from '@mui/material';
 import HostiaIcon from '@/shared/presentation/components/icons/HostiaIcon';
 import type { VidaSacramental } from '@/shared/domain/types/types';
@@ -25,8 +25,8 @@ export interface SacramentoItem {
 export const SACRAMENTO_META = {
   batizado: { icon: React.createElement(WaterDropIcon), tooltip: 'Batismo' },
   primeiraComunhao: { icon: React.createElement(HostiaIcon), tooltip: '1ª Eucaristia' },
-  crismado: { icon: React.createElement(LocalFireDepartmentIcon), tooltip: 'Crisma' },
-  casadoIgrejaCatolica: { icon: React.createElement(FavoriteIcon), tooltip: 'Matrimônio' },
+  crismado: { icon: React.createElement(WhatshotIcon), tooltip: 'Crisma' },
+  casadoIgrejaCatolica: { icon: React.createElement(Diversity1Icon), tooltip: 'Matrimônio' },
 } satisfies Record<SacramentoKey, SacramentoMeta>;
 
 function isTruthy(val: unknown): boolean {

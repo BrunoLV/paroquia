@@ -23,7 +23,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
@@ -74,7 +74,7 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
       <DialogTitle>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <InventoryIcon color="primary" sx={{ fontSize: 28 }} />
+            <AccountBalanceIcon color="primary" sx={{ fontSize: 28 }} />
             <Typography variant="h6" component="div">
               {ativo.nome}
             </Typography>
@@ -167,7 +167,7 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
-                  <InventoryIcon color="primary" fontSize="small" />
+                  <AccountBalanceIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Dados do ativo
                   </Typography>

@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -387,7 +387,7 @@ const Aprovacoes = () => {
           {tipoAprovacao === 'PROJETOS' && (
             <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                <WorkHistoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                <AssignmentTurnedInIcon sx={{ fontSize: 26, color: 'primary.main' }} />
               </Box>
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>

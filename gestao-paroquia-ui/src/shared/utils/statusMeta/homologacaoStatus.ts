@@ -1,6 +1,6 @@
 import React from 'react';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import BlockIcon from '@mui/icons-material/Block';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { StatusHomologacao } from '@/shared/domain/types/types';
@@ -16,7 +16,7 @@ interface HomologacaoStatusMeta {
 
 const HOMOLOGACAO_STATUS_META: Record<StatusHomologacao, HomologacaoStatusMeta> = {
   PENDENTE_HOMOLOGACAO: { label: 'Pendente de Homologação', color: 'warning', icon: React.createElement(HourglassEmptyIcon), tooltip: 'Aguardando homologação' },
-  HOMOLOGADO: { label: 'Homologado', color: 'success', icon: React.createElement(CheckCircleIcon), tooltip: 'Decisão homologada' },
+  HOMOLOGADO: { label: 'Homologado', color: 'success', icon: React.createElement(VerifiedIcon), tooltip: 'Decisão homologada' },
   VETADO: { label: 'Vetado', color: 'error', icon: React.createElement(BlockIcon), tooltip: 'Decisão vetada' },
 };
 

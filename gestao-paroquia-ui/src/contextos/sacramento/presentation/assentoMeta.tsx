@@ -4,10 +4,10 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import BlockIcon from '@mui/icons-material/Block';
 import LockIcon from '@mui/icons-material/Lock';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import Diversity1Icon from '@mui/icons-material/Diversity1';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import {
@@ -37,14 +37,14 @@ const VISIBILIDADE: Record<VisibilidadeAssento, Meta> = {
 };
 
 const AVERBACAO: Record<StatusAverbacao, Meta> = {
-  PENDENTE_HOMOLOGACAO: { label: 'Pendente', color: 'warning', icon: React.createElement(HourglassTopIcon), tooltip: 'Aguardando homologação do Pároco' },
+  PENDENTE_HOMOLOGACAO: { label: 'Pendente', color: 'warning', icon: React.createElement(HourglassEmptyIcon), tooltip: 'Aguardando homologação do Pároco' },
   HOMOLOGADA: { label: 'Homologada', color: 'success', icon: React.createElement(VerifiedIcon), tooltip: 'Homologada pelo Pároco' },
 };
 
 const TIPO_ICON: Record<TipoSacramento, React.ReactElement<SvgIconProps>> = {
   BATISMO: React.createElement(WaterDropIcon),
-  CONFIRMACAO: React.createElement(LocalFireDepartmentIcon),
-  MATRIMONIO: React.createElement(FavoriteIcon),
+  CONFIRMACAO: React.createElement(WhatshotIcon),
+  MATRIMONIO: React.createElement(Diversity1Icon),
   ORDEM: React.createElement(WorkspacePremiumIcon),
 };
 

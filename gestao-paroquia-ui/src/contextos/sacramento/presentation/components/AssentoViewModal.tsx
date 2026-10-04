@@ -4,11 +4,12 @@ import {
 } from '@mui/material';
 import BadgeIcon from '@mui/icons-material/Badge';
 import BlockIcon from '@mui/icons-material/Block';
+import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import EventIcon from '@mui/icons-material/Event';
-import GavelIcon from '@mui/icons-material/Gavel';
 import HistoryIcon from '@mui/icons-material/History';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -73,14 +74,14 @@ export const AssentoViewModal: React.FC<AssentoViewModalProps> = ({ assentoId, o
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>Termo</Typography>
                 </Stack>
                 <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Sacramento" icon={<BadgeIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(assento.tipo)} />} /></Grid>
+                  <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Sacramento" icon={<MenuBookIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(assento.tipo)} />} /></Grid>
                   <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Situação" icon={<VerifiedIcon fontSize="inherit" />} value={<StatusIcon {...getStatusAssentoMeta(assento.status)} />} /></Grid>
                   <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Livro" icon={<MenuBookIcon fontSize="inherit" />} value={<StatusIcon {...getVisibilidadeMeta(assento.visibilidade)} />} /></Grid>
                   <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Livro / Folha / Termo" icon={<BadgeIcon fontSize="inherit" />} value={[assento.livro, assento.folha, assento.termo].every(Boolean) ? `${assento.livro} / ${assento.folha} / ${assento.termo}` : 'Pendente'} /></Grid>
                   <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Celebração" icon={<EventIcon fontSize="inherit" />} value={formatar(assento.dataCelebracao)} /></Grid>
                   <Grid size={{ xs: 12, sm: 4 }}><InfoField label="Local" icon={<LocationOnIcon fontSize="inherit" />} value={assento.localCelebracao ?? '—'} /></Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Paróquia custodiante" icon={<LocationOnIcon fontSize="inherit" />} value={assento.paroquiaCustodiante ?? '—'} /></Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Homologado por" icon={<GavelIcon fontSize="inherit" />} value={assento.homologadoPor ? `${assento.homologadoPor} em ${formatar(assento.homologadoEmUtc)}` : '—'} /></Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Paróquia custodiante" icon={<ChurchIcon fontSize="inherit" />} value={assento.paroquiaCustodiante ?? '—'} /></Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Homologado por" icon={<VerifiedIcon fontSize="inherit" />} value={assento.homologadoPor ? `${assento.homologadoPor} em ${formatar(assento.homologadoEmUtc)}` : '—'} /></Grid>
                   {assento.motivoCancelamento && (
                     <Grid size={{ xs: 12 }}><InfoField label="Motivo do cancelamento" icon={<BlockIcon fontSize="inherit" />} value={assento.motivoCancelamento} /></Grid>
                   )}
@@ -110,7 +111,7 @@ export const AssentoViewModal: React.FC<AssentoViewModalProps> = ({ assentoId, o
               <Card variant="outlined" sx={{ borderRadius: 2 }}>
                 <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
-                    <GavelIcon color="primary" fontSize="small" />
+                    <EditNoteIcon color="primary" fontSize="small" />
                     <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>Ressalvas</Typography>
                   </Stack>
                   <Stack spacing={1}>
@@ -156,7 +157,7 @@ export const AssentoViewModal: React.FC<AssentoViewModalProps> = ({ assentoId, o
           <ActionButton title="Homologar" icon={<VerifiedIcon />} color="primary" onClick={() => acoes.onHomologar(assento)} />
         )}
         {assento && selado && acoes.podeHomologar && (
-          <ActionButton title="Retificar" icon={<GavelIcon />} color="primary" variant="outlined" onClick={() => acoes.onRetificar(assento)} />
+          <ActionButton title="Retificar" icon={<EditNoteIcon />} color="primary" variant="outlined" onClick={() => acoes.onRetificar(assento)} />
         )}
         {assento && assento.status !== 'CANCELADO' && acoes.podeHomologar && (
           <ActionButton title="Cancelar assento" icon={<BlockIcon />} color="error" variant="outlined" onClick={() => acoes.onCancelar(assento)} />

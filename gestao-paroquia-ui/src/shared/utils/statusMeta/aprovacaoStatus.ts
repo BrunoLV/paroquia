@@ -5,8 +5,10 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import BlockIcon from '@mui/icons-material/Block';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import CategoryIcon from '@mui/icons-material/Category';
+import OutboxIcon from '@mui/icons-material/Outbox';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { AprovacaoResponse, ProjetoAprovacaoResponse } from '@/shared/domain/types/types';
 
@@ -32,10 +34,10 @@ const APROVACAO_TIPO_META: Record<AprovacaoTipoSolicitacao, AprovacaoStatusMeta>
   CRIACAO_EVENTO: { label: 'Criação de Evento', color: 'info', icon: React.createElement(AddCircleOutlineIcon), tooltip: 'Solicitação de criação de evento' },
   CRIACAO: { label: 'Criação de Projeto', color: 'info', icon: React.createElement(AddCircleOutlineIcon), tooltip: 'Solicitação de criação de projeto' },
   EDICAO_EVENTO: { label: 'Edição de Evento', color: 'warning', icon: React.createElement(EditNoteIcon), tooltip: 'Solicitação de edição de evento' },
-  ALTERACAO_HORARIO: { label: 'Alteração de Horário', color: 'warning', icon: React.createElement(EditNoteIcon), tooltip: 'Solicitação de alteração de horário' },
-  CANCELAMENTO: { label: 'Cancelamento de Evento', color: 'error', icon: React.createElement(BlockIcon), tooltip: 'Solicitação de cancelamento' },
-  RECLASSIFICACAO: { label: 'Reclassificação', color: 'secondary', icon: React.createElement(EditNoteIcon), tooltip: 'Solicitação de reclassificação' },
-  ALOCACAO_ATIVO_EMPRESTIMO: { label: 'Alocação de Ativo', color: 'secondary', icon: React.createElement(InventoryIcon), tooltip: 'Solicitação de empréstimo de ativo' },
+  ALTERACAO_HORARIO: { label: 'Alteração de Horário', color: 'warning', icon: React.createElement(ScheduleIcon), tooltip: 'Solicitação de alteração de horário' },
+  CANCELAMENTO: { label: 'Cancelamento de Evento', color: 'error', icon: React.createElement(EventBusyIcon), tooltip: 'Solicitação de cancelamento' },
+  RECLASSIFICACAO: { label: 'Reclassificação', color: 'secondary', icon: React.createElement(CategoryIcon), tooltip: 'Solicitação de reclassificação' },
+  ALOCACAO_ATIVO_EMPRESTIMO: { label: 'Alocação de Ativo', color: 'secondary', icon: React.createElement(OutboxIcon), tooltip: 'Solicitação de empréstimo de ativo' },
   OUTRO: { label: 'Outro', color: 'default', icon: React.createElement(EditNoteIcon), tooltip: 'Outro tipo de solicitação' },
   UNKNOWN_LEGACY: { label: 'Legado', color: 'default', icon: React.createElement(EditNoteIcon), tooltip: 'Tipo legado não classificado' },
 };

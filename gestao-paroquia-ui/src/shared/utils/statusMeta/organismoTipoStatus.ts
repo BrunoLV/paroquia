@@ -1,6 +1,6 @@
 import React from 'react';
 import ChurchIcon from '@mui/icons-material/Church';
-import GroupsIcon from '@mui/icons-material/Groups';
+import PlaceIcon from '@mui/icons-material/Place';
 import BadgeIcon from '@mui/icons-material/Badge';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -21,7 +21,7 @@ interface OrganismoTipoMeta {
 
 const ORGANISMO_TIPO_META: Record<TipoOrganismoParoquial, OrganismoTipoMeta> = {
   MATRIZ: { label: 'Matriz', color: 'primary', icon: React.createElement(ChurchIcon), tooltip: 'Matriz' },
-  COMUNIDADE: { label: 'Comunidade', color: 'secondary', icon: React.createElement(GroupsIcon), tooltip: 'Comunidade' },
+  COMUNIDADE: { label: 'Comunidade', color: 'secondary', icon: React.createElement(PlaceIcon), tooltip: 'Comunidade' },
   CLERO: { label: 'Clero', color: 'primary', icon: React.createElement(BadgeIcon), tooltip: 'Clero' },
   CONSELHO_PASTORAL: { label: 'Conselho Pastoral Paroquial (CPP)', color: 'info', icon: React.createElement(HistoryEduIcon), tooltip: 'Conselho Pastoral Paroquial (CPP)' },
   CONSELHO_ECONOMICO: { label: 'Conselho Econômico Paroquial (CAE)', color: 'info', icon: React.createElement(AccountBalanceWalletIcon), tooltip: 'Conselho Econômico Paroquial (CAE)' },
