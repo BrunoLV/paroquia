@@ -1,8 +1,8 @@
 import React from 'react';
 import PersonIcon from '@mui/icons-material/Person';
-import ChurchIcon from '@mui/icons-material/Church';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+import ShieldIcon from '@mui/icons-material/Shield';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { Vocacao } from '@/shared/domain/types/types';
 
@@ -17,9 +17,9 @@ interface VocacaoMeta {
 
 const VOCACAO_META: Record<Vocacao, VocacaoMeta> = {
   LEIGO: { label: 'Leigo(a)', color: 'default', icon: React.createElement(PersonIcon), tooltip: 'Leigo(a)' },
-  SACERDOTE: { label: 'Sacerdote', color: 'primary', icon: React.createElement(ChurchIcon), tooltip: 'Sacerdote' },
+  SACERDOTE: { label: 'Sacerdote', color: 'primary', icon: React.createElement(WorkspacePremiumIcon), tooltip: 'Sacerdote' },
   DIACONO: { label: 'Diácono', color: 'primary', icon: React.createElement(VolunteerActivismIcon), tooltip: 'Diácono' },
-  RELIGIOSO: { label: 'Religioso(a)', color: 'primary', icon: React.createElement(SelfImprovementIcon), tooltip: 'Religioso(a)' },
+  RELIGIOSO: { label: 'Religioso(a)', color: 'primary', icon: React.createElement(ShieldIcon), tooltip: 'Religioso(a)' },
 };
 
 export const getVocacaoMeta = (vocacao: Vocacao): VocacaoMeta => VOCACAO_META[vocacao];

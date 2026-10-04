@@ -5,7 +5,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
-import AjusteIcon from '@mui/icons-material/FactCheck';
+import AjusteIcon from '@mui/icons-material/HowToReg';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

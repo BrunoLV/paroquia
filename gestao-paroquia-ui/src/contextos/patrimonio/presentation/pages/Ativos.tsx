@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ReservarIcon from '@mui/icons-material/EventAvailable';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { canExcluirAtivo, canManageAtivos, canManageManutencaoAtivo, isGlobalCreator } from '@/contextos/iam/presentation/auth/permissions';
@@ -222,7 +222,7 @@ const Ativos = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<InventoryIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<AccountBalanceIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Ativos Patrimoniais"
         subtitle="Cadastro, manutenção e ciclo de vida dos bens patrimoniais da paróquia."
         actions={

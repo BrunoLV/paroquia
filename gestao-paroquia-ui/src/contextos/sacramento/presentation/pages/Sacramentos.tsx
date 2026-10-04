@@ -3,7 +3,7 @@ import { Stack, Tab, Tabs } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -121,7 +121,7 @@ const Sacramentos = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<AutoStoriesIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<MenuBookIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Sacramentos"
         subtitle="Livro de assentos de Batismo, Confirmação, Matrimônio e Ordem Sacra."
         actions={podeGerir && (

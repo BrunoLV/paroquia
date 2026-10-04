@@ -8,6 +8,24 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Modificado
+- **Revisão e Harmonização Semântica de Ícones (Menu, Telas, Formulários e Status):**
+  - Eliminação de símbolos anacrônicos, profanos ou dúbios na interface, alinhando a representação visual com a dignidade canônica, litúrgica e pastoral da Igreja Católica.
+  - Alinhamento 1:1 entre a iconografia da barra de navegação (`navigation.ts`) e os cabeçalhos de página (`PageHeader`):
+    - Clero: `BadgeIcon` (ministros sagrados ordenados / estola-insígnia).
+    - Pastorais e Movimentos: `VolunteerActivismIcon` (caridade e apostolado católico ativo).
+    - Projetos: `AssignmentTurnedInIcon` (metas pastorais e entregas planejadas).
+    - Sacramentos: `MenuBookIcon` (Sagrados Livros de Assentos Paroquiais).
+    - Conselhos & Atas: `HistoryEduIcon` (lavratura colegiada de atas oficiais com pena histórica).
+    - Patrimônio: `AccountBalanceIcon` (bens patrimoniais e fábrica da igreja).
+    - Ajustes Cadastrais: `HowToRegIcon` (validação de registro cadastral do fiel).
+  - Metadados de Status (`statusMeta` e `assentoMeta`):
+    - Assentos: `DRAFT` utiliza `EditNoteIcon` (escrituração em rascunho) e `ORDEM` utiliza `WorkspacePremiumIcon` (ordenação sacerdotal/ordem sagrada).
+    - Clero e Vocações: `PADRE_RELIGIOSO` e `RELIGIOSO` utilizam `ShieldIcon` (ordem religiosa / hábito / carisma consagrado); `EMERITO` e `SACERDOTE` utilizam `WorkspacePremiumIcon` (mérito e dignidade canônica jubilada).
+    - Calendário: `SOLENIDADE` utiliza `FlareIcon` (resplendor litúrgico solene); `MOVIMENTO` utiliza `Diversity1Icon` (movimento eclesial comunitário).
+    - Território e Organismos: `COMUNIDADE` utiliza `PlaceIcon` e `Sacrário` utiliza `FlareIcon` (presença real eucarística).
+    - Fiel: Data de aniversário de nascimento no modal utiliza `CakeIcon`.
+
 ## [0.8.0] - 2026-10-04
 
 ### Adicionado

@@ -7,7 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import DescriptionIcon from '@mui/icons-material/Description';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { canHomologarDecisao } from '@/contextos/iam/presentation/auth/permissions';
@@ -116,7 +116,7 @@ export const ConselhosAtas: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        icon={<DescriptionIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<HistoryEduIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Governança dos Conselhos (CPP & CPC)"
         subtitle="Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação."
         actions={

@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import { Alert, Box, Card, Checkbox, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Drawer, FormControl, FormControlLabel, Grid, LinearProgress, MenuItem, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import WorkIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import CancelIcon from '@mui/icons-material/Cancel';
 import BusinessIcon from '@mui/icons-material/Business';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
@@ -304,7 +304,7 @@ const Projetos = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        icon={<WorkIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<AssignmentTurnedInIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Projetos Paroquiais"
         subtitle="Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais."
         actions={

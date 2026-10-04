@@ -1,12 +1,11 @@
 import React from 'react';
 import ChurchIcon from '@mui/icons-material/Church';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+import ShieldIcon from '@mui/icons-material/Shield';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import ElderlyIcon from '@mui/icons-material/Elderly';
 import PersonIcon from '@mui/icons-material/Person';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { FuncaoEclesiastica, GrauOrdem } from '@/shared/domain/types/types';
@@ -40,7 +39,7 @@ const GRAU_ORDEM_META: Record<GrauOrdem, CleroMeta> = {
   PADRE_RELIGIOSO: {
     label: 'Padre Religioso',
     color: 'secondary',
-    icon: React.createElement(SelfImprovementIcon),
+    icon: React.createElement(ShieldIcon),
     tooltip: 'Padre Religioso',
   },
   BISPO: {
@@ -85,7 +84,7 @@ const FUNCAO_ECLESIASTICA_META: Record<FuncaoEclesiastica, CleroMeta> = {
   EMERITO: {
     label: 'Emérito',
     color: 'default',
-    icon: React.createElement(ElderlyIcon),
+    icon: React.createElement(WorkspacePremiumIcon),
     tooltip: 'Emérito',
   },
 };

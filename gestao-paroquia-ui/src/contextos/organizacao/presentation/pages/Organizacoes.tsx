@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import GroupsIcon from '@mui/icons-material/Groups';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import { createOrganizacao, deleteOrganizacao, getOrganizacoes, updateOrganizacao } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { getUsuarios } from '@/contextos/iam/infrastructure/http/usuarios';
 import { getPastoraisOficiais } from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
@@ -105,7 +105,7 @@ const Organizacoes: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        icon={<GroupsIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<VolunteerActivismIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Pastorais e Movimentos"
         subtitle="Gerencie pastorais, movimentos, lideranças e vínculos."
         actions={

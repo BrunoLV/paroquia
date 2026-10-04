@@ -1,7 +1,7 @@
 import React from 'react';
 import ChurchIcon from '@mui/icons-material/Church';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import PlaceIcon from '@mui/icons-material/Place';
+import FlareIcon from '@mui/icons-material/Flare';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -28,7 +28,7 @@ const TIPO_META: Record<string, UnidadeStatusMeta> = {
   COMUNIDADE: {
     label: 'Comunidade',
     color: 'default',
-    icon: React.createElement(AccountBalanceIcon),
+    icon: React.createElement(PlaceIcon),
     tooltip: 'Comunidade ou Capela vinculada',
   },
 };
@@ -36,7 +36,7 @@ const TIPO_META: Record<string, UnidadeStatusMeta> = {
 const DEFAULT_TIPO_META: UnidadeStatusMeta = {
   label: 'Comunidade',
   color: 'default',
-  icon: React.createElement(AccountBalanceIcon),
+  icon: React.createElement(PlaceIcon),
   tooltip: 'Comunidade Paroquial',
 };
 
@@ -54,7 +54,7 @@ export const getUnidadeTerritorialTipoMeta = (tipo?: string | null): UnidadeStat
 export const getSacrarioMeta = (_possui: boolean = true): UnidadeStatusMeta => ({
   label: 'Sacrário',
   color: 'primary',
-  icon: React.createElement(AutoAwesomeIcon),
+  icon: React.createElement(FlareIcon),
   tooltip: 'Possui Sacrário consagrado',
 });
 

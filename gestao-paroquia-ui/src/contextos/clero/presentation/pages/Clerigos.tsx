@@ -4,7 +4,7 @@ import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBo
 import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
-import PersonIcon from '@mui/icons-material/Person';
+import BadgeIcon from '@mui/icons-material/Badge';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ActionButton from '@/shared/presentation/components/ActionButton';
@@ -120,7 +120,7 @@ const Clerigos: React.FC = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<PersonIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<BadgeIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title={podeGerenciarClero ? "Quadro do Clero" : "Diretório do Clero"}
         subtitle={
           podeGerenciarClero
