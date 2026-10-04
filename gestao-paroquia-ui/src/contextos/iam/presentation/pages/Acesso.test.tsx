@@ -21,6 +21,22 @@ vi.mock('@/shared/presentation/context/NotificationContext', () => ({
   NotificationProvider: ({ children }: any) => <div>{children}</div>,
 }));
 
+vi.mock('@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia', () => ({
+  useConfiguracaoParoquia: () => ({
+    configuracao: {
+      id: 'uuid-1',
+      nome: 'Nossa Senhora de Fátima',
+      diocese: 'Gestão Paroquial',
+      temLogoFundoClaro: true,
+      temLogoFundoEscuro: true,
+      logoFundoClaroUrl: '/api/v1/configuracao-paroquia/logo/claro',
+      logoFundoEscuroUrl: '/api/v1/configuracao-paroquia/logo/escuro',
+    },
+    isLoading: false,
+    isError: false,
+  }),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -213,3 +229,59 @@ test('opens forgot password dialog and submits reset request successfully', asyn
     expect.stringContaining('Solicitação de redefinição enviada com sucesso')
   );
 });
+
+test('exibe o logotipo de fundo escuro quando a aplicação estiver no modo escuro', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+
+  // Mock de useThemeMode com mode='dark'
+  const useThemeModeModule = await import('@/shared/presentation/context/ThemeModeContext');
+  const spy = vi.spyOn(useThemeModeModule, 'useThemeMode').mockReturnValue({
+    mode: 'dark',
+    toggleMode: vi.fn(),
+  });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Acesso />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const logoImg = screen.getByAltText('Nossa Senhora de Fátima');
+  expect(logoImg).toHaveAttribute('src', '/api/v1/configuracao-paroquia/logo/escuro');
+
+  spy.mockRestore();
+});
+
+test('exibe o logotipo de fundo claro quando a aplicação estiver no modo claro', async () => {
+  mockedApiClient.get.mockResolvedValueOnce({ data: null });
+
+  const useThemeModeModule = await import('@/shared/presentation/context/ThemeModeContext');
+  const spy = vi.spyOn(useThemeModeModule, 'useThemeMode').mockReturnValue({
+    mode: 'light',
+    toggleMode: vi.fn(),
+  });
+
+  await act(async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider theme={theme}>
+            <Acesso />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  });
+
+  const logoImg = screen.getByAltText('Nossa Senhora de Fátima');
+  expect(logoImg).toHaveAttribute('src', '/api/v1/configuracao-paroquia/logo/claro');
+
+  spy.mockRestore();
+});
+

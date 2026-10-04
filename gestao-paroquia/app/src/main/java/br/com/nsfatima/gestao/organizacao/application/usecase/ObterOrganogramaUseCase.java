@@ -11,7 +11,6 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Grup
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,21 +41,17 @@ public class ObterOrganogramaUseCase {
     private final ListarGrupoParoquialMembrosUseCase listMembrosUseCase;
     private final EncargoClericalJpaRepository encargoClericalRepository;
     private final ClerigoJpaRepository clerigoRepository;
-    private final String paroquiaNome;
-
     public ObterOrganogramaUseCase(
             GrupoParoquialJpaRepository grupoParoquialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
             ListarGrupoParoquialMembrosUseCase listMembrosUseCase,
             EncargoClericalJpaRepository encargoClericalRepository,
-            ClerigoJpaRepository clerigoRepository,
-            @Value("${app.paroquia.nome:Paróquia Nossa Senhora de Fátima}") String paroquiaNome) {
+            ClerigoJpaRepository clerigoRepository) {
         this.grupoParoquialRepository = grupoParoquialRepository;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
         this.listMembrosUseCase = listMembrosUseCase;
         this.encargoClericalRepository = encargoClericalRepository;
         this.clerigoRepository = clerigoRepository;
-        this.paroquiaNome = paroquiaNome;
     }
 
     /**
@@ -100,6 +95,12 @@ public class ObterOrganogramaUseCase {
         unidadesRaiz.forEach(u -> rootChildren.add(
                 buildUnidadeNodeRecursively(u, unidadesFilhasPorPaiId, gruposPorPaiId)));
         gruposRaiz.forEach(org -> rootChildren.add(buildOrgNodeRecursively(org, gruposPorPaiId)));
+
+        String paroquiaNome = todasUnidades.stream()
+                .filter(u -> u.getTipo() == TipoUnidadeTerritorial.MATRIZ && u.isAtivo())
+                .map(UnidadeTerritorialEntity::getNome)
+                .findFirst()
+                .orElse("Paróquia Nossa Senhora de Fátima");
 
         return new OrganogramaNodeResponse(
                 "root",

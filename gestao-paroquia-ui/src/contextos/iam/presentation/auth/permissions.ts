@@ -340,3 +340,13 @@ export const canAcessarLivroReservado = (user: User | null): boolean => {
   if (!user) return false;
   return hasRole(user, 'PAROCO', 'BISPO_DIOCESANO');
 };
+
+/**
+ * Gestão da identidade visual da paróquia (cores institucionais e upload de logotipos):
+ * Exclusivamente Pároco, Bispo Diocesano e Administrador do Sistema.
+ */
+export const canManageIdentidadeVisual = (user: User | null): boolean => {
+  if (!user) return false;
+  return hasRole(user, 'ADMIN', 'PAROCO', 'BISPO_DIOCESANO');
+};
+

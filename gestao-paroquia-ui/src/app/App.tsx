@@ -3,6 +3,7 @@ import {QueryProvider} from '@/shared/presentation/context/QueryProvider';
 import {AuthProvider} from '@/contextos/iam/presentation/auth/AuthContext';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
 import {ThemeModeProvider} from '@/shared/presentation/context/ThemeModeContext';
+import {DynamicFavicon} from '@/shared/presentation/components/DynamicFavicon';
 import AppRoutes from './AppRoutes';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <AuthProvider>
         <ThemeModeProvider>
           <NotificationProvider>
+            <DynamicFavicon />
             <BrowserRouter>
               <AppRoutes />
             </BrowserRouter>

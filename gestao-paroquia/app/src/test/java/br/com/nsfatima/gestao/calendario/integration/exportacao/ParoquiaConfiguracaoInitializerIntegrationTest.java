@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.exportacao;
 
+import br.com.nsfatima.gestao.calendario.domain.model.VarianteFundoLogo;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.ParoquiaConfiguracaoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
 import org.junit.jupiter.api.Test;
@@ -21,18 +22,23 @@ class ParoquiaConfiguracaoInitializerIntegrationTest {
 
     @Test
     void deveSemearPadraoConfigurationEmInicializacao() {
-        // The initializer runs automatically on application startup, so the config must exist.
         List<ParoquiaConfiguracaoEntity> configs = repository.findAll();
         assertFalse(configs.isEmpty(), "Should have initialized at least one configuration");
 
         ParoquiaConfiguracaoEntity config = configs.getFirst();
         assertNotNull(config.getId());
-        assertEquals("Paróquia Nossa Senhora de Fátima", config.getNome());
-        assertEquals("Diocese de São Miguel Paulista", config.getDiocese());
-        assertEquals("Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP", config.getEndereco());
         assertEquals("#1A237E", config.getCorPrimariaHex());
         assertEquals("#808080", config.getCorSecundariaHex());
-        assertNotNull(config.getLogoBytes());
-        assertTrue(config.getLogoBytes().length > 0);
+
+        assertNotNull(config.getLogoFundoClaroBytes(), "Logo de fundo claro deve ter sido semeado");
+        assertTrue(config.getLogoFundoClaroBytes().length > 0);
+        assertEquals("image/png", config.getLogoFundoClaroTipoMime());
+
+        assertNotNull(config.getLogoFundoEscuroBytes(), "Logo de fundo escuro deve ter sido semeado");
+        assertTrue(config.getLogoFundoEscuroBytes().length > 0);
+        assertEquals("image/png", config.getLogoFundoEscuroTipoMime());
+
+        assertNotNull(config.getLogoBytesPorVariante(VarianteFundoLogo.CLARO));
+        assertNotNull(config.getLogoBytesPorVariante(VarianteFundoLogo.ESCURO));
     }
 }

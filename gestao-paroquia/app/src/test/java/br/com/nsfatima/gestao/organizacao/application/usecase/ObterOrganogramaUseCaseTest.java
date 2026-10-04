@@ -42,7 +42,7 @@ class ObterOrganogramaUseCaseTest {
         when(encargoClericalRepository.findByFuncaoAndAtualTrue(Mockito.any())).thenReturn(List.of());
         getOrganogramaUseCase = new ObterOrganogramaUseCase(
                 grupoParoquialRepository, unidadeTerritorialRepository, listMembrosUseCase,
-                encargoClericalRepository, clerigoRepository, "Paróquia Teste");
+                encargoClericalRepository, clerigoRepository);
     }
 
     @Test
@@ -94,7 +94,7 @@ class ObterOrganogramaUseCaseTest {
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
 
         // Verify root node (Paróquia / Governo Eclesiástico)
-        assertThat(root.label()).isEqualTo("Paróquia Teste");
+        assertThat(root.label()).isEqualTo("Igreja Matriz");
         assertThat(root.type()).isEqualTo("PAROQUIA");
         assertThat(root.subtype()).isEqualTo("GOVERNO_ECLESIASTICO");
         assertThat(root.children()).hasSize(1); // Only Igreja Matriz

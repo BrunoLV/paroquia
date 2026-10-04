@@ -8,6 +8,21 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-04
+
+### Adicionado
+- **Configuração Institucional e Identidade Visual no Banco de Dados (`calendario.paroquia_configuracao`):**
+  - Desacoplamento total dos dados institucionais e logos do `application.yml` (`app.paroquia` removido por completo).
+  - Persistência binarizada (`bytea`) no PostgreSQL de logotipos para duas variantes de contraste: Fundo Claro (`CLARO`) e Fundo Escuro (`ESCURO`).
+  - Semente inicial (*seed*) de logotipos e cores institucionais a partir dos novos arquivos de alta resolução enviados pelo usuário no classpath.
+  - Endpoints REST públicos com cache HTTP (`max-age=86400`) para consulta institucional (`GET /api/v1/configuracao-paroquia`) e streaming dos logotipos (`GET /api/v1/configuracao-paroquia/logo/{variante}`).
+  - Endpoints administrativos (`PUT /api/v1/configuracao-paroquia` e `PUT /api/v1/configuracao-paroquia/logo/{variante}`) com controle de acesso exclusivo para `PAROCO` e `ADMIN` (além de `BISPO_DIOCESANO`).
+  - Single Source of Truth (SSOT): eliminação de redundâncias, derivando dados civis e de contato da Igreja Matriz (`UnidadeTerritorial`) e dados eclesiásticos da Diocese (`GovernoEclesiastico`) via porta hexagonal e ACL (`ConsultaInstitucionalAdapter`).
+  - Frontend: nova aba "Identidade Visual" na tela de Configurações (`Configuracoes.tsx`) com visualização dos dados cadastrais (SSOT), componente visual `ColorPickerField` para seleção de cores primária e secundária, e cards `LogoUploadCard` com preview em contraste adequado e upload de arquivos.
+  - Exibição dinâmica da identidade institucional no `Layout.tsx` e na tela de login (`Acesso.tsx`), respeitando o modo claro/escuro com alternador de tema e imagem de contraste adequado.
+  - Sincronização do favicon do navegador obtido diretamente via serviço REST (`/api/v1/configuracao-paroquia/logo/{variante}.png`) através do hook `useDynamicFavicon` e `DynamicFavicon`, acompanhando automaticamente a preferência de esquema de cores do navegador (`prefers-color-scheme`) e forçando a recriação de nós no DOM para suporte pleno ao Chromium/Blink.
+  - Documentação atualizada com `RN-GOV-05` (SSOT) e `RN-GOV-06` (Logotipos binarizados e dupla variante) em `docs/business-rules/governanca.md`.
+
 ## [0.7.2] - 2026-10-01
 
 ### Corrigido
