@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-04
+
 ### Adicionado
 - **Configuração Institucional e Identidade Visual no Banco de Dados (`calendario.paroquia_configuracao`):**
   - Desacoplamento total dos dados institucionais e logos do `application.yml` (`app.paroquia` removido por completo).
