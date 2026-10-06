@@ -247,7 +247,7 @@ export const UnidadeTerritorialViewModal: React.FC<UnidadeTerritorialViewModalPr
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <InfoField
                     label="Tipo de Aquisição do Solo"
-                    icon={<DescriptionIcon fontSize="inherit" />}
+                    icon={<ReceiptLongIcon fontSize="inherit" />}
                     value={unidade.tipoAquisicao || 'Não informado'}
                   />
                 </Grid>

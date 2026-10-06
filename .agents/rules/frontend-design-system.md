@@ -73,6 +73,27 @@ Todos os botões devem aderir estritamente à semântica de cores e catálogo de
 5. **Ações Destrutivas e Restritivas (`color="error"`):** `DeleteIcon` (excluir), `BlockIcon`/`CancelIcon` (vetar/rejeitar), `ToggleOffIcon`/`PersonOffIcon` (inativar/desativar).
 6. **Ações Neutras e Utilitárias (`color="primary"` ou default):** `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (editar/ressalva), `LinkIcon` (vincular), `DownloadIcon` (exportar), `RefreshIcon` (atualizar).
 
+### 1.3. Padronização Obrigatória de Ícones para Tipo, Encargo e Grau
+1. **Tipo (Categoria e Classificação):**
+   - Campo geral e casos não classificados (`OUTRO`): `CategoryIcon`. Proibido `HelpOutlineIcon` ("?").
+   - Tipo de Sacramento: `MenuBookIcon` (Sagrados Livros de Assentos).
+   - Tipo de Unidade Territorial: `ChurchIcon` (Matriz) e `PlaceIcon` (Comunidade).
+   - Tipo de Local Físico: `ChurchIcon` (Igreja), `MeetingRoomIcon` (Salão), `DoorFrontIcon` (Sala).
+   - Tipo de Aquisição de Solo: `ReceiptLongIcon`.
+2. **Encargo (Ofício e Função Eclesiástica):**
+   - Campo geral: `AssignmentIndIcon`.
+   - Pároco: `ChurchIcon` (pastor titular e autoridade paroquial). Proibido `AdminPanelSettingsIcon` (TI).
+   - Administrador Paroquial: `AssignmentIndIcon` (provisão administrativa temporária). Proibido `ManageAccountsIcon` (TI).
+   - Vigário Paroquial: `SupervisorAccountIcon` (cooperador pastoral).
+   - Diácono Auxiliar: `CoPresentIcon` (assistência ao Altar e ministério da Palavra).
+   - Bispo / Emérito: `WorkspacePremiumIcon` (ordem episcopal e mérito canônico).
+3. **Grau (Sacramento da Ordem):**
+   - Campo geral: `WorkspacePremiumIcon` (grau ministerial da Ordem).
+   - Diaconato (Transitório / Permanente): `CoPresentIcon` (1º grau da Ordem). Proibido `VolunteerActivismIcon` (pastorais).
+   - Presbiterado Diocesano: `BadgeIcon` (2º grau da Ordem incardinado).
+   - Presbiterado Religioso: `ShieldIcon` (2º grau da Ordem regular).
+   - Episcopado: `WorkspacePremiumIcon` (3º grau e plenitude da Ordem).
+
 ---
 
 ## 2. Formulários, Validação e Máscaras

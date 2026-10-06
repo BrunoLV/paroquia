@@ -1,9 +1,8 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useState } from 'react';
 import { Alert, Box, Card, Divider, Drawer, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import BadgeIcon from '@mui/icons-material/Badge';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CategoryIcon from '@mui/icons-material/Category';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import PersonIcon from '@mui/icons-material/Person';
@@ -117,9 +116,9 @@ export const VinculosPendentesPanel: React.FC = () => {
               <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setSelecionado(null)} />
             </Box>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Sacramento" icon={<CategoryIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(selecionado.tipoSacramento)} />} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Sacramento" icon={<MenuBookIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(selecionado.tipoSacramento)} />} /></Grid>
               <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Termo" icon={<MenuBookIcon fontSize="inherit" />} value={`${selecionado.sujeito ?? 'Sem identificação'}${[selecionado.livro, selecionado.folha, selecionado.termo].every(Boolean) ? ` (${selecionado.livro}/${selecionado.folha}/${selecionado.termo})` : ''}`} /></Grid>
-              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Tipo de participação" icon={<BadgeIcon fontSize="inherit" />} value={PAPEL_LABEL[selecionado.papel]} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Tipo de participação" icon={<AssignmentIndIcon fontSize="inherit" />} value={PAPEL_LABEL[selecionado.papel]} /></Grid>
               <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Nome no termo" icon={<PersonIcon fontSize="inherit" />} value={selecionado.nomeHistorico} /></Grid>
               <Grid size={{ xs: 12 }}><InfoField label={selecionado.tipoPessoa === 'FIEL' ? 'Fiel proposto' : 'Clérigo proposto'} icon={<LinkIcon fontSize="inherit" />} value={selecionado.pessoaNome ?? '—'} /></Grid>
             </Grid>

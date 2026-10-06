@@ -4290,8 +4290,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/DESIGN_SYSTEM.md": {
-    "mtime": 1791092722.085577,
-    "ast_hash": "10f8e78fb67a79c120ca99c1fbe9e6c2",
+    "mtime": 1791321024.69782,
+    "ast_hash": "7e34bab89cc6611c244349f26b920731",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/application/usecase/CriarSolicitacaoAprovacaoUseCase.java": {
@@ -5125,8 +5125,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/local/presentation/components/locais/LocalViewModal.tsx": {
-    "mtime": 1789610328.6451576,
-    "ast_hash": "a7eb90526bb448e9ea8fd69d6ad0fe40",
+    "mtime": 1791320881.143906,
+    "ast_hash": "c42577004ccfd50d4dcc09cd591539ea",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/local/presentation/pages/Locais.test.tsx": {
@@ -5865,8 +5865,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/categoriaAtivoStatus.ts": {
-    "mtime": 1789610328.654032,
-    "ast_hash": "87f7cf61660c954915f0ba98c2d55789",
+    "mtime": 1791320780.6089666,
+    "ast_hash": "40d028f67e03108427a9d054133fbfc9",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/categoriaEventoStatus.ts": {
@@ -5875,8 +5875,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/cleroStatus.ts": {
-    "mtime": 1791090524.339428,
-    "ast_hash": "b5d4f687378d78fd10c187b3ead3b3a7",
+    "mtime": 1791320745.152988,
+    "ast_hash": "1266bbd9097a594552673efab28df19f",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/eventoStatus.ts": {
@@ -5890,8 +5890,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/localTipoStatus.ts": {
-    "mtime": 1789610328.6539037,
-    "ast_hash": "16688e0a76bda27bcb6b49ff825d843d",
+    "mtime": 1791320768.274974,
+    "ast_hash": "4678c82db3d2ddd2c46b7b770dbea7d5",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/metricasEstrategicasLabels.ts": {
@@ -5905,8 +5905,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/organismoTipoStatus.ts": {
-    "mtime": 1791090540.0763862,
-    "ast_hash": "53aa628faa87cddf5f9316212375fcc3",
+    "mtime": 1791320793.328959,
+    "ast_hash": "7e28fc494a9ba723d97962f27855b5e4",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/projetoStatus.ts": {
@@ -5930,8 +5930,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/vocacaoStatus.ts": {
-    "mtime": 1791089809.791898,
-    "ast_hash": "62d2f7444be79dae75fc1579519eaf99",
+    "mtime": 1791320757.0819807,
+    "ast_hash": "5e0c9f613a75417a1ffae0f6381bd1c7",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/resources/db/migration/V001__organizacao.sql": {
@@ -7075,8 +7075,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/components/unidadesTerritoriais/UnidadeTerritorialViewModal.tsx": {
-    "mtime": 1790390757.112105,
-    "ast_hash": "d4b34d4d73bfbbe43daa3d6570ee3688",
+    "mtime": 1791320831.0119364,
+    "ast_hash": "de0214edf10b53c9a81d72b962e1010b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/shared/utils/statusMeta/unidadeTerritorialStatus.test.ts": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1791090824.645979,
-    "ast_hash": "fbb06c0e8d82b192e73d58f08599cb58",
+    "mtime": 1791092818.548802,
+    "ast_hash": "b565caa6adb676194f9c16ea78880da4",
     "semantic_hash": ""
   },
   "docs/business-rules/README.md": {
@@ -7320,8 +7320,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/components/VinculosPendentesPanel.tsx": {
-    "mtime": 1791038973.1129286,
-    "ast_hash": "5a4c72235e2b5e235c308ccf0cd95ef0",
+    "mtime": 1791321074.0817902,
+    "ast_hash": "4084a443366108e4572fe3bb17e6d85f",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/hooks/useAssentos.ts": {

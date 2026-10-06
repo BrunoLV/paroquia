@@ -40,6 +40,25 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - Ações de sucesso/homologação com `color="success"`: `CheckCircleIcon` (aprovação/conclusão), `VerifiedIcon` (homologação), `ToggleOnIcon` (ativação/reativação).
     - Ações neutras/informativas com cor primária/neutra padrão: `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (edição/ressalva), `LinkIcon` (vínculos), `DownloadIcon` (exportação).
   - Atualização do Design System (`gestao-paroquia-ui/DESIGN_SYSTEM.md`) e regras de agentes (`.agents/rules/frontend-design-system.md`) para governança obrigatória nos próximos desenvolvimentos.
+- **Revisão e Harmonização Canônica de Ícones para Tipo, Encargo e Grau:**
+  - **Grau (Sacramento da Ordem & Vocações):**
+    - Diaconato (`DIACONO_TRANSITORIO`, `DIACONO_PERMANENTE`, `DIACONO` vocacional): substituição de `VolunteerActivismIcon` (caridade leiga/pastoral) por `CoPresentIcon` (ministro sagrado ordenado para assistência no Altar e proclamação do Evangelho).
+    - Presbiterado: `BadgeIcon` para Padre Diocesano (incardinado) e `ShieldIcon` para Padre Religioso (consagrado regular).
+    - Episcopado: `WorkspacePremiumIcon` (3º grau e plenitude do sacramento da ordem).
+    - Campo geral "Grau da ordem" padronizado com `WorkspacePremiumIcon`.
+  - **Encargo (Ofícios Eclesiásticos & Funções Paroquiais):**
+    - Campo geral de ofício/encargo canônico padronizado com `AssignmentIndIcon`.
+    - Eliminação de ícones profanos/técnicos de TI em funções do clero:
+      - Pároco: substituição de `AdminPanelSettingsIcon` (escudo de TI/firewall) por `ChurchIcon` (pastor titular e autoridade própria da Paróquia).
+      - Administrador Paroquial: substituição de `ManageAccountsIcon` (engrenagem de TI) por `AssignmentIndIcon` (provisão e regência administrativa temporária).
+      - Diácono Auxiliar: substituição de `VolunteerActivismIcon` por `CoPresentIcon` (assistência eclesial e litúrgica).
+  - **Tipo (Categorização, Organismos, Locais e Ativos):**
+    - Eliminação de `HelpOutlineIcon` ("?") para tipos ou categorias genéricas/não classificadas (`OUTRO`), substituído por `CategoryIcon` em `localTipoStatus`, `categoriaAtivoStatus` e `organismoTipoStatus`.
+    - Sacramento em `VinculosPendentesPanel`: harmonização de `CategoryIcon` para `MenuBookIcon` (livros de assentos sacramentais).
+    - Tipo de Participação em `VinculosPendentesPanel`: padronizado com `AssignmentIndIcon`.
+    - Tipo de Aquisição do Solo em `UnidadeTerritorialViewModal`: substituição de `DescriptionIcon` por `ReceiptLongIcon` (título/escritura).
+    - Tipo de Local em `LocalViewModal`: exibição canônica do chip `StatusIcon` com `getLocalTipoMeta(local.tipo)` no cabeçalho do diálogo.
+  - Atualização canônica de governança no `gestao-paroquia-ui/DESIGN_SYSTEM.md` (Seção 6.2) e `.agents/rules/frontend-design-system.md` (Seção 1.3).
 
 ## [0.8.0] - 2026-10-04
 

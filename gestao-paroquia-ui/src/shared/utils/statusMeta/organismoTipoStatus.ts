@@ -6,7 +6,7 @@ import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Diversity1Icon from '@mui/icons-material/Diversity1';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
+import CategoryIcon from '@mui/icons-material/Category';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { TipoOrganismoParoquial } from '@/shared/domain/types/types';
 
@@ -27,7 +27,7 @@ const ORGANISMO_TIPO_META: Record<TipoOrganismoParoquial, OrganismoTipoMeta> = {
   CONSELHO_ECONOMICO: { label: 'Conselho Econômico Paroquial (CAE)', color: 'info', icon: React.createElement(AccountBalanceWalletIcon), tooltip: 'Conselho Econômico Paroquial (CAE)' },
   PASTORAL: { label: 'Pastoral', color: 'success', icon: React.createElement(VolunteerActivismIcon), tooltip: 'Pastoral' },
   MOVIMENTO: { label: 'Movimento', color: 'warning', icon: React.createElement(Diversity1Icon), tooltip: 'Movimento' },
-  OUTRO: { label: 'Outro', color: 'default', icon: React.createElement(HelpOutlineIcon), tooltip: 'Outro tipo de organismo' },
+  OUTRO: { label: 'Outro', color: 'default', icon: React.createElement(CategoryIcon), tooltip: 'Outro tipo de organismo' },
 };
 
 const DEFAULT_META: OrganismoTipoMeta = ORGANISMO_TIPO_META.OUTRO;

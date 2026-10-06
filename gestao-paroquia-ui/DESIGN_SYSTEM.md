@@ -178,6 +178,29 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 - Import de outro módulo (ex. `AtivoViewModal.tsx` usando o `InfoField` de `fieis/fielConstants.tsx`) é o padrão esperado — não duplicar o componente localmente.
 - Não é uma regra "por módulo de negócio": aplica-se a qualquer tela nova de detalhe, independente da entidade.
 
+## 6.2. Iconografia Canônica para Tipo, Encargo e Grau
+
+A representação de atributos estruturais e eclesiásticos deve respeitar estritamente a dignidade canônica e a semântica do domínio:
+
+| Conceito / Informação | Campo / Contexto | Ícone Canônico | Diretriz Específica |
+| :--- | :--- | :--- | :--- |
+| **Tipo (Genérico / Categoria)** | Rótulo geral ou `OUTRO` | `CategoryIcon` | Padrão geométrico; proibido usar `HelpOutlineIcon` ("?") para tipo ou categoria não classificada. |
+| **Tipo de Sacramento** | Assentos e Vínculos | `MenuBookIcon` | Representa os Sagrados Livros Paroquiais e o sacramento registrado. |
+| **Tipo de Unidade Territorial** | Matriz / Comunidade | `ChurchIcon` / `PlaceIcon` | `ChurchIcon` exclusivo da Matriz; `PlaceIcon` para comunidades/capelas. |
+| **Tipo de Local Físico** | Igreja / Salão / Sala | `ChurchIcon` / `MeetingRoomIcon` / `DoorFrontIcon` | Representação arquitetônica do espaço. |
+| **Tipo de Aquisição do Solo** | Unidades Territoriais | `ReceiptLongIcon` | Título imobiliário ou escritura de aquisição. |
+| **Encargo (Campo Geral)** | Ficha / Provisão | `AssignmentIndIcon` | Atribuição canônica/designação individual formal de ofício pastoral. |
+| **Encargo: Pároco** | Função Eclesiástica | `ChurchIcon` | Pastor próprio e autoridade titular da Paróquia. Proibido ícones de TI (`AdminPanelSettingsIcon`). |
+| **Encargo: Adm. Paroquial** | Função Eclesiástica | `AssignmentIndIcon` | Provisão administrativa temporária da paróquia. Proibido ícones de TI (`ManageAccountsIcon`). |
+| **Encargo: Vigário Paroquial** | Função Eclesiástica | `SupervisorAccountIcon` | Cooperador pastoral do pároco no atendimento paroquial. |
+| **Encargo: Diácono Auxiliar** | Função Eclesiástica | `CoPresentIcon` | Assistência litúrgica no Altar e ministério da Palavra. |
+| **Encargo: Bispo / Emérito** | Função Eclesiástica | `WorkspacePremiumIcon` | Dignidade episcopal e mérito canônico alcançado. |
+| **Grau da Ordem (Campo)** | Ficha do Clérigo | `WorkspacePremiumIcon` | Grau sacramental ministerial da Ordem sacerdotal. |
+| **Grau: Diaconato** | Diácono Transitório/Permanente | `CoPresentIcon` | Ministro ordenado assistente (1º grau). Proibido `VolunteerActivismIcon` (exclusivo de pastorais). |
+| **Grau: Presbiterado Diocesano**| Padre Diocesano | `BadgeIcon` | Ministro sagrado incardinado na diocese (2º grau da Ordem). |
+| **Grau: Presbiterado Religioso** | Padre Religioso | `ShieldIcon` | Ministro sagrado consagrado sob regra de vida/hábito regular. |
+| **Grau: Episcopado** | Bispo | `WorkspacePremiumIcon` | Plenitude e coroamento do Sacramento da Ordem (3º grau). |
+
 ## 7. Tabelas
 
 - Cabeçalho: `TableHead` com `backgroundColor: 'action.hover'` e células `fontWeight: 600/700`.

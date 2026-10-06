@@ -3,7 +3,7 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import ChairIcon from '@mui/icons-material/Chair';
 import CheckroomIcon from '@mui/icons-material/Checkroom';
 import EngineeringIcon from '@mui/icons-material/Engineering';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
+import CategoryIcon from '@mui/icons-material/Category';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 import type { AtivoCategoria } from '@/shared/domain/types/types';
 
@@ -23,7 +23,7 @@ const CATEGORIA_ATIVO_META: Record<AtivoCategoria, CategoriaAtivoMeta> = {
   INFRAESTRUTURA: { label: 'Infraestrutura', color: 'primary', icon: React.createElement(EngineeringIcon), tooltip: 'Infraestrutura / Instalações' },
 };
 
-const DEFAULT_META: CategoriaAtivoMeta = { label: 'Outro', color: 'default', icon: React.createElement(HelpOutlineIcon), tooltip: 'Categoria não classificada' };
+const DEFAULT_META: CategoriaAtivoMeta = { label: 'Outro', color: 'default', icon: React.createElement(CategoryIcon), tooltip: 'Categoria não classificada' };
 
 export const getCategoriaAtivoMeta = (categoria: string): CategoriaAtivoMeta =>
   CATEGORIA_ATIVO_META[categoria as AtivoCategoria] ?? DEFAULT_META;
