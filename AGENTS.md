@@ -41,6 +41,8 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
 
 **Ações de tabelas:** Usar `TableActionMenu` em todas as linhas, inclusive ações únicas: botão pequeno delineado somente com `⋮` vertical, tooltip/nome acessível “Ações”, sem texto visível. Preservar permissões e estados; validar `tableActionsArchitecture.test.ts`.
 
+**Seção de pesquisa e filtros:** A barra de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela (em `<Paper sx={{ p: 2, mb: 3 }}>` ou `FilterBar` com `SearchField`), com a tabela isolada em seu próprio `<TableContainer component={Paper}>`. Proibido incorporar campo de busca dentro do mesmo Card que envolve a tabela.
+
 1. **PLANEJAMENTO OBRIGATÓRIO (PLAN MODE / `/plan`):**
    * Antes de propor qualquer alteração ou gerar código, consulte obrigatoriamente `docs/business-rules/<modulo>.md` para o(s) Bounded Context(s) afetado(s).
    * Especifique o plano de arquitetura, branch prevista via GitHub Flow e testes. Proibido mutar código sem aprovação explícita do plano.

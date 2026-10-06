@@ -1,6 +1,6 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import { Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import TableActionMenu, { type TableAction } from '@/shared/presentation/components/TableActionMenu';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -107,7 +107,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
 
   return (
     <>
-      <TableContainer>
+      <TableContainer component={Paper}>
         <Table size="small">
           <TableHead sx={{ backgroundColor: 'action.hover' }}>
             <TableRow>

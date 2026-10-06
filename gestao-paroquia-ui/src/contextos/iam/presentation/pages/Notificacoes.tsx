@@ -4,7 +4,7 @@ import { useState } from 'react';
 import LidaIcon from '@mui/icons-material/MarkEmailRead';
 import NovaIcon from '@mui/icons-material/MarkEmailUnread';
 import NotificacaoIcon from '@mui/icons-material/Notifications';
-import { Card, CardContent, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listarNotificacoes, marcarNotificacaoLida } from '@/contextos/iam/infrastructure/http/notificacoes';
 import PageHeader from '@/shared/presentation/components/PageHeader';
@@ -47,9 +47,7 @@ const Notificacoes = () => {
         subtitle="Decisões e avisos da paróquia e do seu cadastro."
       />
 
-      <Card>
-        <CardContent sx={{ p: 0 }}>
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -127,9 +125,7 @@ const Notificacoes = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
     </Stack>
   );
 };

@@ -117,9 +117,14 @@ Todo modal e componente de tela DEVE conter bloco JSDoc especificando:
 - A regra de negócio ou canônica atendida.
 - A justificativa da decisão de UX (ex.: tamanho de modal, agrupamento de seções, acessibilidade).
 
-## 4. Paginação de Tabelas
+## 4. Tabelas e Seção de Pesquisa Externa
 
-Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
+1. **Seção de Pesquisa e Filtros Obrigatória por Fora da Tabela:**
+   - A barra de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela, renderizada em um `<Paper sx={{ p: 2, mb: 3 }}>` (ou `FilterBar` dedicado), utilizando o componente canônico `SearchField` (`size="small"`, ícone de lupa embutido) e `SearchableSelect`.
+   - A tabela deve residir em seu próprio `<TableContainer component={Paper}>`.
+   - **Terminantemente proibido:** incorporar `<TextField>` ou `<SearchField>` dentro do cabeçalho ou corpo do mesmo `Card` que engloba a tabela.
+2. **Paginação de Tabelas:**
+   - Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
 
 ## 5. Ações de Linha
 

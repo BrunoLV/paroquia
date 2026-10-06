@@ -1,14 +1,14 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useMemo, useState } from 'react';
-import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Box, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BadgeIcon from '@mui/icons-material/Badge';
-import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import PageHeader from '@/shared/presentation/components/PageHeader';
+import SearchField from '@/shared/presentation/components/SearchField';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -139,31 +139,20 @@ const Clerigos: React.FC = () => {
         }
       />
 
-      <Card>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Box sx={{ maxWidth: 400, mb: 2 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Pesquisar por nome ou paróquia..."
-              value={busca}
-              onChange={(e) => {
-                setBusca(e.target.value);
-                setPage(0);
-              }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </Box>
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ maxWidth: 400 }}>
+          <SearchField
+            placeholder="Pesquisar por nome ou paróquia..."
+            value={busca}
+            onChange={(val) => {
+              setBusca(val);
+              setPage(0);
+            }}
+          />
+        </Box>
+      </Paper>
 
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -296,9 +285,7 @@ const Clerigos: React.FC = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
 
       {/* Modal de Criação */}
       <ClerigoFormModal

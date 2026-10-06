@@ -92,9 +92,7 @@ const AjustesCadastrais = () => {
         subtitle="Solicitações pendentes de validação e aprovação cadastral."
       />
 
-      <Card>
-        <CardContent sx={{ p: 0 }}>
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -173,9 +171,7 @@ const AjustesCadastrais = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
 
       {/* Modal de Análise e Decisão */}
       <Dialog

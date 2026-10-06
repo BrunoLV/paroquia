@@ -2,7 +2,7 @@ import SearchableSelect from '@/shared/presentation/components/SearchableSelect'
 import { useMemo, useState, type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, FormControl, MenuItem, Stack, Tab, Tabs } from '@mui/material';
+import { FormControl, MenuItem, Paper, Stack, Tab, Tabs } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import TableViewIcon from '@mui/icons-material/TableView';
@@ -271,107 +271,104 @@ const Reservas: FC = () => {
         isLoading={metricasQuery.isLoading}
       />
 
-      <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Stack
-            direction={{ xs: 'column', md: 'row' }}
-            spacing={2}
-            sx={{
-              alignItems: { xs: 'stretch', md: 'center' },
-              justifyContent: 'space-between',
-              mb: 2,
-            }}
-          >
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ flex: 1 }}>
-              <SearchField
-                placeholder="Pesquisar por item, responsável ou finalidade..."
-                value={busca}
-                onChange={(value) => {
-                  setBusca(value);
-                  setPage(0);
-                }}
-                sx={{ minWidth: { sm: 260 } }}
-              />
-
-              <FormControl size="small" sx={{ minWidth: 140 }}>
-
-                <SearchableSelect
-                  value={filtroTipo}
-                  label="Tipo"
-                  onChange={(e) => {
-                    setFiltroTipo(e.target.value);
-                    setPage(0);
-                  }}
-                >
-                  <MenuItem value="TODOS">Todos os tipos</MenuItem>
-                  <MenuItem value="LOCAL">Espaços (Locais)</MenuItem>
-                  <MenuItem value="ATIVO">Bens (Ativos)</MenuItem>
-                </SearchableSelect>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: 160 }}>
-
-                <SearchableSelect
-                  value={filtroStatus}
-                  label="Situação"
-                  onChange={(e) => {
-                    setFiltroStatus(e.target.value);
-                    setPage(0);
-                  }}
-                >
-                  <MenuItem value="TODOS">Todas as situações</MenuItem>
-                  <MenuItem value="PENDENTE">Pendentes</MenuItem>
-                  <MenuItem value="CONFIRMADA">Confirmadas</MenuItem>
-                  <MenuItem value="RETIRADO">Em Custódia</MenuItem>
-                  <MenuItem value="FINALIZADA">Finalizadas</MenuItem>
-                  <MenuItem value="CANCELADA">Canceladas</MenuItem>
-                  <MenuItem value="EXPIRADA">Expiradas</MenuItem>
-                </SearchableSelect>
-              </FormControl>
-            </Stack>
-
-            <Tabs
-              value={tabIndex}
-              onChange={(_, val) => setTabIndex(val)}
-              sx={{ minHeight: 40, borderBottom: { xs: 1, md: 0 }, borderColor: 'divider' }}
-            >
-              <Tab icon={<TableViewIcon fontSize="small" />} iconPosition="start" label="Tabela" sx={{ minHeight: 40 }} />
-              <Tab icon={<CalendarMonthIcon fontSize="small" />} iconPosition="start" label="Calendário" sx={{ minHeight: 40 }} />
-            </Tabs>
-          </Stack>
-
-          {tabIndex === 0 ? (
-            <ReservasTable
-              reservas={listaFiltrada}
-              podeAprovar={podeAprovar}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={setPage}
-              onRowsPerPageChange={(r) => {
-                setRowsPerPage(r);
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          sx={{
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ flex: 1 }}>
+            <SearchField
+              placeholder="Pesquisar por item, responsável ou finalidade..."
+              value={busca}
+              onChange={(value) => {
+                setBusca(value);
                 setPage(0);
               }}
-              onVisualizar={(r) => setDetalhesReserva(r)}
-              onAprovar={(r) => aprovarMutation.mutate(r.id)}
-              onRejeitar={(r) => {
-                setIsAcaoRejeitar(true);
-                setCancelarReservaAlvo(r);
-              }}
-              onCancelar={(r) => {
-                setIsAcaoRejeitar(false);
-                setCancelarReservaAlvo(r);
-              }}
-              onRetirar={(r) => retirarMutation.mutate(r.id)}
-              onDevolver={(r) => setDevolucaoReservaAlvo(r)}
+              sx={{ minWidth: { sm: 260 } }}
             />
-          ) : (
-            <ReservaCalendarView
-              reservas={listaFiltrada}
-              onSelectReserva={(r) => setDetalhesReserva(r)}
-            />
-          )}
-        </CardContent>
-      </Card>
+
+            <FormControl size="small" sx={{ minWidth: 140 }}>
+              <SearchableSelect
+                value={filtroTipo}
+                label="Tipo"
+                onChange={(e) => {
+                  setFiltroTipo(e.target.value);
+                  setPage(0);
+                }}
+              >
+                <MenuItem value="TODOS">Todos os tipos</MenuItem>
+                <MenuItem value="LOCAL">Espaços (Locais)</MenuItem>
+                <MenuItem value="ATIVO">Bens (Ativos)</MenuItem>
+              </SearchableSelect>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <SearchableSelect
+                value={filtroStatus}
+                label="Situação"
+                onChange={(e) => {
+                  setFiltroStatus(e.target.value);
+                  setPage(0);
+                }}
+              >
+                <MenuItem value="TODOS">Todas as situações</MenuItem>
+                <MenuItem value="PENDENTE">Pendentes</MenuItem>
+                <MenuItem value="CONFIRMADA">Confirmadas</MenuItem>
+                <MenuItem value="RETIRADO">Em Custódia</MenuItem>
+                <MenuItem value="FINALIZADA">Finalizadas</MenuItem>
+                <MenuItem value="CANCELADA">Canceladas</MenuItem>
+                <MenuItem value="EXPIRADA">Expiradas</MenuItem>
+              </SearchableSelect>
+            </FormControl>
+          </Stack>
+
+          <Tabs
+            value={tabIndex}
+            onChange={(_, val) => setTabIndex(val)}
+            sx={{ minHeight: 40, borderBottom: { xs: 1, md: 0 }, borderColor: 'divider' }}
+          >
+            <Tab icon={<TableViewIcon fontSize="small" />} iconPosition="start" label="Tabela" sx={{ minHeight: 40 }} />
+            <Tab icon={<CalendarMonthIcon fontSize="small" />} iconPosition="start" label="Calendário" sx={{ minHeight: 40 }} />
+          </Tabs>
+        </Stack>
+      </Paper>
+
+      {tabIndex === 0 ? (
+        <ReservasTable
+          reservas={listaFiltrada}
+          podeAprovar={podeAprovar}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          onRowsPerPageChange={(r) => {
+            setRowsPerPage(r);
+            setPage(0);
+          }}
+          onVisualizar={(r) => setDetalhesReserva(r)}
+          onAprovar={(r) => aprovarMutation.mutate(r.id)}
+          onRejeitar={(r) => {
+            setIsAcaoRejeitar(true);
+            setCancelarReservaAlvo(r);
+          }}
+          onCancelar={(r) => {
+            setIsAcaoRejeitar(false);
+            setCancelarReservaAlvo(r);
+          }}
+          onRetirar={(r) => retirarMutation.mutate(r.id)}
+          onDevolver={(r) => setDevolucaoReservaAlvo(r)}
+        />
+      ) : (
+        <Paper sx={{ p: 2 }}>
+          <ReservaCalendarView
+            reservas={listaFiltrada}
+            onSelectReserva={(r) => setDetalhesReserva(r)}
+          />
+        </Paper>
+      )}
 
       <ReservaFormDrawer
         open={drawerFormOpen}

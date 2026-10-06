@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Stack, Tab, Tabs } from '@mui/material';
+import { Box, Paper, Stack, Tab, Tabs } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -137,7 +137,11 @@ const Sacramentos = () => {
       <Tabs value={tipo} onChange={(_, v: TipoSacramento) => { setTipo(v); setPage(0); }} variant="scrollable" aria-label="Sacramentos">
         {TIPOS_SACRAMENTO.map((t) => <Tab key={t} value={t} label={TIPO_SACRAMENTO_LABEL[t]} />)}
       </Tabs>
-      <SearchField value={busca} onChange={(v) => { setBusca(v); setPage(0); }} placeholder="Pesquisar por nome, livro, folha ou termo..." />
+      <Paper sx={{ p: 2 }}>
+        <Box sx={{ maxWidth: 480 }}>
+          <SearchField value={busca} onChange={(v) => { setBusca(v); setPage(0); }} placeholder="Pesquisar por nome, livro, folha ou termo..." />
+        </Box>
+      </Paper>
       <AssentosTable
         assentos={filtrados}
         temAssentos={assentos.length > 0}

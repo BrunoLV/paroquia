@@ -332,8 +332,7 @@ const Projetos = () => {
           )}
         </Card>
       ) : (
-        <Card>
-          <TableContainer component={Paper} elevation={0}>
+        <TableContainer component={Paper}>
             <Table>
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -392,7 +391,6 @@ const Projetos = () => {
               />
             </Table>
           </TableContainer>
-        </Card>
       )}
 
       {/* CREATE & EDIT DIALOG */}

@@ -9,6 +9,10 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [Unreleased]
 
 ### Modificado
+- **Padronização da Seção de Pesquisa Externa ao Quadro da Tabela:**
+  - Padronização em todas as telas de listagem (`Clerigos`, `Fieis`, `UnidadesTerritoriais`, `Reservas`, `Sacramentos`, `Projetos`, `AjustesCadastrais`, `Notificacoes`) para que a seção de pesquisa e filtros resida **sempre por fora** do quadro da tabela, em container `<Paper sx={{ p: 2, mb: 3 }}>` dedicado, utilizando o componente canônico `SearchField` (`size="small"`, busca textual integrada e ícone de lupa).
+  - Tabela isolada em seu próprio `<TableContainer component={Paper}>`, eliminando anti-pattern de encapsular a pesquisa e a tabela dentro de um mesmo `<Card>` / `<CardContent>`.
+  - Invariante formalizada no Design System (`gestao-paroquia-ui/DESIGN_SYSTEM.md`), regras de agentes (`.agents/rules/frontend-design-system.md`) e governança geral (`AGENTS.md`).
 - **Revisão e Harmonização Semântica de Ícones (Menu, Telas, Formulários e Status):**
   - Eliminação de símbolos anacrônicos, profanos ou dúbios na interface, alinhando a representação visual com a dignidade canônica, litúrgica e pastoral da Igreja Católica.
   - Alinhamento 1:1 entre a iconografia da barra de navegação (`navigation.ts`) e os cabeçalhos de página (`PageHeader`):

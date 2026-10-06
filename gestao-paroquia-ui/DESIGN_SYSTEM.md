@@ -226,6 +226,13 @@ A representação de atributos estruturais e eclesiásticos deve respeitar estri
 </Table>
 ```
 
+### 7.1. Seção de Pesquisa e Filtros (Externa à Tabela)
+
+- **Regra Mandatória:** A seção de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela (nunca dentro do mesmo `Card` ou `TableContainer`).
+- **Padrão Canônico:** Um componente `<Paper sx={{ p: 2, mb: 3 }}>` (ou componente `FilterBar` dedicado) contendo o campo canônico `SearchField` (com ícone de lupa, `size="small"` e busca textual) acompanhado dos seletores de filtragem (`SearchableSelect`).
+- **Tabela Isolada:** A tabela deve residir em seu próprio `<TableContainer component={Paper}>` (ou container isolado exclusivo para a tabela, sem misturar campos de busca dentro do quadro).
+- **Proibição Expressa:** É estritamente proibido colocar `<TextField>` ou `<SearchField>` dentro do cabeçalho ou corpo do mesmo `Card` que engloba o `TableContainer`.
+
 ## 8. Tokens e Estilo
 
 - Só tokens semânticos do tema (`primary.main`, `error.main`, `divider`, `theme.custom.*`). Proibido hex cru no JSX.
