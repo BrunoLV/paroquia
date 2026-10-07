@@ -10,6 +10,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.AmbitoOrganismo;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.domain.repository.MandatoCoordenacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
@@ -17,7 +18,10 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,16 +48,19 @@ class OrganizacaoServiceTest {
     private OrganizacaoRepository repository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private AuditoriaPersistenceService auditLogService;
+    private MandatoCoordenacaoRepository mandatoRepository;
 
     @BeforeEach
     void setUp() {
         repository = mock(OrganizacaoRepository.class);
         unidadeTerritorialRepository = mock(UnidadeTerritorialJpaRepository.class);
         auditLogService = mock(AuditoriaPersistenceService.class);
+        mandatoRepository = mock(MandatoCoordenacaoRepository.class);
         PastoralMovimentoOficialRepository pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
         service = new OrganizacaoService(repository, auditLogService,
                 new ValidadorHierarquiaOrganizacional(repository, pastoralOficialRepository,
-                        unidadeTerritorialRepository));
+                        unidadeTerritorialRepository),
+                mandatoRepository, Clock.fixed(Instant.parse("2026-06-01T12:00:00Z"), ZoneOffset.UTC));
 
         // Setup mock unidades territoriais (Clero/Matriz não são mais Organizacao, track
         // linguagem_ubiqua_dominio)
@@ -226,5 +233,19 @@ class OrganizacaoServiceTest {
         assertThrows(OrganizacaoNegocioException.class, () -> service.criar("Coroinhas",
                 TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", "Coord", "Vice", null, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null));
+    }
+
+    @Test
+    void naoDeveDesativarOrganizacaoComMandatoVigente() {
+        UUID id = UUID.randomUUID();
+        Organizacao org = new Organizacao(id, "Coroinhas", TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", null,
+                null, true, conselhoId, null, SetorPastoral.SANTIFICACAO_LITURGIA, null);
+        when(repository.findById(id)).thenReturn(Optional.of(org));
+        when(mandatoRepository.existeVigente(id, LocalDate.of(2026, 6, 1))).thenReturn(true);
+
+        assertThrows(OrganizacaoNegocioException.class, () -> service.atualizar(id, "Coroinhas",
+                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", null, null, false, conselhoId, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null));
+        verify(repository, never()).save(any(Organizacao.class));
     }
 }

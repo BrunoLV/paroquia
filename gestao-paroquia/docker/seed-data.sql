@@ -1512,3 +1512,13 @@ VALUES
     ('88000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000001', 'SACRAMENTO_VINCULO_PENDENTE',
      '1 vínculo(s) de fiel/clérigo em assento de CONFIRMACAO proposto(s) por ''secretaria.paroquial'' aguardam aprovação do Pároco.', CURRENT_TIMESTAMP, NULL)
 ON CONFLICT (id) DO NOTHING;
+
+-- Mandatos de coordenação de exemplo: espelha os coordenadores/vices semeados como mandatos homologados (2 anos).
+INSERT INTO calendario.mandato_coordenacao (id, organizacao_id, fiel_id, funcao, inicio, fim, status, homologado_por, decidido_em_utc)
+SELECT gen_random_uuid(), m.organizacao_id, m.fiel_id,
+       CASE WHEN m.papel = 'coordenador' THEN 'COORDENADOR' ELSE 'VICE_COORDENADOR' END,
+       CURRENT_DATE, CURRENT_DATE + INTERVAL '2 years', 'HOMOLOGADO', 'seed', now()
+FROM calendario.membro_grupo m
+WHERE m.ativo AND m.papel IN ('coordenador', 'secretario-grupo')
+  AND NOT EXISTS (SELECT 1 FROM calendario.mandato_coordenacao c
+                  WHERE c.organizacao_id = m.organizacao_id AND c.fiel_id = m.fiel_id);

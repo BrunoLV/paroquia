@@ -6,10 +6,13 @@ import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.repository.MandatoCoordenacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,14 +41,20 @@ public class OrganizacaoService {
     private final OrganizacaoRepository organizacaoRepository;
     private final AuditoriaPersistenceService auditLogService;
     private final ValidadorHierarquiaOrganizacional hierarquiaPolicy;
+    private final MandatoCoordenacaoRepository mandatoRepository;
+    private final Clock clock;
 
     public OrganizacaoService(
             OrganizacaoRepository organizacaoRepository,
             AuditoriaPersistenceService auditLogService,
-            ValidadorHierarquiaOrganizacional hierarquiaPolicy) {
+            ValidadorHierarquiaOrganizacional hierarquiaPolicy,
+            MandatoCoordenacaoRepository mandatoRepository,
+            Clock clock) {
         this.organizacaoRepository = organizacaoRepository;
         this.auditLogService = auditLogService;
         this.hierarquiaPolicy = hierarquiaPolicy;
+        this.mandatoRepository = mandatoRepository;
+        this.clock = clock;
     }
 
     /**
@@ -152,6 +161,10 @@ public class OrganizacaoService {
                 .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
         hierarquiaPolicy.validar(id, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
+        if (org.isAtivo() && !ativo && mandatoRepository.existeVigente(id, LocalDate.now(clock))) {
+            throw new OrganizacaoNegocioException(
+                    "Encerre os mandatos de coordenação vigentes antes de desativar a organização.");
+        }
 
         org.alterarCadastro(nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId, pastoralOficialId);
         org.classificar(setorPastoral, subtipoConselho);
@@ -180,7 +193,7 @@ public class OrganizacaoService {
             throw OrganizacaoNegocioException.notFound(id);
         }
 
-        if (organizacaoRepository.hasDependencies(id)) {
+        if (organizacaoRepository.hasDependencies(id) || !mandatoRepository.findByOrganizacaoId(id).isEmpty()) {
             throw OrganizacaoNegocioException.inUse(id);
         }
 
