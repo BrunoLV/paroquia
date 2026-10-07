@@ -8,6 +8,24 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Adicionado
+- **Reformulação Eclesial de Pastorais e Movimentos (módulo `organizacao`):**
+  - **Tipologia:** pastoral orgânica, movimento apostólico, serviço paroquial (substitui `MINISTERIO`) e conselho, com policies de invariantes por tipo; múnus (ensinar, santificar, governar) obrigatório para pastorais e serviços.
+  - **Articulação ao conselho pastoral:** pastorais, movimentos e serviços exigem como organização-mãe um conselho pastoral (CPP/CPC); novo `SubtipoConselho` (CPP, CPC, CAEP), e o CAEP não acolhe organismos pastorais.
+  - **Estatuto de movimentos:** catálogo oficial com âmbito e reconhecimento de estatuto (Cân. 299 e 304); movimento sem estatuto reconhecido não é instanciado.
+  - **Mandato de coordenação:** encargo temporário (máx. 3 anos) proposto pelo grupo/CPP e homologado, vetado ou encerrado pelo Pároco; job diário encerra mandatos vencidos; modal "Coordenação" na lista de organizações.
+  - **Idoneidade e envio dos agentes:** formação, vivência sacramental atestada, termo de proteção de menores e envio; bloqueia proposta/homologação de mandato e promoção a coordenador com pendências; modal de idoneidade na lista de membros.
+  - **Unidade de caixa:** regra de negócio documentada (organizações não têm personalidade jurídica nem caixa próprios).
+  - Migrações `V026` a `V029`.
+
+### Modificado
+- **Renomeação `GrupoParoquial` para `Organizacao`** em código, banco (`grupo_paroquial`, `grupo_paroquial_id`, `tipo_grupo`) e contrato REST (`grupoParoquialId` vira `organizacaoId`; `grupoParoquialResponsavelId` vira `organizacaoResponsavelId`).
+- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida.
+- Documentação `docs/business-rules/organizacao.md` reescrita; `membro.md` e `conselho.md` atualizados.
+
+### Observação de migração
+- Subtipo dos conselhos existentes inferido pelo nome (econômico = CAEP, comunitário = CPC, demais = CPP): revisar no cadastro. Lideranças existentes viram mandatos homologados de 1 ano a partir da migração: revisar os períodos. Pastorais e serviços existentes sem múnus precisam recebê-lo ao serem editados.
+
 ## [0.9.0] - 2026-10-06
 
 ### Modificado

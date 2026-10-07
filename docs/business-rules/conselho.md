@@ -10,7 +10,7 @@ Assegurar o registro canônico, acompanhamento de mandatos, atas de reunião, qu
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Conselho` (Raiz de Agregado):** Identificado por `ConselhoId`. Representa o órgão colegiado consultivo (`CPP`, `CPC`, `CAEP`).
+- **`Conselho` (Raiz de Agregado):** Identificado por `ConselhoId`. Representa o órgão colegiado consultivo (`CPP`, `CPC`, `CAEP`). Na organização paroquial, o conselho é uma `Organizacao` do tipo `CONSELHO` com `SubtipoConselho`; pastorais, movimentos e serviços articulam-se a um conselho pastoral (CPP/CPC), nunca ao CAEP (ver `organizacao.md`).
 - **`PapelOrganizacional` (Conselhos):**
   - `SECRETARIO_CONSELHO` (`secretario-conselho`): Pauta reuniões e redige minutas de atas do CPP/CPC. Sem voto deliberativo.
   - `MEMBRO_CONSELHO_PASTORAL` (`membro-conselho-pastoral`): Conselheiro com voto consultivo para diretrizes pastorais.

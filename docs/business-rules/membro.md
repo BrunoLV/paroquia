@@ -17,6 +17,7 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
   - `MEMBRO_ATIVO` (`membro-ativo`): Participante regular de atividades e escalas do grupo.
   - `VOLUNTARIO` (`voluntario`): Apoio operacional pontual.
 - **`StatusMembro`:** `ATIVO`, `INATIVO`.
+- **`IdoneidadeAgente` (Value Object):** datas de formação doutrinária básica, vivência sacramental atestada pelo Pároco, termo de proteção de menores (assinatura e validade) e envio (missão), com o responsável pelo envio. Guarda somente datas, nunca o conteúdo dos documentos.
 
 ---
 
@@ -24,10 +25,20 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
 
 ### RN-MEM-01: Provisão Canônica Privativa de Coordenação
 - A promoção de um fiel ao papel de `COORDENADOR` constitui provisão canônica local, sendo de **competência exclusiva do Pároco** (`ROLE_GLOBAL_PAROCO` / `ROLE_CLERO_PAROCO`).
+- A coordenação é temporária e nasce de um **mandato homologado** (ver `organizacao.md`, RN-ORG-05); a promoção direta permanece restrita ao Pároco e também exige idoneidade (RN-MEM-04).
 - O papel `ADMIN` é expressamente impedido de nomear ou prover coordenadores de pastoral.
 
 ### RN-MEM-02: Criação Automatizada de Login
 - Ao ser promovido a `COORDENADOR` pelo Pároco, caso o Fiel ainda não possua usuário de sistema (`Usuario`), o login é provisionado automaticamente com credenciais iniciais para acesso às rotas de coordenação.
+
+### RN-MEM-04: Idoneidade e Envio dos Agentes
+- O vínculo a uma função exige discernimento pastoral. A `PoliticaIdoneidadeFuncao` define as pendências:
+  - **Coordenação (coordenador ou vice):** formação doutrinária básica, vivência sacramental atestada, termo de proteção de menores e vulneráveis vigente e envio (missão) conferido pelo Pároco.
+  - **Organismos do múnus de ensinar (catequese e formação):** vivência sacramental atestada e termo de proteção de menores vigente.
+  - **Organismos do múnus de santificar (liturgia):** vivência sacramental atestada.
+- A proposta e a homologação de mandato e a promoção a coordenador são **bloqueadas** com pendências. Para os demais membros, as pendências são informativas (indicador "Idoneidade" na lista de membros).
+- O registro é feito pelo Pároco, Bispo ou secretaria paroquial; a vivência sacramental é **atestada** pelo Pároco (o sistema não deduz sacramentos automaticamente).
+- LGPD: apenas datas são armazenadas; o termo e demais documentos permanecem fora do sistema.
 
 ### RN-MEM-03: Exclusividade de Coordenação Ativa
 - Cada organização paroquial deve possuir preferencialmente uma liderança coordenadora ativa.
