@@ -64,7 +64,8 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public PastoralMovimentoOficialResponse criar(@RequestBody @Valid PastoralMovimentoOficialRequest request) {
-        PastoralMovimentoOficial oficial = service.criar(request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.criar(request.nome(), request.tipo(), request.ambito(),
+                request.estatutoAutoridade(), request.estatutoData(), request.estatutoReferencia());
         return toResponse(oficial);
     }
 
@@ -91,7 +92,8 @@ public class PastoralMovimentoOficialController {
             @PathVariable UUID id,
             @RequestBody @Valid PastoralMovimentoOficialRequest request) {
 
-        PastoralMovimentoOficial oficial = service.atualizar(id, request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.atualizar(id, request.nome(), request.tipo(), request.ambito(),
+                request.estatutoAutoridade(), request.estatutoData(), request.estatutoReferencia());
         return toResponse(oficial);
     }
 
@@ -167,7 +169,12 @@ public class PastoralMovimentoOficialController {
         return new PastoralMovimentoOficialResponse(
                 domain.getId(),
                 domain.getNome(),
-                domain.getTipo()
+                domain.getTipo(),
+                domain.getAmbito(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().autoridade(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().data(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().referencia(),
+                domain.possuiEstatutoReconhecido()
         );
     }
 }

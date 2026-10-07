@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +46,13 @@ public record OrganizacaoRequest(
         UUID parentId,
 
         @Schema(description = "Pastoral/Movimento Oficial unique identifier")
-        UUID pastoralOficialId
+        UUID pastoralOficialId,
+
+        @Schema(description = "Munus served: teaching, sanctifying or governing (required for PASTORAL and "
+                + "SERVICO_PAROQUIAL)")
+        SetorPastoral setorPastoral,
+
+        @Schema(description = "Council nature: CPP, CPC or CAEP (required for CONSELHO)")
+        SubtipoConselho subtipoConselho
 ) {
 }

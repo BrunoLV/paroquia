@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -73,6 +74,7 @@ class OrganizacaoApiIntegrationTest {
         conselho.setId(conselhoIdVal);
         conselho.setNome("Conselho Pastoral");
         conselho.setTipo(TipoOrganizacao.CONSELHO);
+        conselho.setSubtipoConselho(SubtipoConselho.CPP);
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
         organizacaoRepository.save(conselho);
@@ -87,6 +89,7 @@ class OrganizacaoApiIntegrationTest {
                 {
                   "nome": "Pastoral da Música",
                   "tipo": "PASTORAL",
+                  "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "musica@nsfatima.com",
                   "coordenador": "Pedro Coordenador",
                   "viceCoordenador": "Ana Vice",
@@ -123,6 +126,7 @@ class OrganizacaoApiIntegrationTest {
                 {
                   "nome": "Pastoral da Acolhida",
                   "tipo": "PASTORAL",
+                  "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "acolhida@nsfatima.com",
                   "coordenador": "Carlos Coordenador",
                   "viceCoordenador": "Lucas Vice",

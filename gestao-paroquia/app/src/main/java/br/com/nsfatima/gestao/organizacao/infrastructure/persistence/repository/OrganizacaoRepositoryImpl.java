@@ -56,6 +56,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         entity.setAtivo(domain.isAtivo());
         entity.setParentId(domain.getParentId());
         entity.setPastoralOficialId(domain.getPastoralOficialId());
+        entity.setSetorPastoral(domain.getSetorPastoral());
+        entity.setSubtipoConselho(domain.getSubtipoConselho());
         organizacaoJpaRepository.save(entity);
     }
 
@@ -100,7 +102,9 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 viceName,
                 entity.isAtivo(),
                 entity.getParentId(),
-                entity.getPastoralOficialId()
+                entity.getPastoralOficialId(),
+                entity.getSetorPastoral(),
+                entity.getSubtipoConselho()
         );
     }
 

@@ -7,8 +7,9 @@ import java.util.Locale;
 
 /**
  * Classifica um {@code Organizacao} — qualquer agrupamento de fiéis com função pastoral ou de
- * governança. Restrito aos 4 valores da spec de domínio: {@code PASTORAL}, {@code MOVIMENTO},
- * {@code CONSELHO}, {@code MINISTERIO}. Hierarquia territorial (Clero/Matriz/Comunidade) não é um
+ * governança. Tipologia eclesial: {@code PASTORAL} (pastoral orgânica, ação da Igreja local vinculada ao plano
+ * pastoral), {@code MOVIMENTO} (movimento apostólico/associação de fiéis com estatutos reconhecidos),
+ * {@code SERVICO_PAROQUIAL} (suporte litúrgico e operacional direto) e {@code CONSELHO}. Hierarquia territorial (Clero/Matriz/Comunidade) não é um
  * {@code Organizacao} — ver {@link TipoUnidadeTerritorial}. As regras de qual grupo pode ter qual pai
  * vivem em {@code OrganizacaoService.validateHierarchy}, não neste enum.
  */
@@ -16,12 +17,12 @@ public enum TipoOrganizacao {
     PASTORAL,
     MOVIMENTO,
     CONSELHO,
-    MINISTERIO;
+    SERVICO_PAROQUIAL;
 
     /**
      * Converte um valor recebido via JSON para a constante correspondente, tratando os aliases legados dos
      * 4 tipos de conselho pré-existentes ({@code CONSELHO_PASTORAL}, {@code CONSELHO_ECONOMICO},
-     * {@code CPP}, {@code CPC}) como {@code CONSELHO}, e {@code OUTRO} como {@code MINISTERIO}.
+     * {@code CPP}, {@code CPC}) como {@code CONSELHO}, e {@code OUTRO} e {@code MINISTERIO} como {@code SERVICO_PAROQUIAL}.
      *
      * @param rawValue valor bruto recebido na requisição
      * @return o {@link TipoOrganizacao} correspondente
@@ -36,8 +37,8 @@ public enum TipoOrganizacao {
                 || "CPP".equals(normalized) || "CPC".equals(normalized)) {
             return CONSELHO;
         }
-        if ("OUTRO".equals(normalized)) {
-            return MINISTERIO;
+        if ("OUTRO".equals(normalized) || "MINISTERIO".equals(normalized)) {
+            return SERVICO_PAROQUIAL;
         }
         // CLERO/MATRIZ/COMUNIDADE eram valores territoriais legados (track linguagem_ubiqua_dominio): não
         // são mais um TipoOrganizacao válido (viraram TipoUnidadeTerritorial). Contextos que ainda produzem esses

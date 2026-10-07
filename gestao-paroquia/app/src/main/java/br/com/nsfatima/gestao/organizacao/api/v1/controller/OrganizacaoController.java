@@ -94,7 +94,9 @@ public class OrganizacaoController {
                 request.coordenador(),
                 request.viceCoordenador(),
                 request.parentId(),
-                request.pastoralOficialId()
+                request.pastoralOficialId(),
+                request.setorPastoral(),
+                request.subtipoConselho()
         );
         syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
@@ -132,7 +134,9 @@ public class OrganizacaoController {
                 request.viceCoordenador(),
                 request.ativo(),
                 request.parentId(),
-                request.pastoralOficialId()
+                request.pastoralOficialId(),
+                request.setorPastoral(),
+                request.subtipoConselho()
         );
         syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
@@ -175,7 +179,7 @@ public class OrganizacaoController {
     private UUID resolveIgrejaVinculoId(Organizacao org) {
         // CONSELHO tem organização-mãe diretamente na UnidadeTerritorial (Matriz/Comunidade, track
         // linguagem_ubiqua_dominio); PASTORAL/MOVIMENTO têm organização-mãe um CONSELHO, cuja
-        // organização-mãe é que é a UnidadeTerritorial; MINISTERIO não tem igreja de vínculo.
+        // organização-mãe é que é a UnidadeTerritorial; SERVICO_PAROQUIAL não tem igreja de vínculo.
         if (org.getTipo() == TipoOrganizacao.CONSELHO) {
             return org.getParentId();
         }
@@ -316,7 +320,9 @@ public class OrganizacaoController {
                 domain.getViceCoordenador(),
                 domain.isAtivo(),
                 domain.getParentId(),
-                domain.getPastoralOficialId()
+                domain.getPastoralOficialId(),
+                domain.getSetorPastoral(),
+                domain.getSubtipoConselho()
         );
     }
 }

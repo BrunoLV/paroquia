@@ -15,6 +15,8 @@ import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
@@ -31,6 +33,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -197,8 +200,18 @@ public class ImportacaoLinhaExecutor {
                 data.get("coordenador"),
                 data.get("viceCoordenador"),
                 parentId,
-                pastoralOficialId
+                pastoralOficialId,
+                parseSetorPastoral(data.get("setorPastoral")),
+                parseSubtipoConselho(data.get("subtipoConselho"))
         );
+    }
+
+    private SetorPastoral parseSetorPastoral(String raw) {
+        return raw == null || raw.isBlank() ? null : SetorPastoral.fromValue(raw);
+    }
+
+    private SubtipoConselho parseSubtipoConselho(String raw) {
+        return raw == null || raw.isBlank() ? null : SubtipoConselho.valueOf(raw.trim().toUpperCase(Locale.ROOT));
     }
 
     private void importEvento(Map<String, String> data) {

@@ -160,6 +160,8 @@ public class AuthController {
                 vinculo.organizationViceCoordinator(),
                 vinculo.organizationActive(),
                 null,
+                null,
+                null,
                 null);
     }
 }

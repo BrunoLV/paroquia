@@ -3,12 +3,17 @@ package br.com.nsfatima.gestao.organizacao.application.service;
 import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
+import br.com.nsfatima.gestao.organizacao.domain.policy.ContextoTipologia;
+import br.com.nsfatima.gestao.organizacao.domain.policy.RegrasTipologiaOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,31 +39,43 @@ public class ValidadorHierarquiaOrganizacional {
     }
 
     /**
-     * Valida que o vínculo (tipo, organização-mãe, pastoral/movimento oficial) respeita a hierarquia.
+     * Valida o vínculo (tipo, organização-mãe, catálogo oficial) e a classificação eclesial (múnus e
+     * subtipo de conselho). Carrega os dados e delega as invariantes por tipo às
+     * {@link RegrasTipologiaOrganizacao}.
      *
      * @param id identificador da própria organização ({@code null} na criação) — impede auto-parentesco
-     * @throws OrganizacaoNegocioException se a hierarquia informada for inválida
+     * @throws OrganizacaoNegocioException se a organização informada violar a tipologia ou a hierarquia
      */
-    public void validar(UUID id, TipoOrganizacao tipo, UUID parentId, UUID pastoralOficialId) {
+    public void validar(UUID id, TipoOrganizacao tipo, UUID parentId, UUID pastoralOficialId,
+                        SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
         if (parentId != null && parentId.equals(id)) {
             throw new OrganizacaoNegocioException("Uma organização não pode ser sua própria organização-mãe.");
         }
 
+        PastoralMovimentoOficial oficial = pastoralOficialId == null ? null
+                : pastoralOficialRepository.findById(pastoralOficialId)
+                        .orElseThrow(() -> new OrganizacaoNegocioException(
+                                "Pastoral ou Movimento Oficial não encontrado com ID: " + pastoralOficialId));
+
         if (tipo == TipoOrganizacao.CONSELHO) {
-            validarConselho(tipo, parentId);
-            return;
+            validarMaeTerritorial(tipo, parentId);
+        }
+        Organizacao mae = tipo == TipoOrganizacao.CONSELHO || parentId == null ? null
+                : organizacaoRepository.findById(parentId).orElse(null);
+        if (tipo != TipoOrganizacao.CONSELHO && parentId != null && mae == null) {
+            throw new OrganizacaoNegocioException("Organização-mãe não encontrada com ID: " + parentId);
         }
 
-        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
-            validarPastoralOuMovimento(tipo, parentId, pastoralOficialId);
+        List<String> violacoes = RegrasTipologiaOrganizacao.avaliar(tipo,
+                new ContextoTipologia(setorPastoral, subtipoConselho, oficial, mae, parentId != null));
+        if (!violacoes.isEmpty()) {
+            throw new OrganizacaoNegocioException(String.join(" ", violacoes));
         }
-
-        // MINISTERIO não exige organização-mãe (comportamento herdado do antigo tipo OUTRO)
     }
 
-    private void validarConselho(TipoOrganizacao tipo, UUID parentId) {
+    private void validarMaeTerritorial(TipoOrganizacao tipo, UUID parentId) {
         if (parentId == null) {
-            throw new OrganizacaoNegocioException(tipo.name() + " deve ter uma organização-mãe.");
+            return;
         }
         var unidade = unidadeTerritorialRepository.findById(parentId)
                 .orElseThrow(() -> new OrganizacaoNegocioException(
@@ -70,34 +87,6 @@ public class ValidadorHierarquiaOrganizacional {
                 && unidade.getTipo() != TipoUnidadeTerritorial.COMUNIDADE) {
             throw new OrganizacaoNegocioException(
                     tipo.name() + " deve ter uma organização-mãe do tipo MATRIZ ou COMUNIDADE.");
-        }
-    }
-
-    private void validarPastoralOuMovimento(TipoOrganizacao tipo, UUID parentId, UUID pastoralOficialId) {
-        if (parentId == null) {
-            throw new OrganizacaoNegocioException(tipo.name() + " deve ter uma organização-mãe.");
-        }
-        if (pastoralOficialId == null) {
-            throw new OrganizacaoNegocioException("Vínculo com Pastoral ou Movimento Oficial é obrigatório.");
-        }
-        PastoralMovimentoOficial oficial = pastoralOficialRepository.findById(pastoralOficialId)
-                .orElseThrow(() -> new OrganizacaoNegocioException(
-                        "Pastoral ou Movimento Oficial não encontrado com ID: " + pastoralOficialId));
-        if (oficial.getTipo() != tipo) {
-            throw new OrganizacaoNegocioException(
-                    "O tipo da Pastoral/Movimento Oficial (" + oficial.getTipo()
-                            + ") não coincide com o tipo da organização (" + tipo + ").");
-        }
-
-        Organizacao parent = organizacaoRepository.findById(parentId)
-                .orElseThrow(() -> new OrganizacaoNegocioException(
-                        "Organização-mãe não encontrada com ID: " + parentId));
-        if (!parent.isAtivo()) {
-            throw new OrganizacaoNegocioException("Organização-mãe não está ativa.");
-        }
-        if (parent.getTipo() != TipoOrganizacao.CONSELHO) {
-            throw new OrganizacaoNegocioException(
-                    tipo.name() + " deve ter uma organização-mãe do tipo CONSELHO.");
         }
     }
 }

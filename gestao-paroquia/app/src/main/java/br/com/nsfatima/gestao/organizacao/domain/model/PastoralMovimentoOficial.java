@@ -13,11 +13,20 @@ public class PastoralMovimentoOficial {
     private final UUID id;
     private String nome;
     private TipoOrganizacao tipo;
+    private AmbitoOrganismo ambito;
+    private ReconhecimentoEstatuto reconhecimento;
 
     public PastoralMovimentoOficial(UUID id, String nome, TipoOrganizacao tipo) {
+        this(id, nome, tipo, null, null);
+    }
+
+    public PastoralMovimentoOficial(UUID id, String nome, TipoOrganizacao tipo,
+                                    AmbitoOrganismo ambito, ReconhecimentoEstatuto reconhecimento) {
         this.id = id;
         this.nome = nome;
         this.tipo = tipo;
+        this.ambito = ambito;
+        this.reconhecimento = reconhecimento;
     }
 
     public UUID getId() {
@@ -43,5 +52,34 @@ public class PastoralMovimentoOficial {
     public void atualizar(String nome, TipoOrganizacao tipo) {
         this.nome = nome;
         this.tipo = tipo;
+    }
+
+    public AmbitoOrganismo getAmbito() {
+        return ambito;
+    }
+
+    public ReconhecimentoEstatuto getReconhecimento() {
+        return reconhecimento;
+    }
+
+    /**
+     * Registra o âmbito e o reconhecimento formal dos estatutos pela autoridade eclesiástica (Cân. 299 e 304).
+     * Passar {@code null} em {@code reconhecimento} remove o reconhecimento.
+     *
+     * @param ambito âmbito de origem do organismo
+     * @param reconhecimento reconhecimento dos estatutos, ou {@code null}
+     */
+    public void registrarReconhecimento(AmbitoOrganismo ambito, ReconhecimentoEstatuto reconhecimento) {
+        this.ambito = ambito;
+        this.reconhecimento = reconhecimento;
+    }
+
+    /**
+     * Indica se os estatutos deste organismo têm reconhecimento formal registrado.
+     *
+     * @return {@code true} quando há reconhecimento
+     */
+    public boolean possuiEstatutoReconhecido() {
+        return reconhecimento != null;
     }
 }

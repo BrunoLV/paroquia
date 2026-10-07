@@ -19,6 +19,8 @@ public class Organizacao {
     private boolean ativo;
     private UUID parentId;
     private UUID pastoralOficialId;
+    private SetorPastoral setorPastoral;
+    private SubtipoConselho subtipoConselho;
 
     /**
      * Cria uma organização já existente (id definido) ou uma nova instância a ser persistida, sem aplicar
@@ -39,6 +41,19 @@ public class Organizacao {
         this.ativo = ativo;
         this.parentId = parentId;
         this.pastoralOficialId = pastoralOficialId;
+    }
+
+    /**
+     * Cria uma organização informando também a classificação eclesial: o múnus ({@code setorPastoral}) a que
+     * se vincula e, para conselhos, a sua natureza ({@code subtipoConselho}).
+     */
+    public Organizacao(UUID id,
+                       String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador,
+                       boolean ativo, UUID parentId, UUID pastoralOficialId,
+                       SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
+        this(id, nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId, pastoralOficialId);
+        this.setorPastoral = setorPastoral;
+        this.subtipoConselho = subtipoConselho;
     }
 
     public UUID getId() {
@@ -83,6 +98,26 @@ public class Organizacao {
 
     public void setPastoralOficialId(UUID pastoralOficialId) {
         this.pastoralOficialId = pastoralOficialId;
+    }
+
+    public SetorPastoral getSetorPastoral() {
+        return setorPastoral;
+    }
+
+    public SubtipoConselho getSubtipoConselho() {
+        return subtipoConselho;
+    }
+
+    /**
+     * Define a classificação eclesial desta organização: o múnus (tríplice missão) e, para conselhos, a
+     * natureza do conselho. A obrigatoriedade de cada um por tipo é decidida pelas policies de tipologia.
+     *
+     * @param setorPastoral múnus a que a organização serve, ou {@code null} quando não se aplica
+     * @param subtipoConselho natureza do conselho, ou {@code null} quando a organização não é um conselho
+     */
+    public void classificar(SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
+        this.setorPastoral = setorPastoral;
+        this.subtipoConselho = subtipoConselho;
     }
 
     /**

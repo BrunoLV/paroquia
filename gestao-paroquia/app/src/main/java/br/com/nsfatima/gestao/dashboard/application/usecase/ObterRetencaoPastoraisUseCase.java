@@ -30,7 +30,7 @@ public class ObterRetencaoPastoraisUseCase {
 
     private static final int MINIMO_VOLUNTARIOS = 3;
     private static final Set<TipoOrganizacao> TIPOS_COMUNITARIOS =
-            EnumSet.of(TipoOrganizacao.PASTORAL, TipoOrganizacao.MOVIMENTO, TipoOrganizacao.MINISTERIO);
+            EnumSet.of(TipoOrganizacao.PASTORAL, TipoOrganizacao.MOVIMENTO, TipoOrganizacao.SERVICO_PAROQUIAL);
 
     private final OrganizacaoJpaRepository grupoRepository;
     private final MembroGrupoJpaRepository membroRepository;

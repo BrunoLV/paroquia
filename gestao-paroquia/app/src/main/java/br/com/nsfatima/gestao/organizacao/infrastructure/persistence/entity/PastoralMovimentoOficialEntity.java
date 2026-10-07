@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.AmbitoOrganismo;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
@@ -9,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -29,6 +31,51 @@ public class PastoralMovimentoOficialEntity extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private TipoOrganizacao tipo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 16)
+    private AmbitoOrganismo ambito;
+
+    @Column(name = "estatuto_autoridade", length = 150)
+    private String estatutoAutoridade;
+
+    @Column(name = "estatuto_data")
+    private LocalDate estatutoData;
+
+    @Column(name = "estatuto_referencia", length = 255)
+    private String estatutoReferencia;
+
+    public AmbitoOrganismo getAmbito() {
+        return ambito;
+    }
+
+    public void setAmbito(AmbitoOrganismo ambito) {
+        this.ambito = ambito;
+    }
+
+    public String getEstatutoAutoridade() {
+        return estatutoAutoridade;
+    }
+
+    public void setEstatutoAutoridade(String estatutoAutoridade) {
+        this.estatutoAutoridade = estatutoAutoridade;
+    }
+
+    public LocalDate getEstatutoData() {
+        return estatutoData;
+    }
+
+    public void setEstatutoData(LocalDate estatutoData) {
+        this.estatutoData = estatutoData;
+    }
+
+    public String getEstatutoReferencia() {
+        return estatutoReferencia;
+    }
+
+    public void setEstatutoReferencia(String estatutoReferencia) {
+        this.estatutoReferencia = estatutoReferencia;
+    }
 
     public UUID getId() {
         return id;

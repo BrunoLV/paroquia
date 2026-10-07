@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -27,6 +29,10 @@ public record OrganizacaoResponse(
         @Schema(description = "Parent organization unique identifier")
         UUID parentId,
         @Schema(description = "Pastoral/Movimento Oficial unique identifier")
-        UUID pastoralOficialId
+        UUID pastoralOficialId,
+        @Schema(description = "Munus served")
+        SetorPastoral setorPastoral,
+        @Schema(description = "Council nature (CONSELHO only)")
+        SubtipoConselho subtipoConselho
 ) {
 }

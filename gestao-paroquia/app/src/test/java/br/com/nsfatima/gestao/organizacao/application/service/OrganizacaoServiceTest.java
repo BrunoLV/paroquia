@@ -3,6 +3,10 @@ package br.com.nsfatima.gestao.organizacao.application.service;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.ReconhecimentoEstatuto;
+import br.com.nsfatima.gestao.organizacao.domain.model.AmbitoOrganismo;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
@@ -13,13 +17,13 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -65,7 +69,7 @@ class OrganizacaoServiceTest {
         // Setup mock parent
         Organizacao conselho = new Organizacao(conselhoId,
                 "Conselho", TipoOrganizacao.CONSELHO, "conselho@test.com", "Coordenador", null, true,
-                matrizId, null);
+                matrizId, null, null, SubtipoConselho.CPP);
 
         when(repository.findById(conselhoId)).thenReturn(Optional.of(conselho));
 
@@ -74,7 +78,8 @@ class OrganizacaoServiceTest {
                 "Oficial Pastoral", TipoOrganizacao.PASTORAL);
 
         PastoralMovimentoOficial movimentoOficial = new PastoralMovimentoOficial(movimentoOficialId,
-                "Oficial Movimento", TipoOrganizacao.MOVIMENTO);
+                "Oficial Movimento", TipoOrganizacao.MOVIMENTO, AmbitoOrganismo.DIOCESANO,
+                new ReconhecimentoEstatuto("Bispo diocesano", LocalDate.of(2020, 1, 1), null));
 
         when(pastoralOficialRepository.findById(pastoralOficialId)).thenReturn(Optional.of(pastoralOficial));
         when(pastoralOficialRepository.findById(movimentoOficialId)).thenReturn(Optional.of(movimentoOficial));
@@ -107,7 +112,7 @@ class OrganizacaoServiceTest {
 
         service.atualizar(id,
                 "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
-                conselhoId, pastoralOficialId);
+                conselhoId, pastoralOficialId, SetorPastoral.FORMACAO_ENSINAR, null);
 
 
         assertEquals("PJ Novo", org.getNome());
@@ -153,7 +158,7 @@ class OrganizacaoServiceTest {
     void deveCriarOrganizacaoComConselho() {
         Organizacao created = service.criar("Conselho",
                 TipoOrganizacao.CONSELHO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
-                matrizId, null);
+                matrizId, null, null, SubtipoConselho.CAEP);
 
 
         assertNotNull(created.getId());
@@ -199,18 +204,27 @@ class OrganizacaoServiceTest {
 
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Novo",
-                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId,
+                        SetorPastoral.FORMACAO_ENSINAR, null)
 
         );
     }
 
     @Test
-    void devePermitirCriandoMinisterioComNuloPai() {
-        Organizacao created = service.criar("Ministério Novo",
-                TipoOrganizacao.MINISTERIO, "ministerio@test.com", "Coord", "Vice", null, null);
+    void deveCriarServicoParoquialArticuladoAoCpp() {
+        Organizacao created = service.criar("Coroinhas",
+                TipoOrganizacao.SERVICO_PAROQUIAL, "coroinhas@test.com", "Coord", "Vice", conselhoId, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null);
 
         assertNotNull(created.getId());
-        assertEquals(TipoOrganizacao.MINISTERIO, created.getTipo());
-        assertNull(created.getParentId());
+        assertEquals(TipoOrganizacao.SERVICO_PAROQUIAL, created.getTipo());
+        assertEquals(SetorPastoral.SANTIFICACAO_LITURGIA, created.getSetorPastoral());
+    }
+
+    @Test
+    void naoDeveCriarServicoParoquialSemConselhoPastoral() {
+        assertThrows(OrganizacaoNegocioException.class, () -> service.criar("Coroinhas",
+                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", "Coord", "Vice", null, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null));
     }
 }

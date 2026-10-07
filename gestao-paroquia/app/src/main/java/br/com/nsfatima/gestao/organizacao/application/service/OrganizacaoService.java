@@ -3,6 +3,8 @@ package br.com.nsfatima.gestao.organizacao.application.service;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import org.springframework.stereotype.Service;
@@ -66,10 +68,29 @@ public class OrganizacaoService {
                                 TipoOrganizacao tipo, String contato, String coordenador,
                                 String viceCoordenador, UUID parentId,
                                 UUID pastoralOficialId) {
+        return criar(nome, tipo, contato, coordenador, viceCoordenador, parentId, pastoralOficialId, null, null);
+    }
 
-        hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId);
+    /**
+     * Cria uma nova organização com classificação eclesial (múnus e, para conselhos, subtipo). As invariantes
+     * da tipologia são avaliadas por {@code RegrasTipologiaOrganizacao} antes da persistência.
+     *
+     * @param setorPastoral múnus a que a organização serve (obrigatório para pastoral e serviço paroquial)
+     * @param subtipoConselho natureza do conselho (obrigatória quando {@code tipo} é {@code CONSELHO})
+     * @return a organização recém-criada
+     * @throws OrganizacaoNegocioException se a tipologia ou a hierarquia forem violadas
+     */
+    @Transactional
+    public Organizacao criar(String nome,
+                                TipoOrganizacao tipo, String contato, String coordenador,
+                                String viceCoordenador, UUID parentId,
+                                UUID pastoralOficialId, SetorPastoral setorPastoral,
+                                SubtipoConselho subtipoConselho) {
+
+        hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
         Organizacao org = new Organizacao(UUID.randomUUID(),
-                nome, tipo, contato, coordenador, viceCoordenador, true, parentId, pastoralOficialId);
+                nome, tipo, contato, coordenador, viceCoordenador, true, parentId, pastoralOficialId,
+                setorPastoral, subtipoConselho);
 
         organizacaoRepository.save(org);
 
@@ -105,13 +126,35 @@ public class OrganizacaoService {
                                    String nome, TipoOrganizacao tipo, String contato, String coordenador,
                                    String viceCoordenador,
                                    boolean ativo, UUID parentId, UUID pastoralOficialId) {
+        Organizacao atual = organizacaoRepository.findById(id)
+                .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
+        return atualizar(id, nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId,
+                pastoralOficialId, atual.getSetorPastoral(), atual.getSubtipoConselho());
+    }
+
+    /**
+     * Atualiza os dados de uma organização existente, incluindo a classificação eclesial, revalidando a
+     * tipologia e a hierarquia com os novos valores.
+     *
+     * @param setorPastoral múnus a que a organização serve
+     * @param subtipoConselho natureza do conselho, quando aplicável
+     * @return a organização atualizada
+     * @throws OrganizacaoNegocioException se a organização não existir ou violar a tipologia/hierarquia
+     */
+    @Transactional
+    public Organizacao atualizar(UUID id,
+                                   String nome, TipoOrganizacao tipo, String contato, String coordenador,
+                                   String viceCoordenador,
+                                   boolean ativo, UUID parentId, UUID pastoralOficialId,
+                                   SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
 
         Organizacao org = organizacaoRepository.findById(id)
                 .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
-        hierarquiaPolicy.validar(id, tipo, parentId, pastoralOficialId);
+        hierarquiaPolicy.validar(id, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
 
         org.alterarCadastro(nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId, pastoralOficialId);
+        org.classificar(setorPastoral, subtipoConselho);
         organizacaoRepository.save(org);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(

@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -58,6 +59,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
         conselho.setId(conselhoId);
         conselho.setNome("Conselho Pastoral Teste");
         conselho.setTipo(TipoOrganizacao.CONSELHO);
+        conselho.setSubtipoConselho(SubtipoConselho.CPP);
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
         organizacaoRepository.save(conselho);
@@ -113,6 +115,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 {
                   "nome": "Pastoral Sem Link",
                   "tipo": "PASTORAL",
+                  "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "semlink@teste.com",
                   "coordenador": "Coordenador",
                   "viceCoordenador": "Vice",
@@ -154,6 +157,7 @@ class PastoralMovimentoOficialApiIntegrationTest {
                 {
                   "nome": "Pastoral da Criança - Comunidade A",
                   "tipo": "PASTORAL",
+                  "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "crianca@teste.com",
                   "coordenador": "Coordenador",
                   "viceCoordenador": "Vice",

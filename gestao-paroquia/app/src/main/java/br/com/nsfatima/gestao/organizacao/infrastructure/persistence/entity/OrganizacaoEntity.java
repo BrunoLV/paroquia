@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
@@ -51,6 +52,18 @@ public class OrganizacaoEntity extends BaseAuditableEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "setor_pastoral", length = 64)
     private SetorPastoral setorPastoral;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subtipo_conselho", length = 16)
+    private SubtipoConselho subtipoConselho;
+
+    public SubtipoConselho getSubtipoConselho() {
+        return subtipoConselho;
+    }
+
+    public void setSubtipoConselho(SubtipoConselho subtipoConselho) {
+        this.subtipoConselho = subtipoConselho;
+    }
 
     public UUID getId() {
 

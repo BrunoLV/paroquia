@@ -240,6 +240,23 @@ VALUES
     ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', 'Teresa Social Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
 ON CONFLICT (id) DO NOTHING;
 
+-- Classificação eclesial das organizações semeadas (subtipo de conselho e múnus das pastorais).
+UPDATE calendario.organizacao SET subtipo_conselho = CASE
+        WHEN nome ILIKE '%econ%' THEN 'CAEP'
+        WHEN nome ILIKE '%comunit%' THEN 'CPC'
+        ELSE 'CPP' END
+WHERE tipo = 'CONSELHO';
+UPDATE calendario.organizacao SET setor_pastoral = CASE
+        WHEN nome ILIKE '%Liturgia%' OR nome ILIKE '%Batismo%' OR nome ILIKE '%Acolhida%' THEN 'SANTIFICACAO_LITURGIA'
+        WHEN nome ILIKE '%Dízimo%' OR nome ILIKE '%Social%' THEN 'SOCIAL_CARIDADE'
+        ELSE 'FORMACAO_ENSINAR' END
+WHERE tipo = 'PASTORAL';
+-- Dados de exemplo: movimentos do catálogo com estatuto reconhecido (necessário para instanciar movimentos).
+UPDATE calendario.pastorais_movimentos_oficiais
+SET ambito = 'DIOCESANO', estatuto_autoridade = 'Bispo diocesano (dado de exemplo)',
+    estatuto_data = DATE '2000-01-01', estatuto_referencia = 'Seed de desenvolvimento'
+WHERE tipo = 'MOVIMENTO' AND estatuto_autoridade IS NULL;
+
 -- Locations (Locais) — sempre vinculadas a uma UnidadeTerritorial (Matriz/Comunidade)
 INSERT INTO calendario.locais (
     id, nome, tipo, capacidade, capacidade_maxima, cep, logradouro, numero, complemento, bairro, cidade, uf, descricao, ativo, organizacao_id, version
