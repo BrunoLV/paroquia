@@ -2,8 +2,7 @@ import SearchableSelect from '@/shared/presentation/components/SearchableSelect'
 import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
-import { Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
+import { Alert, Card, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -16,8 +15,6 @@ import {
   SETOR_PASTORAL_OPCOES,
   SUBTIPO_CONSELHO_LABELS,
 } from '@/shared/domain/types/types';
-import {Usuario} from '@/contextos/iam/infrastructure/http/usuarios';
-import {getOrganizacaoMembros} from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import {organizacaoSchema, OrganizacaoFormInput} from '@/contextos/organizacao/presentation/schemas/organizacaoSchema';
 
@@ -27,7 +24,6 @@ interface OrganizacaoFormModalProps {
   onSave: (data: Omit<Organizacao, 'id'>) => void;
   organizacao?: Organizacao | null;
   isPending: boolean;
-  usuarios?: Usuario[];
   igrejas?: Organizacao[];
   organizacoes?: Organizacao[];
   pastoraisOficiais?: PastoralMovimentoOficial[];
@@ -37,8 +33,6 @@ const defaultValues: OrganizacaoFormInput = {
   nome: '',
   tipo: 'PASTORAL',
   contato: '',
-  coordenador: '',
-  viceCoordenador: '',
   parentId: '',
   pastoralOficialId: '',
   setorPastoral: '',
@@ -57,7 +51,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   onSave,
   organizacao,
   isPending,
-  usuarios = [],
   igrejas = [],
   organizacoes = [],
   pastoraisOficiais = [],
@@ -80,8 +73,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
         nome: organizacao.nome,
         tipo: (organizacao.tipo || 'PASTORAL') as OrganizacaoFormInput['tipo'],
         contato: organizacao.contato || '',
-        coordenador: organizacao.coordenador || '',
-        viceCoordenador: organizacao.viceCoordenador || '',
         parentId: organizacao.parentId || '',
         pastoralOficialId: organizacao.pastoralOficialId || '',
         setorPastoral: organizacao.setorPastoral || '',
@@ -93,53 +84,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
   }, [organizacao, open, reset]);
 
   const tipo = watch('tipo');
-  const parentId = watch('parentId');
   const exigeSetor = tipo === 'PASTORAL' || tipo === 'SERVICO_PAROQUIAL';
-
-  const getSelectedChurchId = () => {
-    if (!parentId) return null;
-    const parentOrg = organizacoes.find(o => o.id === parentId);
-    if (!parentOrg) return null;
-    if (parentOrg.tipo === 'MATRIZ' || parentOrg.tipo === 'COMUNIDADE') {
-      return parentOrg.id;
-    }
-    if (parentOrg.parentId) {
-      const grandParentOrg = organizacoes.find(o => o.id === parentOrg.parentId);
-      if (grandParentOrg && (grandParentOrg.tipo === 'MATRIZ' || grandParentOrg.tipo === 'COMUNIDADE')) {
-        return grandParentOrg.id;
-      }
-    }
-    return null;
-  };
-
-  const churchId = getSelectedChurchId();
-
-  const { data: churchMembers = [] } = useQuery({
-    queryKey: ['organizacaoMembros', churchId],
-    queryFn: () => getOrganizacaoMembros(churchId!),
-    enabled: !!churchId,
-  });
-
-  const getCoordinatorOptions = () => {
-    if (churchId) {
-      if (churchMembers.length > 0) {
-        return churchMembers.map(m => ({
-          id: m.usuarioNome,
-          nome: m.usuarioNome
-        }));
-      }
-      return usuarios.map(u => ({
-        id: u.nome || u.username,
-        nome: u.nome || u.username
-      }));
-    }
-    return usuarios.map(u => ({
-      id: u.nome || u.username,
-      nome: u.nome || u.username
-    }));
-  };
-
-  const coordinatorOptions = getCoordinatorOptions();
 
   const handleClose = () => confirmDiscard(isDirty, onClose);
 
@@ -148,8 +93,6 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       nome: data.nome.trim(),
       tipo: data.tipo,
       contato: data.contato?.trim() || null,
-      coordenador: data.coordenador?.trim() || null,
-      viceCoordenador: data.viceCoordenador?.trim() || null,
       ativo: organizacao ? organizacao.ativo : true,
       parentId: data.parentId || null,
       pastoralOficialId: (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO') ? data.pastoralOficialId || null : null,
@@ -370,55 +313,13 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               sx={{ mb: 2.5 }}
             />
 
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
-
-                  <Controller
-                    name="coordenador"
-                    control={control}
-                    render={({ field }) => (
-                      <SearchableSelect
-                        labelId="coordenador-select-label"
-                        label="Coordenador"
-                        disabled={isPending}
-                        {...field}
-                        value={field.value ?? ''}
-                      >
-                        <MenuItem value=""><em>Nenhum</em></MenuItem>
-                        {coordinatorOptions.map(opt => (
-                          <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                        ))}
-                      </SearchableSelect>
-                    )}
-                  />
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 6 }}>
-                <FormControl fullWidth size="small">
-
-                  <Controller
-                    name="viceCoordenador"
-                    control={control}
-                    render={({ field }) => (
-                      <SearchableSelect
-                        labelId="vice-coordenador-select-label"
-                        label="Vice-Coordenador"
-                        disabled={isPending}
-                        {...field}
-                        value={field.value ?? ''}
-                      >
-                        <MenuItem value=""><em>Nenhum</em></MenuItem>
-                        {coordinatorOptions.map(opt => (
-                          <MenuItem key={opt.id} value={opt.nome}>{opt.nome}</MenuItem>
-                        ))}
-                      </SearchableSelect>
-                    )}
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
+            <Alert severity="info" sx={{ mt: 0.5 }}>
+              {organizacao?.coordenador
+                ? `Coordenação atual: ${organizacao.coordenador}${organizacao.viceCoordenador ? ` e ${organizacao.viceCoordenador}` : ''}. `
+                : ''}
+              A coordenação é um mandato temporário proposto pelo grupo e homologado pelo Pároco; gerencie-o na ação
+              &quot;Coordenação&quot; da lista.
+            </Alert>
             </CardContent>
           </Card>
           </Stack>

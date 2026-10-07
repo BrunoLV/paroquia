@@ -28,6 +28,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -101,8 +102,8 @@ class OrganizacaoServiceTest {
 
         assertNotNull(created.getId());
         assertEquals("PJ", created.getNome());
-        assertEquals("Coordenador A", created.getCoordenador());
-        assertEquals("Vice Coordenador B", created.getViceCoordenador());
+        assertNull(created.getCoordenador());
+        assertNull(created.getViceCoordenador());
         assertTrue(created.isAtivo());
         verify(repository).save(any(Organizacao.class));
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
@@ -124,8 +125,8 @@ class OrganizacaoServiceTest {
 
         assertEquals("PJ Novo", org.getNome());
         assertEquals(TipoOrganizacao.PASTORAL, org.getTipo());
-        assertEquals("Novo Coordenador", org.getCoordenador());
-        assertEquals("Novo Vice", org.getViceCoordenador());
+        assertEquals("Coordenador A", org.getCoordenador());
+        assertEquals("Vice Coordenador B", org.getViceCoordenador());
         assertFalse(org.isAtivo());
         verify(repository).save(org);
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());

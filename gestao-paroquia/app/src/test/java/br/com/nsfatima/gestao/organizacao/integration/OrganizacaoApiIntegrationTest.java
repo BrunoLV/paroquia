@@ -104,8 +104,8 @@ class OrganizacaoApiIntegrationTest {
                         .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Música"))
-                .andExpect(jsonPath("$.coordenador").value("Pedro Coordenador"))
-                .andExpect(jsonPath("$.viceCoordenador").value("Ana Vice"))
+                .andExpect(jsonPath("$.coordenador").doesNotExist())
+                .andExpect(jsonPath("$.viceCoordenador").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
 
         // Simple way to get ID from response
@@ -115,8 +115,8 @@ class OrganizacaoApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Pastoral da Música"))
                 .andExpect(jsonPath("$.tipo").value("PASTORAL"))
-                .andExpect(jsonPath("$.coordenador").value("Pedro Coordenador"))
-                .andExpect(jsonPath("$.viceCoordenador").value("Ana Vice"));
+                .andExpect(jsonPath("$.coordenador").doesNotExist())
+                .andExpect(jsonPath("$.viceCoordenador").doesNotExist());
     }
 
     @Test

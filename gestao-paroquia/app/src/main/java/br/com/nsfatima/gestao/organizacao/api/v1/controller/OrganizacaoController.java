@@ -1,16 +1,12 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
-import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
-import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ObterOrganogramaUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ListarOrganizacaoMembrosUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
-import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,9 +36,9 @@ import java.util.stream.Collectors;
 
 /**
  * Expõe a API REST de gestão de organizações da paróquia (Matriz, Comunidades, Pastorais, Movimentos,
- * Conselhos, Clero), incluindo consulta do organograma e dos membros de cada organização. Ao criar ou
- * atualizar uma organização, sincroniza automaticamente os vínculos formais de coordenador/vice-coordenador
- * com base no nome/username informado em texto livre, via {@link AdicionarVinculoUseCase}.
+ * Conselhos, Clero), incluindo consulta do organograma e dos membros de cada organização. A coordenação não é
+ * definida aqui: é um encargo temporário proposto e homologado pelo Pároco, ver {@code MandatoCoordenacaoController};
+ * {@code coordenador}/{@code viceCoordenador} são apenas o espelho de leitura do mandato vigente.
  */
 @RestController
 @RequestMapping("/api/v1/organizacoes")
@@ -52,25 +48,18 @@ public class OrganizacaoController {
     private final OrganizacaoService organizacaoService;
     private final ListarOrganizacaoMembrosUseCase listarOrganizacaoMembrosUseCase;
     private final ObterOrganogramaUseCase obterOrganogramaUseCase;
-    private final AdicionarVinculoUseCase adicionarVinculoUseCase;
-    private final UsuarioJpaRepository usuarioRepository;
 
     public OrganizacaoController(
             OrganizacaoService organizacaoService,
             ListarOrganizacaoMembrosUseCase listarOrganizacaoMembrosUseCase,
-            ObterOrganogramaUseCase obterOrganogramaUseCase,
-            AdicionarVinculoUseCase adicionarVinculoUseCase,
-            UsuarioJpaRepository usuarioRepository) {
+            ObterOrganogramaUseCase obterOrganogramaUseCase) {
         this.organizacaoService = organizacaoService;
         this.listarOrganizacaoMembrosUseCase = listarOrganizacaoMembrosUseCase;
         this.obterOrganogramaUseCase = obterOrganogramaUseCase;
-        this.adicionarVinculoUseCase = adicionarVinculoUseCase;
-        this.usuarioRepository = usuarioRepository;
     }
 
     /**
-     * Cria uma nova organização e sincroniza os vínculos de coordenador/vice-coordenador informados em texto
-     * livre na requisição.
+     * Cria uma nova organização (a coordenação nasce de um mandato homologado).
      *
      * @param request dados da organização a criar
      * @return a organização criada
@@ -98,13 +87,11 @@ public class OrganizacaoController {
                 request.setorPastoral(),
                 request.subtipoConselho()
         );
-        syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
     }
 
     /**
-     * Atualiza uma organização existente e ressincroniza os vínculos de coordenador/vice-coordenador com os
-     * novos valores informados.
+     * Atualiza uma organização existente preservando o espelho de coordenação, que só muda por mandato.
      *
      * @param id identificador da organização a atualizar
      * @param request novos dados da organização
@@ -138,63 +125,7 @@ public class OrganizacaoController {
                 request.setorPastoral(),
                 request.subtipoConselho()
         );
-        syncCoordinatorVinculos(org, request.coordenador(), request.viceCoordenador());
         return toResponse(org);
-    }
-
-    private void syncCoordinatorVinculos(Organizacao org, String coordName, String viceCoordName) {
-        UUID igrejaId = resolveIgrejaVinculoId(org);
-        PapelOrganizacional papel = PapelOrganizacional.COORDENADOR;
-
-        syncSingleRole(org, coordName, papel, igrejaId);
-        syncSingleRole(org, viceCoordName, papel, igrejaId);
-    }
-
-    private void syncSingleRole(Organizacao org,
-                                String nameInput, PapelOrganizacional papel,
-                                UUID igrejaVinculoId) {
-
-        if (nameInput == null || nameInput.trim().isEmpty()) {
-            return;
-        }
-        String input = nameInput.trim();
-        UUID userId = null;
-        try {
-            userId = UUID.fromString(input);
-        } catch (IllegalArgumentException e) {
-            var userOpt = usuarioRepository.findByUsernameIgnoreCase(input);
-            if (userOpt.isPresent()) {
-                userId = userOpt.get().getId();
-            }
-        }
-
-        if (userId != null && usuarioRepository.existsById(userId)) {
-            try {
-                adicionarVinculoUseCase.execute(userId, org.getId(), org.getTipo(), papel, igrejaVinculoId);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    private UUID resolveIgrejaVinculoId(Organizacao org) {
-        // CONSELHO tem organização-mãe diretamente na UnidadeTerritorial (Matriz/Comunidade, track
-        // linguagem_ubiqua_dominio); PASTORAL/MOVIMENTO têm organização-mãe um CONSELHO, cuja
-        // organização-mãe é que é a UnidadeTerritorial; SERVICO_PAROQUIAL não tem igreja de vínculo.
-        if (org.getTipo() == TipoOrganizacao.CONSELHO) {
-            return org.getParentId();
-        }
-        if (org.getParentId() == null) {
-            return null;
-        }
-        var parentOpt = organizacaoService.obterPorId(org.getParentId());
-        if (parentOpt.isEmpty()) {
-            return null;
-        }
-        var parent = parentOpt.get();
-        if (parent.getTipo() == TipoOrganizacao.CONSELHO) {
-            return parent.getParentId();
-        }
-        return null;
     }
 
     /**

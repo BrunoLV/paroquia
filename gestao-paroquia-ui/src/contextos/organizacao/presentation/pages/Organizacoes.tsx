@@ -8,13 +8,14 @@ import { getUsuarios } from '@/contextos/iam/infrastructure/http/usuarios';
 import { getPastoraisOficiais } from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
 import { Organizacao } from '@/shared/domain/types/types';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canManageOrganizacoes } from '@/contextos/iam/presentation/auth/permissions';
+import { canHomologarMandato, canManageOrganizacoes, canProporMandato } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import { OrganizacoesFilterBar } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacoesFilterBar';
 import { OrganizacoesTable } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacoesTable';
+import { OrganizacaoMandatosModal } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMandatosModal';
 import { OrganizacaoMembrosModal } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMembrosModal';
 import OrganizacaoFormModal from '@/contextos/organizacao/presentation/pages/OrganizacaoFormModal';
 
@@ -32,6 +33,8 @@ const Organizacoes: React.FC = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
+
+  const [mandatosOrg, setMandatosOrg] = useState<Organizacao | null>(null);
 
   const [membrosModalOpen, setMembrosModalOpen] = useState(false);
   const [selectedOrgParaMembros, setSelectedOrgParaMembros] = useState<Organizacao | null>(null);
@@ -144,6 +147,7 @@ const Organizacoes: React.FC = () => {
           setSelectedOrgParaMembros(org);
           setMembrosModalOpen(true);
         }}
+        onViewMandatos={setMandatosOrg}
         onEdit={(org) => {
           setSelectedOrg(org);
           setModalOpen(true);
@@ -158,7 +162,6 @@ const Organizacoes: React.FC = () => {
         onSave={(data) => saveMutation.mutate(data)}
         organizacao={selectedOrg}
         isPending={saveMutation.isPending}
-        usuarios={usuarios}
         igrejas={igrejas}
         organizacoes={orgs}
         pastoraisOficiais={pastoraisOficiais}
@@ -173,6 +176,14 @@ const Organizacoes: React.FC = () => {
         organizacao={selectedOrgParaMembros}
         igrejas={igrejas}
         usuarios={usuarios}
+      />
+
+      <OrganizacaoMandatosModal
+        open={!!mandatosOrg}
+        onClose={() => setMandatosOrg(null)}
+        organizacao={mandatosOrg}
+        canPropor={canProporMandato(user)}
+        canHomologar={canHomologarMandato(user)}
       />
     </Container>
   );

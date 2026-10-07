@@ -2,6 +2,7 @@ import SearchableTablePagination from '@/shared/presentation/components/Searchab
 import React from 'react';
 import { Box, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
@@ -21,6 +22,7 @@ interface OrganizacoesTableProps {
   onRowsPerPageChange: (newRows: number) => void;
   canManage: boolean;
   onViewMembers: (org: Organizacao) => void;
+  onViewMandatos: (org: Organizacao) => void;
   onEdit: (org: Organizacao) => void;
   onToggleStatus: (org: Organizacao) => void;
   isTogglePending?: boolean;
@@ -35,6 +37,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
   onRowsPerPageChange,
   canManage,
   onViewMembers,
+  onViewMandatos,
   onEdit,
   onToggleStatus,
   isTogglePending,
@@ -93,6 +96,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
                   <TableActionMenu
                     actions={[
                       { label: 'Membros', icon: <GroupsIcon fontSize="small" color="primary" />, onClick: () => onViewMembers(org) },
+                      { label: 'Coordenação', icon: <AssignmentIndIcon fontSize="small" color="primary" />, onClick: () => onViewMandatos(org) },
                       ...(canManage ? [
                         { label: 'Editar', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => onEdit(org), disabled: isTogglePending },
                         { label: org.ativo ? 'Inativar' : 'Ativar', icon: org.ativo ? <ToggleOffIcon fontSize="small" color="error" /> : <ToggleOnIcon fontSize="small" color="success" />, onClick: () => onToggleStatus(org), disabled: isTogglePending },

@@ -7,17 +7,7 @@ import {ThemeProvider} from '@mui/material/styles';
 import theme from '@/shared/presentation/theme/theme';
 import {Organizacao} from '@/shared/domain/types/types';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {getOrganizacaoMembros} from '@/contextos/organizacao/infrastructure/http/organizacoes';
 
-vi.mock('@/contextos/organizacao/infrastructure/http/organizacoes', async (importOriginal: any) => {
-  const actual: any = await importOriginal();
-  return {
-    ...actual,
-    getOrganizacaoMembros: vi.fn(),
-  };
-});
-
-const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
 
 describe('OrganizacaoFormModal', () => {
   const mockOnSave = jest.fn();
@@ -80,7 +70,6 @@ describe('OrganizacaoFormModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGetOrganizacaoMembros.mockResolvedValue([]);
   });
 
   test('conselho se articula a Matriz ou Comunidade; demais organismos, a conselho pastoral', () => {
@@ -181,24 +170,14 @@ describe('OrganizacaoFormModal', () => {
     expect(mockOnSave).not.toHaveBeenCalled();
   });
 
-  test('renders coordinator select dropdown and calls getOrganizacaoMembros when parent organization resolves to a church', async () => {
-    mockGetOrganizacaoMembros.mockResolvedValue([
-      { vinculoId: 'm-1', usuarioId: 'u-1', usuarioNome: 'Membro Teste', papel: 'OUTRO', ativo: true }
-    ]);
-
+  test('coordenação não é editável no cadastro: informa o mandato homologado', () => {
     renderModal({
-      organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true }
+      organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true, coordenador: 'Maria da Silva' }
     });
 
-    // Expect Coordenador to be rendered as select/combobox
-    const coordSelect = screen.getByRole('combobox', { name: /^Coordenador$/ });
-    expect(coordSelect).toBeInTheDocument();
-
-    fireEvent.mouseDown(coordSelect);
-    
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: 'Membro Teste' })).toBeInTheDocument();
-    });
+    expect(screen.queryByRole('combobox', { name: /^Coordenador$/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Coordenação atual: Maria da Silva/)).toBeInTheDocument();
+    expect(screen.getByText(/mandato temporário proposto pelo grupo e homologado pelo Pároco/)).toBeInTheDocument();
   });
 
   test('renders action buttons with right alignment and standardized labels', () => {

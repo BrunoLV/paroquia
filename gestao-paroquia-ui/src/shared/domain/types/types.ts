@@ -228,6 +228,34 @@ export const SUBTIPO_CONSELHO_LABELS: Record<SubtipoConselho, string> = {
   CAEP: "Conselho para Assuntos Econômicos (CAEP)",
 };
 
+export type FuncaoCoordenacao = "COORDENADOR" | "VICE_COORDENADOR";
+
+export const FUNCAO_COORDENACAO_LABELS: Record<FuncaoCoordenacao, string> = {
+  COORDENADOR: "Coordenador",
+  VICE_COORDENADOR: "Vice-Coordenador",
+};
+
+export type StatusMandato = "PROPOSTO" | "HOMOLOGADO" | "VETADO" | "ENCERRADO";
+
+/**
+ * Mandato temporário de coordenação: proposto pelo grupo ou conselho e só legítimo após a
+ * homologação do Pároco (Cân. 519 e 317).
+ */
+export interface MandatoCoordenacao {
+  id: string;
+  organizacaoId: string;
+  fielId: string;
+  fielNome: string | null;
+  funcao: FuncaoCoordenacao;
+  inicio: string;
+  fim: string;
+  status: StatusMandato;
+  /** `true` quando homologado e dentro do período hoje. */
+  vigente: boolean;
+  motivoVeto?: string | null;
+  decididoEmUtc?: string | null;
+}
+
 export type AmbitoOrganismo = "PAROQUIAL" | "DIOCESANO" | "NACIONAL" | "INTERNACIONAL";
 
 export const AMBITO_ORGANISMO_LABELS: Record<AmbitoOrganismo, string> = {

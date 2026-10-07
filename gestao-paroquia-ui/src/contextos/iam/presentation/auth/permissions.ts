@@ -211,6 +211,12 @@ export const canManageLocais = (user: User | null): boolean => {
  * Gestão de organizações e vínculos de usuários:
  * Pároco/Bispo (criação de grupos/pastorais e provisão canônica) e ADMIN (gestão técnica de usuários).
  */
+/** Quem pode propor um mandato de coordenação: Pároco/Bispo ou a mesa do conselho pastoral (CPP). */
+export const canProporMandato = (user: User | null): boolean => isParoco(user) || isMembroCpp(user);
+
+/** Somente o Pároco (ou Bispo) homologa, veta ou encerra um mandato: provisão canônica (Cân. 519 e 317). */
+export const canHomologarMandato = (user: User | null): boolean => isParoco(user);
+
 export const canManageOrganizacoes = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user);

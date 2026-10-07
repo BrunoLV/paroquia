@@ -65,8 +65,8 @@ public class OrganizacaoService {
      * @param nome nome da organização
      * @param tipo tipo organizacional
      * @param contato informação de contato
-     * @param coordenador nome do coordenador
-     * @param viceCoordenador nome do vice-coordenador
+     * @param coordenador ignorado: a coordenação só nasce de mandato homologado (mantido por compatibilidade)
+     * @param viceCoordenador ignorado, ver {@code coordenador}
      * @param parentId identificador da organização-mãe, exigido para todos os tipos exceto {@code CLERO}
      * @param pastoralOficialId vínculo com o catálogo oficial, obrigatório para {@code PASTORAL}/{@code MOVIMENTO}
      * @return a organização recém-criada
@@ -97,8 +97,9 @@ public class OrganizacaoService {
                                 SubtipoConselho subtipoConselho) {
 
         hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
+        // coordenador/viceCoordenador do request são ignorados: a coordenação só nasce de mandato homologado
         Organizacao org = new Organizacao(UUID.randomUUID(),
-                nome, tipo, contato, coordenador, viceCoordenador, true, parentId, pastoralOficialId,
+                nome, tipo, contato, null, null, true, parentId, pastoralOficialId,
                 setorPastoral, subtipoConselho);
 
         organizacaoRepository.save(org);
@@ -122,8 +123,8 @@ public class OrganizacaoService {
      * @param nome novo nome
      * @param tipo novo tipo organizacional
      * @param contato novo contato
-     * @param coordenador novo nome do coordenador
-     * @param viceCoordenador novo nome do vice-coordenador
+     * @param coordenador ignorado: o espelho de coordenação só muda por mandato
+     * @param viceCoordenador ignorado, ver {@code coordenador}
      * @param ativo novo estado de atividade
      * @param parentId novo identificador da organização-mãe
      * @param pastoralOficialId novo vínculo com o catálogo oficial, quando aplicável
@@ -166,7 +167,8 @@ public class OrganizacaoService {
                     "Encerre os mandatos de coordenação vigentes antes de desativar a organização.");
         }
 
-        org.alterarCadastro(nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId, pastoralOficialId);
+        org.alterarCadastro(nome, tipo, contato, org.getCoordenador(), org.getViceCoordenador(), ativo, parentId,
+                pastoralOficialId);
         org.classificar(setorPastoral, subtipoConselho);
         organizacaoRepository.save(org);
 
