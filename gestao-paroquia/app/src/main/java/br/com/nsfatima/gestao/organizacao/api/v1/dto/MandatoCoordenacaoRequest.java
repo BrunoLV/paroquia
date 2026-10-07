@@ -10,22 +10,22 @@ import java.util.UUID;
  * Proposta de mandato de coordenação, sujeita à homologação do Pároco. O período respeita a duração máxima
  * definida em {@code PoliticaDuracaoMandato}.
  */
-@Schema(description = "Proposal of a coordination mandate")
+@Schema(description = "Proposta de mandato de coordenação")
 public record MandatoCoordenacaoRequest(
-        @Schema(description = "Faithful proposed for the role")
-        @NotNull(message = "Faithful is required")
+        @Schema(description = "Fiel proposto para a função")
+        @NotNull(message = "O fiel é obrigatório")
         UUID fielId,
 
-        @Schema(description = "Coordinator or vice-coordinator")
-        @NotNull(message = "Role is required")
+        @Schema(description = "Coordenador ou vice-coordenador")
+        @NotNull(message = "A função é obrigatória")
         FuncaoCoordenacao funcao,
 
-        @Schema(description = "First day of the mandate")
-        @NotNull(message = "Start date is required")
+        @Schema(description = "Primeiro dia do mandato")
+        @NotNull(message = "A data de início é obrigatória")
         LocalDate inicio,
 
-        @Schema(description = "Last day of the mandate")
-        @NotNull(message = "End date is required")
+        @Schema(description = "Último dia do mandato")
+        @NotNull(message = "A data de término é obrigatória")
         LocalDate fim
 ) {
 }

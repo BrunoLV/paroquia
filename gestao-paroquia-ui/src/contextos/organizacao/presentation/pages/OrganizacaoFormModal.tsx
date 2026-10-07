@@ -32,7 +32,8 @@ interface OrganizacaoFormModalProps {
 const defaultValues: OrganizacaoFormInput = {
   nome: '',
   tipo: 'PASTORAL',
-  contato: '',
+  email: '',
+  telefone: '',
   parentId: '',
   pastoralOficialId: '',
   setorPastoral: '',
@@ -72,7 +73,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       reset({
         nome: organizacao.nome,
         tipo: (organizacao.tipo || 'PASTORAL') as OrganizacaoFormInput['tipo'],
-        contato: organizacao.contato || '',
+        email: organizacao.email || (organizacao.contato?.includes('@') ? organizacao.contato : '') || '',
+        telefone: organizacao.telefone || (organizacao.contato && !organizacao.contato.includes('@') ? organizacao.contato : '') || '',
         parentId: organizacao.parentId || '',
         pastoralOficialId: organizacao.pastoralOficialId || '',
         setorPastoral: organizacao.setorPastoral || '',
@@ -92,7 +94,9 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     onSave({
       nome: data.nome.trim(),
       tipo: data.tipo,
-      contato: data.contato?.trim() || null,
+      contato: null,
+      email: data.email?.trim() || null,
+      telefone: data.telefone?.trim() || null,
       ativo: organizacao ? organizacao.ativo : true,
       parentId: data.parentId || null,
       pastoralOficialId: (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO') ? data.pastoralOficialId || null : null,
@@ -303,15 +307,34 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                 </Typography>
               </Stack>
 
-            <TextField
-              label="Contato (E-mail/Tel)"
-              variant="outlined"
-              fullWidth
-              size="small"
-              disabled={isPending}
-              {...register('contato')}
-              sx={{ mb: 2.5 }}
-            />
+            <Grid container spacing={2} sx={{ mb: 2.5 }}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="E-mail"
+                  type="email"
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  disabled={isPending}
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  {...register('email')}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Telefone"
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  placeholder="(11) 99999-9999"
+                  disabled={isPending}
+                  error={!!errors.telefone}
+                  helperText={errors.telefone?.message}
+                  {...register('telefone')}
+                />
+              </Grid>
+            </Grid>
 
             <Alert severity="info" sx={{ mt: 0.5 }}>
               {organizacao?.coordenador

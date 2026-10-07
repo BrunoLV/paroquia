@@ -336,7 +336,10 @@ export interface Organizacao {
   id: string;
   nome: string;
   tipo: TipoOrganismoParoquial | string;
+  /** Espelho legado de leitura (e-mail ou, na falta dele, telefone). */
   contato: string | null;
+  email?: string | null;
+  telefone?: string | null;
   coordenador?: string | null;
   viceCoordenador?: string | null;
   ativo: boolean;

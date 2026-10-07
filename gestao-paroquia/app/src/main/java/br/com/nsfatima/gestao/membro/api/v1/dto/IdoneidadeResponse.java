@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Idoneidade pastoral do agente e as pendências que o impedem de exercer a função que ocupa.
  */
-@Schema(description = "Pastoral suitability of an agent and its pending requirements")
+@Schema(description = "Idoneidade pastoral de um agente e suas pendências")
 public record IdoneidadeResponse(
         LocalDate formacaoConcluidaEm,
         LocalDate vivenciaSacramentalAtestadaEm,
@@ -15,9 +15,9 @@ public record IdoneidadeResponse(
         LocalDate termoProtecaoMenoresValidoAte,
         LocalDate enviadoEm,
         String enviadoPor,
-        @Schema(description = "Whether the agent has no pending requirement for the current role")
+        @Schema(description = "Indica se o agente não tem pendências para a função atual")
         boolean apto,
-        @Schema(description = "Pending requirements for the current role")
+        @Schema(description = "Pendências para a função atual")
         List<String> pendencias
 ) {
 }

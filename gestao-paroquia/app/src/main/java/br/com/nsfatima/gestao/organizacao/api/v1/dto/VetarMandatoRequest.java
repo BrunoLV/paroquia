@@ -7,11 +7,11 @@ import jakarta.validation.constraints.Size;
 /**
  * Veto do Pároco a uma proposta de mandato; o motivo é obrigatório.
  */
-@Schema(description = "Veto of a coordination mandate proposal")
+@Schema(description = "Veto a uma proposta de mandato de coordenação")
 public record VetarMandatoRequest(
-        @Schema(description = "Reason for the veto")
-        @NotBlank(message = "Reason is required")
-        @Size(max = 500, message = "Reason must not exceed 500 characters")
+        @Schema(description = "Motivo do veto")
+        @NotBlank(message = "O motivo é obrigatório")
+        @Size(max = 500, message = "O motivo não pode exceder 500 caracteres")
         String motivo
 ) {
 }

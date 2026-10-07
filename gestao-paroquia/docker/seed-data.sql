@@ -1607,3 +1607,11 @@ JOIN calendario.fieis f ON f.id = m.fiel_id
 WHERE m.organizacao_id = o.id AND m.status = 'HOMOLOGADO' AND m.funcao = 'COORDENADOR'
   AND o.id IN ('00000000-0000-0000-0000-0000000004a1', '00000000-0000-0000-0000-0000000004b1',
                '00000000-0000-0000-0000-0000000004b3');
+
+-- Contato institucional separado: e-mail (a partir do contato semeado) e telefone fictício por organização.
+UPDATE calendario.organizacao SET email = contato WHERE contato LIKE '%@%' AND email IS NULL;
+UPDATE calendario.organizacao
+SET telefone = '(11) 9' || LPAD((ABS(('x' || SUBSTR(MD5(id::text), 1, 7))::bit(28)::int) % 10000)::text, 4, '0') || '-' ||
+               LPAD((ABS(('x' || SUBSTR(MD5(nome), 1, 7))::bit(28)::int) % 10000)::text, 4, '0')
+WHERE telefone IS NULL AND tipo <> 'CONSELHO';
+UPDATE calendario.organizacao SET contato = COALESCE(email, telefone);

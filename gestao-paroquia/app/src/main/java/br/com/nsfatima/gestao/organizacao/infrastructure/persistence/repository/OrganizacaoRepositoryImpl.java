@@ -56,6 +56,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         entity.setAtivo(domain.isAtivo());
         entity.setParentId(domain.getParentId());
         entity.setPastoralOficialId(domain.getPastoralOficialId());
+        entity.setEmail(domain.getEmail());
+        entity.setTelefone(domain.getTelefone());
         entity.setSetorPastoral(domain.getSetorPastoral());
         entity.setSubtipoConselho(domain.getSubtipoConselho());
         organizacaoJpaRepository.save(entity);
@@ -93,7 +95,7 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         String coordName = resolveRoleMemberName(entity.getId(), PAPEL_COORDENADOR, entity.getCoordenador());
         String viceName = resolveRoleMemberName(entity.getId(), PAPEL_SECRETARIO, entity.getViceCoordenador());
 
-        return new Organizacao(
+        Organizacao organizacao = new Organizacao(
                 entity.getId(),
                 entity.getNome(),
                 entity.getTipo(),
@@ -106,6 +108,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
                 entity.getSetorPastoral(),
                 entity.getSubtipoConselho()
         );
+        organizacao.definirContatos(entity.getEmail(), entity.getTelefone());
+        return organizacao;
     }
 
     private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {

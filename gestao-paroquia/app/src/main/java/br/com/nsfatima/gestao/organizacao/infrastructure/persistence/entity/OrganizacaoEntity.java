@@ -57,6 +57,28 @@ public class OrganizacaoEntity extends BaseAuditableEntity {
     @Column(name = "subtipo_conselho", length = 16)
     private SubtipoConselho subtipoConselho;
 
+    @Column(length = 255)
+    private String email;
+
+    @Column(length = 32)
+    private String telefone;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
     public SubtipoConselho getSubtipoConselho() {
         return subtipoConselho;
     }

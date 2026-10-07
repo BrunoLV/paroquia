@@ -42,7 +42,8 @@ export const organizacaoSchema = z
   .object({
     nome: z.string().trim().min(1, 'O nome é obrigatório'),
     tipo: z.enum(['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'CONSELHO']),
-    contato: z.string().optional(),
+    email: z.string().trim().email('E-mail inválido').or(z.literal('')).optional(),
+    telefone: z.string().trim().max(32, 'Telefone muito longo').optional(),
     coordenador: z.string().optional(),
     viceCoordenador: z.string().optional(),
     parentId: z.string().optional(),

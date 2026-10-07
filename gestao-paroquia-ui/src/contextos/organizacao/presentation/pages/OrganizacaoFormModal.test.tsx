@@ -180,6 +180,37 @@ describe('OrganizacaoFormModal', () => {
     expect(screen.getByText(/mandato temporário proposto pelo grupo e homologado pelo Pároco/)).toBeInTheDocument();
   });
 
+  test('contato é separado em e-mail e telefone e ambos são enviados', async () => {
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
+    fireEvent.change(screen.getByLabelText(/^E-mail$/), { target: { value: 'pastoral@nsfatima.com' } });
+    fireEvent.change(screen.getByLabelText(/^Telefone$/), { target: { value: '(11) 99999-0000' } });
+
+    fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
+    fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
+    fireEvent.mouseDown(screen.getByLabelText(/Múnus/i));
+    fireEvent.click(screen.getByRole('option', { name: /^Ensinar/ }));
+    fireEvent.mouseDown(screen.getByLabelText(/Conselho Pastoral \(CPP\/CPC\)/i));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
+
+    await waitFor(() => expect(mockOnSave).toHaveBeenCalledWith(
+      expect.objectContaining({ email: 'pastoral@nsfatima.com', telefone: '(11) 99999-0000', contato: null })
+    ));
+  });
+
+  test('e-mail inválido bloqueia o envio', async () => {
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
+    fireEvent.change(screen.getByLabelText(/^E-mail$/), { target: { value: 'sem-arroba' } });
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
+
+    await waitFor(() => expect(screen.getByText('E-mail inválido')).toBeInTheDocument());
+    expect(mockOnSave).not.toHaveBeenCalled();
+  });
+
   test('renders action buttons with right alignment and standardized labels', () => {
     renderModal();
     const cancelButton = screen.getByRole('button', { name: /Cancelar/i });

@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,43 +17,52 @@ import java.util.UUID;
  * hierarquia organizacional (ex.: Pastoral/Movimento exige {@code pastoralOficialId} e organização-mãe do
  * tipo {@code CONSELHO_PASTORAL}).
  */
-@Schema(description = "Request to create or update an Organization")
+@Schema(description = "Requisição para criar ou atualizar uma organização")
 public record OrganizacaoRequest(
-        @Schema(description = "Organization name", example = "Pastoral da Juventude")
-        @NotBlank(message = "Name is required")
-        @Size(max = 255, message = "Name must not exceed 255 characters")
+        @Schema(description = "Nome da organização", example = "Pastoral da Juventude")
+        @NotBlank(message = "O nome é obrigatório")
+        @Size(max = 255, message = "O nome não pode exceder 255 caracteres")
         String nome,
 
-        @Schema(description = "Organization type")
-        @NotNull(message = "Type is required")
+        @Schema(description = "Tipo da organização")
+        @NotNull(message = "O tipo é obrigatório")
         TipoOrganizacao tipo,
 
-        @Schema(description = "Contact information", example = "pj@nsfatima.com")
-        @Size(max = 255, message = "Contact must not exceed 255 characters")
+        @Schema(description = "Informação de contato", example = "pj@nsfatima.com")
+        @Size(max = 255, message = "O contato não pode exceder 255 caracteres")
         String contato,
 
-        @Schema(description = "Coordinator name", example = "João Silva")
-        @Size(max = 255, message = "Coordinator name must not exceed 255 characters")
+        @Schema(description = "Nome do coordenador", example = "João Silva")
+        @Size(max = 255, message = "O nome do coordenador não pode exceder 255 caracteres")
         String coordenador,
 
-        @Schema(description = "Vice-coordinator name", example = "Maria Santos")
-        @Size(max = 255, message = "Vice-coordinator name must not exceed 255 characters")
+        @Schema(description = "Nome do vice-coordenador", example = "Maria Santos")
+        @Size(max = 255, message = "O nome do vice-coordenador não pode exceder 255 caracteres")
         String viceCoordenador,
 
-        @Schema(description = "Whether the organization is active", example = "true")
+        @Schema(description = "Indica se a organização está ativa", example = "true")
         boolean ativo,
 
-        @Schema(description = "Parent organization unique identifier")
+        @Schema(description = "Identificador da organização-mãe")
         UUID parentId,
 
-        @Schema(description = "Pastoral/Movimento Oficial unique identifier")
+        @Schema(description = "Identificador da Pastoral/Movimento Oficial")
         UUID pastoralOficialId,
 
-        @Schema(description = "Munus served: teaching, sanctifying or governing (required for PASTORAL and "
+        @Schema(description = "Múnus a que serve: ensinar, santificar ou governar (obrigatório para PASTORAL e "
                 + "SERVICO_PAROQUIAL)")
         SetorPastoral setorPastoral,
 
-        @Schema(description = "Council nature: CPP, CPC or CAEP (required for CONSELHO)")
-        SubtipoConselho subtipoConselho
+        @Schema(description = "Natureza do conselho: CPP, CPC ou CAEP (obrigatória para CONSELHO)")
+        SubtipoConselho subtipoConselho,
+
+        @Schema(description = "E-mail institucional", example = "pj@nsfatima.com")
+        @Email(message = "E-mail inválido")
+        @Size(max = 255, message = "O e-mail não pode exceder 255 caracteres")
+        String email,
+
+        @Schema(description = "Telefone institucional", example = "(11) 99999-9999")
+        @Size(max = 32, message = "O telefone não pode exceder 32 caracteres")
+        String telefone
 ) {
 }

@@ -103,7 +103,7 @@ public class AdicionarVinculoUseCase {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Not authenticated");
+            throw new AccessDeniedException("Não autenticado");
         }
 
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a ->

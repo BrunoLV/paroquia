@@ -21,6 +21,8 @@ public class Organizacao {
     private UUID pastoralOficialId;
     private SetorPastoral setorPastoral;
     private SubtipoConselho subtipoConselho;
+    private String email;
+    private String telefone;
 
     /**
      * Cria uma organização já existente (id definido) ou uma nova instância a ser persistida, sem aplicar
@@ -98,6 +100,31 @@ public class Organizacao {
 
     public void setPastoralOficialId(UUID pastoralOficialId) {
         this.pastoralOficialId = pastoralOficialId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    /**
+     * Define o e-mail e o telefone institucionais da organização. O campo legado {@code contato} passa a
+     * espelhar o e-mail ou, na falta dele, o telefone, para os consumidores que ainda leem um único contato.
+     *
+     * @param email e-mail institucional, ou {@code null}
+     * @param telefone telefone institucional, ou {@code null}
+     */
+    public void definirContatos(String email, String telefone) {
+        this.email = vazioParaNulo(email);
+        this.telefone = vazioParaNulo(telefone);
+        this.contato = this.email != null ? this.email : this.telefone;
+    }
+
+    private static String vazioParaNulo(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
     public SetorPastoral getSetorPastoral() {

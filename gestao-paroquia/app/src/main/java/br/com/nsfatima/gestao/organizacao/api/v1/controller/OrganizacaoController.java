@@ -85,7 +85,9 @@ public class OrganizacaoController {
                 request.parentId(),
                 request.pastoralOficialId(),
                 request.setorPastoral(),
-                request.subtipoConselho()
+                request.subtipoConselho(),
+                request.email(),
+                request.telefone()
         );
         return toResponse(org);
     }
@@ -123,7 +125,9 @@ public class OrganizacaoController {
                 request.parentId(),
                 request.pastoralOficialId(),
                 request.setorPastoral(),
-                request.subtipoConselho()
+                request.subtipoConselho(),
+                request.email(),
+                request.telefone()
         );
         return toResponse(org);
     }
@@ -253,7 +257,9 @@ public class OrganizacaoController {
                 domain.getParentId(),
                 domain.getPastoralOficialId(),
                 domain.getSetorPastoral(),
-                domain.getSubtipoConselho()
+                domain.getSubtipoConselho(),
+                domain.getEmail(),
+                domain.getTelefone()
         );
     }
 }

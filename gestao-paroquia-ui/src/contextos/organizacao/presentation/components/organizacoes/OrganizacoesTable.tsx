@@ -7,7 +7,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import { Organizacao } from '@/shared/domain/types/types';
-import { FormattedContact } from '@/shared/presentation/components/FormattedCell';
+import { FormattedEmail, FormattedPhone } from '@/shared/presentation/components/FormattedCell';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import { getOrganismoTipoMeta } from '@/shared/utils/statusMeta/organismoTipoStatus';
@@ -65,7 +65,8 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
               <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Coordenador</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Vice-Coordenador</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Contato</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Telefone</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
               <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
             </TableRow>
@@ -90,7 +91,8 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
                 <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
                 <TableCell>{org.coordenador || '-'}</TableCell>
                 <TableCell>{org.viceCoordenador || '-'}</TableCell>
-                <TableCell><FormattedContact value={org.contato} /></TableCell>
+                <TableCell><FormattedEmail value={org.email ?? (org.contato?.includes('@') ? org.contato : null)} /></TableCell>
+                <TableCell><FormattedPhone value={org.telefone ?? (org.contato && !org.contato.includes('@') ? org.contato : null)} /></TableCell>
                 <TableCell><StatusIcon {...getSituacaoAtivoMeta(org.ativo)} /></TableCell>
                 <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                   <TableActionMenu
@@ -108,7 +110,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
             ))}
             {organizacoes.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" color="text.secondary">
                     Nenhuma pastoral ou movimento encontrado.
                   </Typography>
@@ -116,7 +118,7 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
               </TableRow>
             )}
           </TableBody>
-          <SearchableTablePagination colSpan={7}
+          <SearchableTablePagination colSpan={8}
             rowsPerPageOptions={[5, 10, 25]}
             count={organizacoes.length}
             rowsPerPage={rowsPerPage}

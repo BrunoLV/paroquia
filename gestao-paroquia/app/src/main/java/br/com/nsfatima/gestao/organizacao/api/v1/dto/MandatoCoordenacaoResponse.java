@@ -10,18 +10,18 @@ import java.util.UUID;
 /**
  * Dados públicos de um mandato de coordenação, incluindo o nome do fiel apenas para exibição.
  */
-@Schema(description = "Coordination mandate data")
+@Schema(description = "Dados do mandato de coordenação")
 public record MandatoCoordenacaoResponse(
-        @Schema(description = "Unique identifier") UUID id,
-        @Schema(description = "Organization identifier") UUID organizacaoId,
-        @Schema(description = "Faithful identifier") UUID fielId,
-        @Schema(description = "Faithful display name") String fielNome,
-        @Schema(description = "Coordinator or vice-coordinator") FuncaoCoordenacao funcao,
-        @Schema(description = "First day of the mandate") LocalDate inicio,
-        @Schema(description = "Last day of the mandate") LocalDate fim,
-        @Schema(description = "Canonical status") StatusMandato status,
-        @Schema(description = "Whether the mandate is in force today") boolean vigente,
-        @Schema(description = "Reason for the veto, when vetoed") String motivoVeto,
-        @Schema(description = "Moment of the last decision") Instant decididoEmUtc
+        @Schema(description = "Identificador único") UUID id,
+        @Schema(description = "Identificador da organização") UUID organizacaoId,
+        @Schema(description = "Identificador do fiel") UUID fielId,
+        @Schema(description = "Nome do fiel para exibição") String fielNome,
+        @Schema(description = "Coordenador ou vice-coordenador") FuncaoCoordenacao funcao,
+        @Schema(description = "Primeiro dia do mandato") LocalDate inicio,
+        @Schema(description = "Último dia do mandato") LocalDate fim,
+        @Schema(description = "Situação canônica") StatusMandato status,
+        @Schema(description = "Indica se o mandato está em vigor hoje") boolean vigente,
+        @Schema(description = "Motivo do veto, quando vetado") String motivoVeto,
+        @Schema(description = "Momento da última decisão") Instant decididoEmUtc
 ) {
 }

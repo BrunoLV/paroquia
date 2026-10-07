@@ -10,29 +10,33 @@ import java.util.UUID;
 /**
  * Dados públicos de uma organização, expostos pela API de gestão de organizações.
  */
-@Schema(description = "Response with Organization data")
+@Schema(description = "Dados de uma organização")
 public record OrganizacaoResponse(
-        @Schema(description = "Unique identifier")
+        @Schema(description = "Identificador único")
         UUID id,
-        @Schema(description = "Organization name")
+        @Schema(description = "Nome da organização")
         String nome,
-        @Schema(description = "Organization type")
+        @Schema(description = "Tipo da organização")
         TipoOrganizacao tipo,
-        @Schema(description = "Contact information")
+        @Schema(description = "Informação de contato")
         String contato,
-        @Schema(description = "Coordinator name")
+        @Schema(description = "Nome do coordenador")
         String coordenador,
-        @Schema(description = "Vice-coordinator name")
+        @Schema(description = "Nome do vice-coordenador")
         String viceCoordenador,
-        @Schema(description = "Whether the organization is active")
+        @Schema(description = "Indica se a organização está ativa")
         boolean ativo,
-        @Schema(description = "Parent organization unique identifier")
+        @Schema(description = "Identificador da organização-mãe")
         UUID parentId,
-        @Schema(description = "Pastoral/Movimento Oficial unique identifier")
+        @Schema(description = "Identificador da Pastoral/Movimento Oficial")
         UUID pastoralOficialId,
-        @Schema(description = "Munus served")
+        @Schema(description = "Múnus a que serve")
         SetorPastoral setorPastoral,
-        @Schema(description = "Council nature (CONSELHO only)")
-        SubtipoConselho subtipoConselho
+        @Schema(description = "Natureza do conselho (somente CONSELHO)")
+        SubtipoConselho subtipoConselho,
+        @Schema(description = "E-mail institucional")
+        String email,
+        @Schema(description = "Telefone institucional")
+        String telefone
 ) {
 }

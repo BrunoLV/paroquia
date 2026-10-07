@@ -95,12 +95,31 @@ public class OrganizacaoService {
                                 String viceCoordenador, UUID parentId,
                                 UUID pastoralOficialId, SetorPastoral setorPastoral,
                                 SubtipoConselho subtipoConselho) {
+        return criar(nome, tipo, contato, coordenador, viceCoordenador, parentId, pastoralOficialId,
+                setorPastoral, subtipoConselho, null, null);
+    }
+
+    /**
+     * Cria uma nova organização com e-mail e telefone institucionais separados.
+     *
+     * @param email e-mail institucional; quando ambos forem nulos, {@code contato} legado é classificado
+     * @param telefone telefone institucional
+     * @return a organização recém-criada
+     * @throws OrganizacaoNegocioException se a tipologia ou a hierarquia forem violadas
+     */
+    @Transactional
+    public Organizacao criar(String nome,
+                                TipoOrganizacao tipo, String contato, String coordenador,
+                                String viceCoordenador, UUID parentId,
+                                UUID pastoralOficialId, SetorPastoral setorPastoral,
+                                SubtipoConselho subtipoConselho, String email, String telefone) {
 
         hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
         // coordenador/viceCoordenador do request são ignorados: a coordenação só nasce de mandato homologado
         Organizacao org = new Organizacao(UUID.randomUUID(),
                 nome, tipo, contato, null, null, true, parentId, pastoralOficialId,
                 setorPastoral, subtipoConselho);
+        aplicarContatos(org, contato, email, telefone);
 
         organizacaoRepository.save(org);
 
@@ -157,6 +176,25 @@ public class OrganizacaoService {
                                    String viceCoordenador,
                                    boolean ativo, UUID parentId, UUID pastoralOficialId,
                                    SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
+        return atualizar(id, nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId,
+                pastoralOficialId, setorPastoral, subtipoConselho, null, null);
+    }
+
+    /**
+     * Atualiza uma organização com e-mail e telefone institucionais separados.
+     *
+     * @param email e-mail institucional; quando ambos forem nulos, {@code contato} legado é classificado
+     * @param telefone telefone institucional
+     * @return a organização atualizada
+     * @throws OrganizacaoNegocioException se a organização não existir ou violar a tipologia/hierarquia
+     */
+    @Transactional
+    public Organizacao atualizar(UUID id,
+                                   String nome, TipoOrganizacao tipo, String contato, String coordenador,
+                                   String viceCoordenador,
+                                   boolean ativo, UUID parentId, UUID pastoralOficialId,
+                                   SetorPastoral setorPastoral, SubtipoConselho subtipoConselho,
+                                   String email, String telefone) {
 
         Organizacao org = organizacaoRepository.findById(id)
                 .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
@@ -170,6 +208,7 @@ public class OrganizacaoService {
         org.alterarCadastro(nome, tipo, contato, org.getCoordenador(), org.getViceCoordenador(), ativo, parentId,
                 pastoralOficialId);
         org.classificar(setorPastoral, subtipoConselho);
+        aplicarContatos(org, contato, email, telefone);
         organizacaoRepository.save(org);
 
         auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
@@ -228,5 +267,19 @@ public class OrganizacaoService {
     @Transactional(readOnly = true)
     public List<Organizacao> listar() {
         return organizacaoRepository.findAll();
+    }
+
+    /**
+     * Define e-mail e telefone; sem nenhum dos dois, classifica o {@code contato} legado (com {@code @} é
+     * e-mail, caso contrário telefone).
+     */
+    private void aplicarContatos(Organizacao org, String contato, String email, String telefone) {
+        boolean semContatos = (email == null || email.isBlank()) && (telefone == null || telefone.isBlank());
+        if (semContatos && contato != null && !contato.isBlank()) {
+            boolean ehEmail = contato.contains("@");
+            org.definirContatos(ehEmail ? contato : null, ehEmail ? null : contato);
+        } else {
+            org.definirContatos(email, telefone);
+        }
     }
 }

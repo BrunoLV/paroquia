@@ -20,7 +20,7 @@ public class OrganizacaoNegocioException extends RuntimeException {
      * @return exceção pronta para ser lançada
      */
     public static OrganizacaoNegocioException notFound(UUID id) {
-        return new OrganizacaoNegocioException("Organization not found with ID: " + id);
+        return new OrganizacaoNegocioException("Organização não encontrada com o ID: " + id);
     }
 
     /**
@@ -33,6 +33,6 @@ public class OrganizacaoNegocioException extends RuntimeException {
      */
     public static OrganizacaoNegocioException inUse(UUID id) {
         return new OrganizacaoNegocioException(
-                "Cannot delete organization " + id + " because it has associated members or events.");
+                "Não é possível excluir a organização " + id + " porque ela possui membros ou eventos associados.");
     }
 }

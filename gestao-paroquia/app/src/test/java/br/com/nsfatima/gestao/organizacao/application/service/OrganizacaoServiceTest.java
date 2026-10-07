@@ -249,4 +249,30 @@ class OrganizacaoServiceTest {
                 SetorPastoral.SANTIFICACAO_LITURGIA, null));
         verify(repository, never()).save(any(Organizacao.class));
     }
+
+    @Test
+    void deveGuardarEmailETelefoneSeparadosEEspelharNoContato() {
+        Organizacao created = service.criar("Coroinhas",
+                TipoOrganizacao.SERVICO_PAROQUIAL, null, null, null, conselhoId, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null, "coroinhas@test.com", "(11) 99999-0000");
+
+        assertEquals("coroinhas@test.com", created.getEmail());
+        assertEquals("(11) 99999-0000", created.getTelefone());
+        assertEquals("coroinhas@test.com", created.getContato());
+    }
+
+    @Test
+    void deveClassificarContatoLegadoEmEmailOuTelefone() {
+        Organizacao comEmail = service.criar("Coroinhas A",
+                TipoOrganizacao.SERVICO_PAROQUIAL, "a@test.com", null, null, conselhoId, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null);
+        Organizacao comTelefone = service.criar("Coroinhas B",
+                TipoOrganizacao.SERVICO_PAROQUIAL, "(11) 3333-4444", null, null, conselhoId, null,
+                SetorPastoral.SANTIFICACAO_LITURGIA, null);
+
+        assertEquals("a@test.com", comEmail.getEmail());
+        assertNull(comEmail.getTelefone());
+        assertEquals("(11) 3333-4444", comTelefone.getTelefone());
+        assertNull(comTelefone.getEmail());
+    }
 }
