@@ -241,14 +241,14 @@ const Clerigos: React.FC = () => {
                           actions={[
                             {
                               label: 'Visualizar ficha',
-                              icon: <VisibilityIcon fontSize="small" />,
+                              icon: <VisibilityIcon fontSize="small" color="primary" />,
                               onClick: () => setClerigoVisualizando(clerigo),
                             },
                             ...(podeGerenciarClero && 'nomeCivil' in clerigo
                               ? [
                                   {
                                     label: 'Editar cadastro',
-                                    icon: <EditIcon fontSize="small" />,
+                                    icon: <EditIcon fontSize="small" color="primary" />,
                                     onClick: () => setClerigoEditando(clerigo as Clerigo),
                                   },
                                   ...((clerigo as Clerigo).isAtivo

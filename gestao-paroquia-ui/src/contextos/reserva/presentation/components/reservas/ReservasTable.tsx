@@ -72,7 +72,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
 }) => {
   /** O menu comum preserva as ações disponíveis por estado e permissão de aprovação. */
   const rowActions = (reserva: ReservaDetalhe): TableAction[] => [
-    { label: 'Ver detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => onVisualizar(reserva) },
+    { label: 'Ver detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => onVisualizar(reserva) },
     ...(reserva.status === 'PENDENTE' && podeAprovar ? [
       { label: 'Aprovar Reserva', icon: <CheckCircleIcon fontSize="small" color="success" />, onClick: () => onAprovar(reserva) },
       { label: 'Rejeitar Solicitação', icon: <HighlightOffIcon fontSize="small" color="error" />, onClick: () => onRejeitar(reserva) },
@@ -130,7 +130,20 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
               paginated.map((r) => {
                 const statusMeta = getReservaStatusMeta(r.status);
                 return (
-                  <TableRow key={r.id} hover>
+                  <TableRow
+                    key={r.id}
+                    hover
+                    tabIndex={0}
+                    role="button"
+                    onClick={() => onVisualizar(r)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onVisualizar(r);
+                      }
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {r.tipoItem === 'LOCAL' ? (
@@ -191,7 +204,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                     <TableCell>
                       <StatusIcon {...statusMeta} />
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                       <TableActionMenu actions={rowActions(r)} />
                     </TableCell>
                   </TableRow>

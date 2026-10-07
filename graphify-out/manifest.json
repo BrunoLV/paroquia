@@ -2685,8 +2685,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1791322116.673163,
-    "ast_hash": "0d85665ef7b2f44bcb86a1e74ae9df38",
+    "mtime": 1791332506.7441382,
+    "ast_hash": "d7be48cba6ae1f6aafc9b045341c011e",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -4290,8 +4290,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/DESIGN_SYSTEM.md": {
-    "mtime": 1791322082.5061836,
-    "ast_hash": "6966d64e29a8155fa2fb6ef182a0d90a",
+    "mtime": 1791332476.0931675,
+    "ast_hash": "7dcd3146abb0e7099c44f2413798798a",
     "semantic_hash": ""
   },
   "gestao-paroquia/app/src/main/java/br/com/nsfatima/gestao/aprovacao/application/usecase/CriarSolicitacaoAprovacaoUseCase.java": {
@@ -4715,8 +4715,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/aprovacao/presentation/pages/Aprovacoes.tsx": {
-    "mtime": 1791092450.3145857,
-    "ast_hash": "2cd871cdc2f7b17ee0441deada3ba411",
+    "mtime": 1791332309.73331,
+    "ast_hash": "4577a09b40b9a254473bc5985fe1bfb3",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/calendario/infrastructure/http/eventos.ts": {
@@ -4890,8 +4890,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/clero/presentation/pages/Clerigos.tsx": {
-    "mtime": 1791321653.242442,
-    "ast_hash": "ec9280c1590e6a9e4171ce2ff3e06d2d",
+    "mtime": 1791332348.21328,
+    "ast_hash": "53a56a95f9db024afb011ef22d0f5181",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/clero/presentation/schemas/clerigoSchema.ts": {
@@ -4965,8 +4965,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/fiel/presentation/pages/Fieis.tsx": {
-    "mtime": 1791321690.5524194,
-    "ast_hash": "be1bd1aa136333709a88399d7475e7c7",
+    "mtime": 1791332358.414272,
+    "ast_hash": "6f0a058972d8c115697b950bf5a36b5d",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/fiel/presentation/schemas/fielSchema.ts": {
@@ -4990,8 +4990,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/governanca/presentation/pages/AjustesCadastrais.tsx": {
-    "mtime": 1791321839.3083298,
-    "ast_hash": "0e9db8a6bf8e58c65cb57dfe358b7f91",
+    "mtime": 1791332329.8662944,
+    "ast_hash": "4cbcb8d5c6cb2ea4baff7ba18732dc14",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/governanca/presentation/pages/Configuracoes.test.tsx": {
@@ -5000,8 +5000,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/governanca/presentation/pages/Configuracoes.tsx": {
-    "mtime": 1791092424.6886075,
-    "ast_hash": "d8cea63d2a5d64c4892189c650e576ad",
+    "mtime": 1791332428.6152132,
+    "ast_hash": "5d2991a023b3f0ed7126c40c12de6446",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/infrastructure/http/notificacoes.ts": {
@@ -5055,8 +5055,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/iam/presentation/pages/Notificacoes.tsx": {
-    "mtime": 1791321877.9093065,
-    "ast_hash": "d7d2461e414c3b9799eca18a7e916d36",
+    "mtime": 1791332339.6102867,
+    "ast_hash": "4682a7bbfcbccfb5678f38c19e0cde0e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/importacao/infrastructure/http/importacao.ts": {
@@ -5090,8 +5090,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/local/presentation/components/locais/LocaisTable.tsx": {
-    "mtime": 1791092377.4036481,
-    "ast_hash": "2c2de70f5ccc68ecdb88c0cbb99e268c",
+    "mtime": 1791332256.2843516,
+    "ast_hash": "0e2f3e78c2699a0c162604e4d79195af",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/local/presentation/components/locais/LocalDeleteConfirmDialog.test.tsx": {
@@ -5175,8 +5175,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMembrosModal.tsx": {
-    "mtime": 1791091876.2500775,
-    "ast_hash": "6ff0758f40647e315a37ce3bf8bd30a0",
+    "mtime": 1791332441.8122005,
+    "ast_hash": "22eb52715d1a7ce6a2291c3180eb93f8",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/components/organizacoes/OrganizacoesFilterBar.tsx": {
@@ -5185,8 +5185,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/components/organizacoes/OrganizacoesTable.tsx": {
-    "mtime": 1791092400.819628,
-    "ast_hash": "6163559f6c4baf9e63246fa8b2ec11c2",
+    "mtime": 1791332261.899347,
+    "ast_hash": "5c4ccbfc7efd49f432dd132c19b932b0",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/components/organograma/OrganogramaExportButton.tsx": {
@@ -5530,18 +5530,18 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/patrimonio/presentation/components/ativos/AtivosTable.tsx": {
-    "mtime": 1791038973.1124427,
-    "ast_hash": "dceeb0971d774f8eb72f29086e08749d",
+    "mtime": 1791332203.8203924,
+    "ast_hash": "4a85578ec6962f0ab94feae32a84403b",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/patrimonio/presentation/pages/Ativos.test.tsx": {
-    "mtime": 1790770991.1651795,
-    "ast_hash": "71049d15848600a79589b5daefb8fdcc",
+    "mtime": 1791332233.2793694,
+    "ast_hash": "2a6fb64d4d4c070079421380417a2706",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/patrimonio/presentation/pages/Ativos.tsx": {
-    "mtime": 1791089744.753965,
-    "ast_hash": "9c980de2f59a3c7543d8323a0581bfbd",
+    "mtime": 1791332223.9913766,
+    "ast_hash": "5e8ddfb0ab66fd95a56ddff2ef0bf234",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/patrimonio/presentation/schemas/ativoSchema.ts": {
@@ -5555,8 +5555,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/projeto/presentation/pages/Projetos.tsx": {
-    "mtime": 1791321812.439346,
-    "ast_hash": "1da14f85c9b3d14b8702cf5f5a601fba",
+    "mtime": 1791332383.026253,
+    "ast_hash": "022f7b7300e768ca7478bcf20bb75a11",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/projeto/presentation/schemas/projetoSchema.ts": {
@@ -5600,8 +5600,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/reserva/presentation/components/reservas/ReservasTable.tsx": {
-    "mtime": 1791321740.0163896,
-    "ast_hash": "78cccb56d57cf7ac8582771882e3a0d5",
+    "mtime": 1791332287.3293273,
+    "ast_hash": "85d490d029ccc0754300969431ba6688",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/reserva/presentation/pages/Reservas.tsx": {
@@ -6955,8 +6955,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/pages/UnidadesTerritoriais.tsx": {
-    "mtime": 1791321718.7034025,
-    "ast_hash": "c1aff11f7b98ec1fe09cd36182037efc",
+    "mtime": 1791332392.7742453,
+    "ast_hash": "fc9e74b601d01dff714276127d66e91e",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/organizacao/presentation/schemas/unidadeTerritorialSchema.test.ts": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1791322132.0141537,
-    "ast_hash": "893b6dc71c5da9fde735ee5059444611",
+    "mtime": 1791332526.742119,
+    "ast_hash": "a4feab49922d852f39af9df221d06f0a",
     "semantic_hash": ""
   },
   "docs/business-rules/README.md": {
@@ -7320,8 +7320,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/components/VinculosPendentesPanel.tsx": {
-    "mtime": 1791321074.0817902,
-    "ast_hash": "4084a443366108e4572fe3bb17e6d85f",
+    "mtime": 1791332319.8713021,
+    "ast_hash": "8f42a538dd2999edfe28e7d538511011",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/hooks/useAssentos.ts": {
@@ -7335,8 +7335,8 @@
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/pages/Sacramentos.tsx": {
-    "mtime": 1791321787.5903609,
-    "ast_hash": "da034548096ee6e53982497a8a3b031e",
+    "mtime": 1791332371.223262,
+    "ast_hash": "edb8271c4cd477b8a2dccb2ddf42cec4",
     "semantic_hash": ""
   },
   "gestao-paroquia-ui/src/contextos/sacramento/presentation/schemas/assentoAcoesSchema.ts": {

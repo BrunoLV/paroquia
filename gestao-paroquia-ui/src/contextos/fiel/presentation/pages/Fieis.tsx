@@ -279,14 +279,14 @@ const Fieis: React.FC = () => {
                             actions={[
                               {
                                 label: 'Visualizar ficha',
-                                icon: <VisibilityIcon fontSize="small" />,
+                                icon: <VisibilityIcon fontSize="small" color="primary" />,
                                 onClick: () => setVisualizando(fiel),
                               },
                               ...(podeGerirCadastro
                                 ? [
                                     {
                                       label: 'Editar cadastro',
-                                      icon: <EditIcon fontSize="small" />,
+                                      icon: <EditIcon fontSize="small" color="primary" />,
                                       onClick: () => setEditando(fiel),
                                     },
                                     ...(isAtivo

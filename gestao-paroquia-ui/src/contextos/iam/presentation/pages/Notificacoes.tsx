@@ -72,7 +72,20 @@ const Notificacoes = () => {
                     .map((n) => {
                       const lida = Boolean(n.lidaEmUtc);
                       return (
-                        <TableRow key={n.id} hover>
+                        <TableRow
+                          key={n.id}
+                          hover
+                          tabIndex={0}
+                          role="button"
+                          onClick={() => !lida && marcar.mutate(n.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              if (!lida) marcar.mutate(n.id);
+                            }
+                          }}
+                          sx={{ cursor: lida ? 'default' : 'pointer' }}
+                        >
                           <TableCell>
                             <Typography
                               variant="body2"
@@ -96,7 +109,7 @@ const Notificacoes = () => {
                               tooltip={lida ? 'Notificação já lida' : 'Notificação ainda não lida'}
                             />
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                             {!lida && (
                               <TableActionMenu actions={[{
                                 label: "Marcar notificação como lida", icon: <LidaIcon fontSize="small" color="primary" />,

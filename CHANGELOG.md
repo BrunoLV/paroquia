@@ -9,6 +9,18 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [Unreleased]
 
 ### Modificado
+- **Cores Semânticas em Ações de Tabela (`TableActionMenu`) e Botões:**
+  - Padronização explícita de cores semânticas em itens do menu de ação de todas as tabelas:
+    - Primária (`color="primary"`): ações de visualização/detalhes e edição (`VisibilityIcon`, `EditIcon`, `GroupsIcon`, `LinkIcon`).
+    - Sucesso (`color="success"`): ações de aprovação, homologação, ativação e conclusão de exercício (`CheckCircleIcon`, `VerifiedIcon`, `ToggleOnIcon`).
+    - Erro / Destrutivo (`color="error"`): ações de exclusão, inativação, veto e cancelamento (`DeleteIcon`, `BlockIcon`, `HighlightOffIcon`, `ToggleOffIcon`).
+    - Informativo (`color="info"`): ações de emissão documental e fluxos de retirada/saída (`DescriptionIcon`, `OutboxIcon`).
+    - Alerta / Atenção (`color="warning"`): envio para manutenção (`BuildIcon`).
+- **Padronização do Clique na Linha para Visualização de Detalhes em Todas as Tabelas:**
+  - Garantia de paridade em 100% das telas de tabela (`AtivosTable`, `LocaisTable`, `OrganizacoesTable`, `ReservasTable`, `Aprovacoes`, `VinculosPendentesPanel`, `AjustesCadastrais`, `Notificacoes`, `Clerigos`, `Fieis`, `Sacramentos`, `Projetos`, `UnidadesTerritoriais`) para que clicar em qualquer linha da tabela abra imediatamente o modal ou drawer de detalhes.
+  - Implementação padronizada com acessibilidade completa: `role="button"`, `tabIndex={0}`, `sx={{ cursor: 'pointer' }}`, navegação por teclado (`Enter` / `Espaço`).
+  - Proteção contra acionamento acidental: a célula do menu de ações contém `onClick={(e) => e.stopPropagation()}` em todas as tabelas.
+  - Atualização dos testes unitários para validar a abertura de detalhes tanto pelo clique na linha quanto pelo menu de ações (`Ativos.test.tsx`).
 - **Padronização da Seção de Pesquisa Externa ao Quadro da Tabela:**
   - Padronização em todas as telas de listagem (`Clerigos`, `Fieis`, `UnidadesTerritoriais`, `Reservas`, `Sacramentos`, `Projetos`, `AjustesCadastrais`, `Notificacoes`) para que a seção de pesquisa e filtros resida **sempre por fora** do quadro da tabela, em container `<Paper sx={{ p: 2, mb: 3 }}>` dedicado, utilizando o componente canônico `SearchField` (`size="small"`, busca textual integrada e ícone de lupa).
   - Tabela isolada em seu próprio `<TableContainer component={Paper}>`, eliminando anti-pattern de encapsular a pesquisa e a tabela dentro de um mesmo `<Card>` / `<CardContent>`.

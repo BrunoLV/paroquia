@@ -461,7 +461,7 @@ export const Configuracoes = () => {
                             )}
                             {ano.status === 'FECHADO' && (
                               <TableActionMenu actions={[{
-                                label: "Concluir Ano", icon: <CheckCircleIcon color="secondary" />,
+                                label: "Concluir Ano", icon: <CheckCircleIcon color="success" />,
                                 onClick: () => {
                                   setSelectedYear(ano.ano);
                                   setConfirmOpen(true);
@@ -560,12 +560,12 @@ export const Configuracoes = () => {
                               actions={[
                                 ...(user && canEditOrInactivateUser(user) ? [{
                                   label: 'Editar',
-                                  icon: <EditIcon fontSize="small" />,
+                                  icon: <EditIcon fontSize="small" color="primary" />,
                                   onClick: () => handleOpenEditUser(u),
                                 }] : []),
                                 {
                                   label: 'Gerenciar vínculos',
-                                  icon: <LinkIcon fontSize="small" />,
+                                  icon: <LinkIcon fontSize="small" color="primary" />,
                                   onClick: () => {
                                     setSelectedUserForVinculos(u);
                                     setIsVinculosModalOpen(true);
@@ -653,7 +653,7 @@ export const Configuracoes = () => {
                           <TableCell align="right">
                             <TableActionMenu
                               actions={[
-                                { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => handleEditPO(po) },
+                                { label: 'Editar', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => handleEditPO(po) },
                                 {
                                   label: 'Excluir',
                                   icon: <DeleteIcon fontSize="small" color="error" />,

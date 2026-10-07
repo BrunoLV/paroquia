@@ -432,7 +432,20 @@ const Aprovacoes = () => {
                     </TableHead>
                     <TableBody>
                       {data.content.filter((approval) => !approval.aprovacaoPaiId).map((approval) => (
-                        <TableRow key={approval.id} hover>
+                        <TableRow
+                          key={approval.id}
+                          hover
+                          tabIndex={0}
+                          role="button"
+                          onClick={() => setAprovacaoSelecionada(approval)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setAprovacaoSelecionada(approval);
+                            }
+                          }}
+                          sx={{ cursor: 'pointer' }}
+                        >
                           <TableCell sx={{ fontWeight: 500 }}>
                             <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                           </TableCell>
@@ -460,8 +473,8 @@ const Aprovacoes = () => {
                             {new Date(approval.criadoEmUtc).toLocaleString()}
                           </TableCell>
                           <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
-                          <TableCell align="right">
-                            <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoSelecionada(approval) }]} />
+                          <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                            <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setAprovacaoSelecionada(approval) }]} />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -518,7 +531,20 @@ const Aprovacoes = () => {
                       {projectData
                         .slice(projPage * projRowsPerPage, projPage * projRowsPerPage + projRowsPerPage)
                         .map((approval) => (
-                          <TableRow key={approval.id} hover>
+                          <TableRow
+                            key={approval.id}
+                            hover
+                            tabIndex={0}
+                            role="button"
+                            onClick={() => setAprovacaoProjetoSelecionada(approval)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setAprovacaoProjetoSelecionada(approval);
+                              }
+                            }}
+                            sx={{ cursor: 'pointer' }}
+                          >
                             <TableCell sx={{ fontWeight: 500 }}>
                               <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                             </TableCell>
@@ -538,8 +564,8 @@ const Aprovacoes = () => {
                               {new Date(approval.criadoEmUtc).toLocaleString()}
                             </TableCell>
                             <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
-                            <TableCell align="right">
-                              <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoProjetoSelecionada(approval) }]} />
+                            <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                              <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setAprovacaoProjetoSelecionada(approval) }]} />
                             </TableCell>
                           </TableRow>
                         ))}

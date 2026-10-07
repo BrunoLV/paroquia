@@ -69,7 +69,20 @@ export const VinculosPendentesPanel: React.FC = () => {
               </TableHead>
               <TableBody>
                 {paginados.map((v) => (
-                  <TableRow key={`${v.assentoId}-${v.participanteId}`} hover>
+                  <TableRow
+                    key={`${v.assentoId}-${v.participanteId}`}
+                    hover
+                    tabIndex={0}
+                    role="button"
+                    onClick={() => setSelecionado(v)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelecionado(v);
+                      }
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell><StatusIcon {...getTipoSacramentoMeta(v.tipoSacramento)} /></TableCell>
                     <TableCell>
                       {v.sujeito ?? 'Sem identificação'} · {TIPO_SACRAMENTO_LABEL[v.tipoSacramento]}
@@ -78,8 +91,8 @@ export const VinculosPendentesPanel: React.FC = () => {
                     <TableCell>{PAPEL_LABEL[v.papel]}</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{v.nomeHistorico}</TableCell>
                     <TableCell>{v.pessoaNome ?? '—'} ({v.tipoPessoa === 'FIEL' ? 'fiel' : 'clérigo'})</TableCell>
-                    <TableCell align="right">
-                      <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setSelecionado(v) }]} />
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                      <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setSelecionado(v) }]} />
                     </TableCell>
                   </TableRow>
                 ))}

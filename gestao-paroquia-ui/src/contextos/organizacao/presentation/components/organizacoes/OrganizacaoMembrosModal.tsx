@@ -134,7 +134,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                           actions={[
                             {
                               label: 'Remover',
-                              icon: <DeleteIcon fontSize="small" />,
+                              icon: <DeleteIcon fontSize="small" color="error" />,
                               onClick: () => removeMembroMutation.mutate({ userId: m.usuarioId || m.fielId || '', vinculoId: m.vinculoId }),
                               disabled: removeMembroMutation.isPending,
                             },

@@ -125,11 +125,20 @@ Todo modal e componente de tela DEVE conter bloco JSDoc especificando:
    - **Terminantemente proibido:** incorporar `<TextField>` ou `<SearchField>` dentro do cabeçalho ou corpo do mesmo `Card` que engloba a tabela.
 2. **Paginação de Tabelas:**
    - Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
+3. **Clique na Linha para Visualização de Detalhes:**
+   - Toda tabela do sistema deve permitir abrir o modal ou drawer de detalhes ao clicar na linha (`TableRow`), em paridade com o botão "Visualizar" do menu de ações.
+   - A linha deve conter: `role="button"`, `tabIndex={0}`, `sx={{ cursor: 'pointer' }}`, `onClick={() => onVisualizar(item)}` e `onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onVisualizar(item); } }}`.
+   - A célula do menu de ações (`TableActionMenu`) deve conter **obrigatoriamente** `onClick={(e) => e.stopPropagation()}` para evitar acionamento inadvertido do detalhamento ao clicar no menu.
 
 ## 5. Ações de Linha
 
 Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha.
-- **Cores semânticas obrigatórias nos itens:** Ações destrutivas (exclusão, inativação, veto, cancelamento) usam obrigatoriamente `color="error"`; ações de sucesso (aprovação, homologação, reativação) usam `color="success"`; ações neutras de visualização ou edição usam cor primária/neutra padrão.
+- **Cores semânticas obrigatórias nos itens de ação:**
+  - Visualização e edição (`Visualizar`, `Editar`, `Membros`, `Vínculos`): `color="primary"` (ex.: `<VisibilityIcon fontSize="small" color="primary" />`, `<EditIcon fontSize="small" color="primary" />`, `<GroupsIcon fontSize="small" color="primary" />`).
+  - Ações destrutivas / restritivas (`Excluir`, `Inativar`, `Desativar`, `Vetar`, `Rejeitar`, `Cancelar`): `color="error"` (ex.: `DeleteIcon color="error"`, `ToggleOffIcon color="error"`, `BlockIcon color="error"`).
+  - Ações de sucesso / homologação (`Aprovar`, `Homologar`, `Ativar`, `Reativar`, `Concluir`): `color="success"` (ex.: `CheckCircleIcon color="success"`, `VerifiedIcon color="success"`, `ToggleOnIcon color="success"`).
+  - Ações de processo e fluxo (`Saída`, `Retirada`, `Certidão`): `color="info"`.
+  - Ações de alerta / atenção (`Manutenção`): `color="warning"`.
 - Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
 
 ## 6. Navegação Lateral

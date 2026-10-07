@@ -104,16 +104,16 @@ const Sacramentos = () => {
 
   const acoesDaLinha = (a: AssentoResumo): TableAction[] => {
     const acoes: TableAction[] = [
-      { label: 'Visualizar', icon: <VisibilityIcon fontSize="small" />, onClick: () => setVisualizarId(a.id) },
+      { label: 'Visualizar', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setVisualizarId(a.id) },
     ];
     if (podeGerir && a.status === 'DRAFT') {
-      acoes.push({ label: 'Editar rascunho', icon: <EditIcon fontSize="small" />, onClick: () => void abrirEdicao(a.id) });
+      acoes.push({ label: 'Editar rascunho', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => void abrirEdicao(a.id) });
     }
     if (podeHomologar && a.status === 'DRAFT') {
       acoes.push({ label: 'Homologar', icon: <VerifiedIcon fontSize="small" color="success" />, onClick: () => m.homologar.mutate(a.id) });
     }
     if (podeGerir && a.status === 'SEALED') {
-      acoes.push({ label: 'Emitir certidão', icon: <DescriptionIcon fontSize="small" />, onClick: () => void abrirCertidao(a.id) });
+      acoes.push({ label: 'Emitir certidão', icon: <DescriptionIcon fontSize="small" color="info" />, onClick: () => void abrirCertidao(a.id) });
     }
     return acoes;
   };

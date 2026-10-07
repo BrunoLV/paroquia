@@ -351,7 +351,15 @@ const Projetos = () => {
                     <TableRow
                       key={project.id}
                       hover
+                      tabIndex={0}
+                      role="button"
                       onClick={() => handleRowClick(project)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleRowClick(project);
+                        }
+                      }}
                       sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
@@ -364,9 +372,9 @@ const Projetos = () => {
                       <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                         <TableActionMenu
                           actions={[
-                            { label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => handleRowClick(project) },
+                            { label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => handleRowClick(project) },
                             ...(canManageProjetos()
-                              ? [{ label: 'Editar projeto', icon: <EditIcon fontSize="small" />, onClick: () => handleOpenEdit(project) }]
+                              ? [{ label: 'Editar projeto', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => handleOpenEdit(project) }]
                               : []),
                           ]}
                         />

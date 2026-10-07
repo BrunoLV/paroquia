@@ -181,17 +181,24 @@ describe('Ativos Page', () => {
     expect(screen.getByRole('menuitem', { name: /^Excluir$/i })).toBeInTheDocument();
   });
 
-  test('abre o modal de detalhes ao clicar na ação Visualizar e não ao clicar na linha da tabela', async () => {
+  test('abre o modal de detalhes tanto ao clicar na linha quanto na ação Visualizar', async () => {
     await renderAtivos(adminUser);
     await selecionarOrg();
 
-    // Clicar na linha não deve abrir o modal
+    // Clicar na linha deve abrir o modal
     await act(async () => {
       fireEvent.click(screen.getByText('TV 55 polegadas'));
     });
+    expect(screen.getByText('Dados do ativo')).toBeInTheDocument();
+    expect(screen.getByText('Tombamento: PAT-2026-0001')).toBeInTheDocument();
+
+    // Fecha o modal
+    await act(async () => {
+      screen.getByRole('button', { name: /^Fechar$/i }).click();
+    });
     expect(screen.queryByText('Dados do ativo')).not.toBeInTheDocument();
 
-    // Clicar na ação "Visualizar" deve abrir o modal de detalhes
+    // Clicar na ação "Visualizar" também deve abrir o modal de detalhes
     await act(async () => {
       screen.getAllByLabelText('Ações')[0].click();
     });

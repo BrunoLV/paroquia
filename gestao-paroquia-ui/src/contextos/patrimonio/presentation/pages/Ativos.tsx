@@ -183,7 +183,7 @@ const Ativos = () => {
     }
     actions.push({
       label: 'Visualizar',
-      icon: <VisibilityIcon fontSize="small" />,
+      icon: <VisibilityIcon fontSize="small" color="primary" />,
       onClick: () => setViewAtivo(ativo),
     });
     if (podeGerir && ativo.status === 'DISPONIVEL') {
@@ -203,7 +203,7 @@ const Ativos = () => {
     if (canManageAtivos(user)) {
       actions.push({
         label: 'Editar',
-        icon: <EditIcon fontSize="small" />,
+        icon: <EditIcon fontSize="small" color="primary" />,
         onClick: () => setEditAtivo(ativo),
       });
     }
@@ -263,6 +263,7 @@ const Ativos = () => {
         onPageChange={setPage}
         onRowsPerPageChange={setRowsPerPage}
         rowActions={buildRowActions}
+        onView={setViewAtivo}
       />
 
       <AtivoViewModal

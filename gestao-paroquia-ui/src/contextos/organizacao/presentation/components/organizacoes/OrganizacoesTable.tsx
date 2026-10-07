@@ -69,19 +69,32 @@ export const OrganizacoesTable: React.FC<OrganizacoesTableProps> = ({
           </TableHead>
           <TableBody>
             {paginatedOrgs.map((org) => (
-              <TableRow key={org.id} hover>
+              <TableRow
+                key={org.id}
+                hover
+                tabIndex={0}
+                role="button"
+                onClick={() => onViewMembers(org)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onViewMembers(org);
+                  }
+                }}
+                sx={{ cursor: 'pointer' }}
+              >
                 <TableCell sx={{ fontWeight: 600 }}>{org.nome}</TableCell>
                 <TableCell><StatusIcon {...getOrganismoTipoMeta(org.tipo)} /></TableCell>
                 <TableCell>{org.coordenador || '-'}</TableCell>
                 <TableCell>{org.viceCoordenador || '-'}</TableCell>
                 <TableCell><FormattedContact value={org.contato} /></TableCell>
                 <TableCell><StatusIcon {...getSituacaoAtivoMeta(org.ativo)} /></TableCell>
-                <TableCell align="right">
+                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                   <TableActionMenu
                     actions={[
-                      { label: 'Membros', icon: <GroupsIcon fontSize="small" />, onClick: () => onViewMembers(org) },
+                      { label: 'Membros', icon: <GroupsIcon fontSize="small" color="primary" />, onClick: () => onViewMembers(org) },
                       ...(canManage ? [
-                        { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => onEdit(org), disabled: isTogglePending },
+                        { label: 'Editar', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => onEdit(org), disabled: isTogglePending },
                         { label: org.ativo ? 'Inativar' : 'Ativar', icon: org.ativo ? <ToggleOffIcon fontSize="small" color="error" /> : <ToggleOnIcon fontSize="small" color="success" />, onClick: () => onToggleStatus(org), disabled: isTogglePending },
                       ] : []),
                     ]}

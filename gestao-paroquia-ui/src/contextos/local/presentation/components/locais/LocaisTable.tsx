@@ -88,7 +88,20 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
               const igrejaNome = local.igrejaNome || igrejaEncontrada?.nome || '-';
 
               return (
-                <TableRow key={local.id} hover>
+                <TableRow
+                  key={local.id}
+                  hover
+                  tabIndex={0}
+                  role="button"
+                  onClick={() => onView(local)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onView(local);
+                    }
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
                   <TableCell sx={{ fontWeight: 600 }}>{local.nome}</TableCell>
                   <TableCell>
                     <StatusIcon {...getLocalTipoMeta(local.tipo)} />
@@ -106,7 +119,7 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
                     <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
                   </TableCell>
                   {canManage && (
-                    <TableCell align="right">
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                       <TableActionMenu
                         actions={[
                           {
@@ -116,12 +129,12 @@ export const LocaisTable: React.FC<LocaisTableProps> = ({
                           },
                           {
                             label: 'Visualizar',
-                            icon: <VisibilityIcon fontSize="small" />,
+                            icon: <VisibilityIcon fontSize="small" color="primary" />,
                             onClick: () => onView(local),
                           },
                           {
                             label: 'Editar',
-                            icon: <EditIcon fontSize="small" />,
+                            icon: <EditIcon fontSize="small" color="primary" />,
                             onClick: () => onEdit(local),
                             disabled: isDeletePending,
                           },

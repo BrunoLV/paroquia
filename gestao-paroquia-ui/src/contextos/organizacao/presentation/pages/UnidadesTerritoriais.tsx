@@ -414,14 +414,14 @@ export const UnidadesTerritoriais: React.FC = () => {
                           actions={[
                             {
                               label: 'Visualizar detalhes',
-                              icon: <VisibilityIcon fontSize="small" />,
+                              icon: <VisibilityIcon fontSize="small" color="primary" />,
                               onClick: () => setUnidadeVisualizando(u),
                             },
                             ...(podeGerenciar
                               ? [
                                   {
                                     label: 'Editar unidade',
-                                    icon: <EditIcon fontSize="small" />,
+                                    icon: <EditIcon fontSize="small" color="primary" />,
                                     onClick: () => handleOpenEditarUnidade(u),
                                   },
                                   {
