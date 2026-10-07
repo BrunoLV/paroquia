@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-06
+
 ### Modificado
 - **Cores Semânticas em Ações de Tabela (`TableActionMenu`) e Botões:**
   - Padronização explícita de cores semânticas em itens do menu de ação de todas as tabelas:
