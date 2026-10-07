@@ -80,9 +80,11 @@ const Organograma: React.FC = () => {
       case 'CONSELHO_ECONOMICO':
         return 'Conselho Econômico Paroquial';
       case 'PASTORAL':
-        return 'Pastoral';
+        return 'Pastoral Orgânica';
       case 'MOVIMENTO':
-        return 'Movimento';
+        return 'Movimento Apostólico';
+      case 'SERVICO_PAROQUIAL':
+        return 'Serviço Paroquial';
       case 'MINISTERIO':
         return 'Ministério';
       case 'LAICATO':
@@ -370,7 +372,7 @@ const Organograma: React.FC = () => {
   const cleroOrgs = collectNodesBySubtypes(organograma, ['CLERO']);
   const matrizesOrgs = collectNodesBySubtypes(organograma, ['MATRIZ', 'COMUNIDADE']);
   const conselhoOrgs = collectNodesBySubtypes(organograma, ['CONSELHO', 'CONSELHO_ECONOMICO']);
-  const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'MINISTERIO', 'LAICATO', 'OUTRO']);
+  const pastoralOrgs = collectNodesBySubtypes(organograma, ['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'MINISTERIO', 'LAICATO', 'OUTRO']);
 
   // A visão em árvore usa o Clero como raiz visual (pároco no topo da hierarquia pastoral), não
   // o nó raiz literal devolvido pela API (que normalmente é a Paróquia/Matriz). Se a raiz da API

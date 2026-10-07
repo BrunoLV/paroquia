@@ -37,12 +37,10 @@ export const OrganizacoesFilterBar: React.FC<OrganizacoesFilterBarProps> = ({
           onChange={(e) => onTipoFilterChange(e.target.value)}
         >
           <MenuItem value="TODOS">Todos os Tipos</MenuItem>
-          <MenuItem value="PASTORAL">Pastoral</MenuItem>
-          <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-          <MenuItem value="SERVICO">Serviço</MenuItem>
-          <MenuItem value="COMISSAO">Comissão</MenuItem>
+          <MenuItem value="PASTORAL">Pastoral Orgânica</MenuItem>
+          <MenuItem value="MOVIMENTO">Movimento Apostólico</MenuItem>
+          <MenuItem value="SERVICO_PAROQUIAL">Serviço Paroquial</MenuItem>
           <MenuItem value="CONSELHO">Conselho</MenuItem>
-          <MenuItem value="OUTRO">Outro</MenuItem>
         </SearchableSelect>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 140 }}>

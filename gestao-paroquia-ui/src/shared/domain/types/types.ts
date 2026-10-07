@@ -6,6 +6,8 @@ export type TipoOrganismoParoquial =
   | "CONSELHO_ECONOMICO"
   | "PASTORAL"
   | "MOVIMENTO"
+  | "SERVICO_PAROQUIAL"
+  | "CONSELHO"
   | "OUTRO";
 
 export type Vocacao = "LEIGO" | "SACERDOTE" | "DIACONO" | "RELIGIOSO";
@@ -210,6 +212,31 @@ export type TipoDocumentoEstrangeiro = "RNE_RNM" | "PASSAPORTE";
 export type SetorPastoral =
   "SANTIFICACAO_LITURGIA" | "FORMACAO_ENSINAR" | "SOCIAL_CARIDADE";
 
+/** Múnus (tríplice missão de Cristo) a que uma pastoral ou serviço serve. */
+export const SETOR_PASTORAL_OPCOES: Record<SetorPastoral, string> = {
+  FORMACAO_ENSINAR: "Ensinar (evangelização, catequese e formação)",
+  SANTIFICACAO_LITURGIA: "Santificar (liturgia, oração e sacramentos)",
+  SOCIAL_CARIDADE: "Governar (caridade organizada e promoção humana)",
+};
+
+/** Natureza do conselho: CPP/CPC são pastorais; CAEP é econômico e nunca acolhe pastorais. */
+export type SubtipoConselho = "CPP" | "CPC" | "CAEP";
+
+export const SUBTIPO_CONSELHO_LABELS: Record<SubtipoConselho, string> = {
+  CPP: "Conselho Pastoral Paroquial (CPP)",
+  CPC: "Conselho Pastoral Comunitário (CPC)",
+  CAEP: "Conselho para Assuntos Econômicos (CAEP)",
+};
+
+export type AmbitoOrganismo = "PAROQUIAL" | "DIOCESANO" | "NACIONAL" | "INTERNACIONAL";
+
+export const AMBITO_ORGANISMO_LABELS: Record<AmbitoOrganismo, string> = {
+  PAROQUIAL: "Paroquial",
+  DIOCESANO: "Diocesano",
+  NACIONAL: "Nacional",
+  INTERNACIONAL: "Internacional",
+};
+
 export type PapelEclesial =
   | "ADMIN"
   | "BISPO_DIOCESANO"
@@ -275,6 +302,8 @@ export interface Organizacao {
   /** ID do registro oficial de Pastoral/Movimento vinculado, quando `tipo` for `PASTORAL` ou `MOVIMENTO`. */
   pastoralOficialId?: string | null;
   setorPastoral?: SetorPastoral | null;
+  /** Natureza do conselho; preenchida somente quando `tipo` for `CONSELHO`. */
+  subtipoConselho?: SubtipoConselho | null;
 }
 
 export type TipoUnidadeTerritorial = 'MATRIZ' | 'COMUNIDADE';
@@ -361,6 +390,13 @@ export interface PastoralMovimentoOficial {
   id: string;
   nome: string;
   tipo: "PASTORAL" | "MOVIMENTO";
+  ambito?: AmbitoOrganismo | null;
+  /** Autoridade que reconheceu os estatutos (Cân. 299 e 304); exigida para movimentos. */
+  estatutoAutoridade?: string | null;
+  estatutoData?: string | null;
+  estatutoReferencia?: string | null;
+  /** Somente leitura: `true` quando há reconhecimento formal dos estatutos. */
+  estatutoReconhecido?: boolean;
 }
 
 /**

@@ -1,44 +1,55 @@
 import { z } from 'zod';
 
 /**
- * Regra canônica: a associação com o cadastro oficial de Pastoral/Movimento
- * só é exigida quando `tipo` for `PASTORAL` ou `MOVIMENTO`. Espelha a
- * validação antes imposta manualmente em `OrganizacaoFormModal.handleSubmit`.
+ * Invariantes eclesiais por tipologia, espelhando `RegrasTipologiaOrganizacao` no backend:
+ * pastoral e movimento exigem o vínculo com o catálogo oficial; pastoral e serviço paroquial exigem o múnus
+ * (setor); conselho exige o subtipo; todo organismo (exceto conselho, cuja mãe é territorial) se articula a um
+ * conselho pastoral (CPP/CPC), expressão da comunhão pastoral.
  */
-function validarPastoralOficial(
-  data: { tipo: string; pastoralOficialId?: string },
+function validarTipologia(
+  data: {
+    tipo: string;
+    pastoralOficialId?: string;
+    setorPastoral?: string;
+    subtipoConselho?: string;
+    parentId?: string;
+  },
   ctx: z.RefinementCtx,
 ) {
-  const exigeOficial = data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO';
-  if (exigeOficial && !data.pastoralOficialId) {
-    ctx.addIssue({
-      code: 'custom',
-      path: ['pastoralOficialId'],
-      message: 'A associação oficial é obrigatória',
-    });
+  const issue = (path: string, message: string) => ctx.addIssue({ code: 'custom', path: [path], message });
+
+  if ((data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO') && !data.pastoralOficialId) {
+    issue('pastoralOficialId', 'A associação oficial é obrigatória');
+  }
+  if ((data.tipo === 'PASTORAL' || data.tipo === 'SERVICO_PAROQUIAL') && !data.setorPastoral) {
+    issue('setorPastoral', 'O múnus (ensinar, santificar ou governar) é obrigatório');
+  }
+  if (data.tipo === 'CONSELHO' && !data.subtipoConselho) {
+    issue('subtipoConselho', 'O subtipo do conselho é obrigatório');
+  }
+  if (!data.parentId) {
+    issue(
+      'parentId',
+      data.tipo === 'CONSELHO'
+        ? 'Informe a Matriz ou Comunidade do conselho'
+        : 'Articule o organismo a um conselho pastoral (CPP ou CPC)',
+    );
   }
 }
 
-/** Schema de cadastro/edição de Organização (Pastoral, Movimento, Clero, Matriz etc). */
+/** Schema de cadastro/edição de organismo eclesial (pastoral, movimento, serviço paroquial ou conselho). */
 export const organizacaoSchema = z
   .object({
     nome: z.string().trim().min(1, 'O nome é obrigatório'),
-    tipo: z.enum([
-      'PASTORAL',
-      'MOVIMENTO',
-      'CLERO',
-      'MATRIZ',
-      'COMUNIDADE',
-      'CONSELHO_PASTORAL',
-      'CONSELHO_ECONOMICO',
-      'OUTRO',
-    ]),
+    tipo: z.enum(['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'CONSELHO']),
     contato: z.string().optional(),
     coordenador: z.string().optional(),
     viceCoordenador: z.string().optional(),
     parentId: z.string().optional(),
     pastoralOficialId: z.string().optional(),
+    setorPastoral: z.enum(['SANTIFICACAO_LITURGIA', 'FORMACAO_ENSINAR', 'SOCIAL_CARIDADE', '']).optional(),
+    subtipoConselho: z.enum(['CPP', 'CPC', 'CAEP', '']).optional(),
   })
-  .superRefine(validarPastoralOficial);
+  .superRefine(validarTipologia);
 
 export type OrganizacaoFormInput = z.infer<typeof organizacaoSchema>;

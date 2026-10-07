@@ -10,7 +10,12 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import SaveIcon from '@mui/icons-material/Save';
 import {DIALOG_CONTENT_SCROLL_SX} from '@/shared/presentation/theme/dialogStyles';
 import {confirmDiscard} from '@/shared/utils/confirmDiscard';
-import {Organizacao, PastoralMovimentoOficial} from '@/shared/domain/types/types';
+import {
+  Organizacao,
+  PastoralMovimentoOficial,
+  SETOR_PASTORAL_OPCOES,
+  SUBTIPO_CONSELHO_LABELS,
+} from '@/shared/domain/types/types';
 import {Usuario} from '@/contextos/iam/infrastructure/http/usuarios';
 import {getOrganizacaoMembros} from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import ActionButton from '@/shared/presentation/components/ActionButton';
@@ -36,6 +41,8 @@ const defaultValues: OrganizacaoFormInput = {
   viceCoordenador: '',
   parentId: '',
   pastoralOficialId: '',
+  setorPastoral: '',
+  subtipoConselho: '',
 };
 
 /**
@@ -77,6 +84,8 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
         viceCoordenador: organizacao.viceCoordenador || '',
         parentId: organizacao.parentId || '',
         pastoralOficialId: organizacao.pastoralOficialId || '',
+        setorPastoral: organizacao.setorPastoral || '',
+        subtipoConselho: organizacao.subtipoConselho || '',
       });
     } else {
       reset(defaultValues);
@@ -85,6 +94,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
 
   const tipo = watch('tipo');
   const parentId = watch('parentId');
+  const exigeSetor = tipo === 'PASTORAL' || tipo === 'SERVICO_PAROQUIAL';
 
   const getSelectedChurchId = () => {
     if (!parentId) return null;
@@ -141,25 +151,25 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
       coordenador: data.coordenador?.trim() || null,
       viceCoordenador: data.viceCoordenador?.trim() || null,
       ativo: organizacao ? organizacao.ativo : true,
-      parentId: (data.tipo === 'CLERO') ? null : (data.parentId || null),
+      parentId: data.parentId || null,
       pastoralOficialId: (data.tipo === 'PASTORAL' || data.tipo === 'MOVIMENTO') ? data.pastoralOficialId || null : null,
+      setorPastoral: exigeSetor ? data.setorPastoral || null : null,
+      subtipoConselho: data.tipo === 'CONSELHO' ? data.subtipoConselho || null : null,
     });
   };
 
+  /**
+   * Conselho nasce em uma Matriz/Comunidade; pastoral, movimento e serviço articulam-se a um conselho
+   * pastoral (CPP/CPC) — o CAEP é econômico e não acolhe organismos pastorais.
+   */
   const parentOptions = organizacoes
     .filter(org => org.ativo)
     .filter(org => !organizacao || org.id !== organizacao.id)
     .filter(org => {
-      if (tipo === 'MATRIZ' || tipo === 'COMUNIDADE') {
-        return org.tipo === 'CLERO';
-      }
-      if (tipo === 'CONSELHO_PASTORAL' || tipo === 'CONSELHO_ECONOMICO') {
+      if (tipo === 'CONSELHO') {
         return org.tipo === 'MATRIZ' || org.tipo === 'COMUNIDADE';
       }
-      if (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') {
-        return org.tipo === 'CONSELHO_PASTORAL';
-      }
-      return true;
+      return org.tipo === 'CONSELHO' && org.subtipoConselho !== 'CAEP';
     });
 
   return (
@@ -171,7 +181,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>
-          {organizacao ? 'Editar Pastoral / Movimento' : 'Nova Pastoral / Movimento'}
+          {organizacao ? 'Editar Organismo Eclesial' : 'Novo Organismo Eclesial'}
         </DialogTitle>
         <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
           <Stack spacing={2.5}>
@@ -210,14 +220,10 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                         disabled={isPending}
                         {...field}
                       >
-                        <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                        <MenuItem value="MOVIMENTO">Movimento</MenuItem>
-                        <MenuItem value="CLERO">Clero</MenuItem>
-                        <MenuItem value="MATRIZ">Matriz</MenuItem>
-                        <MenuItem value="COMUNIDADE">Comunidade</MenuItem>
-                        <MenuItem value="CONSELHO_PASTORAL">Conselho Pastoral Paroquial (CPP)</MenuItem>
-                        <MenuItem value="CONSELHO_ECONOMICO">Conselho Econômico Paroquial (CAE)</MenuItem>
-                        <MenuItem value="OUTRO">Outro</MenuItem>
+                        <MenuItem value="PASTORAL">Pastoral Orgânica</MenuItem>
+                        <MenuItem value="MOVIMENTO">Movimento Apostólico</MenuItem>
+                        <MenuItem value="SERVICO_PAROQUIAL">Serviço Paroquial</MenuItem>
+                        <MenuItem value="CONSELHO">Conselho</MenuItem>
                       </SearchableSelect>
                     )}
                   />
@@ -243,7 +249,16 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                           {pastoraisOficiais
                             .filter(po => po.tipo === tipo)
                             .map(po => (
-                              <MenuItem key={po.id} value={po.id}>{po.nome}</MenuItem>
+                              <MenuItem
+                                key={po.id}
+                                value={po.id}
+                                disabled={po.tipo === 'MOVIMENTO' && po.estatutoReconhecido === false}
+                              >
+                                {po.nome}
+                                {po.tipo === 'MOVIMENTO' && po.estatutoReconhecido === false
+                                  ? ' (sem estatuto reconhecido)'
+                                  : ''}
+                              </MenuItem>
                             ))}
                         </SearchableSelect>
                       )}
@@ -258,8 +273,59 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               )}
             </Grid>
 
-            {tipo !== 'CLERO' && (
-              <FormControl fullWidth size="small">
+            <Grid container spacing={2} sx={{ mt: 0 }}>
+              {tipo === 'CONSELHO' && (
+                <Grid size={{ xs: 12 }}>
+                  <FormControl fullWidth required size="small" error={!!errors.subtipoConselho}>
+                    <Controller
+                      name="subtipoConselho"
+                      control={control}
+                      render={({ field }) => (
+                        <SearchableSelect
+                          labelId="subtipo-conselho-label"
+                          label="Natureza do Conselho"
+                          disabled={isPending}
+                          {...field}
+                          value={field.value ?? ''}
+                        >
+                          {Object.entries(SUBTIPO_CONSELHO_LABELS).map(([valor, rotulo]) => (
+                            <MenuItem key={valor} value={valor}>{rotulo}</MenuItem>
+                          ))}
+                        </SearchableSelect>
+                      )}
+                    />
+                    {errors.subtipoConselho && <FormHelperText error>{errors.subtipoConselho.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
+              )}
+              {exigeSetor && (
+                <Grid size={{ xs: 12 }}>
+                  <FormControl fullWidth required size="small" error={!!errors.setorPastoral}>
+                    <Controller
+                      name="setorPastoral"
+                      control={control}
+                      render={({ field }) => (
+                        <SearchableSelect
+                          labelId="setor-pastoral-label"
+                          label="Múnus (Setor Pastoral)"
+                          disabled={isPending}
+                          {...field}
+                          value={field.value ?? ''}
+                        >
+                          {Object.entries(SETOR_PASTORAL_OPCOES).map(([valor, rotulo]) => (
+                            <MenuItem key={valor} value={valor}>{rotulo}</MenuItem>
+                          ))}
+                        </SearchableSelect>
+                      )}
+                    />
+                    {errors.setorPastoral && <FormHelperText error>{errors.setorPastoral.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
+              )}
+            </Grid>
+
+            {(
+              <FormControl fullWidth required size="small" error={!!errors.parentId} sx={{ mt: 2 }}>
 
                 <Controller
                   name="parentId"
@@ -267,18 +333,19 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
                   render={({ field }) => (
                     <SearchableSelect
                       labelId="parent-org-label"
-                      label="Organização Pai"
+                      label={tipo === 'CONSELHO' ? 'Matriz / Comunidade' : 'Conselho Pastoral (CPP/CPC)'}
                       disabled={isPending}
                       {...field}
                       value={field.value ?? ''}
                     >
-                      <MenuItem value=""><em>Nenhuma</em></MenuItem>
+                      <MenuItem value=""><em>Selecione...</em></MenuItem>
                       {parentOptions.map(org => (
                         <MenuItem key={org.id} value={org.id}>{org.nome}</MenuItem>
                       ))}
                     </SearchableSelect>
                   )}
                 />
+                {errors.parentId && <FormHelperText error>{errors.parentId.message}</FormHelperText>}
               </FormControl>
             )}
             </CardContent>
