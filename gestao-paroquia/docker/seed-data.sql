@@ -1528,3 +1528,82 @@ UPDATE calendario.membro_grupo
 SET formacao_concluida_em = DATE '2025-01-01', vivencia_sacramental_atestada_em = DATE '2025-01-01',
     termo_protecao_menores_em = DATE '2025-01-01', enviado_em = DATE '2025-01-01', enviado_por = 'seed'
 WHERE ativo AND papel IN ('coordenador', 'secretario-grupo') AND formacao_concluida_em IS NULL;
+
+-- =====================================================================================================
+-- Módulo Organização: movimentos, serviços paroquiais, mandatos em todos os estados e idoneidade mista
+-- (dados fictícios de desenvolvimento).
+-- =====================================================================================================
+
+-- Catálogo: movimento SEM estatuto reconhecido, para demonstrar o bloqueio de instanciação (Cân. 299 e 304).
+INSERT INTO calendario.pastorais_movimentos_oficiais (id, nome, tipo, version)
+VALUES ('50000000-0000-0000-0000-000000000199', 'Movimento em Processo de Reconhecimento', 'MOVIMENTO', 0)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.organizacao (id, nome, tipo, contato, ativo, parent_id, pastoral_oficial_id, setor_pastoral, version)
+VALUES
+    -- Movimentos apostólicos (estatuto reconhecido no catálogo)
+    ('00000000-0000-0000-0000-0000000004a1', 'Encontro de Casais com Cristo (ECC) - Matriz', 'MOVIMENTO', 'ecc@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000105', 'FORMACAO_ENSINAR', 0),
+    ('00000000-0000-0000-0000-0000000004a2', 'Renovação Carismática (RCC) - São José Allamano', 'MOVIMENTO', 'rcc.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000101', 'SANTIFICACAO_LITURGIA', 0),
+    ('00000000-0000-0000-0000-0000000004a3', 'Terço dos Homens - Matriz', 'MOVIMENTO', 'terco@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000109', 'SANTIFICACAO_LITURGIA', 0),
+    -- Serviços paroquiais (articulados ao conselho pastoral)
+    ('00000000-0000-0000-0000-0000000004b1', 'Coroinhas e Acólitos', 'SERVICO_PAROQUIAL', 'coroinhas@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', NULL, 'SANTIFICACAO_LITURGIA', 0),
+    ('00000000-0000-0000-0000-0000000004b2', 'Ministros Extraordinários da Sagrada Comunhão', 'SERVICO_PAROQUIAL', 'mesc@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', NULL, 'SANTIFICACAO_LITURGIA', 0),
+    ('00000000-0000-0000-0000-0000000004b3', 'Acolhida e Cerimonial - Santo Agostinho', 'SERVICO_PAROQUIAL', 'acolhida.sa@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000003c0', NULL, 'SOCIAL_CARIDADE', 0),
+    -- Organismo inativo (histórico)
+    ('00000000-0000-0000-0000-0000000004c1', 'Pastoral do Menor (encerrada)', 'PASTORAL', NULL, FALSE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000001', 'SOCIAL_CARIDADE', 0)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, igreja_vinculo_id, ativo, criado_em_utc, atualizado_em_utc)
+VALUES
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-0000000004a1', 'MOVIMENTO', 'coordenador', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-0000000004a1', 'MOVIMENTO', 'membro-ativo', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000024', '00000000-0000-0000-0000-0000000004a1', 'MOVIMENTO', 'voluntario', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000024', '00000000-0000-0000-0000-0000000004a2', 'MOVIMENTO', 'membro-ativo', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-0000000004a2', 'MOVIMENTO', 'membro-ativo', '00000000-0000-0000-0000-000000000200', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-0000000004a3', 'MOVIMENTO', 'membro-ativo', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-0000000004a3', 'MOVIMENTO', 'voluntario', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-0000000004b1', 'SERVICO_PAROQUIAL', 'coordenador', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-0000000004b1', 'SERVICO_PAROQUIAL', 'voluntario', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-0000000004b2', 'SERVICO_PAROQUIAL', 'coordenador', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-0000000004b2', 'SERVICO_PAROQUIAL', 'membro-ativo', '00000000-0000-0000-0000-000000000100', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000025', '00000000-0000-0000-0000-0000000004b3', 'SERVICO_PAROQUIAL', 'coordenador', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (gen_random_uuid(), '1f000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-0000000004b3', 'SERVICO_PAROQUIAL', 'voluntario', '00000000-0000-0000-0000-000000000300', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON CONFLICT DO NOTHING;
+
+-- Idoneidade mista: completa (aptos), sem termo de menores (Coroinhas), sem envio (MESC) e vazia (demais).
+UPDATE calendario.membro_grupo
+SET formacao_concluida_em = DATE '2025-03-01', vivencia_sacramental_atestada_em = DATE '2025-03-01',
+    termo_protecao_menores_em = DATE '2025-03-01', termo_protecao_menores_valido_ate = DATE '2028-03-01',
+    enviado_em = DATE '2025-03-10', enviado_por = 'seed'
+WHERE organizacao_id IN ('00000000-0000-0000-0000-0000000004a1', '00000000-0000-0000-0000-0000000004a2',
+                         '00000000-0000-0000-0000-0000000004b3')
+  AND papel IN ('coordenador', 'membro-ativo');
+UPDATE calendario.membro_grupo
+SET formacao_concluida_em = DATE '2025-03-01', vivencia_sacramental_atestada_em = DATE '2025-03-01',
+    enviado_em = DATE '2025-03-10', enviado_por = 'seed'
+WHERE organizacao_id = '00000000-0000-0000-0000-0000000004b1' AND papel = 'coordenador';
+UPDATE calendario.membro_grupo
+SET formacao_concluida_em = DATE '2025-03-01', vivencia_sacramental_atestada_em = DATE '2025-03-01',
+    termo_protecao_menores_em = DATE '2024-03-01', termo_protecao_menores_valido_ate = DATE '2025-03-01'
+WHERE organizacao_id = '00000000-0000-0000-0000-0000000004b2' AND papel = 'coordenador';
+
+-- Mandatos em todos os estados: ECC (coordenador homologado, vice proposto), RCC (proposta vetada e mandato
+-- anterior encerrado), Terço (proposta pendente), Coroinhas (homologado legado, com pendência de idoneidade).
+INSERT INTO calendario.mandato_coordenacao (id, organizacao_id, fiel_id, funcao, inicio, fim, status, homologado_por, motivo_veto, decidido_em_utc)
+VALUES
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a1', '1f000000-0000-0000-0000-000000000010', 'COORDENADOR', CURRENT_DATE - INTERVAL '3 months', CURRENT_DATE + INTERVAL '21 months', 'HOMOLOGADO', 'seed', NULL, now()),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a1', '1f000000-0000-0000-0000-000000000011', 'VICE_COORDENADOR', CURRENT_DATE, CURRENT_DATE + INTERVAL '18 months', 'PROPOSTO', NULL, NULL, NULL),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a2', '1f000000-0000-0000-0000-000000000024', 'COORDENADOR', CURRENT_DATE, CURRENT_DATE + INTERVAL '2 years', 'VETADO', 'seed', 'Formação doutrinária básica ainda não concluída.', now()),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a2', '1f000000-0000-0000-0000-000000000015', 'COORDENADOR', DATE '2022-01-01', DATE '2024-12-31', 'ENCERRADO', 'seed', NULL, now()),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a3', '1f000000-0000-0000-0000-000000000009', 'COORDENADOR', CURRENT_DATE, CURRENT_DATE + INTERVAL '2 years', 'PROPOSTO', NULL, NULL, NULL),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004b1', '1f000000-0000-0000-0000-000000000003', 'COORDENADOR', CURRENT_DATE - INTERVAL '1 year', CURRENT_DATE + INTERVAL '1 year', 'HOMOLOGADO', 'seed', NULL, now()),
+    (gen_random_uuid(), '00000000-0000-0000-0000-0000000004b3', '1f000000-0000-0000-0000-000000000025', 'COORDENADOR', CURRENT_DATE - INTERVAL '6 months', CURRENT_DATE + INTERVAL '30 months', 'HOMOLOGADO', 'seed', NULL, now());
+
+-- Espelho de leitura: nome do fiel com mandato homologado na coordenação.
+UPDATE calendario.organizacao o
+SET coordenador = f.nome
+FROM calendario.mandato_coordenacao m
+JOIN calendario.fieis f ON f.id = m.fiel_id
+WHERE m.organizacao_id = o.id AND m.status = 'HOMOLOGADO' AND m.funcao = 'COORDENADOR'
+  AND o.id IN ('00000000-0000-0000-0000-0000000004a1', '00000000-0000-0000-0000-0000000004b1',
+               '00000000-0000-0000-0000-0000000004b3');

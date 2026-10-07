@@ -19,6 +19,8 @@ import { OrganizacaoMandatosModal } from '@/contextos/organizacao/presentation/c
 import { OrganizacaoMembrosModal } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMembrosModal';
 import OrganizacaoFormModal from '@/contextos/organizacao/presentation/pages/OrganizacaoFormModal';
 
+const ORGANISMOS = new Set(['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'CONSELHO']);
+
 const Organizacoes: React.FC = () => {
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
@@ -88,8 +90,11 @@ const Organizacoes: React.FC = () => {
     [orgs]
   );
 
+  /** A lista é de organismos eclesiais; Matriz e Comunidade ficam em Governo & Território. */
+  const organismos = useMemo(() => orgs.filter((org) => ORGANISMOS.has(org.tipo)), [orgs]);
+
   const filteredOrgs = useMemo(() => {
-    return orgs.filter((org) => {
+    return organismos.filter((org) => {
       const query = searchTerm.toLowerCase().trim();
       const matchesSearch =
         !query ||
@@ -103,7 +108,7 @@ const Organizacoes: React.FC = () => {
         (statusFilter === 'INATIVO' && !org.ativo);
       return matchesSearch && matchesTipo && matchesStatus;
     });
-  }, [orgs, searchTerm, tipoFilter, statusFilter]);
+  }, [organismos, searchTerm, tipoFilter, statusFilter]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>

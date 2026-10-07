@@ -149,7 +149,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               sx={{ mb: 2.5 }}
             />
 
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ mb: 2.5 }}>
               <Grid size={{ xs: (tipo === 'PASTORAL' || tipo === 'MOVIMENTO') ? 6 : 12 }}>
                 <FormControl fullWidth required size="small">
 
@@ -216,7 +216,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
               )}
             </Grid>
 
-            <Grid container spacing={2} sx={{ mt: 0 }}>
+            <Grid container spacing={2} sx={{ mb: (tipo === 'CONSELHO' || exigeSetor) ? 2.5 : 0 }}>
               {tipo === 'CONSELHO' && (
                 <Grid size={{ xs: 12 }}>
                   <FormControl fullWidth required size="small" error={!!errors.subtipoConselho}>
@@ -268,7 +268,7 @@ const OrganizacaoFormModal: React.FC<OrganizacaoFormModalProps> = ({
             </Grid>
 
             {(
-              <FormControl fullWidth required size="small" error={!!errors.parentId} sx={{ mt: 2 }}>
+              <FormControl fullWidth required size="small" error={!!errors.parentId}>
 
                 <Controller
                   name="parentId"

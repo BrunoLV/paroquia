@@ -157,6 +157,12 @@ public class SeedDataSqlIntegrityTest {
         Integer eventosHibridoCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.eventos WHERE formato = 'HIBRIDO'", Integer.class);
 
+        Integer statusMandatosCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT status) FROM calendario.mandato_coordenacao", Integer.class);
+        Integer tiposOrganizacaoCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT tipo) FROM calendario.organizacao", Integer.class);
+        assertEquals(4, statusMandatosCount, "Seed deve cobrir todos os estados de mandato");
+        assertEquals(4, tiposOrganizacaoCount, "Seed deve cobrir todos os tipos de organização");
         assertTrue(organizacoesCount != null && organizacoesCount > 0, "Organizacoes should be populated");
         assertTrue(diocesesCount != null && diocesesCount > 0, "Seed deve incluir dioceses cadastradas");
         assertTrue(governoEclesiasticoCount != null && governoEclesiasticoCount > 0,
