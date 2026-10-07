@@ -9,6 +9,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaIdoneidadeFuncao;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -21,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -89,6 +92,11 @@ public class PromoverACoordenadorUseCase {
                         "Fiel não é membro ativo desta organização: " + request.fielId()));
 
         MembroGrupo membroAgregado = membroGrupoMapper.toDomain(membro);
+        List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(papel.isCoordenacao(),
+                organizacao.getSetorPastoral(), membroAgregado.getIdoneidade(), LocalDate.now());
+        if (!pendencias.isEmpty()) {
+            throw new IllegalArgumentException("Agente sem idoneidade para a função: " + String.join(" ", pendencias));
+        }
         membroAgregado.atribuirPapel(papel);
         membroGrupoMapper.aplicar(membroAgregado, membro);
         membroRepository.save(membro);

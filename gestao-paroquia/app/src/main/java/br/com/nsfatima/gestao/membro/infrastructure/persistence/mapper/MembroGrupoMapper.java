@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper;
 
+import br.com.nsfatima.gestao.membro.domain.model.IdoneidadeAgente;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
@@ -17,7 +18,7 @@ public class MembroGrupoMapper {
         if (e == null) {
             return null;
         }
-        return new MembroGrupo(
+        MembroGrupo membro = new MembroGrupo(
                 e.getId(),
                 e.getFielId(),
                 e.getOrganizacaoId(),
@@ -26,6 +27,14 @@ public class MembroGrupoMapper {
                 e.getIgrejaVinculoId(),
                 e.getDataEntrada(),
                 e.isAtivo());
+        membro.registrarIdoneidade(new IdoneidadeAgente(
+                e.getFormacaoConcluidaEm(),
+                e.getVivenciaSacramentalAtestadaEm(),
+                e.getTermoProtecaoMenoresEm(),
+                e.getTermoProtecaoMenoresValidoAte(),
+                e.getEnviadoEm(),
+                e.getEnviadoPor()));
+        return membro;
     }
 
     public MembroGrupoEntity toEntity(MembroGrupo d) {
@@ -43,5 +52,12 @@ public class MembroGrupoMapper {
         e.setIgrejaVinculoId(d.getIgrejaVinculoId());
         e.setDataEntrada(d.getDataEntrada());
         e.setAtivo(d.isAtivo());
+        IdoneidadeAgente idoneidade = d.getIdoneidade();
+        e.setFormacaoConcluidaEm(idoneidade.formacaoConcluidaEm());
+        e.setVivenciaSacramentalAtestadaEm(idoneidade.vivenciaSacramentalAtestadaEm());
+        e.setTermoProtecaoMenoresEm(idoneidade.termoProtecaoMenoresEm());
+        e.setTermoProtecaoMenoresValidoAte(idoneidade.termoProtecaoMenoresValidoAte());
+        e.setEnviadoEm(idoneidade.enviadoEm());
+        e.setEnviadoPor(idoneidade.enviadoPor());
     }
 }

@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.organizacao.application.service;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaIdoneidadeFuncao;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -82,6 +83,8 @@ public class MandatoCoordenacaoService {
             throw new OrganizacaoNegocioException("O fiel precisa ser membro ativo da organização para coordená-la.");
         }
 
+        exigirIdoneidade(organizacao, fielId);
+
         MandatoCoordenacao mandato;
         try {
             mandato = MandatoCoordenacao.propor(organizacaoId, fielId, funcao, inicio, fim);
@@ -107,6 +110,8 @@ public class MandatoCoordenacaoService {
      */
     public MandatoCoordenacao homologar(UUID mandatoId) {
         MandatoCoordenacao mandato = carregar(mandatoId);
+        organizacaoRepository.findById(mandato.getOrganizacaoId())
+                .ifPresent(organizacao -> exigirIdoneidade(organizacao, mandato.getFielId()));
         try {
             mandato.homologar(atorAtual(), LocalDate.now(clock), Instant.now(clock));
         } catch (IllegalStateException ex) {
@@ -175,6 +180,23 @@ public class MandatoCoordenacaoService {
     @Transactional(readOnly = true)
     public List<MandatoCoordenacao> listar(UUID organizacaoId) {
         return mandatoRepository.findByOrganizacaoId(organizacaoId);
+    }
+
+    /**
+     * Exige que o agente seja idôneo para coordenar: formação, vivência sacramental atestada, termo de proteção
+     * de menores vigente e envio conferido pelo Pároco, conforme {@link PoliticaIdoneidadeFuncao}.
+     */
+    private void exigirIdoneidade(OrganizacaoEntity organizacao, UUID fielId) {
+        MembroGrupoEntity entity = membroRepository
+                .findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacao.getId())
+                .orElseThrow(() -> new OrganizacaoNegocioException(
+                        "O fiel precisa ser membro ativo da organização para coordená-la."));
+        List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(true, organizacao.getSetorPastoral(),
+                membroMapper.toDomain(entity).getIdoneidade(), LocalDate.now(clock));
+        if (!pendencias.isEmpty()) {
+            throw new OrganizacaoNegocioException("Agente sem idoneidade para coordenar: "
+                    + String.join(" ", pendencias));
+        }
     }
 
     private MandatoCoordenacao carregar(UUID mandatoId) {

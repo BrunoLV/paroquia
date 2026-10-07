@@ -48,6 +48,72 @@ public class MembroGrupoEntity extends BaseAuditableEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
+    @Column(name = "formacao_concluida_em")
+    private LocalDate formacaoConcluidaEm;
+
+    @Column(name = "vivencia_sacramental_atestada_em")
+    private LocalDate vivenciaSacramentalAtestadaEm;
+
+    @Column(name = "termo_protecao_menores_em")
+    private LocalDate termoProtecaoMenoresEm;
+
+    @Column(name = "termo_protecao_menores_valido_ate")
+    private LocalDate termoProtecaoMenoresValidoAte;
+
+    @Column(name = "enviado_em")
+    private LocalDate enviadoEm;
+
+    @Column(name = "enviado_por", length = 128)
+    private String enviadoPor;
+
+    public LocalDate getFormacaoConcluidaEm() {
+        return formacaoConcluidaEm;
+    }
+
+    public void setFormacaoConcluidaEm(LocalDate formacaoConcluidaEm) {
+        this.formacaoConcluidaEm = formacaoConcluidaEm;
+    }
+
+    public LocalDate getVivenciaSacramentalAtestadaEm() {
+        return vivenciaSacramentalAtestadaEm;
+    }
+
+    public void setVivenciaSacramentalAtestadaEm(LocalDate vivenciaSacramentalAtestadaEm) {
+        this.vivenciaSacramentalAtestadaEm = vivenciaSacramentalAtestadaEm;
+    }
+
+    public LocalDate getTermoProtecaoMenoresEm() {
+        return termoProtecaoMenoresEm;
+    }
+
+    public void setTermoProtecaoMenoresEm(LocalDate termoProtecaoMenoresEm) {
+        this.termoProtecaoMenoresEm = termoProtecaoMenoresEm;
+    }
+
+    public LocalDate getTermoProtecaoMenoresValidoAte() {
+        return termoProtecaoMenoresValidoAte;
+    }
+
+    public void setTermoProtecaoMenoresValidoAte(LocalDate termoProtecaoMenoresValidoAte) {
+        this.termoProtecaoMenoresValidoAte = termoProtecaoMenoresValidoAte;
+    }
+
+    public LocalDate getEnviadoEm() {
+        return enviadoEm;
+    }
+
+    public void setEnviadoEm(LocalDate enviadoEm) {
+        this.enviadoEm = enviadoEm;
+    }
+
+    public String getEnviadoPor() {
+        return enviadoPor;
+    }
+
+    public void setEnviadoPor(String enviadoPor) {
+        this.enviadoPor = enviadoPor;
+    }
+
     public UUID getId() {
         return id;
     }

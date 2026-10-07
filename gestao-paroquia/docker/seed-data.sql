@@ -1522,3 +1522,9 @@ FROM calendario.membro_grupo m
 WHERE m.ativo AND m.papel IN ('coordenador', 'secretario-grupo')
   AND NOT EXISTS (SELECT 1 FROM calendario.mandato_coordenacao c
                   WHERE c.organizacao_id = m.organizacao_id AND c.fiel_id = m.fiel_id);
+
+-- Idoneidade de exemplo para os coordenadores semeados (dados fictícios de desenvolvimento).
+UPDATE calendario.membro_grupo
+SET formacao_concluida_em = DATE '2025-01-01', vivencia_sacramental_atestada_em = DATE '2025-01-01',
+    termo_protecao_menores_em = DATE '2025-01-01', enviado_em = DATE '2025-01-01', enviado_por = 'seed'
+WHERE ativo AND papel IN ('coordenador', 'secretario-grupo') AND formacao_concluida_em IS NULL;

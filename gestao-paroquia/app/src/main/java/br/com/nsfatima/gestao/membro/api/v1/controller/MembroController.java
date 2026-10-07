@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.membro.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.membro.api.v1.dto.IdoneidadeRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.IdoneidadeResponse;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
@@ -9,6 +11,7 @@ import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ObterMembroUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.ListarMembrosUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.PromoverACoordenadorUseCase;
+import br.com.nsfatima.gestao.membro.application.usecase.RegistrarIdoneidadeUseCase;
 import br.com.nsfatima.gestao.membro.application.usecase.AtualizarMembroUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +57,7 @@ public class MembroController {
     private final ObterMembroUseCase obterMembroUseCase;
     private final ListarMembrosUseCase listarMembrosUseCase;
     private final PromoverACoordenadorUseCase promoverACoordenadorUseCase;
+    private final RegistrarIdoneidadeUseCase registrarIdoneidadeUseCase;
     private final EventoActorContextResolver actorContextResolver;
 
     public MembroController(
@@ -61,12 +66,14 @@ public class MembroController {
             ObterMembroUseCase obterMembroUseCase,
             ListarMembrosUseCase listarMembrosUseCase,
             PromoverACoordenadorUseCase promoverACoordenadorUseCase,
+            RegistrarIdoneidadeUseCase registrarIdoneidadeUseCase,
             EventoActorContextResolver actorContextResolver) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.atualizarMembroUseCase = atualizarMembroUseCase;
         this.obterMembroUseCase = obterMembroUseCase;
         this.listarMembrosUseCase = listarMembrosUseCase;
         this.promoverACoordenadorUseCase = promoverACoordenadorUseCase;
+        this.registrarIdoneidadeUseCase = registrarIdoneidadeUseCase;
         this.actorContextResolver = actorContextResolver;
     }
 
@@ -193,6 +200,48 @@ public class MembroController {
             @Parameter(description = "Novo status de ativação") @RequestParam boolean ativo) {
         var context = actorContextResolver.resolveRequired();
         atualizarMembroUseCase.alternarAtivo(id, ativo, context.actor());
+    }
+
+    /**
+     * Consulta a idoneidade pastoral do agente e as pendências para a função que ele ocupa.
+     *
+     * @param id identificador do vínculo
+     * @return a idoneidade e as pendências
+     */
+    @GetMapping("/{id}/idoneidade")
+    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
+    @Operation(summary = "Consulta a idoneidade pastoral de um agente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Idoneidade retornada",
+                    content = @Content(schema = @Schema(implementation = IdoneidadeResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Vínculo não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public IdoneidadeResponse obterIdoneidade(
+            @Parameter(description = "Identificador do vínculo", required = true) @PathVariable UUID id) {
+        return registrarIdoneidadeUseCase.obter(id);
+    }
+
+    /**
+     * Registra a idoneidade pastoral do agente (formação, vivência sacramental, proteção de menores e envio).
+     *
+     * @param id identificador do vínculo
+     * @param request datas atestadas
+     * @return a idoneidade atualizada e as pendências
+     */
+    @PutMapping("/{id}/idoneidade")
+    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL')")
+    @Operation(summary = "Registra a idoneidade pastoral de um agente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Idoneidade registrada",
+                    content = @Content(schema = @Schema(implementation = IdoneidadeResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datas inválidas ou vínculo não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    public IdoneidadeResponse registrarIdoneidade(
+            @Parameter(description = "Identificador do vínculo", required = true) @PathVariable UUID id,
+            @RequestBody @Valid IdoneidadeRequest request) {
+        return registrarIdoneidadeUseCase.registrar(id, request, actorContextResolver.resolveRequired().actor());
     }
 
     /**

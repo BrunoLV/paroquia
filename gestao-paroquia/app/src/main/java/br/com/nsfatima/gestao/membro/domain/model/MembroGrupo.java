@@ -28,6 +28,7 @@ public class MembroGrupo {
     private UUID igrejaVinculoId;
     private LocalDate dataEntrada;
     private boolean ativo;
+    private IdoneidadeAgente idoneidade = IdoneidadeAgente.vazia();
 
     public MembroGrupo(
             UUID id,
@@ -59,6 +60,19 @@ public class MembroGrupo {
             LocalDate dataEntrada) {
         return new MembroGrupo(id, fielId, organizacaoId, tipoOrganizacao, papel, igrejaVinculoId,
                 dataEntrada != null ? dataEntrada : LocalDate.now(), true);
+    }
+
+    /**
+     * Registra a idoneidade pastoral do agente (formação, vivência sacramental, proteção de menores e envio).
+     *
+     * @param novaIdoneidade registro completo e atual; nunca nulo
+     */
+    public void registrarIdoneidade(IdoneidadeAgente novaIdoneidade) {
+        this.idoneidade = Objects.requireNonNull(novaIdoneidade, "Idoneidade é obrigatória.");
+    }
+
+    public IdoneidadeAgente getIdoneidade() {
+        return idoneidade;
     }
 
     public final void atribuirPapel(PapelOrganizacional novoPapel) {

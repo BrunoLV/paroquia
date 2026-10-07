@@ -85,7 +85,9 @@ class ObterOrganogramaUseCaseTest {
                 membroId,
                 "João Santos",
                 "membro",
-                true
+                true,
+                true,
+                List.of()
         );
         when(listMembrosUseCase.execute(pastoralId)).thenReturn(List.of(memberResp));
         when(listMembrosUseCase.execute(conselhoId)).thenReturn(List.of());

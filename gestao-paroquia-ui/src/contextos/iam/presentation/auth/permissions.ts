@@ -211,6 +211,10 @@ export const canManageLocais = (user: User | null): boolean => {
  * Gestão de organizações e vínculos de usuários:
  * Pároco/Bispo (criação de grupos/pastorais e provisão canônica) e ADMIN (gestão técnica de usuários).
  */
+/** Quem atesta a idoneidade pastoral dos agentes: o Pároco/Bispo e a secretaria paroquial. */
+export const canGerirIdoneidade = (user: User | null): boolean =>
+  isParoco(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
+
 /** Quem pode propor um mandato de coordenação: Pároco/Bispo ou a mesa do conselho pastoral (CPP). */
 export const canProporMandato = (user: User | null): boolean => isParoco(user) || isMembroCpp(user);
 

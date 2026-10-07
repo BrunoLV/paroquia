@@ -24,6 +24,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -81,6 +82,10 @@ class PromoverACoordenadorUseCaseTest {
         membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         membro.setPapel("VOLUNTARIO");
         membro.setAtivo(true);
+        membro.setFormacaoConcluidaEm(LocalDate.of(2025, 1, 1));
+        membro.setVivenciaSacramentalAtestadaEm(LocalDate.of(2025, 1, 1));
+        membro.setTermoProtecaoMenoresEm(LocalDate.of(2025, 1, 1));
+        membro.setEnviadoEm(LocalDate.of(2025, 1, 1));
         when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
                 .thenReturn(Optional.of(membro));
     }

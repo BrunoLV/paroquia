@@ -8,7 +8,7 @@ import { getUsuarios } from '@/contextos/iam/infrastructure/http/usuarios';
 import { getPastoraisOficiais } from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
 import { Organizacao } from '@/shared/domain/types/types';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canHomologarMandato, canManageOrganizacoes, canProporMandato } from '@/contextos/iam/presentation/auth/permissions';
+import { canGerirIdoneidade, canHomologarMandato, canManageOrganizacoes, canProporMandato } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import ActionButton from '@/shared/presentation/components/ActionButton';
@@ -176,6 +176,7 @@ const Organizacoes: React.FC = () => {
         organizacao={selectedOrgParaMembros}
         igrejas={igrejas}
         usuarios={usuarios}
+        canGerirIdoneidade={canGerirIdoneidade(user)}
       />
 
       <OrganizacaoMandatosModal

@@ -7,6 +7,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.IdoneidadeRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -35,8 +36,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,7 +156,8 @@ class MembroControllerIntegrationTest {
     @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario mediante provisão do Pároco")
     void devePromoverFielACoordenadorCriandoUsuario() throws Exception {
         UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Carlos Promovido");
-        createMembro(fielId);
+        UUID membroId = createMembro(fielId);
+        atestarIdoneidade(membroId);
 
         var request = new PromoverACoordenadorRequest(
                 fielId, orgId, "coordenador", "carlos.promovido", "senhaForte123");
@@ -168,7 +172,64 @@ class MembroControllerIntegrationTest {
                 .andExpect(jsonPath("$.fielId").value(fielId.toString()));
     }
 
-    private void createMembro(UUID fielId) {
+    @Test
+    @DisplayName("Deve recusar a promoção de um Fiel sem idoneidade pastoral registrada")
+    void deveRecusarPromocaoDeFielSemIdoneidade() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Fiel Sem Idoneidade");
+        createMembro(fielId);
+
+        var request = new PromoverACoordenadorRequest(
+                fielId, orgId, "coordenador", "fiel.sem.idoneidade", "senhaForte123");
+
+        mockMvc.perform(post("/api/v1/membros/promover-coordenador")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Registra a idoneidade e informa quem conferiu o envio")
+    void deveRegistrarEConsultarIdoneidade() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Fiel Idoneidade");
+        UUID membroId = createMembro(fielId);
+
+        mockMvc.perform(get("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth())))
+                .andExpect(status().isOk());
+
+        var request = new IdoneidadeRequest(LocalDate.of(2025, 1, 1), null, null, null, LocalDate.of(2025, 2, 1));
+        mockMvc.perform(put("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.enviadoEm").value("2025-02-01"))
+                .andExpect(jsonPath("$.enviadoPor").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("Vínculo inexistente retorna 400 e usuário comum não acessa a idoneidade")
+    void deveNegarIdoneidadeSemPermissao() throws Exception {
+        mockMvc.perform(get("/api/v1/membros/" + UUID.randomUUID() + "/idoneidade")
+                        .with(authentication(getParocoAuth())))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/api/v1/membros/" + UUID.randomUUID() + "/idoneidade")
+                        .with(user("fiel").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+
+    private void atestarIdoneidade(UUID membroId) throws Exception {
+        var request = new IdoneidadeRequest(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 1), null, LocalDate.of(2025, 1, 1));
+        mockMvc.perform(put("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    private UUID createMembro(UUID fielId) {
         var entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
@@ -177,5 +238,6 @@ class MembroControllerIntegrationTest {
         entity.setPapel("MEMBRO_ATIVO");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);
+        return entity.getId();
     }
 }

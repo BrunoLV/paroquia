@@ -2,12 +2,19 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.membro.domain.model.IdoneidadeAgente;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaIdoneidadeFuncao;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,12 +63,7 @@ public class ListarOrganizacaoMembrosUseCase {
         }
 
         List<OrganizacaoMembroResponse> membrosBanco = vinculosBrutos.stream()
-                .map(m -> new OrganizacaoMembroResponse(
-                        m.getId(),
-                        m.getFielId(),
-                        resolveNome(m.getFielId()),
-                        m.getPapel(),
-                        m.isAtivo()))
+                .map(m -> toResponse(m, setorDa(m.getOrganizacaoId())))
                 .toList();
 
         List<OrganizacaoMembroResponse> membros = new ArrayList<>(membrosBanco);
@@ -74,6 +76,22 @@ public class ListarOrganizacaoMembrosUseCase {
         }
 
         return membros;
+    }
+
+    private OrganizacaoMembroResponse toResponse(MembroGrupoEntity m, SetorPastoral setor) {
+        var papel = PapelOrganizacional.fromStoredValue(m.getPapel());
+        var idoneidade = new IdoneidadeAgente(m.getFormacaoConcluidaEm(), m.getVivenciaSacramentalAtestadaEm(),
+                m.getTermoProtecaoMenoresEm(), m.getTermoProtecaoMenoresValidoAte(), m.getEnviadoEm(),
+                m.getEnviadoPor());
+        var pendencias = PoliticaIdoneidadeFuncao.pendencias(
+                papel != null && papel.isCoordenacao(), setor, idoneidade, LocalDate.now());
+        return new OrganizacaoMembroResponse(m.getId(), m.getFielId(), resolveNome(m.getFielId()), m.getPapel(),
+                m.isAtivo(), pendencias.isEmpty(), pendencias);
+    }
+
+    private SetorPastoral setorDa(UUID organizacaoId) {
+        return organizacaoRepository.findById(organizacaoId)
+                .map(OrganizacaoEntity::getSetorPastoral).orElse(null);
     }
 
     private String resolveNome(UUID fielId) {
@@ -99,7 +117,9 @@ public class ListarOrganizacaoMembrosUseCase {
                         fielId,
                         name,
                         papel,
-                        true
+                        true,
+                        null,
+                        null
                 )));
     }
 }

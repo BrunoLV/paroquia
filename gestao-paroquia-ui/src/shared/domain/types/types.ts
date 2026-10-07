@@ -228,6 +228,21 @@ export const SUBTIPO_CONSELHO_LABELS: Record<SubtipoConselho, string> = {
   CAEP: "Conselho para Assuntos Econômicos (CAEP)",
 };
 
+/**
+ * Idoneidade pastoral do agente: guarda apenas datas e quem conferiu o envio, nunca o conteúdo dos documentos.
+ * `pendencias` lista o que ainda impede o agente de exercer a função que ocupa.
+ */
+export interface IdoneidadeAgente {
+  formacaoConcluidaEm?: string | null;
+  vivenciaSacramentalAtestadaEm?: string | null;
+  termoProtecaoMenoresEm?: string | null;
+  termoProtecaoMenoresValidoAte?: string | null;
+  enviadoEm?: string | null;
+  enviadoPor?: string | null;
+  apto: boolean;
+  pendencias: string[];
+}
+
 export type FuncaoCoordenacao = "COORDENADOR" | "VICE_COORDENADOR";
 
 export const FUNCAO_COORDENACAO_LABELS: Record<FuncaoCoordenacao, string> = {

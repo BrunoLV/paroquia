@@ -72,9 +72,38 @@ class MandatoCoordenacaoServiceTest {
         membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         membro.setPapel(PapelOrganizacional.MEMBRO_ATIVO.storedValue());
         membro.setAtivo(true);
+        membro.setFormacaoConcluidaEm(LocalDate.of(2025, 1, 1));
+        membro.setVivenciaSacramentalAtestadaEm(LocalDate.of(2025, 1, 1));
+        membro.setTermoProtecaoMenoresEm(LocalDate.of(2025, 1, 1));
+        membro.setEnviadoEm(LocalDate.of(2025, 1, 1));
         when(membros.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
                 .thenReturn(Optional.of(membro));
         when(mandatos.findByOrganizacaoId(organizacaoId)).thenReturn(List.of());
+    }
+
+    @Test
+    void proporRecusaAgenteSemIdoneidade() {
+        membro.setTermoProtecaoMenoresEm(null);
+        membro.setEnviadoEm(null);
+
+        assertThatThrownBy(() -> service.propor(organizacaoId, fielId, FuncaoCoordenacao.COORDENADOR,
+                HOJE, HOJE.plusYears(1))).isInstanceOf(OrganizacaoNegocioException.class)
+                .hasMessageContaining("sem idoneidade")
+                .hasMessageContaining("Termo de proteção de menores")
+                .hasMessageContaining("Envio");
+        verify(mandatos, never()).save(any());
+    }
+
+    @Test
+    void homologarRecusaAgenteQuePerdeuAIdoneidade() {
+        MandatoCoordenacao m = MandatoCoordenacao.propor(organizacaoId, fielId, FuncaoCoordenacao.COORDENADOR,
+                HOJE, HOJE.plusYears(2));
+        when(mandatos.findById(m.getId())).thenReturn(Optional.of(m));
+        membro.setTermoProtecaoMenoresEm(LocalDate.of(2020, 1, 1));
+        membro.setTermoProtecaoMenoresValidoAte(LocalDate.of(2021, 1, 1));
+
+        assertThatThrownBy(() -> service.homologar(m.getId())).isInstanceOf(OrganizacaoNegocioException.class);
+        assertThat(m.getStatus()).isEqualTo(StatusMandato.PROPOSTO);
     }
 
     @Test
