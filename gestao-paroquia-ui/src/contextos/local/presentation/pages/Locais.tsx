@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Container } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import LocationIcon from '@mui/icons-material/LocationOn';
 import { createLocal, deleteLocal, getLocais, updateLocal } from '@/contextos/local/infrastructure/http/locais';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
@@ -112,7 +112,7 @@ const Locais: React.FC = () => {
           isAuthorized && (
             <ActionButton
               title="Novo Local"
-              icon={<AddIcon />}
+              icon={<AddLocationAltIcon />}
               color="primary"
               onClick={() => {
                 setSelectedLocal(null);

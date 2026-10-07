@@ -1,7 +1,7 @@
 import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import BlockIcon from '@mui/icons-material/Block';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import type { ChipProps, SvgIconProps } from '@mui/material';
 
 interface SituacaoMeta {
@@ -21,4 +21,4 @@ export const getSituacaoAtivoMeta = (ativo: boolean): SituacaoMeta =>
 export const getUsuarioSituacaoMeta = (enabled: boolean): SituacaoMeta =>
   enabled
     ? { label: 'Ativo', color: 'success', icon: React.createElement(CheckCircleIcon), tooltip: 'Cadastro ativo' }
-    : { label: 'Pendente', color: 'warning', icon: React.createElement(PendingActionsIcon), tooltip: 'Aguardando aprovação de cadastro' };
+    : { label: 'Pendente', color: 'warning', icon: React.createElement(HourglassEmptyIcon), tooltip: 'Aguardando aprovação de cadastro' };

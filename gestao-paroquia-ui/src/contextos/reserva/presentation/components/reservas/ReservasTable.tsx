@@ -1,10 +1,10 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React from 'react';
-import { Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import TableActionMenu, { type TableAction } from '@/shared/presentation/components/TableActionMenu';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import OutboxIcon from '@mui/icons-material/Outbox';
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 import BlockIcon from '@mui/icons-material/Block';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -72,13 +72,13 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
 }) => {
   /** O menu comum preserva as ações disponíveis por estado e permissão de aprovação. */
   const rowActions = (reserva: ReservaDetalhe): TableAction[] => [
-    { label: 'Ver detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => onVisualizar(reserva) },
+    { label: 'Ver detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => onVisualizar(reserva) },
     ...(reserva.status === 'PENDENTE' && podeAprovar ? [
       { label: 'Aprovar Reserva', icon: <CheckCircleIcon fontSize="small" color="success" />, onClick: () => onAprovar(reserva) },
       { label: 'Rejeitar Solicitação', icon: <HighlightOffIcon fontSize="small" color="error" />, onClick: () => onRejeitar(reserva) },
     ] : []),
     ...(reserva.status === 'CONFIRMADA' && reserva.tipoItem === 'ATIVO' ? [
-      { label: 'Registrar Saída (Retirada)', icon: <LocalShippingIcon fontSize="small" color="info" />, onClick: () => onRetirar(reserva) },
+      { label: 'Registrar Saída (Retirada)', icon: <OutboxIcon fontSize="small" color="info" />, onClick: () => onRetirar(reserva) },
     ] : []),
     ...(reserva.status === 'RETIRADO' && reserva.tipoItem === 'ATIVO' ? [
       { label: 'Registrar Devolução', icon: <AssignmentReturnIcon fontSize="small" color="primary" />, onClick: () => onDevolver(reserva) },
@@ -107,7 +107,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
 
   return (
     <>
-      <TableContainer>
+      <TableContainer component={Paper}>
         <Table size="small">
           <TableHead sx={{ backgroundColor: 'action.hover' }}>
             <TableRow>
@@ -130,7 +130,20 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
               paginated.map((r) => {
                 const statusMeta = getReservaStatusMeta(r.status);
                 return (
-                  <TableRow key={r.id} hover>
+                  <TableRow
+                    key={r.id}
+                    hover
+                    tabIndex={0}
+                    role="button"
+                    onClick={() => onVisualizar(r)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onVisualizar(r);
+                      }
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {r.tipoItem === 'LOCAL' ? (
@@ -191,7 +204,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
                     <TableCell>
                       <StatusIcon {...statusMeta} />
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                       <TableActionMenu actions={rowActions(r)} />
                     </TableCell>
                   </TableRow>

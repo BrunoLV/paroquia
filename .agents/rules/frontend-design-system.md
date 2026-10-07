@@ -57,6 +57,43 @@ Todo componente de modal/diálogo (`*Modal.tsx`, `*Dialog.tsx`) DEVE seguir estr
 7. **PROIBIDO overrides arbitrários de padding em `<DialogActions>`:** Use `<DialogActions>` limpo com espaçamento padrão do tema.
 8. **PROIBIDO `<Button>` ou `<IconButton>` crus:** Use exclusivamente `<ActionButton>` e `<IconActionButton>`.
 
+### 1.2. Padronização Obrigatória de Ícones e Cores em Botões (`ActionButton` / `IconActionButton`)
+Todos os botões devem aderir estritamente à semântica de cores e catálogo de ícones de `DESIGN_SYSTEM.md`:
+1. **Criação / Cadastro (`color="primary"` variant="contained"):** Ícone específico da entidade:
+   - Fiel / Clérigo: `PersonAddIcon`
+   - Pastoral / Movimento: `GroupAddIcon`
+   - Unidade Territorial: `AddHomeWorkIcon`
+   - Local / Espaço: `AddLocationAltIcon`
+   - Evento de Calendário: `EventNoteIcon`
+   - Assento / Ata / Projeto: `PostAddIcon`
+   - Genérico / Parâmetro: `AddIcon`
+2. **Gravação e Submissão (`color="primary"`):** `SaveIcon` para salvar/gravar; `CheckCircleIcon` para confirmar/submeter; `LoginIcon` para autenticação.
+3. **Cancelamento e Fechamento (`color="secondary"`):** `CloseIcon` para cancelar/fechar; `ArrowBackIcon` para voltar; `ClearAllIcon`/`FilterAltOffIcon` para limpar filtros.
+4. **Ações de Sucesso e Homologação (`color="success"`):** `CheckCircleIcon` (aprovar/concluir), `VerifiedIcon` (homologar), `ToggleOnIcon` (ativar/reativar).
+5. **Ações Destrutivas e Restritivas (`color="error"`):** `DeleteIcon` (excluir), `BlockIcon`/`CancelIcon` (vetar/rejeitar), `ToggleOffIcon`/`PersonOffIcon` (inativar/desativar).
+6. **Ações Neutras e Utilitárias (`color="primary"` ou default):** `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (editar/ressalva), `LinkIcon` (vincular), `DownloadIcon` (exportar), `RefreshIcon` (atualizar).
+
+### 1.3. Padronização Obrigatória de Ícones para Tipo, Encargo e Grau
+1. **Tipo (Categoria e Classificação):**
+   - Campo geral e casos não classificados (`OUTRO`): `CategoryIcon`. Proibido `HelpOutlineIcon` ("?").
+   - Tipo de Sacramento: `MenuBookIcon` (Sagrados Livros de Assentos).
+   - Tipo de Unidade Territorial: `ChurchIcon` (Matriz) e `PlaceIcon` (Comunidade).
+   - Tipo de Local Físico: `ChurchIcon` (Igreja), `MeetingRoomIcon` (Salão), `DoorFrontIcon` (Sala).
+   - Tipo de Aquisição de Solo: `ReceiptLongIcon`.
+2. **Encargo (Ofício e Função Eclesiástica):**
+   - Campo geral: `AssignmentIndIcon`.
+   - Pároco: `ChurchIcon` (pastor titular e autoridade paroquial). Proibido `AdminPanelSettingsIcon` (TI).
+   - Administrador Paroquial: `AssignmentIndIcon` (provisão administrativa temporária). Proibido `ManageAccountsIcon` (TI).
+   - Vigário Paroquial: `SupervisorAccountIcon` (cooperador pastoral).
+   - Diácono Auxiliar: `CoPresentIcon` (assistência ao Altar e ministério da Palavra).
+   - Bispo / Emérito: `WorkspacePremiumIcon` (ordem episcopal e mérito canônico).
+3. **Grau (Sacramento da Ordem):**
+   - Campo geral: `WorkspacePremiumIcon` (grau ministerial da Ordem).
+   - Diaconato (Transitório / Permanente): `CoPresentIcon` (1º grau da Ordem). Proibido `VolunteerActivismIcon` (pastorais).
+   - Presbiterado Diocesano: `BadgeIcon` (2º grau da Ordem incardinado).
+   - Presbiterado Religioso: `ShieldIcon` (2º grau da Ordem regular).
+   - Episcopado: `WorkspacePremiumIcon` (3º grau e plenitude da Ordem).
+
 ---
 
 ## 2. Formulários, Validação e Máscaras
@@ -80,13 +117,29 @@ Todo modal e componente de tela DEVE conter bloco JSDoc especificando:
 - A regra de negócio ou canônica atendida.
 - A justificativa da decisão de UX (ex.: tamanho de modal, agrupamento de seções, acessibilidade).
 
-## 4. Paginação de Tabelas
+## 4. Tabelas e Seção de Pesquisa Externa
 
-Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
+1. **Seção de Pesquisa e Filtros Obrigatória por Fora da Tabela:**
+   - A barra de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela, renderizada em um `<Paper sx={{ p: 2, mb: 3 }}>` (ou `FilterBar` dedicado), utilizando o componente canônico `SearchField` (`size="small"`, ícone de lupa embutido) e `SearchableSelect`.
+   - A tabela deve residir em seu próprio `<TableContainer component={Paper}>`.
+   - **Terminantemente proibido:** incorporar `<TextField>` ou `<SearchField>` dentro do cabeçalho ou corpo do mesmo `Card` que engloba a tabela.
+2. **Paginação de Tabelas:**
+   - Aplicar a seção 7 do [`DESIGN_SYSTEM.md`](../../gestao-paroquia-ui/DESIGN_SYSTEM.md). `SearchableTablePagination` é o rodapé semântico: renderizar dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Nunca posicionar fora da tabela ou do seu contêiner. Linhas por página mantém pesquisa e a mesma altura dos botões anterior/próximo; o estilo compacto pertence somente à paginação e não altera formulários, filtros ou modais. Validar `tablePaginationArchitecture.test.ts` e dimensões no navegador nos temas claro/escuro.
+3. **Clique na Linha para Visualização de Detalhes:**
+   - Toda tabela do sistema deve permitir abrir o modal ou drawer de detalhes ao clicar na linha (`TableRow`), em paridade com o botão "Visualizar" do menu de ações.
+   - A linha deve conter: `role="button"`, `tabIndex={0}`, `sx={{ cursor: 'pointer' }}`, `onClick={() => onVisualizar(item)}` e `onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onVisualizar(item); } }}`.
+   - A célula do menu de ações (`TableActionMenu`) deve conter **obrigatoriamente** `onClick={(e) => e.stopPropagation()}` para evitar acionamento inadvertido do detalhamento ao clicar no menu.
 
 ## 5. Ações de Linha
 
-Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha. Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
+Toda ação em célula de tabela usa `TableActionMenu`, mesmo quando única. Gatilho pequeno e delineado com `⋮` vertical, sem texto visível; tooltip e nome acessível “Ações”. Proibidos `… Ações`, botões textuais e menus locais duplicados. Preservar permissões, callbacks e estados desabilitados. O componente comum gerencia teclado, foco e isolamento dos eventos da linha.
+- **Cores semânticas obrigatórias nos itens de ação:**
+  - Visualização e edição (`Visualizar`, `Editar`, `Membros`, `Vínculos`): `color="primary"` (ex.: `<VisibilityIcon fontSize="small" color="primary" />`, `<EditIcon fontSize="small" color="primary" />`, `<GroupsIcon fontSize="small" color="primary" />`).
+  - Ações destrutivas / restritivas (`Excluir`, `Inativar`, `Desativar`, `Vetar`, `Rejeitar`, `Cancelar`): `color="error"` (ex.: `DeleteIcon color="error"`, `ToggleOffIcon color="error"`, `BlockIcon color="error"`).
+  - Ações de sucesso / homologação (`Aprovar`, `Homologar`, `Ativar`, `Reativar`, `Concluir`): `color="success"` (ex.: `CheckCircleIcon color="success"`, `VerifiedIcon color="success"`, `ToggleOnIcon color="success"`).
+  - Ações de processo e fluxo (`Saída`, `Retirada`, `Certidão`): `color="info"`.
+  - Ações de alerta / atenção (`Manutenção`): `color="warning"`.
+- Executar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts`.
 
 ## 6. Navegação Lateral
 

@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ReservarIcon from '@mui/icons-material/EventAvailable';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { canExcluirAtivo, canManageAtivos, canManageManutencaoAtivo, isGlobalCreator } from '@/contextos/iam/presentation/auth/permissions';
@@ -183,7 +183,7 @@ const Ativos = () => {
     }
     actions.push({
       label: 'Visualizar',
-      icon: <VisibilityIcon fontSize="small" />,
+      icon: <VisibilityIcon fontSize="small" color="primary" />,
       onClick: () => setViewAtivo(ativo),
     });
     if (podeGerir && ativo.status === 'DISPONIVEL') {
@@ -203,7 +203,7 @@ const Ativos = () => {
     if (canManageAtivos(user)) {
       actions.push({
         label: 'Editar',
-        icon: <EditIcon fontSize="small" />,
+        icon: <EditIcon fontSize="small" color="primary" />,
         onClick: () => setEditAtivo(ativo),
       });
     }
@@ -222,7 +222,7 @@ const Ativos = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<InventoryIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<AccountBalanceIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Ativos Patrimoniais"
         subtitle="Cadastro, manutenção e ciclo de vida dos bens patrimoniais da paróquia."
         actions={
@@ -263,6 +263,7 @@ const Ativos = () => {
         onPageChange={setPage}
         onRowsPerPageChange={setRowsPerPage}
         rowActions={buildRowActions}
+        onView={setViewAtivo}
       />
 
       <AtivoViewModal

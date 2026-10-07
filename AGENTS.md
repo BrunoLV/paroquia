@@ -39,7 +39,11 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
 
 **Paginação de tabelas:** Aplicar a seção 7 do Design System: `SearchableTablePagination` dentro do `Table`, após `TableBody`, com `colSpan` das colunas visíveis. Seletor Linhas por página e botões anterior/próximo têm a mesma altura; compactação exclusiva da paginação, nunca dos formulários. Proibida paginação fora do rodapé da tabela.
 
-**Ações de tabelas:** Usar `TableActionMenu` em todas as linhas, inclusive ações únicas: botão pequeno delineado somente com `⋮` vertical, tooltip/nome acessível “Ações”, sem texto visível. Preservar permissões e estados; validar `tableActionsArchitecture.test.ts`.
+**Ações de tabelas:** Usar `TableActionMenu` em todas as linhas, inclusive ações únicas: botão pequeno delineado somente com `⋮` vertical, tooltip/nome acessível “Ações”, sem texto visível. Preservar permissões e estados; itens do menu devem utilizar cores semânticas explícitas no ícone (`color="primary"` para visualização/edição, `color="error"` para exclusão/inativação/veto, `color="success"` para aprovação/homologação/ativação); validar `tableActionsArchitecture.test.ts`.
+
+**Clique na linha das tabelas:** Toda tabela com visualização de detalhes deve abrir o modal/drawer ao clicar na linha (`role="button" tabIndex={0} sx={{ cursor: 'pointer' }} onClick={() => onVisualizar(item)} onKeyDown={...}`), em paridade com o botão Visualizar do menu de ações. A célula do `TableActionMenu` deve conter obrigatoriamente `onClick={(e) => e.stopPropagation()}`.
+
+**Seção de pesquisa e filtros:** A barra de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela (em `<Paper sx={{ p: 2, mb: 3 }}>` ou `FilterBar` com `SearchField`), com a tabela isolada em seu próprio `<TableContainer component={Paper}>`. Proibido incorporar campo de busca dentro do mesmo Card que envolve a tabela.
 
 1. **PLANEJAMENTO OBRIGATÓRIO (PLAN MODE / `/plan`):**
    * Antes de propor qualquer alteração ou gerar código, consulte obrigatoriamente `docs/business-rules/<modulo>.md` para o(s) Bounded Context(s) afetado(s).

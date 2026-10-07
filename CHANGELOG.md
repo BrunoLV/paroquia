@@ -8,6 +8,76 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-06
+
+### Modificado
+- **Cores Semânticas em Ações de Tabela (`TableActionMenu`) e Botões:**
+  - Padronização explícita de cores semânticas em itens do menu de ação de todas as tabelas:
+    - Primária (`color="primary"`): ações de visualização/detalhes e edição (`VisibilityIcon`, `EditIcon`, `GroupsIcon`, `LinkIcon`).
+    - Sucesso (`color="success"`): ações de aprovação, homologação, ativação e conclusão de exercício (`CheckCircleIcon`, `VerifiedIcon`, `ToggleOnIcon`).
+    - Erro / Destrutivo (`color="error"`): ações de exclusão, inativação, veto e cancelamento (`DeleteIcon`, `BlockIcon`, `HighlightOffIcon`, `ToggleOffIcon`).
+    - Informativo (`color="info"`): ações de emissão documental e fluxos de retirada/saída (`DescriptionIcon`, `OutboxIcon`).
+    - Alerta / Atenção (`color="warning"`): envio para manutenção (`BuildIcon`).
+- **Padronização do Clique na Linha para Visualização de Detalhes em Todas as Tabelas:**
+  - Garantia de paridade em 100% das telas de tabela (`AtivosTable`, `LocaisTable`, `OrganizacoesTable`, `ReservasTable`, `Aprovacoes`, `VinculosPendentesPanel`, `AjustesCadastrais`, `Notificacoes`, `Clerigos`, `Fieis`, `Sacramentos`, `Projetos`, `UnidadesTerritoriais`) para que clicar em qualquer linha da tabela abra imediatamente o modal ou drawer de detalhes.
+  - Implementação padronizada com acessibilidade completa: `role="button"`, `tabIndex={0}`, `sx={{ cursor: 'pointer' }}`, navegação por teclado (`Enter` / `Espaço`).
+  - Proteção contra acionamento acidental: a célula do menu de ações contém `onClick={(e) => e.stopPropagation()}` em todas as tabelas.
+  - Atualização dos testes unitários para validar a abertura de detalhes tanto pelo clique na linha quanto pelo menu de ações (`Ativos.test.tsx`).
+- **Padronização da Seção de Pesquisa Externa ao Quadro da Tabela:**
+  - Padronização em todas as telas de listagem (`Clerigos`, `Fieis`, `UnidadesTerritoriais`, `Reservas`, `Sacramentos`, `Projetos`, `AjustesCadastrais`, `Notificacoes`) para que a seção de pesquisa e filtros resida **sempre por fora** do quadro da tabela, em container `<Paper sx={{ p: 2, mb: 3 }}>` dedicado, utilizando o componente canônico `SearchField` (`size="small"`, busca textual integrada e ícone de lupa).
+  - Tabela isolada em seu próprio `<TableContainer component={Paper}>`, eliminando anti-pattern de encapsular a pesquisa e a tabela dentro de um mesmo `<Card>` / `<CardContent>`.
+  - Invariante formalizada no Design System (`gestao-paroquia-ui/DESIGN_SYSTEM.md`), regras de agentes (`.agents/rules/frontend-design-system.md`) e governança geral (`AGENTS.md`).
+- **Revisão e Harmonização Semântica de Ícones (Menu, Telas, Formulários e Status):**
+  - Eliminação de símbolos anacrônicos, profanos ou dúbios na interface, alinhando a representação visual com a dignidade canônica, litúrgica e pastoral da Igreja Católica.
+  - Alinhamento 1:1 entre a iconografia da barra de navegação (`navigation.ts`) e os cabeçalhos de página (`PageHeader`):
+    - Clero: `BadgeIcon` (ministros sagrados ordenados / estola-insígnia).
+    - Pastorais e Movimentos: `VolunteerActivismIcon` (caridade e apostolado católico ativo).
+    - Projetos: `AssignmentTurnedInIcon` (metas pastorais e entregas planejadas).
+    - Sacramentos: `MenuBookIcon` (Sagrados Livros de Assentos Paroquiais).
+    - Conselhos & Atas: `HistoryEduIcon` (lavratura colegiada de atas oficiais com pena histórica).
+    - Patrimônio: `AccountBalanceIcon` (bens patrimoniais e fábrica da igreja).
+    - Ajustes Cadastrais: `HowToRegIcon` (validação de registro cadastral do fiel).
+  - Metadados de Status (`statusMeta` e `assentoMeta`):
+    - Assentos: `DRAFT` utiliza `EditNoteIcon` (escrituração em rascunho) e `ORDEM` utiliza `WorkspacePremiumIcon` (ordenação sacerdotal/ordem sagrada).
+    - Clero e Vocações: `PADRE_RELIGIOSO` e `RELIGIOSO` utilizam `ShieldIcon` (ordem religiosa / hábito / carisma consagrado); `EMERITO` e `SACERDOTE` utilizam `WorkspacePremiumIcon` (mérito e dignidade canônica jubilada).
+    - Calendário: `SOLENIDADE` utiliza `FlareIcon` (resplendor litúrgico solene); `MOVIMENTO` utiliza `Diversity1Icon` (movimento eclesial comunitário).
+    - Fiel: Data de aniversário de nascimento no modal utiliza `CakeIcon`.
+  - Harmonização de Status e Informações do Mesmo Tipo:
+    - Ciclo de vida e fluxos: `HourglassEmptyIcon` padronizado para pendências gerais e cadastrais (`situacaoStatus`, `assentoMeta`); `VerifiedIcon` para homologações canônicas oficiais (`homologacaoStatus`, `AssentoViewModal`); `TaskAltIcon` para finalização/devolução de reservas; `EventBusyIcon` para cancelamento de eventos na agenda.
+    - Empréstimo e custódia de bens: substituição de `LocalShippingIcon` por `OutboxIcon` em `reservaStatus`, `ReservasTable` e `aprovacaoStatus` (`ALOCACAO_ATIVO_EMPRESTIMO`), alinhando com as métricas de reservas.
+    - Sacramentos: Crisma/Confirmação padronizado com `WhatshotIcon` (fogo/chama de Pentecostes); Matrimônio com `Diversity1Icon` (aliança de amor mútuo e comunhão familiar indissolúvel) em `sacramentos` e `assentoMeta`.
+    - Patrimônio: `InventoryIcon` substituído por `AccountBalanceIcon` em `AtivoViewModal` e `AtivoFormModal`.
+    - Alçadas e Aprovações: `ALTERACAO_HORARIO` com `ScheduleIcon`, `RECLASSIFICACAO` com `CategoryIcon`, solicitações de projetos pastorais com `AssignmentTurnedInIcon`.
+    - Eclesiásticos: `PADRE_DIOCESANO` com `BadgeIcon`; ordenações e graus da ordem unificados com `WorkspacePremiumIcon` em `ClerigoViewModal`.
+- **Padronização Visual e Semântica de Botões e Cores de Ação:**
+  - Botões de criação/cadastro (`primary`, `contained`) alinhados aos arquétipos de entidade: `PersonAddIcon` (Fiel, Clérigo, Usuário), `GroupAddIcon` (Pastoral, Tipo Oficial), `AddHomeWorkIcon` (Unidade Territorial), `AddLocationAltIcon` (Local/Espaço), `EventNoteIcon` (Evento de Calendário), `PostAddIcon` (Assento, Ata, Projeto).
+  - Botões e ações de confirmação/gravação: `SaveIcon` padronizado em modais de criação/edição e formulários; `CheckCircleIcon` e `LoginIcon` para submissão e autenticação.
+  - Botões de cancelamento/fechamento: `CloseIcon` com `color="secondary"` (`variant="outlined"` ou `"text"`).
+  - Padronização de cores semânticas em botões normais e menus de ação de tabelas (`TableActionMenu`):
+    - Ações destrutivas/restritivas com `color="error"`: `DeleteIcon` (exclusão), `ToggleOffIcon`/`PersonOffIcon` (inativação/desativação), `BlockIcon` (veto).
+    - Ações de sucesso/homologação com `color="success"`: `CheckCircleIcon` (aprovação/conclusão), `VerifiedIcon` (homologação), `ToggleOnIcon` (ativação/reativação).
+    - Ações neutras/informativas com cor primária/neutra padrão: `VisibilityIcon` (detalhes/visualizar), `EditIcon`/`EditNoteIcon` (edição/ressalva), `LinkIcon` (vínculos), `DownloadIcon` (exportação).
+  - Atualização do Design System (`gestao-paroquia-ui/DESIGN_SYSTEM.md`) e regras de agentes (`.agents/rules/frontend-design-system.md`) para governança obrigatória nos próximos desenvolvimentos.
+- **Revisão e Harmonização Canônica de Ícones para Tipo, Encargo e Grau:**
+  - **Grau (Sacramento da Ordem & Vocações):**
+    - Diaconato (`DIACONO_TRANSITORIO`, `DIACONO_PERMANENTE`, `DIACONO` vocacional): substituição de `VolunteerActivismIcon` (caridade leiga/pastoral) por `CoPresentIcon` (ministro sagrado ordenado para assistência no Altar e proclamação do Evangelho).
+    - Presbiterado: `BadgeIcon` para Padre Diocesano (incardinado) e `ShieldIcon` para Padre Religioso (consagrado regular).
+    - Episcopado: `WorkspacePremiumIcon` (3º grau e plenitude do sacramento da ordem).
+    - Campo geral "Grau da ordem" padronizado com `WorkspacePremiumIcon`.
+  - **Encargo (Ofícios Eclesiásticos & Funções Paroquiais):**
+    - Campo geral de ofício/encargo canônico padronizado com `AssignmentIndIcon`.
+    - Eliminação de ícones profanos/técnicos de TI em funções do clero:
+      - Pároco: substituição de `AdminPanelSettingsIcon` (escudo de TI/firewall) por `ChurchIcon` (pastor titular e autoridade própria da Paróquia).
+      - Administrador Paroquial: substituição de `ManageAccountsIcon` (engrenagem de TI) por `AssignmentIndIcon` (provisão e regência administrativa temporária).
+      - Diácono Auxiliar: substituição de `VolunteerActivismIcon` por `CoPresentIcon` (assistência eclesial e litúrgica).
+  - **Tipo (Categorização, Organismos, Locais e Ativos):**
+    - Eliminação de `HelpOutlineIcon` ("?") para tipos ou categorias genéricas/não classificadas (`OUTRO`), substituído por `CategoryIcon` em `localTipoStatus`, `categoriaAtivoStatus` e `organismoTipoStatus`.
+    - Sacramento em `VinculosPendentesPanel`: harmonização de `CategoryIcon` para `MenuBookIcon` (livros de assentos sacramentais).
+    - Tipo de Participação em `VinculosPendentesPanel`: padronizado com `AssignmentIndIcon`.
+    - Tipo de Aquisição do Solo em `UnidadeTerritorialViewModal`: substituição de `DescriptionIcon` por `ReceiptLongIcon` (título/escritura).
+    - Tipo de Local em `LocalViewModal`: exibição canônica do chip `StatusIcon` com `getLocalTipoMeta(local.tipo)` no cabeçalho do diálogo.
+  - Atualização canônica de governança no `gestao-paroquia-ui/DESIGN_SYSTEM.md` (Seção 6.2) e `.agents/rules/frontend-design-system.md` (Seção 1.3).
+
 ## [0.8.0] - 2026-10-04
 
 ### Adicionado

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Stack, Tab, Tabs } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Paper, Stack, Tab, Tabs } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -104,16 +104,16 @@ const Sacramentos = () => {
 
   const acoesDaLinha = (a: AssentoResumo): TableAction[] => {
     const acoes: TableAction[] = [
-      { label: 'Visualizar', icon: <VisibilityIcon fontSize="small" />, onClick: () => setVisualizarId(a.id) },
+      { label: 'Visualizar', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setVisualizarId(a.id) },
     ];
     if (podeGerir && a.status === 'DRAFT') {
-      acoes.push({ label: 'Editar rascunho', icon: <EditIcon fontSize="small" />, onClick: () => void abrirEdicao(a.id) });
+      acoes.push({ label: 'Editar rascunho', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => void abrirEdicao(a.id) });
     }
     if (podeHomologar && a.status === 'DRAFT') {
       acoes.push({ label: 'Homologar', icon: <VerifiedIcon fontSize="small" color="success" />, onClick: () => m.homologar.mutate(a.id) });
     }
     if (podeGerir && a.status === 'SEALED') {
-      acoes.push({ label: 'Emitir certidão', icon: <DescriptionIcon fontSize="small" />, onClick: () => void abrirCertidao(a.id) });
+      acoes.push({ label: 'Emitir certidão', icon: <DescriptionIcon fontSize="small" color="info" />, onClick: () => void abrirCertidao(a.id) });
     }
     return acoes;
   };
@@ -121,13 +121,13 @@ const Sacramentos = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<AutoStoriesIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<MenuBookIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Sacramentos"
         subtitle="Livro de assentos de Batismo, Confirmação, Matrimônio e Ordem Sacra."
         actions={podeGerir && (
           <ActionButton
             title="Novo Assento"
-            icon={<AddIcon />}
+            icon={<PostAddIcon />}
             color="primary"
             onClick={() => setForm({ edicao: null, aberto: true })}
             sx={{ border: '1px solid', borderColor: 'primary.main' }}
@@ -137,7 +137,11 @@ const Sacramentos = () => {
       <Tabs value={tipo} onChange={(_, v: TipoSacramento) => { setTipo(v); setPage(0); }} variant="scrollable" aria-label="Sacramentos">
         {TIPOS_SACRAMENTO.map((t) => <Tab key={t} value={t} label={TIPO_SACRAMENTO_LABEL[t]} />)}
       </Tabs>
-      <SearchField value={busca} onChange={(v) => { setBusca(v); setPage(0); }} placeholder="Pesquisar por nome, livro, folha ou termo..." />
+      <Paper sx={{ p: 2 }}>
+        <Box sx={{ maxWidth: 480 }}>
+          <SearchField value={busca} onChange={(v) => { setBusca(v); setPage(0); }} placeholder="Pesquisar por nome, livro, folha ou termo..." />
+        </Box>
+      </Paper>
       <AssentosTable
         assentos={filtrados}
         temAssentos={assentos.length > 0}

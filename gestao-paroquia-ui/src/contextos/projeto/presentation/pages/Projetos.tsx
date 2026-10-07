@@ -3,16 +3,17 @@ import SearchableTablePagination from '@/shared/presentation/components/Searchab
 import {useEffect, useRef, useState} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import { Alert, Box, Card, Checkbox, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Drawer, FormControl, FormControlLabel, Grid, LinearProgress, MenuItem, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import WorkIcon from '@mui/icons-material/Assignment';
-import CancelIcon from '@mui/icons-material/Cancel';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import BlockIcon from '@mui/icons-material/Block';
 import BusinessIcon from '@mui/icons-material/Business';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
-import CheckIcon from '@mui/icons-material/Check';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -304,12 +305,12 @@ const Projetos = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        icon={<WorkIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<AssignmentTurnedInIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Projetos Paroquiais"
         subtitle="Gerencie a criação, acompanhamento e prazos dos projetos pastorais e paroquiais."
         actions={
           canManageProjetos() && (
-            <ActionButton title="Novo Projeto" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />
+            <ActionButton title="Novo Projeto" icon={<PostAddIcon />} color="primary" onClick={handleOpenCreate} />
           )
         }
       />
@@ -327,12 +328,11 @@ const Projetos = () => {
             Nenhum projeto cadastrado.
           </Typography>
           {canManageProjetos() && (
-            <ActionButton title="Cadastrar Novo Projeto" icon={<AddIcon />} color="primary" onClick={handleOpenCreate} />
+            <ActionButton title="Cadastrar Novo Projeto" icon={<PostAddIcon />} color="primary" onClick={handleOpenCreate} />
           )}
         </Card>
       ) : (
-        <Card>
-          <TableContainer component={Paper} elevation={0}>
+        <TableContainer component={Paper}>
             <Table>
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -351,7 +351,15 @@ const Projetos = () => {
                     <TableRow
                       key={project.id}
                       hover
+                      tabIndex={0}
+                      role="button"
                       onClick={() => handleRowClick(project)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleRowClick(project);
+                        }
+                      }}
                       sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
@@ -364,9 +372,9 @@ const Projetos = () => {
                       <TableCell sx={{ textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                         <TableActionMenu
                           actions={[
-                            { label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => handleRowClick(project) },
+                            { label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => handleRowClick(project) },
                             ...(canManageProjetos()
-                              ? [{ label: 'Editar projeto', icon: <EditIcon fontSize="small" />, onClick: () => handleOpenEdit(project) }]
+                              ? [{ label: 'Editar projeto', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => handleOpenEdit(project) }]
                               : []),
                           ]}
                         />
@@ -391,7 +399,6 @@ const Projetos = () => {
               />
             </Table>
           </TableContainer>
-        </Card>
       )}
 
       {/* CREATE & EDIT DIALOG */}
@@ -671,7 +678,7 @@ const Projetos = () => {
                   <ActionButton title="Iniciar Projeto" icon={<PlayArrowIcon />} color="success" onClick={() => handleOpenTransition('INICIAR')} />
                 )}
                 {selectedProject.status === 'EM_ANDAMENTO' && canTransitionProjeto(selectedProject) && (
-                  <ActionButton title="Concluir Projeto" icon={<CheckIcon />} color="primary" onClick={() => handleOpenTransition('CONCLUIR')} />
+                  <ActionButton title="Concluir Projeto" icon={<CheckCircleIcon />} color="primary" onClick={() => handleOpenTransition('CONCLUIR')} />
                 )}
                 {(selectedProject.status === 'ABERTO' || selectedProject.status === 'EM_ANDAMENTO') && canTransitionProjeto(selectedProject) && (
                   <ActionButton title="Cancelar Projeto" icon={<CancelIcon />} color="error" onClick={() => handleOpenTransition('CANCELAR')} />
@@ -725,7 +732,7 @@ const Projetos = () => {
           />
           <ActionButton
             title={transitionType === 'CANCELAR' ? 'Confirmar Cancelamento' : transitionType === 'INICIAR' ? 'Iniciar Projeto' : 'Concluir Projeto'}
-            icon={isTransitioning ? <CircularProgress size={20} color="inherit" /> : <CheckIcon />}
+            icon={isTransitioning ? <CircularProgress size={20} color="inherit" /> : (transitionType === 'CANCELAR' ? <BlockIcon /> : transitionType === 'INICIAR' ? <PlayArrowIcon /> : <CheckCircleIcon />)}
             onClick={handleTransitionSubmit}
             color={transitionType === 'CANCELAR' ? 'error' : 'primary'}
             disabled={isTransitioning}

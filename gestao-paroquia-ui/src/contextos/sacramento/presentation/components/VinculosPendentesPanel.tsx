@@ -1,9 +1,8 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useState } from 'react';
 import { Alert, Box, Card, Divider, Drawer, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import BadgeIcon from '@mui/icons-material/Badge';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CategoryIcon from '@mui/icons-material/Category';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import PersonIcon from '@mui/icons-material/Person';
@@ -70,7 +69,20 @@ export const VinculosPendentesPanel: React.FC = () => {
               </TableHead>
               <TableBody>
                 {paginados.map((v) => (
-                  <TableRow key={`${v.assentoId}-${v.participanteId}`} hover>
+                  <TableRow
+                    key={`${v.assentoId}-${v.participanteId}`}
+                    hover
+                    tabIndex={0}
+                    role="button"
+                    onClick={() => setSelecionado(v)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelecionado(v);
+                      }
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell><StatusIcon {...getTipoSacramentoMeta(v.tipoSacramento)} /></TableCell>
                     <TableCell>
                       {v.sujeito ?? 'Sem identificação'} · {TIPO_SACRAMENTO_LABEL[v.tipoSacramento]}
@@ -79,8 +91,8 @@ export const VinculosPendentesPanel: React.FC = () => {
                     <TableCell>{PAPEL_LABEL[v.papel]}</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{v.nomeHistorico}</TableCell>
                     <TableCell>{v.pessoaNome ?? '—'} ({v.tipoPessoa === 'FIEL' ? 'fiel' : 'clérigo'})</TableCell>
-                    <TableCell align="right">
-                      <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setSelecionado(v) }]} />
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                      <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setSelecionado(v) }]} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -117,9 +129,9 @@ export const VinculosPendentesPanel: React.FC = () => {
               <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setSelecionado(null)} />
             </Box>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Sacramento" icon={<CategoryIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(selecionado.tipoSacramento)} />} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Sacramento" icon={<MenuBookIcon fontSize="inherit" />} value={<StatusIcon {...getTipoSacramentoMeta(selecionado.tipoSacramento)} />} /></Grid>
               <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Termo" icon={<MenuBookIcon fontSize="inherit" />} value={`${selecionado.sujeito ?? 'Sem identificação'}${[selecionado.livro, selecionado.folha, selecionado.termo].every(Boolean) ? ` (${selecionado.livro}/${selecionado.folha}/${selecionado.termo})` : ''}`} /></Grid>
-              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Tipo de participação" icon={<BadgeIcon fontSize="inherit" />} value={PAPEL_LABEL[selecionado.papel]} /></Grid>
+              <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Tipo de participação" icon={<AssignmentIndIcon fontSize="inherit" />} value={PAPEL_LABEL[selecionado.papel]} /></Grid>
               <Grid size={{ xs: 12, sm: 6 }}><InfoField label="Nome no termo" icon={<PersonIcon fontSize="inherit" />} value={selecionado.nomeHistorico} /></Grid>
               <Grid size={{ xs: 12 }}><InfoField label={selecionado.tipoPessoa === 'FIEL' ? 'Fiel proposto' : 'Clérigo proposto'} icon={<LinkIcon fontSize="inherit" />} value={selecionado.pessoaNome ?? '—'} /></Grid>
             </Grid>

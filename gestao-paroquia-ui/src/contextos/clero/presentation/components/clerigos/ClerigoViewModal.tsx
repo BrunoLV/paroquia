@@ -24,7 +24,6 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import EditIcon from '@mui/icons-material/Edit';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import EmailIcon from '@mui/icons-material/Email';
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
@@ -156,7 +155,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
                   <InfoField
                     label="Grau da ordem"
                     value={<StatusIcon {...getGrauOrdemMeta(clerigo.grauOrdem)} />}
-                    icon={<HistoryEduIcon fontSize="small" />}
+                    icon={<WorkspacePremiumIcon fontSize="small" />}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
@@ -230,7 +229,7 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
                     <InfoField
                       label="Ordenação presbiteral"
                       value={formatDateBr((clerigo as Clerigo).dataOrdenacaoPresbiteral)}
-                      icon={<HistoryEduIcon fontSize="small" />}
+                      icon={<WorkspacePremiumIcon fontSize="small" />}
                     />
                   </Grid>
                 )}

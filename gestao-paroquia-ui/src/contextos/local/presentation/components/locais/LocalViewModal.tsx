@@ -21,6 +21,7 @@ import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { getSituacaoAtivoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
+import { getLocalTipoMeta } from '@/shared/utils/statusMeta/localTipoStatus';
 import { Local, Organizacao } from '@/shared/domain/types/types';
 
 interface LocalViewModalProps {
@@ -69,7 +70,10 @@ export const LocalViewModal: React.FC<LocalViewModalProps> = ({
               {local.nome}
             </Typography>
           </Stack>
-          <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <StatusIcon {...getLocalTipoMeta(local.tipo)} />
+            <StatusIcon {...getSituacaoAtivoMeta(local.ativo)} />
+          </Stack>
         </Stack>
       </DialogTitle>
 

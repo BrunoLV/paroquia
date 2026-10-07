@@ -4,16 +4,17 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert, Box, Card, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from '@mui/material';
 import Autocomplete from '@/shared/presentation/components/SearchableAutocomplete';
-import AddIcon from '@mui/icons-material/Add';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import KeyIcon from '@mui/icons-material/Key';
 import LinkIcon from '@mui/icons-material/Link';
 import LockIcon from '@mui/icons-material/Lock';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -460,7 +461,7 @@ export const Configuracoes = () => {
                             )}
                             {ano.status === 'FECHADO' && (
                               <TableActionMenu actions={[{
-                                label: "Concluir Ano", icon: <CheckCircleIcon color="secondary" />,
+                                label: "Concluir Ano", icon: <CheckCircleIcon color="success" />,
                                 onClick: () => {
                                   setSelectedYear(ano.ano);
                                   setConfirmOpen(true);
@@ -530,7 +531,7 @@ export const Configuracoes = () => {
                 {user && canCreateUsuario(user) && (
                   <ActionButton
                     title="Cadastrar Usuário"
-                    icon={<AddIcon />}
+                    icon={<PersonAddIcon />}
                     color="primary"
                     onClick={() => setIsAdminRegisterModalOpen(true)}
                   />
@@ -559,12 +560,12 @@ export const Configuracoes = () => {
                               actions={[
                                 ...(user && canEditOrInactivateUser(user) ? [{
                                   label: 'Editar',
-                                  icon: <EditIcon fontSize="small" />,
+                                  icon: <EditIcon fontSize="small" color="primary" />,
                                   onClick: () => handleOpenEditUser(u),
                                 }] : []),
                                 {
                                   label: 'Gerenciar vínculos',
-                                  icon: <LinkIcon fontSize="small" />,
+                                  icon: <LinkIcon fontSize="small" color="primary" />,
                                   onClick: () => {
                                     setSelectedUserForVinculos(u);
                                     setIsVinculosModalOpen(true);
@@ -577,7 +578,7 @@ export const Configuracoes = () => {
                                 }] : []),
                                 ...(!u.enabled && canApproveUsuario(user) ? [{
                                   label: 'Aprovar',
-                                  icon: <CheckCircleIcon fontSize="small" />,
+                                  icon: <CheckCircleIcon fontSize="small" color="success" />,
                                   onClick: () => approveUserMutation.mutate(u.id),
                                   disabled: approveUserMutation.isPending,
                                 }] : []),
@@ -631,7 +632,7 @@ export const Configuracoes = () => {
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 1 }}>
-                <ActionButton title="Novo Tipo" icon={<AddIcon />} color="primary" onClick={handleCreatePO} />
+                <ActionButton title="Novo Tipo" icon={<GroupAddIcon />} color="primary" onClick={handleCreatePO} />
               </Box>
               <TableContainer component={Paper}>
                 <Table>
@@ -652,10 +653,10 @@ export const Configuracoes = () => {
                           <TableCell align="right">
                             <TableActionMenu
                               actions={[
-                                { label: 'Editar', icon: <EditIcon fontSize="small" />, onClick: () => handleEditPO(po) },
+                                { label: 'Editar', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => handleEditPO(po) },
                                 {
                                   label: 'Excluir',
-                                  icon: <DeleteIcon fontSize="small" />,
+                                  icon: <DeleteIcon fontSize="small" color="error" />,
                                   onClick: () => {
                                     if (window.confirm('Tem certeza de que deseja excluir este tipo oficial?')) {
                                       deletePOMutation.mutate(po.id);
@@ -996,7 +997,7 @@ export const Configuracoes = () => {
 
                 <ActionButton
                   title="Adicionar Vínculo"
-                  icon={addVinculoMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
+                  icon={addVinculoMutation.isPending ? <CircularProgress size={20} /> : <LinkIcon />}
                   color="primary"
                   onClick={() => {
                     const selectedOrgObj = orgs.find((o) => o.id === newVinculoOrgId);
@@ -1111,7 +1112,7 @@ export const Configuracoes = () => {
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setIsAdminRegisterModalOpen(false)} />
           <ActionButton
             title="Cadastrar"
-            icon={registerUserMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
+            icon={registerUserMutation.isPending ? <CircularProgress size={20} /> : <PersonAddIcon />}
             color="primary"
             onClick={() => {
               if (!adminRegisterFielId || !adminRegisterUsername.trim() || !adminRegisterPassword) {
@@ -1164,7 +1165,7 @@ export const Configuracoes = () => {
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={() => setPoModalOpen(false)} />
           <ActionButton
             title="Salvar"
-            icon={createPOMutation.isPending || updatePOMutation.isPending ? <CircularProgress size={20} /> : <AddIcon />}
+            icon={createPOMutation.isPending || updatePOMutation.isPending ? <CircularProgress size={20} /> : <SaveIcon />}
             color="primary"
             onClick={handleSavePO}
             disabled={createPOMutation.isPending || updatePOMutation.isPending}

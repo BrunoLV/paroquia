@@ -3,12 +3,12 @@ import SearchableTablePagination from '@/shared/presentation/components/Searchab
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Stack, useTheme } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import AddIcon from '@mui/icons-material/Add';
+import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
-import DescriptionIcon from '@mui/icons-material/Description';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { canHomologarDecisao } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
@@ -116,13 +116,13 @@ export const ConselhosAtas: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
-        icon={<DescriptionIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<HistoryEduIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title="Governança dos Conselhos (CPP & CPC)"
         subtitle="Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação."
         actions={
           <ActionButton
             title="Nova Ata / Decisão"
-            icon={<AddIcon />}
+            icon={<PostAddIcon />}
             color="primary"
             onClick={() => setIsModalOpen(true)}
           />
@@ -242,8 +242,8 @@ export const ConselhosAtas: React.FC = () => {
                         {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
                           <TableActionMenu
                             actions={[
-                              { label: 'Homologar ata', icon: <CheckCircleIcon fontSize="small" />, onClick: () => handleHomologar(item.id) },
-                              { label: 'Vetar ata', icon: <CancelIcon fontSize="small" />, onClick: () => setVetoDialogItem(item) },
+                              { label: 'Homologar ata', icon: <VerifiedIcon fontSize="small" color="success" />, onClick: () => handleHomologar(item.id) },
+                              { label: 'Vetar ata', icon: <BlockIcon fontSize="small" color="error" />, onClick: () => setVetoDialogItem(item) },
                             ]}
                           />
                         ) : (
@@ -304,7 +304,7 @@ export const ConselhosAtas: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <ActionButton title="Cancelar veto" icon={<CloseIcon />} onClick={() => setVetoDialogItem(null)} color="secondary" />
-          <ActionButton title="Confirmar veto da ata / decisão" icon={<CancelIcon />} onClick={handleConfirmVeto} color="error" />
+          <ActionButton title="Confirmar veto da ata / decisão" icon={<BlockIcon />} onClick={handleConfirmVeto} color="error" />
         </DialogActions>
       </Dialog>
     </Container>

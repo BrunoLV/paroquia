@@ -17,7 +17,6 @@ import {
 import BadgeIcon from '@mui/icons-material/Badge';
 import BlockIcon from '@mui/icons-material/Block';
 import CakeIcon from '@mui/icons-material/Cake';
-import CelebrationIcon from '@mui/icons-material/Celebration';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
@@ -150,7 +149,7 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                 )}
                 {dados.permitirDivulgacaoAniversario && (
                   <StatusIcon
-                    icon={<CelebrationIcon />}
+                    icon={<CakeIcon />}
                     color="info"
                     label="Aniversário divulgável"
                     tooltip="Autoriza divulgar dia e mês do aniversário"

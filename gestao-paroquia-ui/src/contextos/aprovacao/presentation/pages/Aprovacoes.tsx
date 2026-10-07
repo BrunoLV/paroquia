@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -387,7 +387,7 @@ const Aprovacoes = () => {
           {tipoAprovacao === 'PROJETOS' && (
             <Box sx={{ p: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ p: 1.2, bgcolor: 'rgba(26, 35, 126, 0.08)', display: 'flex' }}>
-                <WorkHistoryIcon sx={{ fontSize: 26, color: 'primary.main' }} />
+                <AssignmentTurnedInIcon sx={{ fontSize: 26, color: 'primary.main' }} />
               </Box>
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
@@ -432,7 +432,20 @@ const Aprovacoes = () => {
                     </TableHead>
                     <TableBody>
                       {data.content.filter((approval) => !approval.aprovacaoPaiId).map((approval) => (
-                        <TableRow key={approval.id} hover>
+                        <TableRow
+                          key={approval.id}
+                          hover
+                          tabIndex={0}
+                          role="button"
+                          onClick={() => setAprovacaoSelecionada(approval)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setAprovacaoSelecionada(approval);
+                            }
+                          }}
+                          sx={{ cursor: 'pointer' }}
+                        >
                           <TableCell sx={{ fontWeight: 500 }}>
                             <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                           </TableCell>
@@ -460,8 +473,8 @@ const Aprovacoes = () => {
                             {new Date(approval.criadoEmUtc).toLocaleString()}
                           </TableCell>
                           <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
-                          <TableCell align="right">
-                            <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoSelecionada(approval) }]} />
+                          <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                            <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setAprovacaoSelecionada(approval) }]} />
                           </TableCell>
                         </TableRow>
                       ))}
@@ -518,7 +531,20 @@ const Aprovacoes = () => {
                       {projectData
                         .slice(projPage * projRowsPerPage, projPage * projRowsPerPage + projRowsPerPage)
                         .map((approval) => (
-                          <TableRow key={approval.id} hover>
+                          <TableRow
+                            key={approval.id}
+                            hover
+                            tabIndex={0}
+                            role="button"
+                            onClick={() => setAprovacaoProjetoSelecionada(approval)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setAprovacaoProjetoSelecionada(approval);
+                              }
+                            }}
+                            sx={{ cursor: 'pointer' }}
+                          >
                             <TableCell sx={{ fontWeight: 500 }}>
                               <StatusIcon {...getAprovacaoTipoMeta(approval.tipoSolicitacao)} />
                             </TableCell>
@@ -538,8 +564,8 @@ const Aprovacoes = () => {
                               {new Date(approval.criadoEmUtc).toLocaleString()}
                             </TableCell>
                             <TableCell><StatusIcon {...getAprovacaoStatusMeta(approval.status)} /></TableCell>
-                            <TableCell align="right">
-                              <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" />, onClick: () => setAprovacaoProjetoSelecionada(approval) }]} />
+                            <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                              <TableActionMenu actions={[{ label: 'Visualizar detalhes', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setAprovacaoProjetoSelecionada(approval) }]} />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -690,7 +716,7 @@ const Aprovacoes = () => {
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Detalhes da Solicitação
               </Typography>
-              <ActionButton title="Fechar" icon={<CloseIcon />} onClick={() => setAprovacaoSelecionada(null)} />
+              <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={() => setAprovacaoSelecionada(null)} />
             </Box>
             <Divider sx={{ mb: 3 }} />
 
@@ -1032,6 +1058,7 @@ const Aprovacoes = () => {
               <ActionButton
                 title="Fechar painel"
                 icon={<CloseIcon />}
+                color="secondary"
                 onClick={() => setAprovacaoProjetoSelecionada(null)}
               />
             </Box>

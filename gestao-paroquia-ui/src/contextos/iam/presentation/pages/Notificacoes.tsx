@@ -4,7 +4,7 @@ import { useState } from 'react';
 import LidaIcon from '@mui/icons-material/MarkEmailRead';
 import NovaIcon from '@mui/icons-material/MarkEmailUnread';
 import NotificacaoIcon from '@mui/icons-material/Notifications';
-import { Card, CardContent, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listarNotificacoes, marcarNotificacaoLida } from '@/contextos/iam/infrastructure/http/notificacoes';
 import PageHeader from '@/shared/presentation/components/PageHeader';
@@ -47,9 +47,7 @@ const Notificacoes = () => {
         subtitle="Decisões e avisos da paróquia e do seu cadastro."
       />
 
-      <Card>
-        <CardContent sx={{ p: 0 }}>
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -74,7 +72,20 @@ const Notificacoes = () => {
                     .map((n) => {
                       const lida = Boolean(n.lidaEmUtc);
                       return (
-                        <TableRow key={n.id} hover>
+                        <TableRow
+                          key={n.id}
+                          hover
+                          tabIndex={0}
+                          role="button"
+                          onClick={() => !lida && marcar.mutate(n.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              if (!lida) marcar.mutate(n.id);
+                            }
+                          }}
+                          sx={{ cursor: lida ? 'default' : 'pointer' }}
+                        >
                           <TableCell>
                             <Typography
                               variant="body2"
@@ -98,7 +109,7 @@ const Notificacoes = () => {
                               tooltip={lida ? 'Notificação já lida' : 'Notificação ainda não lida'}
                             />
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                             {!lida && (
                               <TableActionMenu actions={[{
                                 label: "Marcar notificação como lida", icon: <LidaIcon fontSize="small" color="primary" />,
@@ -127,9 +138,7 @@ const Notificacoes = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
     </Stack>
   );
 };

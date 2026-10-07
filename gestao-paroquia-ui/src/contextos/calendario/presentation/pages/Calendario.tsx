@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Box, Stack } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import CalendarIcon from '@mui/icons-material/CalendarMonth';
 import DownloadIcon from '@mui/icons-material/Download';
 import EventIcon from '@mui/icons-material/Event';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import CadastroEventoModal from '@/contextos/calendario/presentation/components/CadastroEventoModal';
 import CancelarEventoDialog from '@/contextos/calendario/presentation/components/CancelarEventoDialog';
@@ -85,7 +85,7 @@ const Calendario = () => {
             />
             <ActionButton
               title="Novo Evento"
-              icon={<AddIcon />}
+              icon={<EventNoteIcon />}
               color="primary"
               onClick={() => crud.handleOpenCreate()}
             />

@@ -66,13 +66,34 @@ A suíte `searchableListsArchitecture.test.ts` impede seletores sem pesquisa e u
 - Texto: `ActionButton` (`src/shared/presentation/components/ActionButton.tsx`) — props `title`, `icon`, `color`, `variant`, `type`, `form?`, `disabled`, `fullWidth`, `component`.
 - Só ícone: `IconActionButton` (`src/shared/presentation/components/IconActionButton.tsx`) — sempre com `Tooltip` (`title`) e `aria-label`.
 
-Semântica de cor obrigatória:
+### 3.1. Semântica Obrigatória de Cores e Ícones
 
-| Ação | Cor | Ícone típico |
-| --- | --- | --- |
-| Salvar / Criar / Confirmar / Submeter | `primary` | `SaveIcon`, `AddIcon`, `CheckCircleIcon` |
-| Cancelar / Fechar / Voltar | `secondary` | `CloseIcon`, `ArrowBackIcon` |
-| Inativar / Excluir / Rejeitar / Vetar | `error` | `BlockIcon`, `CancelIcon`, `DeleteIcon` |
+Todos os botões normais (`ActionButton`), de ícone (`IconActionButton`) e itens de menu de ação (`TableActionMenu`) devem seguir estritamente o catálogo canônico de cores e ícones:
+
+| Ação / Propósito | Cor | Variante Padrão | Ícones Canônicos |
+| :--- | :--- | :--- | :--- |
+| **Criar / Novo Fiel / Clérigo** | `primary` | `contained` | `PersonAddIcon` |
+| **Criar / Nova Pastoral / Movimento** | `primary` | `contained` | `GroupAddIcon` |
+| **Criar / Nova Unidade Territorial** | `primary` | `contained` | `AddHomeWorkIcon` |
+| **Criar / Novo Local / Espaço** | `primary` | `contained` | `AddLocationAltIcon` |
+| **Criar / Novo Evento de Calendário** | `primary` | `contained` | `EventNoteIcon` |
+| **Criar / Novo Assento / Ata / Projeto** | `primary` | `contained` | `PostAddIcon` |
+| **Criar Genérico / Novo Parâmetro** | `primary` | `contained` | `AddIcon` |
+| **Salvar / Gravar Registro** | `primary` | `contained` | `SaveIcon` |
+| **Confirmar / Submeter / Entrar** | `primary` | `contained` | `CheckCircleIcon`, `LoginIcon` |
+| **Aprovar / Homologar / Concluir** | `success` | `contained` ou item de menu | `CheckCircleIcon`, `VerifiedIcon` |
+| **Ativar / Reativar Registro** | `success` | item de menu ou `outlined` | `ToggleOnIcon`, `CheckCircleIcon` |
+| **Cancelar / Fechar Diálogo / Voltar** | `secondary` | `outlined` ou `text` | `CloseIcon`, `ArrowBackIcon` |
+| **Limpar Filtros / Desmarcar** | `secondary` | `outlined` | `ClearAllIcon`, `FilterAltOffIcon` |
+| **Filtrar / Aplicar Busca** | `primary` | `contained` | `FilterListIcon`, `FilterAltIcon` |
+| **Visualizar / Detalhes** | `primary` | item de menu ou `text` | `VisibilityIcon` |
+| **Editar / Alterar / Ressalva** | `primary` | item de menu ou `outlined` | `EditIcon`, `EditNoteIcon` |
+| **Vincular / Relacionar Membro/Organização** | `primary` | `contained` ou `outlined` | `LinkIcon` |
+| **Download / Exportar (PDF, CSV, Excel)** | `primary` | `outlined` | `DownloadIcon`, `PictureAsPdfIcon`, `FileDownloadIcon` |
+| **Atualizar / Sincronizar** | `primary` | `outlined` ou `IconActionButton` | `RefreshIcon` |
+| **Inativar / Desativar** | `error` | item de menu ou `contained` | `ToggleOffIcon`, `BlockIcon`, `PersonOffIcon` |
+| **Vetar / Rejeitar Proposta** | `error` | `contained` ou item de menu | `BlockIcon`, `CancelIcon` |
+| **Excluir / Deletar / Remover** | `error` | item de menu ou `contained` (diálogo) | `DeleteIcon` |
 
 Submissão a partir de um botão fora do `<form>` (ex.: rodapé de `Drawer`): usar `form="id-do-form"` no `ActionButton`, nunca sair do componente para isso.
 
@@ -157,11 +178,40 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
 - Import de outro módulo (ex. `AtivoViewModal.tsx` usando o `InfoField` de `fieis/fielConstants.tsx`) é o padrão esperado — não duplicar o componente localmente.
 - Não é uma regra "por módulo de negócio": aplica-se a qualquer tela nova de detalhe, independente da entidade.
 
+## 6.2. Iconografia Canônica para Tipo, Encargo e Grau
+
+A representação de atributos estruturais e eclesiásticos deve respeitar estritamente a dignidade canônica e a semântica do domínio:
+
+| Conceito / Informação | Campo / Contexto | Ícone Canônico | Diretriz Específica |
+| :--- | :--- | :--- | :--- |
+| **Tipo (Genérico / Categoria)** | Rótulo geral ou `OUTRO` | `CategoryIcon` | Padrão geométrico; proibido usar `HelpOutlineIcon` ("?") para tipo ou categoria não classificada. |
+| **Tipo de Sacramento** | Assentos e Vínculos | `MenuBookIcon` | Representa os Sagrados Livros Paroquiais e o sacramento registrado. |
+| **Tipo de Unidade Territorial** | Matriz / Comunidade | `ChurchIcon` / `PlaceIcon` | `ChurchIcon` exclusivo da Matriz; `PlaceIcon` para comunidades/capelas. |
+| **Tipo de Local Físico** | Igreja / Salão / Sala | `ChurchIcon` / `MeetingRoomIcon` / `DoorFrontIcon` | Representação arquitetônica do espaço. |
+| **Tipo de Aquisição do Solo** | Unidades Territoriais | `ReceiptLongIcon` | Título imobiliário ou escritura de aquisição. |
+| **Encargo (Campo Geral)** | Ficha / Provisão | `AssignmentIndIcon` | Atribuição canônica/designação individual formal de ofício pastoral. |
+| **Encargo: Pároco** | Função Eclesiástica | `ChurchIcon` | Pastor próprio e autoridade titular da Paróquia. Proibido ícones de TI (`AdminPanelSettingsIcon`). |
+| **Encargo: Adm. Paroquial** | Função Eclesiástica | `AssignmentIndIcon` | Provisão administrativa temporária da paróquia. Proibido ícones de TI (`ManageAccountsIcon`). |
+| **Encargo: Vigário Paroquial** | Função Eclesiástica | `SupervisorAccountIcon` | Cooperador pastoral do pároco no atendimento paroquial. |
+| **Encargo: Diácono Auxiliar** | Função Eclesiástica | `CoPresentIcon` | Assistência litúrgica no Altar e ministério da Palavra. |
+| **Encargo: Bispo / Emérito** | Função Eclesiástica | `WorkspacePremiumIcon` | Dignidade episcopal e mérito canônico alcançado. |
+| **Grau da Ordem (Campo)** | Ficha do Clérigo | `WorkspacePremiumIcon` | Grau sacramental ministerial da Ordem sacerdotal. |
+| **Grau: Diaconato** | Diácono Transitório/Permanente | `CoPresentIcon` | Ministro ordenado assistente (1º grau). Proibido `VolunteerActivismIcon` (exclusivo de pastorais). |
+| **Grau: Presbiterado Diocesano**| Padre Diocesano | `BadgeIcon` | Ministro sagrado incardinado na diocese (2º grau da Ordem). |
+| **Grau: Presbiterado Religioso** | Padre Religioso | `ShieldIcon` | Ministro sagrado consagrado sob regra de vida/hábito regular. |
+| **Grau: Episcopado** | Bispo | `WorkspacePremiumIcon` | Plenitude e coroamento do Sacramento da Ordem (3º grau). |
+
 ## 7. Tabelas
 
 - Cabeçalho: `TableHead` com `backgroundColor: 'action.hover'` e células `fontWeight: 600/700`.
-- Linha clicável: `role="button"`, `tabIndex={0}`, `onKeyDown` tratando `Enter`/`Espaço`.
+- **Clique na Linha para Visualização de Detalhes:** Toda tabela do sistema deve permitir abrir o modal ou drawer de detalhes ao clicar na linha (`TableRow`), em paridade com o botão de "Visualizar" do menu de ações. A linha deve possuir `role="button"`, `tabIndex={0}`, `sx={{ cursor: 'pointer' }}`, `onClick={() => onVisualizar(item)}` e `onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onVisualizar(item); } }}`. A célula final contendo o menu de ações (`TableActionMenu`) deve conter **obrigatoriamente** `onClick={(e) => e.stopPropagation()}` para evitar que a abertura do menu dispare a navegação ou abertura do modal da linha.
 - Ações de linha: usar exclusivamente `TableActionMenu`, inclusive para uma única ação. Gatilho `IconActionButton` pequeno, delineado, com `MoreVert` (`⋮`), sem texto visível ou preenchimento; proibido o botão `… Ações` e ações textuais diretamente na célula. Tooltip e nome acessível “Ações”, `aria-haspopup`, `aria-expanded` e vínculo ao menu são obrigatórios. Preservar permissões, estados desabilitados e callbacks.
+- **Cores semânticas obrigatórias nos itens do menu de ação (`TableActionMenu`):**
+  - **Ações primárias e de visualização/edição:** Visualizar ficha/detalhes, Editar, Membros utilizam `color="primary"` no ícone (ex.: `<VisibilityIcon fontSize="small" color="primary" />`, `<EditIcon fontSize="small" color="primary" />`, `<GroupsIcon fontSize="small" color="primary" />`).
+  - **Ações destrutivas / restritivas:** Excluir, Inativar, Desativar, Vetar, Rejeitar, Cancelar utilizam `color="error"` no ícone (ex.: `DeleteIcon color="error"`, `ToggleOffIcon color="error"`, `BlockIcon color="error"`, `HighlightOffIcon color="error"`).
+  - **Ações de sucesso / homologação / ativação:** Aprovar, Homologar, Ativar, Reativar, Concluir utilizam `color="success"` no ícone (ex.: `CheckCircleIcon color="success"`, `VerifiedIcon color="success"`, `ToggleOnIcon color="success"`).
+  - **Ações de processo / saída:** Registro de saída/retirada, emissão documental utilizam `color="info"`.
+  - **Ações de alerta / atenção:** Envio para manutenção utilizam `color="warning"`.
 - O menu compartilhado impede propagação de clique e teclado para a linha, permite navegação por teclado e restaura foco ao fechar. Validar `TableActionMenu.test.tsx` e `tableActionsArchitecture.test.ts` nos novos componentes.
 - Paginação obrigatória: `SearchableTablePagination` com `[5, 10, 25]`. A quantidade é pesquisável e sua alteração retorna à primeira página. `onRowsPerPageChange` recebe `{ target: { value: string } }`; `onPageChange` mantém o contrato MUI. O seletor simples interno do MUI fica desabilitado. Proibido TablePagination direto em telas.
 - `SearchableTablePagination` é o rodapé semântico (`TableFooter`/`TableRow`/`TableCell`): montar **dentro do `Table`, após o `TableBody`**, nunca após `TableContainer`, Card ou Paper. Informar `colSpan` com o número de colunas visíveis, respeitando colunas condicionais por permissão.
@@ -177,6 +227,13 @@ Toda tela somente-leitura que mostra a ficha completa de uma entidade (`*ViewMod
     onRowsPerPageChange={({ target }) => setLinhas(Number(target.value))} />
 </Table>
 ```
+
+### 7.1. Seção de Pesquisa e Filtros (Externa à Tabela)
+
+- **Regra Mandatória:** A seção de pesquisa e filtros deve ficar **sempre por fora** do quadro da tabela (nunca dentro do mesmo `Card` ou `TableContainer`).
+- **Padrão Canônico:** Um componente `<Paper sx={{ p: 2, mb: 3 }}>` (ou componente `FilterBar` dedicado) contendo o campo canônico `SearchField` (com ícone de lupa, `size="small"` e busca textual) acompanhado dos seletores de filtragem (`SearchableSelect`).
+- **Tabela Isolada:** A tabela deve residir em seu próprio `<TableContainer component={Paper}>` (ou container isolado exclusivo para a tabela, sem misturar campos de busca dentro do quadro).
+- **Proibição Expressa:** É estritamente proibido colocar `<TextField>` ou `<SearchField>` dentro do cabeçalho ou corpo do mesmo `Card` que engloba o `TableContainer`.
 
 ## 8. Tokens e Estilo
 

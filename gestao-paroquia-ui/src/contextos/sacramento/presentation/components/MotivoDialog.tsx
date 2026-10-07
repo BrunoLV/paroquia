@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import CloseIcon from '@mui/icons-material/Close';
-import GavelIcon from '@mui/icons-material/Gavel';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import {
@@ -94,7 +94,7 @@ export const RetificacaoDialog: React.FC<DialogBaseProps & { onConfirm: (p: Reti
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
-                  <GavelIcon color="primary" fontSize="small" />
+                  <EditNoteIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Ressalva atestada pelo Pároco
                   </Typography>
@@ -128,7 +128,7 @@ export const RetificacaoDialog: React.FC<DialogBaseProps & { onConfirm: (p: Reti
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <ActionButton title="Cancelar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
-          <ActionButton title="Registrar ressalva" icon={<GavelIcon />} color="primary" type="submit" disabled={isPending} />
+          <ActionButton title="Registrar ressalva" icon={<EditNoteIcon />} color="primary" type="submit" disabled={isPending} />
         </DialogActions>
       </form>
     </Dialog>

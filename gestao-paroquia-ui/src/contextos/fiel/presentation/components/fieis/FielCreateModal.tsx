@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, InputAdornment, MenuItem, Stack, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/Save';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { confirmDiscard } from '@/shared/utils/confirmDiscard';
 import BadgeIcon from '@mui/icons-material/Badge';
@@ -650,7 +650,7 @@ export const FielCreateModal: React.FC<FielCreateModalProps> = ({
           <ActionButton
             type="submit"
             title="Salvar"
-            icon={<AddIcon />}
+            icon={<SaveIcon />}
             color="primary"
             disabled={isPending}
           />

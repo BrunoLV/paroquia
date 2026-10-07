@@ -31,7 +31,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     <Button
       type={type} form={form} color={color} variant={variant} size={size} onClick={onClick}
       startIcon={icon} disabled={disabled} fullWidth={fullWidth}
-      sx={sx} aria-label={ariaLabel ?? title} {...(component ? { component } : {})}
+      sx={sx} aria-label={ariaLabel} {...(component ? { component } : {})}
     >
       {label ?? title}
       {children}

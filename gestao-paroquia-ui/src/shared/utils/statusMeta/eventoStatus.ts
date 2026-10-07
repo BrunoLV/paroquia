@@ -2,7 +2,7 @@ import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import CancelIcon from '@mui/icons-material/Cancel';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlineOutlined';
@@ -31,7 +31,7 @@ export const getEventoStatusMeta = (status: string): EventoStatusMeta => {
     case 'PENDENTE_APROVACAO':
       return { label: 'Pendente Aprovação', color: 'warning', icon: React.createElement(HourglassEmptyIcon), tooltip: 'Aguardando deliberação de aprovação' };
     case 'CANCELADO':
-      return { label: 'Cancelado', color: 'error', icon: React.createElement(CancelIcon), tooltip: 'Evento cancelado' };
+      return { label: 'Cancelado', color: 'error', icon: React.createElement(EventBusyIcon), tooltip: 'Evento cancelado' };
     default:
       return DEFAULT_META;
   }

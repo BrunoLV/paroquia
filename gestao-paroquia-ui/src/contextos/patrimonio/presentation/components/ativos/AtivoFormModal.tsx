@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Card, CardContent, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
 import { confirmDiscard } from '@/shared/utils/confirmDiscard';
 import SaveIcon from '@mui/icons-material/Save';
@@ -84,7 +84,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
-                  <InventoryIcon color="primary" fontSize="small" />
+                  <AccountBalanceIcon color="primary" fontSize="small" />
                   <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
                     Identificação do ativo
                   </Typography>

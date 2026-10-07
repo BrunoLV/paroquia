@@ -1,14 +1,14 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useMemo, useState } from 'react';
-import { Box, Card, CardContent, InputAdornment, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
-import PersonIcon from '@mui/icons-material/Person';
-import SearchIcon from '@mui/icons-material/Search';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import BadgeIcon from '@mui/icons-material/Badge';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import PageHeader from '@/shared/presentation/components/PageHeader';
+import SearchField from '@/shared/presentation/components/SearchField';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -120,7 +120,7 @@ const Clerigos: React.FC = () => {
   return (
     <Stack spacing={3}>
       <PageHeader
-        icon={<PersonIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
+        icon={<BadgeIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
         title={podeGerenciarClero ? "Quadro do Clero" : "Diretório do Clero"}
         subtitle={
           podeGerenciarClero
@@ -131,7 +131,7 @@ const Clerigos: React.FC = () => {
           podeGerenciarClero ? (
             <ActionButton
               title="Novo clérigo"
-              icon={<AddIcon />}
+              icon={<PersonAddIcon />}
               color="primary"
               onClick={() => setDialogCadastroAberto(true)}
             />
@@ -139,31 +139,20 @@ const Clerigos: React.FC = () => {
         }
       />
 
-      <Card>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Box sx={{ maxWidth: 400, mb: 2 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Pesquisar por nome ou paróquia..."
-              value={busca}
-              onChange={(e) => {
-                setBusca(e.target.value);
-                setPage(0);
-              }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </Box>
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ maxWidth: 400 }}>
+          <SearchField
+            placeholder="Pesquisar por nome ou paróquia..."
+            value={busca}
+            onChange={(val) => {
+              setBusca(val);
+              setPage(0);
+            }}
+          />
+        </Box>
+      </Paper>
 
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -252,21 +241,21 @@ const Clerigos: React.FC = () => {
                           actions={[
                             {
                               label: 'Visualizar ficha',
-                              icon: <VisibilityIcon fontSize="small" />,
+                              icon: <VisibilityIcon fontSize="small" color="primary" />,
                               onClick: () => setClerigoVisualizando(clerigo),
                             },
                             ...(podeGerenciarClero && 'nomeCivil' in clerigo
                               ? [
                                   {
                                     label: 'Editar cadastro',
-                                    icon: <EditIcon fontSize="small" />,
+                                    icon: <EditIcon fontSize="small" color="primary" />,
                                     onClick: () => setClerigoEditando(clerigo as Clerigo),
                                   },
                                   ...((clerigo as Clerigo).isAtivo
                                     ? [
                                         {
                                           label: 'Inativar',
-                                          icon: <BlockIcon fontSize="small" />,
+                                          icon: <BlockIcon fontSize="small" color="error" />,
                                           onClick: () => setClerigoParaInativar(clerigo as Clerigo),
                                         },
                                       ]
@@ -296,9 +285,7 @@ const Clerigos: React.FC = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
 
       {/* Modal de Criação */}
       <ClerigoFormModal

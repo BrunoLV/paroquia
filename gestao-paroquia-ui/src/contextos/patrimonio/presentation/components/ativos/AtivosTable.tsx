@@ -18,6 +18,7 @@ interface AtivosTableProps {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRows: number) => void;
   rowActions: (ativo: AtivoPatrimonial) => TableAction[];
+  onView?: (ativo: AtivoPatrimonial) => void;
 }
 
 /** Tabela de Ativos Patrimoniais — espelha o padrão visual de LocaisTable. */
@@ -30,6 +31,7 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
   rowActions,
+  onView,
 }) => {
   if (isLoading) {
     return (
@@ -61,7 +63,20 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
           </TableHead>
           <TableBody>
             {paginados.map((ativo) => (
-              <TableRow key={ativo.id} hover>
+              <TableRow
+                key={ativo.id}
+                hover
+                tabIndex={0}
+                role="button"
+                onClick={() => onView?.(ativo)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onView?.(ativo);
+                  }
+                }}
+                sx={{ cursor: onView ? 'pointer' : 'default' }}
+              >
                 <TableCell sx={{ fontWeight: 600 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {ativo.nome}
@@ -80,7 +95,7 @@ export const AtivosTable: React.FC<AtivosTableProps> = ({
                 <TableCell align="right">
                   <FormattedCurrency value={ativo.valorAquisicao} />
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                   <TableActionMenu actions={rowActions(ativo)} />
                 </TableCell>
               </TableRow>

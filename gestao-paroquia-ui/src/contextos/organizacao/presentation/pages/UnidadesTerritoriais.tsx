@@ -1,9 +1,9 @@
 import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Box, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import AddIcon from '@mui/icons-material/Add';
+import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
 import ChurchIcon from '@mui/icons-material/Church';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -222,7 +222,7 @@ export const UnidadesTerritoriais: React.FC = () => {
               />
               <ActionButton
                 title="Nova Unidade Territorial"
-                icon={<AddIcon />}
+                icon={<AddHomeWorkIcon />}
                 variant="contained"
                 color="primary"
                 onClick={handleOpenNovaUnidade}
@@ -305,21 +305,22 @@ export const UnidadesTerritoriais: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Tabela de Unidades Territoriais */}
-      <Card>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Box sx={{ maxWidth: 400, mb: 2 }}>
-            <SearchField
-              value={busca}
-              onChange={(val) => {
-                setBusca(val);
-                setPage(0);
-              }}
-              placeholder="Pesquisar por nome, padroeiro ou cidade..."
-            />
-          </Box>
+      {/* Pesquisa e Filtros */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ maxWidth: 400 }}>
+          <SearchField
+            value={busca}
+            onChange={(val) => {
+              setBusca(val);
+              setPage(0);
+            }}
+            placeholder="Pesquisar por nome, padroeiro ou cidade..."
+          />
+        </Box>
+      </Paper>
 
-          <TableContainer>
+      {/* Tabela de Unidades Territoriais */}
+      <TableContainer component={Paper}>
             <Table size="small">
               <TableHead sx={{ backgroundColor: 'action.hover' }}>
                 <TableRow>
@@ -413,19 +414,19 @@ export const UnidadesTerritoriais: React.FC = () => {
                           actions={[
                             {
                               label: 'Visualizar detalhes',
-                              icon: <VisibilityIcon fontSize="small" />,
+                              icon: <VisibilityIcon fontSize="small" color="primary" />,
                               onClick: () => setUnidadeVisualizando(u),
                             },
                             ...(podeGerenciar
                               ? [
                                   {
                                     label: 'Editar unidade',
-                                    icon: <EditIcon fontSize="small" />,
+                                    icon: <EditIcon fontSize="small" color="primary" />,
                                     onClick: () => handleOpenEditarUnidade(u),
                                   },
                                   {
                                     label: 'Excluir unidade',
-                                    icon: <DeleteIcon fontSize="small" />,
+                                    icon: <DeleteIcon fontSize="small" color="error" />,
                                     onClick: () => handleOpenConfirmDelete(u),
                                   },
                                 ]
@@ -453,9 +454,7 @@ export const UnidadesTerritoriais: React.FC = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
 
       {/* Modais */}
       {unidadeVisualizando && (

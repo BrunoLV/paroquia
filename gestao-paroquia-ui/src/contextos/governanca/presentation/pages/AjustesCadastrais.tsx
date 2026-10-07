@@ -5,7 +5,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
-import AjusteIcon from '@mui/icons-material/FactCheck';
+import AjusteIcon from '@mui/icons-material/HowToReg';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -92,9 +92,7 @@ const AjustesCadastrais = () => {
         subtitle="Solicitações pendentes de validação e aprovação cadastral."
       />
 
-      <Card>
-        <CardContent sx={{ p: 0 }}>
-          <TableContainer>
+      <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -117,7 +115,24 @@ const AjustesCadastrais = () => {
                   lista
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((a) => (
-                      <TableRow key={a.id} hover>
+                      <TableRow
+                        key={a.id}
+                        hover
+                        tabIndex={0}
+                        role="button"
+                        onClick={() => {
+                          setSelecionado(a);
+                          setJustificativa('');
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelecionado(a);
+                            setJustificativa('');
+                          }
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
                         <TableCell>
                           <Stack spacing={0.25}>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -144,7 +159,7 @@ const AjustesCadastrais = () => {
                             label={formatDateBr(a.criadaEmUtc?.slice(0, 10))}
                           />
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                           <TableActionMenu actions={[{
                             label: "Analisar solicitação", icon: <VisibilityIcon fontSize="small" color="primary" />,
                             onClick: () => {
@@ -173,9 +188,7 @@ const AjustesCadastrais = () => {
                 }
               />
             </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      </TableContainer>
 
       {/* Modal de Análise e Decisão */}
       <Dialog
