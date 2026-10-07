@@ -49,7 +49,7 @@ public class ImportacaoController {
      * esperados para o tipo de entidade informado, servindo de guia para preenchimento do
      * arquivo de importação.
      *
-     * @param tipo código de {@code TipoEntidadeImportacao} (ex.: MEMBRO, GRUPO_PAROQUIAL)
+     * @param tipo código de {@code TipoEntidadeImportacao} (ex.: MEMBRO, ORGANIZACAO)
      * @param formato "CSV" ou "XLSX"; qualquer outro valor recai em CSV
      * @return arquivo binário para download, com nome e content-type apropriados ao formato
      */
@@ -63,7 +63,7 @@ public class ImportacaoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public ResponseEntity<byte[]> baixarModelo(
-            @Parameter(description = "Tipo de entidade (MEMBRO, GRUPO_PAROQUIAL, etc.)")
+            @Parameter(description = "Tipo de entidade (MEMBRO, ORGANIZACAO, etc.)")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
             @Parameter(description = "Formato do arquivo (CSV ou XLSX)")
             @RequestParam(defaultValue = "CSV") String formato) throws IOException {

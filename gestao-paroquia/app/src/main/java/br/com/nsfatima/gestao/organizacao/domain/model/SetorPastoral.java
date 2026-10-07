@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Classifica uma {@link GrupoParoquial} do tipo {@code PASTORAL} segundo os três eixos clássicos da ação
+ * Classifica uma {@link Organizacao} do tipo {@code PASTORAL} segundo os três eixos clássicos da ação
  * pastoral paroquial: Santificação/Liturgia, Formação/Ensinar e Social/Caridade. Usado apenas para
  * agrupamento/relatórios organizacionais, sem impacto nas regras de autorização.
  */

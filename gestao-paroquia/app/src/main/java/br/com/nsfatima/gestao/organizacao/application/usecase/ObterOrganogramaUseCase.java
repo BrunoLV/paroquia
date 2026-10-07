@@ -4,12 +4,12 @@ import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Monta a árvore hierárquica (organograma) de toda a estrutura da paróquia. Desde a track
  * {@code linguagem_ubiqua_dominio}, a hierarquia territorial (Clero/Matriz/Comunidade) e os grupos
  * paroquiais (Conselho/Pastoral/Movimento/Ministério) vivem em agregados distintos —
- * {@code UnidadeTerritorial} e {@code GrupoParoquial}, respectivamente. A raiz preferida é a unidade
+ * {@code UnidadeTerritorial} e {@code Organizacao}, respectivamente. A raiz preferida é a unidade
  * territorial do tipo {@code CLERO}; se ela não existir, todas as raízes (unidades territoriais e grupos
  * sem organização-mãe) são expostas como filhas diretas de um nó sintético "root" com o nome da paróquia.
  * Grupos do tipo {@code CONSELHO} são filhos de uma unidade territorial (Matriz/Comunidade); Pastoral e
@@ -34,20 +34,20 @@ import java.util.stream.Collectors;
 @Service
 public class ObterOrganogramaUseCase {
 
-    private static final String GRUPO_PAROQUIAL_RAIZ_ID = "00000000-0000-0000-0000-000000000001";
+    private static final String ORGANIZACAO_RAIZ_ID = "00000000-0000-0000-0000-000000000001";
 
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
-    private final ListarGrupoParoquialMembrosUseCase listMembrosUseCase;
+    private final ListarOrganizacaoMembrosUseCase listMembrosUseCase;
     private final EncargoClericalJpaRepository encargoClericalRepository;
     private final ClerigoJpaRepository clerigoRepository;
     public ObterOrganogramaUseCase(
-            GrupoParoquialJpaRepository grupoParoquialRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
-            ListarGrupoParoquialMembrosUseCase listMembrosUseCase,
+            ListarOrganizacaoMembrosUseCase listMembrosUseCase,
             EncargoClericalJpaRepository encargoClericalRepository,
             ClerigoJpaRepository clerigoRepository) {
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
         this.listMembrosUseCase = listMembrosUseCase;
         this.encargoClericalRepository = encargoClericalRepository;
@@ -64,7 +64,7 @@ public class ObterOrganogramaUseCase {
     @Transactional(readOnly = true)
     public OrganogramaNodeResponse execute() {
         List<UnidadeTerritorialEntity> todasUnidades = unidadeTerritorialRepository.findAll();
-        List<GrupoParoquialEntity> todosGrupos = grupoParoquialRepository.findAll();
+        List<OrganizacaoEntity> todosGrupos = organizacaoRepository.findAll();
 
         List<UnidadeTerritorialEntity> unidadesRaiz = todasUnidades.stream()
                 .filter(UnidadeTerritorialEntity::isAtivo)
@@ -76,15 +76,15 @@ public class ObterOrganogramaUseCase {
                 .filter(u -> u.getParentId() != null)
                 .collect(Collectors.groupingBy(UnidadeTerritorialEntity::getParentId));
 
-        Map<UUID, List<GrupoParoquialEntity>> gruposPorPaiId = todosGrupos.stream()
-                .filter(GrupoParoquialEntity::isAtivo)
-                .filter(org -> !org.getId().toString().equals(GRUPO_PAROQUIAL_RAIZ_ID))
+        Map<UUID, List<OrganizacaoEntity>> gruposPorPaiId = todosGrupos.stream()
+                .filter(OrganizacaoEntity::isAtivo)
+                .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() != null)
-                .collect(Collectors.groupingBy(GrupoParoquialEntity::getParentId));
+                .collect(Collectors.groupingBy(OrganizacaoEntity::getParentId));
 
-        List<GrupoParoquialEntity> gruposRaiz = todosGrupos.stream()
-                .filter(GrupoParoquialEntity::isAtivo)
-                .filter(org -> !org.getId().toString().equals(GRUPO_PAROQUIAL_RAIZ_ID))
+        List<OrganizacaoEntity> gruposRaiz = todosGrupos.stream()
+                .filter(OrganizacaoEntity::isAtivo)
+                .filter(org -> !org.getId().toString().equals(ORGANIZACAO_RAIZ_ID))
                 .filter(org -> org.getParentId() == null)
                 .toList();
 
@@ -117,14 +117,14 @@ public class ObterOrganogramaUseCase {
     private OrganogramaNodeResponse buildUnidadeNodeRecursively(
             UnidadeTerritorialEntity unidade,
             Map<UUID, List<UnidadeTerritorialEntity>> unidadesFilhasPorPaiId,
-            Map<UUID, List<GrupoParoquialEntity>> gruposPorPaiId) {
+            Map<UUID, List<OrganizacaoEntity>> gruposPorPaiId) {
 
         List<UnidadeTerritorialEntity> unidadesFilhas = unidadesFilhasPorPaiId.getOrDefault(unidade.getId(), List.of());
         List<OrganogramaNodeResponse> nosFilhos = unidadesFilhas.stream()
                 .map(child -> buildUnidadeNodeRecursively(child, unidadesFilhasPorPaiId, gruposPorPaiId))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        List<GrupoParoquialEntity> gruposFilhos = gruposPorPaiId.getOrDefault(unidade.getId(), List.of());
+        List<OrganizacaoEntity> gruposFilhos = gruposPorPaiId.getOrDefault(unidade.getId(), List.of());
         gruposFilhos.forEach(org -> nosFilhos.add(buildOrgNodeRecursively(org, gruposPorPaiId)));
 
         boolean isMatriz = unidade.getTipo() == TipoUnidadeTerritorial.MATRIZ;
@@ -162,15 +162,15 @@ public class ObterOrganogramaUseCase {
                 .orElse(null);
     }
 
-    private OrganogramaNodeResponse buildOrgNodeRecursively(GrupoParoquialEntity org,
-                                                            Map<UUID, List<GrupoParoquialEntity>> filhosPorPaiId) {
+    private OrganogramaNodeResponse buildOrgNodeRecursively(OrganizacaoEntity org,
+                                                            Map<UUID, List<OrganizacaoEntity>> filhosPorPaiId) {
 
-        List<GrupoParoquialEntity> organizacoesFilhas = filhosPorPaiId.getOrDefault(org.getId(), List.of());
+        List<OrganizacaoEntity> organizacoesFilhas = filhosPorPaiId.getOrDefault(org.getId(), List.of());
         List<OrganogramaNodeResponse> nosFilhos = organizacoesFilhas.stream()
                 .map(child -> buildOrgNodeRecursively(child, filhosPorPaiId))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        List<GrupoParoquialMembroResponse> membros = listMembrosUseCase.execute(org.getId());
+        List<OrganizacaoMembroResponse> membros = listMembrosUseCase.execute(org.getId());
 
         List<OrganogramaNodeResponse> nosMembros = membros.stream()
                 .map(m -> new OrganogramaNodeResponse(
@@ -194,7 +194,7 @@ public class ObterOrganogramaUseCase {
         if (responsavelNome == null || responsavelNome.isBlank()) {
             responsavelNome = membros.stream()
                     .filter(m -> "COORDENADOR".equalsIgnoreCase(m.papel()) || "PAROCO".equalsIgnoreCase(m.papel()))
-                    .map(GrupoParoquialMembroResponse::fielNome)
+                    .map(OrganizacaoMembroResponse::fielNome)
                     .findFirst()
                     .orElse(null);
         }
@@ -205,7 +205,7 @@ public class ObterOrganogramaUseCase {
                             || "secretario-grupo".equalsIgnoreCase(m.papel())
                             || "secretario-conselho".equalsIgnoreCase(m.papel())
                             || "VIGARIO".equalsIgnoreCase(m.papel()))
-                    .map(GrupoParoquialMembroResponse::fielNome)
+                    .map(OrganizacaoMembroResponse::fielNome)
                     .findFirst()
                     .orElse(null);
         }
@@ -215,7 +215,7 @@ public class ObterOrganogramaUseCase {
         return new OrganogramaNodeResponse(
                 org.getId().toString(),
                 org.getNome(),
-                "GRUPO_PAROQUIAL",
+                "ORGANIZACAO",
                 org.getTipo().name(),
                 responsavelNome,
                 responsavelPapel,

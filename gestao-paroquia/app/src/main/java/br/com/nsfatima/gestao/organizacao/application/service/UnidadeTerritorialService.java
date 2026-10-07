@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.application.service;
 
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.UnidadeTerritorialRequest;
-import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
@@ -57,10 +57,10 @@ public class UnidadeTerritorialService {
     public UnidadeTerritorialEntity criar(UnidadeTerritorialRequest request) {
         if (request.parentId() != null) {
             var parent = repository.findById(request.parentId())
-                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
                             MSG_MAE_NAO_ENCONTRADA + request.parentId()));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
+                throw new OrganizacaoNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -85,10 +85,10 @@ public class UnidadeTerritorialService {
             String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         if (parentId != null) {
             var parent = repository.findById(parentId)
-                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
                             MSG_MAE_NAO_ENCONTRADA + parentId));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
+                throw new OrganizacaoNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -115,17 +115,17 @@ public class UnidadeTerritorialService {
     @Transactional
     public UnidadeTerritorialEntity atualizar(UUID id, UnidadeTerritorialRequest request) {
         UnidadeTerritorialEntity entity = repository.findById(id)
-                .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
+                .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
         if (request.parentId() != null) {
             if (request.parentId().equals(id)) {
-                throw new GrupoParoquialNegocioException("Uma unidade territorial não pode ser mãe de si mesma.");
+                throw new OrganizacaoNegocioException("Uma unidade territorial não pode ser mãe de si mesma.");
             }
             var parent = repository.findById(request.parentId())
-                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
                             MSG_MAE_NAO_ENCONTRADA + request.parentId()));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
+                throw new OrganizacaoNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -146,17 +146,17 @@ public class UnidadeTerritorialService {
     public UnidadeTerritorialEntity atualizar(
             UUID id, String nome, TipoUnidadeTerritorial tipo, String contato, boolean ativo, UUID parentId) {
         UnidadeTerritorialEntity entity = repository.findById(id)
-                .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
+                .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
         if (parentId != null) {
             if (parentId.equals(id)) {
-                throw new GrupoParoquialNegocioException("Uma unidade territorial não pode ser mãe de si mesma.");
+                throw new OrganizacaoNegocioException("Uma unidade territorial não pode ser mãe de si mesma.");
             }
             var parent = repository.findById(parentId)
-                    .orElseThrow(() -> new GrupoParoquialNegocioException(
+                    .orElseThrow(() -> new OrganizacaoNegocioException(
                             MSG_MAE_NAO_ENCONTRADA + parentId));
             if (!parent.isAtivo()) {
-                throw new GrupoParoquialNegocioException(MSG_MAE_NAO_ATIVA);
+                throw new OrganizacaoNegocioException(MSG_MAE_NAO_ATIVA);
             }
         }
 
@@ -229,7 +229,7 @@ public class UnidadeTerritorialService {
     @Transactional
     public void excluir(UUID id) {
         UnidadeTerritorialEntity entity = repository.findById(id)
-                .orElseThrow(() -> GrupoParoquialNegocioException.notFound(id));
+                .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
 
         repository.delete(entity);
 

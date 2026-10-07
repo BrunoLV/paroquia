@@ -11,8 +11,8 @@ import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultado
 import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +42,9 @@ public class ImportacaoService {
 
     public ImportacaoService(AdicionarMembroUseCase adicionarMembroUseCase,
                               UsuarioJpaRepository usuarioJpaRepository,
-                              GrupoParoquialService grupoParoquialService,
+                              OrganizacaoService organizacaoService,
                               EventoJpaRepository eventoJpaRepository,
-                              GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+                              OrganizacaoJpaRepository organizacaoJpaRepository,
                               UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                               PastoralMovimentoOficialRepository pastoralOficialRepository,
                               LeitorArquivoImportacao leitorArquivoImportacao,
@@ -56,9 +56,9 @@ public class ImportacaoService {
         this.linhaExecutor = new ImportacaoLinhaExecutor(
                 adicionarMembroUseCase,
                 usuarioJpaRepository,
-                grupoParoquialService,
+                organizacaoService,
                 eventoJpaRepository,
-                grupoParoquialJpaRepository,
+                organizacaoJpaRepository,
                 unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
                 anoParoquialJpaRepository,

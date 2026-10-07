@@ -9,7 +9,7 @@ export const ativoSchema = z.object({
     .max(200, 'Nome não pode exceder 200 caracteres'),
   descricao: z.string().max(4000).optional().or(z.literal('')),
   categoria: z.enum(['ELETRONICO', 'MOBILIARIO', 'PARAMENTO', 'INFRAESTRUTURA']),
-  grupoParoquialId: z.string().min(1, 'Selecione a unidade territorial proprietária'),
+  organizacaoId: z.string().min(1, 'Selecione a unidade territorial proprietária'),
   isReservavel: z.boolean(),
   dataAquisicao: z.string().min(1, 'Data de aquisição é obrigatória'),
   valorAquisicao: z

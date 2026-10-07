@@ -126,7 +126,7 @@ const AgendaListaCalendario = ({ agendaEvents, onEventClick, getOrgName }: Agend
                 />
                 <StatusIcon {...getCategoriaEventoMeta(evt.categoria)} />
                 <StatusIcon
-                  label={getOrgName(evt.grupoParoquialResponsavelId, evt.igrejaVinculoId)}
+                  label={getOrgName(evt.organizacaoResponsavelId, evt.igrejaVinculoId)}
                   color="default"
                   icon={<BusinessIcon />}
                   tooltip="Organização responsável pelo evento"

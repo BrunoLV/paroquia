@@ -13,17 +13,17 @@ import java.util.UUID;
  * ordenado por nome.
  */
 @Service
-public class ListarAtivosPorGrupoParoquialUseCase {
+public class ListarAtivosPorOrganizacaoUseCase {
 
     private final AtivoPatrimonialRepository repository;
 
-    public ListarAtivosPorGrupoParoquialUseCase(AtivoPatrimonialRepository repository) {
+    public ListarAtivosPorOrganizacaoUseCase(AtivoPatrimonialRepository repository) {
         this.repository = repository;
     }
 
     @Transactional(readOnly = true)
-    public List<AtivoPatrimonialResponse> executePorGrupo(UUID grupoParoquialId) {
-        return repository.findByGrupoParoquial(grupoParoquialId).stream()
+    public List<AtivoPatrimonialResponse> executePorGrupo(UUID organizacaoId) {
+        return repository.findByOrganizacao(organizacaoId).stream()
                 .map(AtivoPatrimonialResponse::de)
                 .toList();
     }

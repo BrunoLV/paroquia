@@ -1009,7 +1009,6 @@ export const Configuracoes = () => {
                       }
                     }
                     addVinculoMutation.mutate({
-                      grupoParoquialId: newVinculoOrgId,
                       organizacaoId: newVinculoOrgId,
                       tipo: selectedOrgObj.tipo,
                       papel: newVinculoPapel,

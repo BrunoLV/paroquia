@@ -40,14 +40,14 @@ public final class PadraoAutorizacaoPatrimonioPolicy implements AutorizacaoPatri
     }
 
     @Override
-    public void assertPodeGerirPatrimonio(String rawRole, UUID atorOrganizacaoId, UUID grupoParoquialId) {
+    public void assertPodeGerirPatrimonio(String rawRole, UUID atorOrganizacaoId, UUID organizacaoId) {
         if (!isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para gerir ativos patrimoniais");
         }
 
         if (!isAtorDeAltoNivel(rawRole)
                 && atorOrganizacaoId != null
-                && !Objects.equals(atorOrganizacaoId, grupoParoquialId)) {
+                && !Objects.equals(atorOrganizacaoId, organizacaoId)) {
             throw new OperacaoProibidaException("Usuário não pode gerir ativos de outra unidade territorial");
         }
     }

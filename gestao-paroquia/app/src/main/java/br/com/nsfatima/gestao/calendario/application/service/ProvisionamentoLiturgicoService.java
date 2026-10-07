@@ -169,7 +169,7 @@ public class ProvisionamentoLiturgicoService {
                 evento.setDescricao(
                 "Solenidade / Marco Litúrgico provisionado automaticamente"
                         + " a partir do banco de dados (" + marco.chave() + ")");
-                evento.setGrupoParoquialResponsavelId(igreja.getId());
+                evento.setOrganizacaoResponsavelId(igreja.getId());
                 evento.setCategoria(CategoriaEvento.LITURGICO);
                 evento.setStatus(EventoStatusInput.CONFIRMADO.name());
 

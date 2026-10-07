@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.domain.policy;
 
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,7 +15,7 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
     @Override
     public boolean canManageOrganizationData(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId) {
@@ -44,7 +44,7 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
     @Override
     public boolean canApproveEvents(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId) {
         if (userRole == null || userRole.isBlank()) {
@@ -58,7 +58,7 @@ public final class PadraoAutorizacaoEscopoUsuarioPolicy implements AutorizacaoEs
     @Override
     public boolean canAddObservation(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant) {

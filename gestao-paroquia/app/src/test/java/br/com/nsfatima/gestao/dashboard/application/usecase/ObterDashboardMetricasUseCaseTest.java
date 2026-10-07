@@ -14,8 +14,8 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -44,14 +44,14 @@ class ObterDashboardMetricasUseCaseTest {
     private final AprovacaoJpaRepository aprovacaoRepository = mock(AprovacaoJpaRepository.class);
     private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository =
             mock(ProjetoSolicitacaoAprovacaoJpaRepository.class);
-    private final GrupoParoquialJpaRepository grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
+    private final OrganizacaoJpaRepository organizacaoRepository = mock(OrganizacaoJpaRepository.class);
     private final LocalJpaRepository localRepository = mock(LocalJpaRepository.class);
     private final FielJpaRepository fielRepository = mock(FielJpaRepository.class);
     private final MembroGrupoJpaRepository membroRepository = mock(MembroGrupoJpaRepository.class);
 
     private final ObterDashboardMetricasUseCase useCase = new ObterDashboardMetricasUseCase(
             eventoRepository, projetoRepository, aprovacaoRepository, projetoAprovacaoRepository,
-            grupoParoquialRepository, localRepository, fielRepository, membroRepository,
+            organizacaoRepository, localRepository, fielRepository, membroRepository,
             new ProjetoAgregacaoDomainService(), new JanelaTemporalResolver(), new EscopoDashboardResolver());
 
     private static final UUID ORG_A = UUID.randomUUID();
@@ -61,7 +61,7 @@ class ObterDashboardMetricasUseCaseTest {
         EventoEntity e = new EventoEntity();
         e.setId(UUID.randomUUID());
         e.setTitulo("Evento " + org);
-        e.setGrupoParoquialResponsavelId(org);
+        e.setOrganizacaoResponsavelId(org);
         e.setInicioUtc(inicio);
         e.setFimUtc(fim);
         e.setLocalId(localId);
@@ -73,7 +73,7 @@ class ObterDashboardMetricasUseCaseTest {
         p.setId(UUID.randomUUID());
         p.setNome("Projeto " + status);
         p.setStatus(status);
-        p.setGrupoParoquialResponsavelId(org);
+        p.setOrganizacaoResponsavelId(org);
         p.setInicioUtc(inicio);
         p.setFimUtc(fim);
         return p;
@@ -117,13 +117,13 @@ class ObterDashboardMetricasUseCaseTest {
 
         when(projetoRepository.findAll()).thenReturn(List.of(projeto1, projeto2, projeto3, projeto4));
 
-        GrupoParoquialEntity orgA = new GrupoParoquialEntity();
+        OrganizacaoEntity orgA = new OrganizacaoEntity();
         orgA.setId(ORG_A);
         orgA.setNome("Comunidade A");
-        GrupoParoquialEntity orgB = new GrupoParoquialEntity();
+        OrganizacaoEntity orgB = new OrganizacaoEntity();
         orgB.setId(ORG_B);
         orgB.setNome("Comunidade B");
-        when(grupoParoquialRepository.findAll()).thenReturn(List.of(orgA, orgB));
+        when(organizacaoRepository.findAll()).thenReturn(List.of(orgA, orgB));
 
         LocalEntity local = new LocalEntity();
         local.setId(eventoA.getLocalId());
@@ -181,9 +181,9 @@ class ObterDashboardMetricasUseCaseTest {
                 .anySatisfy(o -> assertThat(o.projetoSugeridoId()).isEqualTo(projeto1.getId()))
                 .anySatisfy(o -> assertThat(o.projetoSugeridoId()).isNull());
 
-        assertThat(resultado.eventosPorGrupoParoquial()).hasSize(2);
-        assertThat(resultado.eventosPorGrupoParoquial().get(0).grupoParoquialNome()).isEqualTo("Comunidade A");
-        assertThat(resultado.eventosPorGrupoParoquial().get(0).quantidadeEventos()).isEqualTo(2L);
+        assertThat(resultado.eventosPorOrganizacao()).hasSize(2);
+        assertThat(resultado.eventosPorOrganizacao().get(0).organizacaoNome()).isEqualTo("Comunidade A");
+        assertThat(resultado.eventosPorOrganizacao().get(0).quantidadeEventos()).isEqualTo(2L);
     }
 
     @Test
@@ -204,7 +204,7 @@ class ObterDashboardMetricasUseCaseTest {
         when(projetoRepository.findAllById(Set.of(projetoOrgA.getId(), projetoOrgB.getId())))
                 .thenReturn(List.of(projetoOrgA, projetoOrgB));
 
-        when(grupoParoquialRepository.findAll()).thenReturn(List.of());
+        when(organizacaoRepository.findAll()).thenReturn(List.of());
         when(localRepository.findAll()).thenReturn(List.of());
 
         AprovacaoEntity aprovacaoOrgA = new AprovacaoEntity();
@@ -238,6 +238,6 @@ class ObterDashboardMetricasUseCaseTest {
         assertThat(resultado.resumoGeral().totalEventosPeriodo()).isEqualTo(1);
         assertThat(resultado.resumoGeral().solicitacoesPendentes()).isEqualTo(2);
         assertThat(resultado.resumoGeral().projetosAtivos()).isEqualTo(1);
-        assertThat(resultado.eventosPorGrupoParoquial()).hasSize(1);
+        assertThat(resultado.eventosPorOrganizacao()).hasSize(1);
     }
 }

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.iam.api.v1.dto;
 
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +16,7 @@ public record UsuarioResponse(
         String username,
         boolean enabled,
         Collection<String> roles,
-        Collection<GrupoParoquialResponse> organizations,
+        Collection<OrganizacaoResponse> organizations,
         String nome,
         UUID fielId,
         UUID clerigoId
@@ -36,7 +36,7 @@ public record UsuarioResponse(
                            String username,
                            boolean enabled,
                            Collection<String> roles,
-                           Collection<GrupoParoquialResponse> organizations) {
+                           Collection<OrganizacaoResponse> organizations) {
         this(id, username, enabled, roles, organizations, null, null, null);
     }
 }

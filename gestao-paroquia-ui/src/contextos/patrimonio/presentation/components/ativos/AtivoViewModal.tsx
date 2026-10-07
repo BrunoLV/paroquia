@@ -67,7 +67,7 @@ export const AtivoViewModal: React.FC<AtivoViewModalProps> = ({
 
   const statusMeta = getAtivoStatusMeta(ativo.status);
   const categoriaMeta = getCategoriaAtivoMeta(ativo.categoria);
-  const organizacaoNome = organizacoes.find((o) => o.id === ativo.grupoParoquialId)?.nome || '—';
+  const organizacaoNome = organizacoes.find((o) => o.id === ativo.organizacaoId)?.nome || '—';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

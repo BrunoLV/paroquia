@@ -50,10 +50,10 @@ class WeeklyMetricsSnapshotHistoryIntegrationTest {
         assertThat(second).containsEntry("historySize", 2);
     }
 
-    private AuditoriaOperacaoEntity record(UUID grupoParoquialId, UUID eventoId) {
+    private AuditoriaOperacaoEntity record(UUID organizacaoId, UUID eventoId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(UUID.randomUUID());
-        entity.setGrupoParoquialId(grupoParoquialId);
+        entity.setOrganizacaoId(organizacaoId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

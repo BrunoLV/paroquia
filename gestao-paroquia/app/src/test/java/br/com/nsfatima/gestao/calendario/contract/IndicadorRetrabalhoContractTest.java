@@ -32,29 +32,29 @@ class IndicadorRetrabalhoContractTest {
 
     @Test
     void deveRetornarRetrabalhoContratoPayload() throws Exception {
-        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 
         auditoriaOperacaoJpaRepository.save(reworkRecord(
-                UUID.randomUUID(), grupoParoquialId, eventoId));
+                UUID.randomUUID(), organizacaoId, eventoId));
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/retrabalho")
-                        .param("grupoParoquialId", grupoParoquialId.toString())
+                        .param("organizacaoId", organizacaoId.toString())
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-10T00:00:00Z")
-                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
+                        .header("X-Actor-Org-Id", organizacaoId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.grupoParoquialId").value(grupoParoquialId.toString()))
+                .andExpect(jsonPath("$.organizacaoId").value(organizacaoId.toString()))
                 .andExpect(jsonPath("$.periodo.inicio").value("2026-10-01T00:00:00Z"))
                 .andExpect(jsonPath("$.taxaRetrabalho").value(1.0))
                 .andExpect(jsonPath("$.numeradorOcorrenciasElegiveis").value(1))
                 .andExpect(jsonPath("$.denominadorEventosAfetados").value(1));
     }
 
-    private AuditoriaOperacaoEntity reworkRecord(UUID id, UUID grupoParoquialId, UUID eventoId) {
+    private AuditoriaOperacaoEntity reworkRecord(UUID id, UUID organizacaoId, UUID eventoId) {
         AuditoriaOperacaoEntity entity = new AuditoriaOperacaoEntity();
         entity.setId(id);
-        entity.setGrupoParoquialId(grupoParoquialId);
+        entity.setOrganizacaoId(organizacaoId);
         entity.setEventoId(eventoId);
         entity.setRecursoTipo("EVENTO");
         entity.setRecursoId(eventoId.toString());

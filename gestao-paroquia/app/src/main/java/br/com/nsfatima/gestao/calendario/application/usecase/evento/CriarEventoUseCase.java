@@ -238,7 +238,7 @@ public class CriarEventoUseCase {
         List<ConflitoEventoItemDto> conflitos = detectarConflitos(request);
 
         ModoRequisicaoCriacao mode = authorizationService.resolveModoRequisicaoCriacao(actorContext,
-                request.grupoParoquialResponsavelId(), request.igrejaVinculoId());
+                request.organizacaoResponsavelId(), request.igrejaVinculoId());
 
         boolean isParoco = PapelGlobal.PAROCO.storedValue().equals(actorContext.role());
 
@@ -290,8 +290,8 @@ public class CriarEventoUseCase {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         domainService.validateEvento(request.inicio(), request.fim(), status, request.adicionadoExtraJustificativa());
         validarBloqueioAnoParoquial(request.inicio(), status);
-        domainService.validateGrupoParoquialParticipantes(
-                request.grupoParoquialResponsavelId(), request.participantes());
+        domainService.validateOrganizacaoParticipantes(
+                request.organizacaoResponsavelId(), request.participantes());
         validadorVinculoProjeto.validarEvento(request.projetoId(), request.inicio(), request.fim());
     }
 
@@ -384,7 +384,7 @@ public class CriarEventoUseCase {
                     request.localIds(),
                     request.ativoIds(),
                     solicitanteId,
-                    saved.getGrupoParoquialResponsavelId(),
+                    saved.getOrganizacaoResponsavelId(),
                     saved.getInicioUtc(),
                     saved.getFimUtc(),
                     saved.getPeriodosList()
@@ -434,7 +434,7 @@ public class CriarEventoUseCase {
      * }
      */
     public CriarEventoRequest restaurarDoPayloadAprovacao(AprovacaoAcaoPayload payload) {
-        Objects.requireNonNull(payload.grupoParoquialResponsavelId(), "grupoParoquialResponsavelId é obrigatório");
+        Objects.requireNonNull(payload.organizacaoResponsavelId(), "organizacaoResponsavelId é obrigatório");
         Objects.requireNonNull(payload.inicio(), "inicio é obrigatório");
         Objects.requireNonNull(payload.fim(), "fim é obrigatório");
 
@@ -442,7 +442,7 @@ public class CriarEventoUseCase {
                 payload.titulo(),
                 payload.descricao(),
                 payload.categoria(),
-                payload.grupoParoquialResponsavelId(),
+                payload.organizacaoResponsavelId(),
                 payload.projetoId(),
                 payload.localId(),
                 payload.localIds(),

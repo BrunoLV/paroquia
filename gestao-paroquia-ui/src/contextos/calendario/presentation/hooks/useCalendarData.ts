@@ -195,7 +195,7 @@ export const useCalendarData = ({
             titulo: payload.titulo || 'Novo Evento (Pendente)',
             descricao: payload.descricao || '',
             categoria: payload.categoria || 'PASTORAL',
-            grupoParoquialResponsavelId: payload.grupoParoquialResponsavelId || '',
+            organizacaoResponsavelId: payload.organizacaoResponsavelId || '',
             projetoId: payload.projetoId || null,
             nomeProjeto: null,
             localId: payload.localId || null,

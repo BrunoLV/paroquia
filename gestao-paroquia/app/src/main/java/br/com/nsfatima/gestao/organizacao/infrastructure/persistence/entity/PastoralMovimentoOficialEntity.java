@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +28,7 @@ public class PastoralMovimentoOficialEntity extends BaseAuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private TipoGrupo tipo;
+    private TipoOrganizacao tipo;
 
     public UUID getId() {
         return id;
@@ -46,11 +46,11 @@ public class PastoralMovimentoOficialEntity extends BaseAuditableEntity {
         this.nome = nome;
     }
 
-    public TipoGrupo getTipo() {
+    public TipoOrganizacao getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoGrupo tipo) {
+    public void setTipo(TipoOrganizacao tipo) {
         this.tipo = tipo;
     }
 }

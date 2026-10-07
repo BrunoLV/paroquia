@@ -44,20 +44,20 @@ public class ObterTaxaEventosExtraUseCase {
      */
     @Transactional(readOnly = true)
     public TaxaEventosExtraResponse execute(
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             String granularidade,
             Instant inicio,
             Instant fim) {
-        assertAccessToOrganization(grupoParoquialId);
+        assertAccessToOrganization(organizacaoId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
 
-        long extras = eventoJpaRepository.countByGrupoParoquialAndStatusAndPeriod(
-                grupoParoquialId,
+        long extras = eventoJpaRepository.countByOrganizacaoAndStatusAndPeriod(
+                organizacaoId,
                 "ADICIONADO_EXTRA",
                 periodo.inicio(),
                 periodo.fim());
-        long total = eventoJpaRepository.countByGrupoParoquialAndPeriod(
-                grupoParoquialId,
+        long total = eventoJpaRepository.countByOrganizacaoAndPeriod(
+                organizacaoId,
                 periodo.inicio(),
                 periodo.fim());
 
@@ -77,12 +77,12 @@ public class ObterTaxaEventosExtraUseCase {
                         .divide(BigDecimal.valueOf(denominador), TAXA_SCALE, RoundingMode.HALF_UP);
     }
 
-    private void assertAccessToOrganization(UUID grupoParoquialId) {
+    private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
-        if (usuarioDetails.findVinculoPorGrupoParoquial(grupoParoquialId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException(
                     "Usuário não pode consultar métricas fora do escopo da organização responsável");
         }

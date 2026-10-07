@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.domain.policy;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,13 +18,13 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
     @DisplayName("Pároco e Vigário possuem acesso amplo de gestão enquanto Admin é isolado")
     void devePermitirAcessoAmploParaCleroEBloquearAdmin() {
         assertThat(policy.canManageOrganizationData(
-                "admin", TipoGrupo.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
+                "admin", TipoOrganizacao.CONSELHO, matrizId, comunidadeBId, comunidadeBId)).isFalse();
         assertThat(policy.canManageOrganizationData(
-                "paroco", TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+                "paroco", TipoOrganizacao.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
         assertThat(policy.canManageOrganizationData(
-                "vigario", TipoGrupo.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
+                "vigario", TipoOrganizacao.CONSELHO, null, comunidadeBId, comunidadeBId)).isTrue();
 
-        assertThat(policy.canApproveEvents("paroco", TipoGrupo.CONSELHO, null, matrizId)).isTrue();
+        assertThat(policy.canApproveEvents("paroco", TipoOrganizacao.CONSELHO, null, matrizId)).isTrue();
     }
 
     @Test
@@ -34,9 +34,9 @@ class PadraoAutorizacaoEscopoUsuarioPolicyTest {
         UUID outraOrgId = UUID.randomUUID();
 
         assertThat(policy.canManageOrganizationData(
-                "coordenador", TipoGrupo.PASTORAL, orgId, orgId, matrizId)).isTrue();
+                "coordenador", TipoOrganizacao.PASTORAL, orgId, orgId, matrizId)).isTrue();
         assertThat(policy.canManageOrganizationData(
-                "coordenador", TipoGrupo.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
+                "coordenador", TipoOrganizacao.PASTORAL, orgId, outraOrgId, matrizId)).isFalse();
     }
 
     @Test

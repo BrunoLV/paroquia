@@ -32,7 +32,7 @@ public class AtivoPatrimonial implements Serializable {
     private final AtivoCategoria categoria;
     private final LocalDate dataAquisicao;
     private final BigDecimal valorAquisicao;
-    private final UUID grupoParoquialId;
+    private final UUID organizacaoId;
     private final boolean reservavel;
     private AtivoStatus status;
     private final UUID cadastradoPorId;
@@ -49,7 +49,7 @@ public class AtivoPatrimonial implements Serializable {
             AtivoCategoria categoria,
             LocalDate dataAquisicao,
             BigDecimal valorAquisicao,
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             boolean reservavel,
             AtivoStatus status,
             UUID cadastradoPorId,
@@ -65,7 +65,7 @@ public class AtivoPatrimonial implements Serializable {
         this.categoria = Objects.requireNonNull(categoria, "A categoria (tipo) do ativo é obrigatória.");
         this.dataAquisicao = Objects.requireNonNull(dataAquisicao, "A data de aquisição é obrigatória.");
         this.valorAquisicao = exigirValorNaoNegativo(valorAquisicao);
-        this.grupoParoquialId = Objects.requireNonNull(grupoParoquialId,
+        this.organizacaoId = Objects.requireNonNull(organizacaoId,
                 "O grupo paroquial proprietário é obrigatório.");
         this.reservavel = reservavel;
         this.status = Objects.requireNonNull(status, "O status do ativo é obrigatório.");
@@ -88,7 +88,7 @@ public class AtivoPatrimonial implements Serializable {
             AtivoCategoria categoria,
             LocalDate dataAquisicao,
             BigDecimal valorAquisicao,
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             boolean reservavel,
             UUID cadastradoPorId,
             Instant agora
@@ -96,7 +96,7 @@ public class AtivoPatrimonial implements Serializable {
         Objects.requireNonNull(cadastradoPorId, "O autor do cadastro é obrigatório.");
         return new AtivoPatrimonial(
                 id, nome, codigoTombamento, descricao, categoria, dataAquisicao, valorAquisicao,
-                grupoParoquialId, reservavel, AtivoStatus.DISPONIVEL, cadastradoPorId,
+                organizacaoId, reservavel, AtivoStatus.DISPONIVEL, cadastradoPorId,
                 agora, agora, null, 0L);
     }
 
@@ -206,8 +206,8 @@ public class AtivoPatrimonial implements Serializable {
     public BigDecimal getValorAquisicao() {
         return valorAquisicao;
     }
-    public UUID getGrupoParoquialId() {
-        return grupoParoquialId;
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
     }
     public boolean isReservavel() {
         return reservavel;

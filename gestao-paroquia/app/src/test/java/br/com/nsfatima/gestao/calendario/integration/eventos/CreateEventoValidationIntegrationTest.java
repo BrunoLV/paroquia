@@ -24,7 +24,7 @@ class CreateEventoValidationIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento Invalido",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2026-06-11T18:00:00Z",
                   "fim": "2026-06-11T17:00:00Z"
                 }
@@ -47,7 +47,7 @@ class CreateEventoValidationIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento Extra",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2026-06-11T17:00:00Z",
                   "fim": "2026-06-11T18:00:00Z",
                   "status": "ADICIONADO_EXTRA"

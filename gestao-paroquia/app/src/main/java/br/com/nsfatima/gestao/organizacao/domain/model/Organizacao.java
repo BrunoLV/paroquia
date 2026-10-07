@@ -6,13 +6,13 @@ import java.util.UUID;
  * Representa um nó da hierarquia organizacional da paróquia (Matriz, Comunidade, Pastoral, Movimento,
  * Conselho, Clero etc.), incluindo seu vínculo com a organização-mãe ({@code parentId}) e, quando aplicável,
  * com o catálogo oficial de Pastorais/Movimentos ({@code pastoralOficialId}). Esta é a raiz de agregado do
- * contexto {@code grupoParoquial}: as regras de qual tipo pode ter qual pai são aplicadas em
- * {@code GrupoParoquialService}, não nesta classe.
+ * contexto {@code organizacao}: as regras de qual tipo pode ter qual pai são aplicadas em
+ * {@code OrganizacaoService}, não nesta classe.
  */
-public class GrupoParoquial {
+public class Organizacao {
     private final UUID id;
     private String nome;
-    private TipoGrupo tipo;
+    private TipoOrganizacao tipo;
     private String contato;
     private String coordenador;
     private String viceCoordenador;
@@ -22,12 +22,12 @@ public class GrupoParoquial {
 
     /**
      * Cria uma organização já existente (id definido) ou uma nova instância a ser persistida, sem aplicar
-     * nenhuma validação de hierarquia — quem chama este construtor (tipicamente {@code GrupoParoquialService} ou
+     * nenhuma validação de hierarquia — quem chama este construtor (tipicamente {@code OrganizacaoService} ou
      * a camada de persistência ao reidratar a entidade) é responsável por garantir a consistência do vínculo
      * com {@code parentId} e {@code pastoralOficialId}.
      */
-    public GrupoParoquial(UUID id,
-                       String nome, TipoGrupo tipo, String contato, String coordenador, String viceCoordenador,
+    public Organizacao(UUID id,
+                       String nome, TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador,
                        boolean ativo, UUID parentId, UUID pastoralOficialId) {
 
         this.id = id;
@@ -49,7 +49,7 @@ public class GrupoParoquial {
         return nome;
     }
 
-    public TipoGrupo getTipo() {
+    public TipoOrganizacao getTipo() {
         return tipo;
     }
 
@@ -100,7 +100,7 @@ public class GrupoParoquial {
      * @param pastoralOficialId novo vínculo com o catálogo oficial de Pastorais/Movimentos, quando aplicável
      */
     public void alterarCadastro(String nome,
-                       TipoGrupo tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
+                       TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
                        UUID parentId, UUID pastoralOficialId) {
 
         this.nome = nome;

@@ -22,7 +22,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
      * filtros opcionais (qualquer parâmetro nulo é ignorado na cláusula {@code where}),
      * ordenados cronologicamente para permitir reconstrução sequencial dos eventos.
      *
-     * @param grupoParoquialId organização cujo histórico será consultado
+     * @param organizacaoId organização cujo histórico será consultado
      * @param inicioUtc limite inferior (inclusivo) do intervalo, em UTC
      * @param fimUtc limite superior (exclusivo) do intervalo, em UTC
      * @param ator filtro opcional por ator
@@ -33,7 +33,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
      */
     @Query("""
             select a from AuditoriaOperacaoEntity a
-            where a.grupoParoquialId = :grupoParoquialId
+            where a.organizacaoId = :organizacaoId
               and a.ocorridoEmUtc >= :inicioUtc
               and a.ocorridoEmUtc < :fimUtc
               and (cast(:ator as string) is null or a.ator = :ator)
@@ -43,7 +43,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
             order by a.ocorridoEmUtc asc, a.id asc
             """)
     List<AuditoriaOperacaoEntity> findForTrail(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc,
             @Param("ator") String ator,
@@ -57,14 +57,14 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
      * indicadores agregados (ex.: retrabalho) que precisam varrer o histórico completo do
      * período, não apenas um subconjunto filtrado.
      *
-     * @param grupoParoquialId organização cujo histórico será consultado
+     * @param organizacaoId organização cujo histórico será consultado
      * @param inicioUtc limite inferior (inclusivo) do intervalo, em UTC
      * @param fimUtc limite superior (exclusivo) do intervalo, em UTC
      * @return registros de auditoria da organização no período, ordenados por data e id
      */
     List<AuditoriaOperacaoEntity>
-    findByGrupoParoquialIdAndOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
-            UUID grupoParoquialId,
+    findByOrganizacaoIdAndOcorridoEmUtcGreaterThanEqualAndOcorridoEmUtcLessThanOrderByOcorridoEmUtcAscIdAsc(
+            UUID organizacaoId,
             Instant inicioUtc,
             Instant fimUtc);
 
@@ -86,11 +86,11 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
      * Conta ocorrências elegíveis para o indicador de retrabalho administrativo: operações bem
      * sucedidas ("sucesso"/"executado") que representam ou um cancelamento de evento, ou uma
      * atualização que alterou agenda, organização responsável ou sinalizou cancelamento no
-     * JSON de detalhes ({@code agendaAlterada}, {@code grupoParoquialResponsavelAlterada},
+     * JSON de detalhes ({@code agendaAlterada}, {@code organizacaoResponsavelAlterada},
      * {@code cancelamento}). Essa regra materializa, em SQL nativo por performance, o critério
      * de negócio de "retrabalho" usado por {@code ReworkRateCalculator}.
      *
-     * @param grupoParoquialId organização cujo indicador será calculado
+     * @param organizacaoId organização cujo indicador será calculado
      * @param inicioUtc limite inferior (inclusivo) do intervalo, em UTC
      * @param fimUtc limite superior (exclusivo) do intervalo, em UTC
      * @return quantidade de ocorrências elegíveis de retrabalho no período
@@ -98,7 +98,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
     @Query(value = """
             select count(*)
             from calendario.auditoria_operacoes a
-            where a.grupo_paroquial_id = :grupoParoquialId
+            where a.organizacao_id = :organizacaoId
               and a.ocorrido_em_utc >= :inicioUtc
               and a.ocorrido_em_utc < :fimUtc
               and lower(a.resultado) in ('sucesso', 'executado')
@@ -108,14 +108,14 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
                         lower(a.acao) = 'atualizar'
                         and (
                             a.detalhes_auditaveis_json like '%"agendaAlterada":true%'
-                            or a.detalhes_auditaveis_json like '%"grupoParoquialResponsavelAlterada":true%'
+                            or a.detalhes_auditaveis_json like '%"organizacaoResponsavelAlterada":true%'
                             or a.detalhes_auditaveis_json like '%"cancelamento":true%'
                         )
                     )
               )
             """, nativeQuery = true)
     long contarOcorrenciasRetrabalhoAdministrativoElegiveis(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc);
 
@@ -125,7 +125,7 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
      * normalizar pela base de eventos realmente movimentados, não pelo total de eventos
      * existentes.
      *
-     * @param grupoParoquialId organização cujo indicador será calculado
+     * @param organizacaoId organização cujo indicador será calculado
      * @param inicioUtc limite inferior (inclusivo) do intervalo, em UTC
      * @param fimUtc limite superior (exclusivo) do intervalo, em UTC
      * @return quantidade de eventos distintos com ao menos um registro de auditoria no período
@@ -133,13 +133,13 @@ public interface AuditoriaOperacaoJpaRepository extends JpaRepository<AuditoriaO
     @Query(value = """
             select count(distinct a.evento_id)
             from calendario.auditoria_operacoes a
-            where a.grupo_paroquial_id = :grupoParoquialId
+            where a.organizacao_id = :organizacaoId
               and a.ocorrido_em_utc >= :inicioUtc
               and a.ocorrido_em_utc < :fimUtc
               and a.evento_id is not null
             """, nativeQuery = true)
     long contarEventosDistintosAfetados(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("inicioUtc") Instant inicioUtc,
             @Param("fimUtc") Instant fimUtc);
 }

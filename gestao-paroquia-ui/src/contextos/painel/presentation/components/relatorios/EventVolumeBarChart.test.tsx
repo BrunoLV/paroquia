@@ -16,8 +16,8 @@ const renderChart = (data: EventDistribution[], mode: 'light' | 'dark' = 'light'
 describe('EventVolumeBarChart', () => {
   test('renders a bar series from eventosPorOrganizacao data', () => {
     renderChart([
-      { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
-      { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 },
+      { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
+      { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 },
     ]);
 
     expect(screen.getByText('Volume de Eventos por Organização')).toBeInTheDocument();

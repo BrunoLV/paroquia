@@ -59,7 +59,7 @@ class DashboardLogisticaIntegrationTest {
 
         mockMvc.perform(get("/api/v1/painel/logistica")
                         .session(session)
-                        .param("grupoParoquialId", UUID.randomUUID().toString()))
+                        .param("organizacaoId", UUID.randomUUID().toString()))
                 .andExpect(status().isForbidden());
     }
 }

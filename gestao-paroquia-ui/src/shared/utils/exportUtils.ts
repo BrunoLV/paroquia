@@ -44,9 +44,9 @@ export const generateMetricsCSV = (metrics: DashboardMetrics): string => {
   // Distribuição de Eventos por Organização
   lines.push('DISTRIBUICAO DE EVENTOS POR ORGANIZACAO');
   lines.push('Organizacao,Quantidade de Eventos');
-  if (metrics.eventosPorGrupoParoquial && metrics.eventosPorGrupoParoquial.length > 0) {
-    metrics.eventosPorGrupoParoquial.forEach((item) => {
-      lines.push(`"${item.grupoParoquialNome}",${item.quantidadeEventos}`);
+  if (metrics.eventosPorOrganizacao && metrics.eventosPorOrganizacao.length > 0) {
+    metrics.eventosPorOrganizacao.forEach((item) => {
+      lines.push(`"${item.organizacaoNome}",${item.quantidadeEventos}`);
     });
   } else {
     lines.push('Nenhuma organizacao registrada,0');
@@ -211,8 +211,8 @@ export const generateStructuredPDF = async (
     doc.text('2. Distribuição de Eventos por Organização / Pastoral', 14, currentY);
     currentY += 4;
 
-    const orgRows = metrics.eventosPorGrupoParoquial?.map((item) => [
-      item.grupoParoquialNome,
+    const orgRows = metrics.eventosPorOrganizacao?.map((item) => [
+      item.organizacaoNome,
       String(item.quantidadeEventos),
     ]) || [['Nenhuma organização registrada', '0']];
 
@@ -268,7 +268,7 @@ export const generateStructuredPDF = async (
 
       const eventRows = metrics.eventosSemana.map((ev) => [
         ev.titulo,
-        ev.grupoParoquialNome || 'Paróquia',
+        ev.organizacaoNome || 'Paróquia',
         ev.localNome || 'Sem Local',
         ev.inicio
           ? new Date(ev.inicio).toLocaleString('pt-BR', {
@@ -529,12 +529,12 @@ export const generateWordDocument = async (
                     createTableHeaderCell('Quantidade de Eventos'),
                   ],
                 }),
-                ...(metrics.eventosPorGrupoParoquial && metrics.eventosPorGrupoParoquial.length > 0
-                  ? metrics.eventosPorGrupoParoquial.map(
+                ...(metrics.eventosPorOrganizacao && metrics.eventosPorOrganizacao.length > 0
+                  ? metrics.eventosPorOrganizacao.map(
                       (item) =>
                         new TableRow({
                           children: [
-                            new TableCell({ children: [new Paragraph(item.grupoParoquialNome)] }),
+                            new TableCell({ children: [new Paragraph(item.organizacaoNome)] }),
                             new TableCell({ children: [new Paragraph(String(item.quantidadeEventos))] }),
                           ],
                         })
@@ -619,7 +619,7 @@ export const generateWordDocument = async (
                           new TableRow({
                             children: [
                               new TableCell({ children: [new Paragraph(ev.titulo)] }),
-                              new TableCell({ children: [new Paragraph(ev.grupoParoquialNome || 'Paróquia')] }),
+                              new TableCell({ children: [new Paragraph(ev.organizacaoNome || 'Paróquia')] }),
                               new TableCell({ children: [new Paragraph(ev.localNome || 'Sem Local')] }),
                               new TableCell({
                                 children: [

@@ -24,7 +24,7 @@ class CreateEventoConflitoPendenteIntegrationTest {
         String firstPayload = """
                 {
                   "titulo": "Evento Base",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                   "inicio": "2026-06-15T10:00:00Z",
                   "fim": "2026-06-15T11:00:00Z"
                 }
@@ -33,7 +33,7 @@ class CreateEventoConflitoPendenteIntegrationTest {
         String overlapPayload = """
                 {
                   "titulo": "Evento Sobreposto",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                   "inicio": "2026-06-15T10:30:00Z",
                   "fim": "2026-06-15T11:30:00Z"
                 }

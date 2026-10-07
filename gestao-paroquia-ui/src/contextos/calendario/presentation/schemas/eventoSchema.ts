@@ -45,7 +45,7 @@ export const eventoFormSchema = z
     categoria: z.string().min(1),
     status: z.string().min(1),
     formato: formatoEnum.default('PRESENCIAL'),
-    grupoParoquialResponsavelId: z.string().min(1, 'A organização responsável é obrigatória.'),
+    organizacaoResponsavelId: z.string().min(1, 'A organização responsável é obrigatória.'),
     igrejaVinculoId: z.string(),
     localId: z.string(),
     localIds: z.array(z.string()).optional().default([]),

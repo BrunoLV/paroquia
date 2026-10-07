@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.calendario.domain.policy;
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.util.Set;
 
@@ -82,7 +82,7 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
     }
 
     @Override
-    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoGrupo tipoGrupo) {
+    public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoOrganizacao tipoOrganizacao) {
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
         if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return ModoRequisicaoCriacao.IMEDIATO;
@@ -91,7 +91,7 @@ public final class PadraoEventoPatchAuthorizationPolicy implements EventoPatchAu
     }
 
     @Override
-    public void assertCanChangeResponsibleOrganization(String rawRole, TipoGrupo tipoGrupo) {
+    public void assertCanChangeResponsibleOrganization(String rawRole, TipoOrganizacao tipoOrganizacao) {
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
         if (papelGlobal != PapelGlobal.PAROCO && papelGlobal != PapelGlobal.BISPO_DIOCESANO) {
             throw new OperacaoProibidaException(

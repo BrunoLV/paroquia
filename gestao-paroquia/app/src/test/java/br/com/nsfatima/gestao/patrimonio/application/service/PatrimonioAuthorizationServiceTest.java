@@ -14,33 +14,33 @@ class PatrimonioAuthorizationServiceTest {
 
     private final PatrimonioAuthorizationService service =
             new PatrimonioAuthorizationService(new PadraoAutorizacaoPatrimonioPolicy());
-    private final UUID grupoParoquialId = UUID.randomUUID();
+    private final UUID organizacaoId = UUID.randomUUID();
 
     @Test
     void deveRejeitarPapelNaoAutorizado() {
         EventoActorContext actor = new EventoActorContext("joao", "membro-ativo", "PASTORAL",
-                grupoParoquialId, UUID.randomUUID(), null);
+                organizacaoId, UUID.randomUUID(), null);
 
-        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId))
+        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, organizacaoId))
                 .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
-    void deveRejeitarCoordenadorParaGrupoParoquialDiferente() {
+    void deveRejeitarCoordenadorParaOrganizacaoDiferente() {
         EventoActorContext actor = new EventoActorContext("joao", "coordenador", "PASTORAL",
-                grupoParoquialId, UUID.randomUUID(), null);
-        UUID outraGrupoParoquialId = UUID.randomUUID();
+                organizacaoId, UUID.randomUUID(), null);
+        UUID outraOrganizacaoId = UUID.randomUUID();
 
-        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, outraGrupoParoquialId))
+        assertThatThrownBy(() -> service.assertPodeGerirPatrimonio(actor, outraOrganizacaoId))
                 .isInstanceOf(OperacaoProibidaException.class);
     }
 
     @Test
-    void devePermitirCoordenadorParaSuaPropriaGrupoParoquial() {
+    void devePermitirCoordenadorParaSuaPropriaOrganizacao() {
         EventoActorContext actor = new EventoActorContext("joao", "coordenador", "PASTORAL",
-                grupoParoquialId, UUID.randomUUID(), null);
+                organizacaoId, UUID.randomUUID(), null);
 
-        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, grupoParoquialId)).doesNotThrowAnyException();
+        assertThatCode(() -> service.assertPodeGerirPatrimonio(actor, organizacaoId)).doesNotThrowAnyException();
     }
 
     @Test
@@ -53,7 +53,7 @@ class PatrimonioAuthorizationServiceTest {
     }
 
     @Test
-    void devePermitirParocoParaQualquerGrupoParoquial() {
+    void devePermitirParocoParaQualquerOrganizacao() {
         EventoActorContext actor = new EventoActorContext("paroco", "paroco", "CLERO",
                 UUID.randomUUID(), UUID.randomUUID(), null);
 

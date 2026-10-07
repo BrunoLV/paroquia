@@ -11,9 +11,9 @@ import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class MembroControllerIntegrationTest {
     @Autowired
     private FielJpaRepository fielRepository;
     @Autowired
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
     @Autowired
@@ -69,12 +69,12 @@ class MembroControllerIntegrationTest {
         membroRepository.deleteAll();
         auditoriaRepository.deleteAll();
 
-        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(UUID.randomUUID());
         org.setNome("Pastoral de Teste " + UUID.randomUUID());
-        org.setTipo(TipoGrupo.PASTORAL);
+        org.setTipo(TipoOrganizacao.PASTORAL);
         org.setAtivo(true);
-        grupoParoquialRepository.saveAndFlush(org);
+        organizacaoRepository.saveAndFlush(org);
         orgId = org.getId();
     }
 
@@ -123,7 +123,7 @@ class MembroControllerIntegrationTest {
         assertThat(membroRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll().getFirst().getRecursoTipo()).isEqualTo("MEMBRO");
-        assertThat(auditoriaRepository.findAll().getFirst().getGrupoParoquialId()).isEqualTo(orgId);
+        assertThat(auditoriaRepository.findAll().getFirst().getOrganizacaoId()).isEqualTo(orgId);
     }
 
     @Test
@@ -134,7 +134,7 @@ class MembroControllerIntegrationTest {
 
         mockMvc.perform(get("/api/v1/membros")
                         .with(authentication(getParocoAuth()))
-                        .param("grupoParoquialId", orgId.toString()))
+                        .param("organizacaoId", orgId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2));
@@ -172,8 +172,8 @@ class MembroControllerIntegrationTest {
         var entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
-        entity.setGrupoParoquialId(orgId);
-        entity.setTipoGrupo(TipoGrupo.PASTORAL);
+        entity.setOrganizacaoId(orgId);
+        entity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         entity.setPapel("MEMBRO_ATIVO");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);

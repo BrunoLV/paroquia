@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
@@ -41,7 +41,7 @@ class CancelEventoAprovacaoRequestIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Solicitar cancelamento");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-09-10T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-09-10T11:00:00Z"));
         entity.setStatus("CONFIRMADO");
@@ -71,6 +71,6 @@ class CancelEventoAprovacaoRequestIntegrationTest {
                 .orElseThrow();
         assertThat(aprovacao.getMotivoCancelamentoSnapshot()).isEqualTo("Aguardando aprovacao do conselho");
         assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador");
-        assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.PASTORAL);
+        assertThat(aprovacao.getSolicitanteTipoOrganizacao()).isEqualTo(TipoOrganizacao.PASTORAL);
     }
 }

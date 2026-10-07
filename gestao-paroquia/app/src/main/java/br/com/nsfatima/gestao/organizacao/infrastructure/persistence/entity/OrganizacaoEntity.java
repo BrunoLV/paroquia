@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,13 +14,13 @@ import java.util.UUID;
 
 /**
  * Entidade JPA que persiste um nó da hierarquia organizacional da paróquia — o espelho de armazenamento de
- * {@code GrupoParoquial}. {@code parentId} referencia a organização-mãe (auto-relacionamento por ID, sem FK JPA
+ * {@code Organizacao}. {@code parentId} referencia a organização-mãe (auto-relacionamento por ID, sem FK JPA
  * navegável, para manter os contextos independentes) e {@code pastoralOficialId} vincula o registro ao
  * catálogo oficial de Pastorais/Movimentos quando o {@code tipo} for {@code PASTORAL} ou {@code MOVIMENTO}.
  */
 @Entity
-@Table(name = "grupo_paroquial", schema = "calendario")
-public class GrupoParoquialEntity extends BaseAuditableEntity {
+@Table(name = "organizacao", schema = "calendario")
+public class OrganizacaoEntity extends BaseAuditableEntity {
 
     @Id
     private UUID id;
@@ -30,7 +30,7 @@ public class GrupoParoquialEntity extends BaseAuditableEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private TipoGrupo tipo;
+    private TipoOrganizacao tipo;
 
     @Column()
     private String contato;
@@ -69,11 +69,11 @@ public class GrupoParoquialEntity extends BaseAuditableEntity {
         this.nome = nome;
     }
 
-    public TipoGrupo getTipo() {
+    public TipoOrganizacao getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoGrupo tipo) {
+    public void setTipo(TipoOrganizacao tipo) {
         this.tipo = tipo;
     }
 

@@ -6,8 +6,8 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.AtivoPatrimonialJpaRepository;
 import br.com.nsfatima.gestao.reserva.application.dto.ReservaDetalheDto;
@@ -30,20 +30,20 @@ public class EnriquecedorReservaService {
 
     private final LocalJpaRepository localRepository;
     private final AtivoPatrimonialJpaRepository ativoRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final EventoJpaRepository eventoRepository;
 
     public EnriquecedorReservaService(
             LocalJpaRepository localRepository,
             AtivoPatrimonialJpaRepository ativoRepository,
-            GrupoParoquialJpaRepository grupoParoquialRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
             UsuarioJpaRepository usuarioRepository,
             EventoJpaRepository eventoRepository
     ) {
         this.localRepository = localRepository;
         this.ativoRepository = ativoRepository;
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
         this.usuarioRepository = usuarioRepository;
         this.eventoRepository = eventoRepository;
     }
@@ -99,7 +99,7 @@ public class EnriquecedorReservaService {
 
         Map<UUID, String> nomesOrgs = new HashMap<>();
         if (!orgIds.isEmpty()) {
-            for (GrupoParoquialEntity e : grupoParoquialRepository.findAllById(orgIds)) {
+            for (OrganizacaoEntity e : organizacaoRepository.findAllById(orgIds)) {
                 nomesOrgs.put(e.getId(), e.getNome());
             }
         }

@@ -20,8 +20,8 @@ public class MembroGrupoMapper {
         return new MembroGrupo(
                 e.getId(),
                 e.getFielId(),
-                e.getGrupoParoquialId(),
-                e.getTipoGrupo(),
+                e.getOrganizacaoId(),
+                e.getTipoOrganizacao(),
                 PapelOrganizacional.fromStoredValue(e.getPapel()),
                 e.getIgrejaVinculoId(),
                 e.getDataEntrada(),
@@ -37,8 +37,8 @@ public class MembroGrupoMapper {
 
     public void aplicar(MembroGrupo d, MembroGrupoEntity e) {
         e.setFielId(d.getFielId());
-        e.setGrupoParoquialId(d.getGrupoParoquialId());
-        e.setTipoGrupo(d.getTipoGrupo());
+        e.setOrganizacaoId(d.getOrganizacaoId());
+        e.setTipoOrganizacao(d.getTipoOrganizacao());
         e.setPapel(d.getPapel().storedValue());
         e.setIgrejaVinculoId(d.getIgrejaVinculoId());
         e.setDataEntrada(d.getDataEntrada());

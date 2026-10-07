@@ -33,7 +33,6 @@ export interface VinculoResponse {
 }
 
 export interface AdicionarVinculoRequest {
-  grupoParoquialId?: string;
   organizacaoId?: string;
   tipo: string;
   papel: string;

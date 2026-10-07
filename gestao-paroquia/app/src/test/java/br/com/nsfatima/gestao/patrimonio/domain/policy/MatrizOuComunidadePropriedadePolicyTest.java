@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.patrimonio.domain.policy;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +33,6 @@ class MatrizOuComunidadePropriedadePolicyTest {
     @DisplayName("rejeita tipo territorial nulo")
     void rejeitaTipoTerritorialNulo() {
         assertThatThrownBy(() -> policy.assertPermitida(null))
-                .isInstanceOf(AtivoGrupoParoquialInvalidaException.class);
+                .isInstanceOf(AtivoOrganizacaoInvalidaException.class);
     }
 }

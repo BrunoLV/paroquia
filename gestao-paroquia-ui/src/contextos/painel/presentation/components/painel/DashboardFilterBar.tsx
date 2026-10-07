@@ -13,7 +13,7 @@ const RECORTES: Array<{value: PeriodoDashboard; label: string}> = [
 ];
 
 const DashboardFilterBar: React.FC = () => {
-  const {periodo, grupoParoquialId, setPeriodo, setGrupoParoquialId} = useDashboardFilter();
+  const {periodo, organizacaoId, setPeriodo, setOrganizacaoId} = useDashboardFilter();
   const {data: organizacoes = []} = useQuery<Organizacao[]>({
     queryKey: ['organizacoes'],
     queryFn: getOrganizacoes,
@@ -38,8 +38,8 @@ const DashboardFilterBar: React.FC = () => {
         size="small"
         label="Comunidade"
         sx={{minWidth: 200}}
-        value={grupoParoquialId ?? ''}
-        onChange={(e) => setGrupoParoquialId(e.target.value || undefined)}
+        value={organizacaoId ?? ''}
+        onChange={(e) => setOrganizacaoId(e.target.value || undefined)}
       >
         <MenuItem value="">Todas (meu escopo)</MenuItem>
         {organizacoes.filter((org) => org.ativo).map((org) => (

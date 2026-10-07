@@ -10,8 +10,8 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -89,7 +89,7 @@ public class AuthController {
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()),
                 userDetails.getVinculos().stream()
-                        .map(this::mapToGrupoParoquialResponse)
+                        .map(this::mapToOrganizacaoResponse)
                         .collect(Collectors.toList()));
     }
 
@@ -150,11 +150,11 @@ public class AuthController {
                 )));
     }
 
-    private GrupoParoquialResponse mapToGrupoParoquialResponse(LeitorVinculoExterno.Vinculo vinculo) {
-        return new GrupoParoquialResponse(
+    private OrganizacaoResponse mapToOrganizacaoResponse(LeitorVinculoExterno.Vinculo vinculo) {
+        return new OrganizacaoResponse(
                 vinculo.organizationId(),
                 vinculo.organizationName(),
-                TipoGrupo.fromStoredValue(vinculo.organizationType()),
+                TipoOrganizacao.fromStoredValue(vinculo.organizationType()),
                 vinculo.organizationContact(),
                 vinculo.organizationCoordinator(),
                 vinculo.organizationViceCoordinator(),

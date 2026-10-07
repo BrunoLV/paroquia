@@ -36,8 +36,8 @@ public class AtivoPatrimonialRepositoryImpl implements AtivoPatrimonialRepositor
     }
 
     @Override
-    public List<AtivoPatrimonial> findByGrupoParoquial(UUID grupoParoquialId) {
-        return jpaRepository.findByGrupoParoquialIdAndDeletedAtIsNullOrderByNomeAsc(grupoParoquialId)
+    public List<AtivoPatrimonial> findByOrganizacao(UUID organizacaoId) {
+        return jpaRepository.findByOrganizacaoIdAndDeletedAtIsNullOrderByNomeAsc(organizacaoId)
                 .stream().map(mapper::toDomain).toList();
     }
 

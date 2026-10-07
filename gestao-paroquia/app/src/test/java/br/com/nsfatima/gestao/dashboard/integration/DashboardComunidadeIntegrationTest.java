@@ -54,7 +54,7 @@ class DashboardComunidadeIntegrationTest {
 
         mockMvc.perform(get("/api/v1/painel/comunidade")
                         .session(session)
-                        .param("grupoParoquialId", UUID.randomUUID().toString()))
+                        .param("organizacaoId", UUID.randomUUID().toString()))
                 .andExpect(status().isForbidden());
     }
 }

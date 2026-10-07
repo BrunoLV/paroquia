@@ -41,7 +41,7 @@ class VerificarConcorrenciaInterpastoralUseCaseTest {
         EventoEntity evA = new EventoEntity();
         evA.setId(UUID.randomUUID());
         evA.setTitulo("Encontro de Casais Matriz");
-        evA.setGrupoParoquialResponsavelId(orgA);
+        evA.setOrganizacaoResponsavelId(orgA);
         evA.setInicioUtc(agora);
         evA.setFimUtc(agora.plus(2, ChronoUnit.HOURS));
         evA.setCategoria(CategoriaEvento.PASTORAL);
@@ -49,7 +49,7 @@ class VerificarConcorrenciaInterpastoralUseCaseTest {
         EventoEntity evB = new EventoEntity();
         evB.setId(UUID.randomUUID());
         evB.setTitulo("Encontro de Casais Capela");
-        evB.setGrupoParoquialResponsavelId(orgB);
+        evB.setOrganizacaoResponsavelId(orgB);
         evB.setInicioUtc(agora.plus(1, ChronoUnit.DAYS));
         evB.setFimUtc(agora.plus(1, ChronoUnit.DAYS).plus(2, ChronoUnit.HOURS));
         evB.setCategoria(CategoriaEvento.PASTORAL);

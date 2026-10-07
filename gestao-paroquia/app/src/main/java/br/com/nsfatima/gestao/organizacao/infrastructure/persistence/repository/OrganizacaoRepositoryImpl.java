@@ -4,9 +4,9 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
-import br.com.nsfatima.gestao.organizacao.domain.repository.GrupoParoquialRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
+import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,38 +15,38 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Adaptador JPA de {@link GrupoParoquialRepository}. Além do CRUD básico sobre {@code GrupoParoquialEntity}, resolve
+ * Adaptador JPA de {@link OrganizacaoRepository}. Além do CRUD básico sobre {@code OrganizacaoEntity}, resolve
  * dinamicamente o nome de exibição de coordenador/apoio a partir dos vínculos de membro ativos
  * (papel {@code coordenador} ou {@code secretario-grupo}/{@code secretario-conselho}), com fallback
  * para o texto livre gravado na própria organização quando nenhum vínculo correspondente é encontrado — e
  * calcula {@code hasDependencies} verificando tanto vínculos de membro quanto eventos associados, para que
- * {@code GrupoParoquialService} possa bloquear exclusões que deixariam referências órfãs.
+ * {@code OrganizacaoService} possa bloquear exclusões que deixariam referências órfãs.
  */
 @Repository
-public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
+public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     private static final String PAPEL_COORDENADOR = "coordenador";
     private static final String PAPEL_SECRETARIO = "secretario";
 
-    private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final MembroGrupoJpaRepository membroGrupoJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
     private final FielJpaRepository fielRepository;
 
-    public GrupoParoquialRepositoryImpl(
-            GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+    public OrganizacaoRepositoryImpl(
+            OrganizacaoJpaRepository organizacaoJpaRepository,
             MembroGrupoJpaRepository membroGrupoJpaRepository,
             EventoJpaRepository eventoJpaRepository,
             FielJpaRepository fielRepository) {
-        this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
+        this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.membroGrupoJpaRepository = membroGrupoJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
         this.fielRepository = fielRepository;
     }
 
     @Override
-    public void save(GrupoParoquial domain) {
-        GrupoParoquialEntity entity = new GrupoParoquialEntity();
+    public void save(Organizacao domain) {
+        OrganizacaoEntity entity = new OrganizacaoEntity();
         entity.setId(domain.getId());
         entity.setNome(domain.getNome());
         entity.setTipo(domain.getTipo());
@@ -56,42 +56,42 @@ public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
         entity.setAtivo(domain.isAtivo());
         entity.setParentId(domain.getParentId());
         entity.setPastoralOficialId(domain.getPastoralOficialId());
-        grupoParoquialJpaRepository.save(entity);
+        organizacaoJpaRepository.save(entity);
     }
 
     @Override
-    public Optional<GrupoParoquial> findById(UUID id) {
-        return grupoParoquialJpaRepository.findById(id).map(this::toDomain);
+    public Optional<Organizacao> findById(UUID id) {
+        return organizacaoJpaRepository.findById(id).map(this::toDomain);
     }
 
     @Override
-    public List<GrupoParoquial> findAll() {
-        return grupoParoquialJpaRepository.findAll().stream()
+    public List<Organizacao> findAll() {
+        return organizacaoJpaRepository.findAll().stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public boolean hasDependencies(UUID id) {
-        boolean hasMembers = membroGrupoJpaRepository.existsByGrupoParoquialId(id);
+        boolean hasMembers = membroGrupoJpaRepository.existsByOrganizacaoId(id);
         if (hasMembers) {
             return true;
         }
 
-        // Note: EventoJpaRepository needs existsByGrupoParoquialResponsavelId
-        return eventoJpaRepository.existsByGrupoParoquialResponsavelId(id);
+        // Note: EventoJpaRepository needs existsByOrganizacaoResponsavelId
+        return eventoJpaRepository.existsByOrganizacaoResponsavelId(id);
     }
 
     @Override
     public void delete(UUID id) {
-        grupoParoquialJpaRepository.deleteById(id);
+        organizacaoJpaRepository.deleteById(id);
     }
 
-    private GrupoParoquial toDomain(GrupoParoquialEntity entity) {
+    private Organizacao toDomain(OrganizacaoEntity entity) {
         String coordName = resolveRoleMemberName(entity.getId(), PAPEL_COORDENADOR, entity.getCoordenador());
         String viceName = resolveRoleMemberName(entity.getId(), PAPEL_SECRETARIO, entity.getViceCoordenador());
 
-        return new GrupoParoquial(
+        return new Organizacao(
                 entity.getId(),
                 entity.getNome(),
                 entity.getTipo(),
@@ -105,7 +105,7 @@ public class GrupoParoquialRepositoryImpl implements GrupoParoquialRepository {
     }
 
     private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
-        return membroGrupoJpaRepository.findByGrupoParoquialIdAndAtivoTrue(orgId).stream()
+        return membroGrupoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
                 .filter(m -> {
                     if (m.getPapel() == null) {
                         return false;

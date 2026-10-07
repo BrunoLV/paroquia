@@ -18,7 +18,7 @@ public class Projeto {
     private final UUID id;
     private String nome;
     private String descricao;
-    private UUID grupoParoquialResponsavelId;
+    private UUID organizacaoResponsavelId;
     private Instant inicio;
     private Instant fim;
     private ProjetoStatus status;
@@ -27,14 +27,14 @@ public class Projeto {
             UUID id,
             String nome,
             String descricao,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             Instant inicio,
             Instant fim,
             ProjetoStatus status) {
         this.id = Objects.requireNonNull(id, "ID do projeto é obrigatório.");
         this.nome = exigirNaoBranco(nome);
         this.descricao = descricao;
-        this.grupoParoquialResponsavelId = grupoParoquialResponsavelId;
+        this.organizacaoResponsavelId = organizacaoResponsavelId;
         this.status = Objects.requireNonNull(status, "Status do projeto é obrigatório.");
         aplicarPeriodo(inicio, fim);
     }
@@ -44,10 +44,10 @@ public class Projeto {
             UUID id,
             String nome,
             String descricao,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             Instant inicio,
             Instant fim) {
-        return new Projeto(id, nome, descricao, grupoParoquialResponsavelId, inicio, fim, ProjetoStatus.ABERTO);
+        return new Projeto(id, nome, descricao, organizacaoResponsavelId, inicio, fim, ProjetoStatus.ABERTO);
     }
 
     public void iniciar() {
@@ -79,8 +79,8 @@ public class Projeto {
         this.descricao = novaDescricao;
     }
 
-    public void transferirResponsavel(UUID novoGrupoParoquialResponsavelId) {
-        this.grupoParoquialResponsavelId = novoGrupoParoquialResponsavelId;
+    public void transferirResponsavel(UUID novoOrganizacaoResponsavelId) {
+        this.organizacaoResponsavelId = novoOrganizacaoResponsavelId;
     }
 
     public void redefinirPeriodo(Instant novoInicio, Instant novoFim) {
@@ -114,8 +114,8 @@ public class Projeto {
         return descricao;
     }
 
-    public UUID getGrupoParoquialResponsavelId() {
-        return grupoParoquialResponsavelId;
+    public UUID getOrganizacaoResponsavelId() {
+        return organizacaoResponsavelId;
     }
 
     public Instant getInicio() {

@@ -99,7 +99,7 @@ public class MembroController {
      * Lista vínculos Fiel-organização, aplicando filtros opcionais por organização, Fiel e situação
      * (ativo/inativo).
      *
-     * @param grupoParoquialId filtro por organização, ou {@code null} para não filtrar
+     * @param organizacaoId filtro por organização, ou {@code null} para não filtrar
      * @param fielId        filtro por Fiel, ou {@code null} para não filtrar
      * @param ativo         filtro por situação do vínculo, ou {@code null} para não filtrar
      * @param pageable      paginação/ordenação solicitada
@@ -114,11 +114,11 @@ public class MembroController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public Page<MembroResponse> listar(
-            @Parameter(description = "ID do grupo paroquial") @RequestParam(required = false) UUID grupoParoquialId,
+            @Parameter(description = "ID do grupo paroquial") @RequestParam(required = false) UUID organizacaoId,
             @Parameter(description = "ID do fiel") @RequestParam(required = false) UUID fielId,
             @Parameter(description = "Status ativo do vínculo") @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 20) Pageable pageable) {
-        return listarMembrosUseCase.execute(grupoParoquialId, fielId, ativo, pageable);
+        return listarMembrosUseCase.execute(organizacaoId, fielId, ativo, pageable);
     }
 
     /**

@@ -35,18 +35,18 @@ class TaxaEventosExtraIntegrationTest {
 
     @Test
     void deveCalcularTaxaEventosExtra() throws Exception {
-        UUID grupoParoquialId = UUID.fromString(ORG_ID);
+        UUID organizacaoId = UUID.fromString(ORG_ID);
 
         // 1. Regular event
-        eventoJpaRepository.save(createEvento(grupoParoquialId, "Evento Regular", "AGENDADO", "2026-10-05T10:00:00Z"));
+        eventoJpaRepository.save(createEvento(organizacaoId, "Evento Regular", "AGENDADO", "2026-10-05T10:00:00Z"));
 
         // 2. Extra event
-        eventoJpaRepository.save(createEvento(grupoParoquialId,
+        eventoJpaRepository.save(createEvento(organizacaoId,
                 "Evento Extra 1", "ADICIONADO_EXTRA", "2026-10-06T10:00:00Z"));
 
 
         // 3. Extra event
-        eventoJpaRepository.save(createEvento(grupoParoquialId,
+        eventoJpaRepository.save(createEvento(organizacaoId,
                 "Evento Extra 2", "ADICIONADO_EXTRA", "2026-10-07T10:00:00Z"));
 
 
@@ -56,7 +56,7 @@ class TaxaEventosExtraIntegrationTest {
 
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/extras")
-                        .param("grupoParoquialId", ORG_ID)
+                        .param("organizacaoId", ORG_ID)
                         .param("inicio", "2026-10-01T00:00:00Z")
                         .param("fim", "2026-10-31T23:59:59Z")
                         .header("X-Actor-Org-Id", ORG_ID))
@@ -68,7 +68,7 @@ class TaxaEventosExtraIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo(titulo);
-        entity.setGrupoParoquialResponsavelId(orgId);
+        entity.setOrganizacaoResponsavelId(orgId);
         entity.setStatus(status);
         entity.setInicioUtc(Instant.parse(inicio));
         entity.setFimUtc(Instant.parse(inicio).plusSeconds(3600));

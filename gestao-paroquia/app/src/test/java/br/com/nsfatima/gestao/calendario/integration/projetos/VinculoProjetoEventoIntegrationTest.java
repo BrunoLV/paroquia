@@ -51,7 +51,7 @@ class VinculoProjetoEventoIntegrationTest {
                                 {
                                   "nome": "Projeto Vinculado",
                                   "descricao": "Fluxo tipado",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-01-01T00:00:00Z",
                                   "fim": "2026-12-31T23:59:59Z"
                                 }
@@ -78,7 +78,7 @@ class VinculoProjetoEventoIntegrationTest {
                                 {
                                   "nome": "Projeto com Limites",
                                   "descricao": "Limites de datas",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-05-01T00:00:00Z",
                                   "fim": "2026-05-31T23:59:59Z"
                                 }
@@ -100,7 +100,7 @@ class VinculoProjetoEventoIntegrationTest {
                                   "titulo": "Evento Fora do Periodo",
                                   "descricao": "Fora das datas do projeto",
                                   "categoria": "PASTORAL",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-06-01T10:00:00Z",
                                   "fim": "2026-06-01T11:00:00Z"
@@ -115,7 +115,7 @@ class VinculoProjetoEventoIntegrationTest {
         projeto.setId(UUID.randomUUID());
         projeto.setNome("Projeto Sem Limites");
         projeto.setDescricao("Sem limites de datas");
-        projeto.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
+        projeto.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
         projeto.setStatus(ProjetoStatus.EM_ANDAMENTO);
         projeto.setInicioUtc(null);
         projeto.setFimUtc(null);
@@ -135,7 +135,7 @@ class VinculoProjetoEventoIntegrationTest {
                                   "titulo": "Evento Qualquer Data",
                                   "descricao": "Projeto sem limites de data",
                                   "categoria": "PASTORAL",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-06-01T10:00:00Z",
                                   "fim": "2026-06-01T11:00:00Z"
@@ -155,7 +155,7 @@ class VinculoProjetoEventoIntegrationTest {
                                 {
                                   "nome": "Projeto com Recorrencia",
                                   "descricao": "Limites de recorrencia",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-05-01T00:00:00Z",
                                   "fim": "2026-05-31T23:59:59Z"
                                 }
@@ -177,7 +177,7 @@ class VinculoProjetoEventoIntegrationTest {
                                   "titulo": "Base Recorrente",
                                   "descricao": "Para recorrencia",
                                   "categoria": "PASTORAL",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-05-10T10:00:00Z",
                                   "fim": "2026-05-10T11:00:00Z"
@@ -231,7 +231,7 @@ class VinculoProjetoEventoIntegrationTest {
                                 {
                                   "nome": "Projeto com Recorrencia Ok",
                                   "descricao": "Limites de recorrencia ok",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-05-01T00:00:00Z",
                                   "fim": "2026-05-31T23:59:59Z"
                                 }
@@ -253,7 +253,7 @@ class VinculoProjetoEventoIntegrationTest {
                                   "titulo": "Base Recorrente Ok",
                                   "descricao": "Para recorrencia ok",
                                   "categoria": "PASTORAL",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "projetoId": "%s",
                                   "inicio": "2026-05-10T10:00:00Z",
                                   "fim": "2026-05-10T11:00:00Z"

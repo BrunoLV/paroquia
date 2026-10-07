@@ -1,7 +1,7 @@
 /**
  * Contexto de organização: modela a hierarquia paroquial (Matriz, Comunidades, Pastorais,
- * Movimentos, Conselhos, Clero) via {@code GrupoParoquialEntity}/{@code TipoGrupo} e o vínculo
- * usuário-organização com papel ({@code MembroGrupoParoquialEntity}/{@code PapelOrganizacional}).
+ * Movimentos, Conselhos, Clero) via {@code OrganizacaoEntity}/{@code TipoOrganizacao} e o vínculo
+ * usuário-organização com papel ({@code MembroOrganizacaoEntity}/{@code PapelOrganizacional}).
  *
  * <p>É o contexto que drive a autorização de escopo usada pela maioria dos demais contextos
  * (calendario, projeto, patrimonio, conselho) — a maior parte das checagens de permissão no app é

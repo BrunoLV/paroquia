@@ -205,9 +205,9 @@ public class UsuarioController {
     public UUID adicionarVinculo(
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id,
             @RequestBody @Valid AdicionarVinculoRequest request) {
-        authorizationService.requireAdminOrCoordinatorOfOrganization(request.grupoParoquialId());
+        authorizationService.requireAdminOrCoordinatorOfOrganization(request.organizacaoId());
         return adicionarVinculoUseCase.execute(id,
-                request.grupoParoquialId(), request.tipo(), request.papel(), request.igrejaVinculoId());
+                request.organizacaoId(), request.tipo(), request.papel(), request.igrejaVinculoId());
     }
 
     @DeleteMapping("/{id}/membros/{vinculoId}")

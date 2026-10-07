@@ -20,7 +20,7 @@ public interface AtivoPatrimonialRepository {
 
     Optional<AtivoPatrimonial> findById(AtivoPatrimonialId id);
 
-    List<AtivoPatrimonial> findByGrupoParoquial(UUID grupoParoquialId);
+    List<AtivoPatrimonial> findByOrganizacao(UUID organizacaoId);
 
     List<AtivoPatrimonial> findTodos();
 

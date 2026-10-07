@@ -158,12 +158,12 @@ export const canManageAtivos = (user: User | null): boolean => {
  * Quem pode gerir (manutenção, exclusão) um ativo pertencente a uma unidade territorial:
  * Pároco/Bispo e membros do CAE podem gerir em âmbito paroquial; Coordenador gere ativos da sua unidade.
  */
-export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: string): boolean => {
+export const canManageManutencaoAtivo = (user: User | null, organizacaoId: string): boolean => {
   if (!user) return false;
   if (isParoco(user) || isMembroCae(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: Organization) => org.id === grupoParoquialId);
+    return user.organizations.some((org: Organization) => org.id === organizacaoId);
   }
   return false;
 };

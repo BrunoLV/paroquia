@@ -17,7 +17,7 @@ import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import br.com.nsfatima.gestao.dashboard.domain.service.JanelaTemporalResolver;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +56,7 @@ public class ObterDashboardLogisticaUseCase {
 
     private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
     private final AprovacaoJpaRepository aprovacaoRepository;
     private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository;
     private final JanelaTemporalResolver janelaResolver;
@@ -65,14 +65,14 @@ public class ObterDashboardLogisticaUseCase {
     public ObterDashboardLogisticaUseCase(
             EventoJpaRepository eventoRepository,
             LocalJpaRepository localRepository,
-            GrupoParoquialJpaRepository grupoParoquialRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
             AprovacaoJpaRepository aprovacaoRepository,
             ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository,
             JanelaTemporalResolver janelaResolver,
             EscopoDashboardResolver escopoResolver) {
         this.eventoRepository = eventoRepository;
         this.localRepository = localRepository;
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
         this.aprovacaoRepository = aprovacaoRepository;
         this.projetoAprovacaoRepository = projetoAprovacaoRepository;
         this.janelaResolver = janelaResolver;
@@ -84,17 +84,17 @@ public class ObterDashboardLogisticaUseCase {
      *
      * @param actorContext contexto do ator autenticado
      * @param periodo recorte temporal do filtro global
-     * @param grupoParoquialIdSolicitado organização escolhida no filtro, ou {@code null}
+     * @param organizacaoIdSolicitado organização escolhida no filtro, ou {@code null}
      * @return snapshot de logística
      * @throws org.springframework.security.access.AccessDeniedException se o ator não puder ver a
      *     organização solicitada
      */
     @Transactional(readOnly = true)
     public DashboardLogisticaDTO execute(
-            EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
+            EventoActorContext actorContext, PeriodoDashboard periodo, UUID organizacaoIdSolicitado) {
         Instant agora = Instant.now();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
-        UUID escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado).orElse(null);
+        UUID escopo = escopoResolver.resolver(actorContext, organizacaoIdSolicitado).orElse(null);
 
         List<LocalEntity> locais = locaisNoEscopo(escopo);
         Map<UUID, String> nomesLocais = locais.stream()
@@ -162,7 +162,7 @@ public class ObterDashboardLogisticaUseCase {
 
     private List<EventosPorResponsavelDTO> eventosPorResponsavel(JanelaTemporal janela, UUID escopo) {
         Map<UUID, String> nomes = new HashMap<>();
-        grupoParoquialRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
+        organizacaoRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
         return eventoRepository.contarPorResponsavelNoPeriodo(janela.inicio(), janela.fim()).stream()
                 .filter(linha -> escopo == null || escopo.equals(linha[0]))
                 .map(linha -> new EventosPorResponsavelDTO(
@@ -186,7 +186,7 @@ public class ObterDashboardLogisticaUseCase {
 
     private List<LocalEntity> locaisNoEscopo(UUID escopo) {
         return localRepository.findByAtivoTrue().stream()
-                .filter(l -> escopo == null || escopo.equals(l.getGrupoParoquialId()))
+                .filter(l -> escopo == null || escopo.equals(l.getOrganizacaoId()))
                 .toList();
     }
 

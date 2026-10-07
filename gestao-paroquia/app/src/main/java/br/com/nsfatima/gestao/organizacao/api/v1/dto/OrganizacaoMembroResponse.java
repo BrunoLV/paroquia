@@ -7,7 +7,7 @@ import java.util.UUID;
  * abrangendo tanto vínculos formais ({@code MembroGrupo}) quanto o coordenador/vice-coordenador registrados
  * como texto livre.
  */
-public record GrupoParoquialMembroResponse(
+public record OrganizacaoMembroResponse(
         UUID vinculoId,
         UUID fielId,
         String fielNome,

@@ -1,11 +1,11 @@
 package br.com.nsfatima.gestao.organizacao.integration;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.PastoralMovimentoOficialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.PastoralMovimentoOficialJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,13 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
 @AutoConfigureMockMvc
-class GrupoParoquialApiIntegrationTest {
+class OrganizacaoApiIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     @Autowired
     private PastoralMovimentoOficialJpaRepository pastoralOficialRepository;
@@ -54,7 +54,7 @@ class GrupoParoquialApiIntegrationTest {
                 pastoralOficialRepository.findById(pastoralOficialId).orElseGet(PastoralMovimentoOficialEntity::new);
         oficial.setId(pastoralOficialId);
         oficial.setNome("Pastoral da Comunicação Oficial");
-        oficial.setTipo(TipoGrupo.PASTORAL);
+        oficial.setTipo(TipoOrganizacao.PASTORAL);
         pastoralOficialRepository.save(oficial);
 
         // 1. Matriz (UnidadeTerritorial)
@@ -67,22 +67,22 @@ class GrupoParoquialApiIntegrationTest {
         matriz.setAtivo(true);
         unidadeTerritorialRepository.save(matriz);
 
-        // 3. Conselho (GrupoParoquial)
-        GrupoParoquialEntity conselho = grupoParoquialRepository.findById(conselhoIdVal)
-                .orElseGet(GrupoParoquialEntity::new);
+        // 3. Conselho (Organizacao)
+        OrganizacaoEntity conselho = organizacaoRepository.findById(conselhoIdVal)
+                .orElseGet(OrganizacaoEntity::new);
         conselho.setId(conselhoIdVal);
         conselho.setNome("Conselho Pastoral");
-        conselho.setTipo(TipoGrupo.CONSELHO);
+        conselho.setTipo(TipoOrganizacao.CONSELHO);
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
-        grupoParoquialRepository.save(conselho);
+        organizacaoRepository.save(conselho);
 
         conselhoId = conselhoIdVal;
     }
 
     @Test
     @WithMockUser(roles = "PAROCO")
-    void deveCriarERecuperarGrupoParoquial() throws Exception {
+    void deveCriarERecuperarOrganizacao() throws Exception {
         String payload = String.format("""
                 {
                   "nome": "Pastoral da Música",
@@ -158,7 +158,7 @@ class GrupoParoquialApiIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deveListarGrupoParoquialMembros() throws Exception {
+    void deveListarOrganizacaoMembros() throws Exception {
         // Create a mock UUID
         UUID orgId = UUID.randomUUID();
         mockMvc.perform(get("/api/v1/organizacoes/" + orgId + "/membros")

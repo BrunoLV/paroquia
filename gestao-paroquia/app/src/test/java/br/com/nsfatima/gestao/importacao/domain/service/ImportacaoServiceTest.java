@@ -7,11 +7,11 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
+import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
 import br.com.nsfatima.gestao.importacao.application.service.LeitorArquivoImportacao;
 import br.com.nsfatima.gestao.importacao.application.service.ImportacaoService;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -56,13 +56,13 @@ class ImportacaoServiceTest {
     private UsuarioJpaRepository usuarioJpaRepository;
 
     @Mock
-    private GrupoParoquialService grupoParoquialService;
+    private OrganizacaoService organizacaoService;
 
     @Mock
     private EventoJpaRepository eventoJpaRepository;
 
     @Mock
-    private GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
 
     @Mock
     private UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
@@ -77,9 +77,9 @@ class ImportacaoServiceTest {
         importacaoService = new ImportacaoService(
                 adicionarMembroUseCase,
                 usuarioJpaRepository,
-                grupoParoquialService,
+                organizacaoService,
                 eventoJpaRepository,
-                grupoParoquialJpaRepository,
+                organizacaoJpaRepository,
                 unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
                 new LeitorArquivoImportacao(),
@@ -95,7 +95,7 @@ class ImportacaoServiceTest {
     void deveGerarCsvTemplateParaMembro() throws IOException {
         byte[] bytes = importacaoService.gerarTemplate("MEMBRO", "CSV");
         String content = new String(bytes, StandardCharsets.UTF_8);
-        assertTrue(content.contains("usuarioUsername,grupoParoquialNome,papel,igrejaId"));
+        assertTrue(content.contains("usuarioUsername,organizacaoNome,papel,igrejaId"));
         assertTrue(content.contains("joao.silva@email.com,Pastoral da Comunicação"));
     }
 
@@ -110,11 +110,11 @@ class ImportacaoServiceTest {
     void deveValidarArquivoCsvComSucessoEErros() throws IOException {
         when(usuarioJpaRepository.findByUsernameIgnoreCase("joao@email.com"))
                 .thenReturn(Optional.of(new UsuarioEntity()));
-        when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
-                .thenReturn(Optional.of(new GrupoParoquialEntity()));
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
+                .thenReturn(Optional.of(new OrganizacaoEntity()));
 
         String csvContent = """
-                usuarioUsername,grupoParoquialNome,papel
+                usuarioUsername,organizacaoNome,papel
                 joao@email.com,Pastoral da Música,COORDENADOR
                 desconhecido@email.com,Inexistente,MEMBRO
                 """;
@@ -135,15 +135,15 @@ class ImportacaoServiceTest {
     void deveValidarArquivoXlsx() throws IOException {
         when(usuarioJpaRepository.findByUsernameIgnoreCase("maria@email.com"))
                 .thenReturn(Optional.of(new UsuarioEntity()));
-        when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Pastoral da Catequese"))
-                .thenReturn(Optional.of(new GrupoParoquialEntity()));
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Catequese"))
+                .thenReturn(Optional.of(new OrganizacaoEntity()));
 
         byte[] xlsxBytes;
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Membros");
             Row header = sheet.createRow(0);
             header.createCell(0).setCellValue("usuarioUsername");
-            header.createCell(1).setCellValue("grupoParoquialNome");
+            header.createCell(1).setCellValue("organizacaoNome");
             header.createCell(2).setCellValue("papel");
 
             Row row1 = sheet.createRow(1);
@@ -167,20 +167,20 @@ class ImportacaoServiceTest {
     }
 
     @Test
-    void deveConfirmarImportacaoParaMembroEGrupoParoquialEEvento() {
+    void deveConfirmarImportacaoParaMembroEOrganizacaoEEvento() {
         var user = new UsuarioEntity();
         user.setId(UUID.randomUUID());
-        var org = new GrupoParoquialEntity();
+        var org = new OrganizacaoEntity();
         org.setId(UUID.randomUUID());
 
         when(usuarioJpaRepository.findByUsernameIgnoreCase("joao@email.com"))
                 .thenReturn(Optional.of(user));
-        when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
+        when(organizacaoJpaRepository.findByNomeIgnoreCase("Pastoral da Música"))
                 .thenReturn(Optional.of(org));
 
         Map<String, String> membroMap = Map.of(
                 "usuarioUsername", "joao@email.com",
-                "grupoParoquialNome", "Pastoral da Música",
+                "organizacaoNome", "Pastoral da Música",
                 "papel", "COORDENADOR"
         );
         int countMembro = importacaoService.confirmarImportacao("MEMBRO", List.of(membroMap), "admin");
@@ -191,9 +191,9 @@ class ImportacaoServiceTest {
                 "nome", "Pastoral da Música",
                 "tipo", "PASTORAL"
         );
-        int countOrg = importacaoService.confirmarImportacao("GRUPO_PAROQUIAL", List.of(orgMap), "admin");
+        int countOrg = importacaoService.confirmarImportacao("ORGANIZACAO", List.of(orgMap), "admin");
         assertEquals(1, countOrg);
-        verify(grupoParoquialService).criar(eq("Pastoral da Música"),
+        verify(organizacaoService).criar(eq("Pastoral da Música"),
                 any(), any(), any(), any(), any(), any());
 
 
@@ -216,8 +216,8 @@ class ImportacaoServiceTest {
         when(anoRepoMock.findByAno(2026)).thenReturn(Optional.of(anoFechado));
 
         ImportacaoService serviceComAno = new ImportacaoService(
-                adicionarMembroUseCase, usuarioJpaRepository, grupoParoquialService,
-                eventoJpaRepository, grupoParoquialJpaRepository, unidadeTerritorialJpaRepository,
+                adicionarMembroUseCase, usuarioJpaRepository, organizacaoService,
+                eventoJpaRepository, organizacaoJpaRepository, unidadeTerritorialJpaRepository,
                 pastoralOficialRepository,
                 new LeitorArquivoImportacao(), anoRepoMock, null, null, null
         );

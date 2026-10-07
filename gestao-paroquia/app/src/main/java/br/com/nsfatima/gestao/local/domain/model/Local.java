@@ -106,14 +106,14 @@ public class Local {
     /**
      * Alias de interoperabilidade para contextos externos que referenciam o ID da organização subordinada.
      */
-    public UUID getGrupoParoquialId() {
+    public UUID getOrganizacaoId() {
         return igrejaId;
     }
 
     /**
      * Alias de interoperabilidade para contextos externos que referenciam o nome da organização subordinada.
      */
-    public String getGrupoParoquialNome() {
+    public String getOrganizacaoNome() {
         return igrejaNome;
     }
 

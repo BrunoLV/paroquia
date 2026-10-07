@@ -23,7 +23,7 @@ class EnumNormalizationIntegrationTest {
         String payload = """
                 {
                   "titulo": "Vigilia",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                   "inicio": "2026-03-15T10:00:00Z",
                   "fim": "2026-03-15T11:00:00Z",
                   "status": "  confirmado  "

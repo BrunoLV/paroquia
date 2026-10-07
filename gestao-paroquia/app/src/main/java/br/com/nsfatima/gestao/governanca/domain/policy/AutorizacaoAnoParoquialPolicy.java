@@ -4,5 +4,5 @@ package br.com.nsfatima.gestao.governanca.domain.policy;
 @FunctionalInterface
 public interface AutorizacaoAnoParoquialPolicy {
 
-    void assertPodeGerir(String rawRole, String rawTipoGrupo);
+    void assertPodeGerir(String rawRole, String rawTipoOrganizacao);
 }

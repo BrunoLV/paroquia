@@ -31,7 +31,7 @@ class EventoIdempotencyIntegrationTest {
         String payload = """
                 {
                   "titulo": "Assembleia",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2026-08-01T09:00:00Z",
                   "fim": "2026-08-01T11:00:00Z"
                 }
@@ -69,7 +69,7 @@ class EventoIdempotencyIntegrationTest {
         String firstPayload = """
                 {
                   "titulo": "Assembleia",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2026-08-01T09:00:00Z",
                   "fim": "2026-08-01T11:00:00Z"
                 }
@@ -78,7 +78,7 @@ class EventoIdempotencyIntegrationTest {
         String secondPayload = """
                 {
                   "titulo": "Assembleia Alterada",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicio": "2026-08-01T09:00:00Z",
                   "fim": "2026-08-01T11:00:00Z"
                 }

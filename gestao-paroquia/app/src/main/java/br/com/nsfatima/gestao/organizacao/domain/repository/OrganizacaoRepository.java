@@ -1,23 +1,23 @@
 package br.com.nsfatima.gestao.organizacao.domain.repository;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
+import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Porta de persistência (Ports &amp; Adapters) para a raiz de agregado {@link GrupoParoquial}, isolando o
- * domínio dos detalhes de JPA. Implementada por {@code GrupoParoquialRepositoryImpl}, que resolve nomes de
+ * Porta de persistência (Ports &amp; Adapters) para a raiz de agregado {@link Organizacao}, isolando o
+ * domínio dos detalhes de JPA. Implementada por {@code OrganizacaoRepositoryImpl}, que resolve nomes de
  * coordenador/vice-coordenador a partir dos vínculos de membro ativos.
  */
-public interface GrupoParoquialRepository {
+public interface OrganizacaoRepository {
     /**
      * Persiste (insere ou atualiza) a organização informada.
      *
-     * @param grupoParoquial organização a ser salva
+     * @param organizacao organização a ser salva
      */
-    void save(GrupoParoquial grupoParoquial);
+    void save(Organizacao organizacao);
 
     /**
      * Busca uma organização pelo seu identificador.
@@ -25,14 +25,14 @@ public interface GrupoParoquialRepository {
      * @param id identificador da organização
      * @return a organização encontrada, ou {@link Optional#empty()} se não existir
      */
-    Optional<GrupoParoquial> findById(UUID id);
+    Optional<Organizacao> findById(UUID id);
 
     /**
      * Lista todas as organizações cadastradas, ativas ou inativas.
      *
      * @return lista de todas as organizações
      */
-    List<GrupoParoquial> findAll();
+    List<Organizacao> findAll();
 
     /**
      * Verifica se a organização possui dependências ativas (membros vinculados ou eventos associados) que

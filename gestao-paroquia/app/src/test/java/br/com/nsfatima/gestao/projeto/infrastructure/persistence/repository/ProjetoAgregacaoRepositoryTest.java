@@ -99,33 +99,33 @@ class ProjetoAgregacaoRepositoryTest {
         UUID orgEvento1 = UUID.randomUUID();
         UUID orgEnvolvido1 = UUID.randomUUID();
 
-        // Setup organizations in grupo_paroquial
+        // Setup organizations in organizacao
         jdbcTemplate.execute(
-                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgProjeto
+                "INSERT INTO calendario.organizacao (id, nome) VALUES ('" + orgProjeto
                         + "', 'Pastoral do Projeto')");
         jdbcTemplate.execute(
-                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEvento1
+                "INSERT INTO calendario.organizacao (id, nome) VALUES ('" + orgEvento1
                         + "', 'Pastoral do Evento')");
-        jdbcTemplate.execute("INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgEnvolvido1 +
+        jdbcTemplate.execute("INSERT INTO calendario.organizacao (id, nome) VALUES ('" + orgEnvolvido1 +
                 "', 'Pastoral Envolvida')");
 
         // Setup project
         ProjetoEventoEntity projeto = new ProjetoEventoEntity();
         projeto.setId(projetoId);
         projeto.setNome("Projeto Teste");
-        projeto.setGrupoParoquialResponsavelId(orgProjeto);
+        projeto.setOrganizacaoResponsavelId(orgProjeto);
         projetoRepository.save(projeto);
 
         // Event 1 with involved
         EventoEntity evento1 = saveEvento(projetoId,
                 EventoStatusInput.CONFIRMADO, Instant.now().plus(1, ChronoUnit.DAYS));
 
-        evento1.setGrupoParoquialResponsavelId(orgEvento1);
+        evento1.setOrganizacaoResponsavelId(orgEvento1);
         eventoRepository.save(evento1);
 
         EventoEnvolvidoEntity envolvido = new EventoEnvolvidoEntity();
         envolvido.setEventoId(evento1.getId());
-        envolvido.setGrupoParoquialId(orgEnvolvido1);
+        envolvido.setOrganizacaoId(orgEnvolvido1);
         envolvidoRepository.save(envolvido);
 
         // Query distinct org names
@@ -138,7 +138,7 @@ class ProjetoAgregacaoRepositoryTest {
         UUID orgId = UUID.randomUUID();
         String uniqueNome = "Org Teste " + orgId;
         jdbcTemplate.execute(
-                "INSERT INTO calendario.grupo_paroquial (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
+                "INSERT INTO calendario.organizacao (id, nome) VALUES ('" + orgId + "', '" + uniqueNome + "')");
 
         EventoEntity evento = new EventoEntity();
         evento.setId(UUID.randomUUID());
@@ -147,7 +147,7 @@ class ProjetoAgregacaoRepositoryTest {
         evento.setInicioUtc(inicio);
         evento.setFimUtc(inicio.plus(1, ChronoUnit.HOURS));
         evento.setTitulo("Evento");
-        evento.setGrupoParoquialResponsavelId(orgId);
+        evento.setOrganizacaoResponsavelId(orgId);
         return eventoRepository.save(evento);
     }
 }

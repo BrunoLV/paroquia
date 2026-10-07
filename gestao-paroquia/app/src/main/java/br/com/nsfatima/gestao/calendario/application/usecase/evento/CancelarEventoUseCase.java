@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -107,7 +107,7 @@ public class CancelarEventoUseCase {
         validateCancellableStatus(evento);
 
         ModoRequisicaoCancelamento mode = authorizationService.resolveRequestMode(actorContext,
-                evento.getGrupoParoquialResponsavelId());
+                evento.getOrganizacaoResponsavelId());
 
         if (mode == ModoRequisicaoCancelamento.IMEDIATO) {
             return processImmediate(evento, request, actorContext);
@@ -187,7 +187,7 @@ public class CancelarEventoUseCase {
         metricsPublisher.recordDelecao("EVENTO", "DIRETA");
         auditPublisher.publish(actor, "cancelar", saved.getId().toString(), auditResult, Map.of(
                 "eventoId", saved.getId(),
-                "grupoParoquialId", saved.getGrupoParoquialResponsavelId(),
+                "organizacaoId", saved.getOrganizacaoResponsavelId(),
                 "status", saved.getStatus(),
                 "motivo", motivo,
                 "tipoObservacao", TipoObservacaoInput.CANCELAMENTO.name()));
@@ -197,7 +197,7 @@ public class CancelarEventoUseCase {
         return new EventoCanceladoResponse(saved.getId(),
                 saved.getStatus(), saved.getCanceladoMotivo(), saved.getTitulo(),
 
-                saved.getInicioUtc(), saved.getFimUtc(), saved.getGrupoParoquialResponsavelId());
+                saved.getInicioUtc(), saved.getFimUtc(), saved.getOrganizacaoResponsavelId());
     }
 
     private void evictCacheProjeto(UUID projetoId) {
@@ -220,7 +220,7 @@ public class CancelarEventoUseCase {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId().toString());
         aprovacao.setSolicitantePapel(actorContext.role());
-        aprovacao.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
+        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
         aprovacao.setMotivoCancelamentoSnapshot(request.motivo());
         aprovacao.setActionPayloadJson(payloadMapper.toJson(new AprovacaoAcaoPayload(
                 null, evento.getId(), null, null, null, null, null, null, null, null,

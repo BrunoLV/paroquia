@@ -785,7 +785,7 @@ const Aprovacoes = () => {
                     })()}
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>Organização dona:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.grupoParoquialResponsavelId || 'Não informado'}
+                    <strong>Organização dona:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.organizacaoResponsavelId || 'Não informado'}
                   </Typography>
                   <Typography variant="body2">
                     <strong>Justificativa:</strong> {parsePayload(aprovacaoSelecionada.actionPayloadJson)?.motivo || 'Não informado'}

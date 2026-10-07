@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.dto;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +20,6 @@ public record PastoralMovimentoOficialRequest(
 
         @Schema(description = "Type (must be PASTORAL or MOVIMENTO)")
         @NotNull(message = "Type is required")
-        TipoGrupo tipo
+        TipoOrganizacao tipo
 ) {
 }

@@ -40,7 +40,7 @@ class ProjetoSecurityIntegrationTest {
                         .content("""
                                 {
                                   "nome": "Meu Projeto",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-01-01T00:00:00Z",
                                   "fim": "2026-01-31T23:59:59Z"
                                 }
@@ -59,7 +59,7 @@ class ProjetoSecurityIntegrationTest {
                         .content("""
                                 {
                                   "nome": "Projeto Alheio",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-01-01T00:00:00Z",
                                   "fim": "2026-01-31T23:59:59Z"
                                 }
@@ -78,7 +78,7 @@ class ProjetoSecurityIntegrationTest {
                         .content("""
                                 {
                                   "nome": "Projeto Global",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2026-01-01T00:00:00Z",
                                   "fim": "2026-01-31T23:59:59Z"
                                 }

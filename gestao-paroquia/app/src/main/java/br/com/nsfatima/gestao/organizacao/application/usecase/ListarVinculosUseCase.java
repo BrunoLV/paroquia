@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.organizacao.application.usecase;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.VinculoResponse;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +21,15 @@ public class ListarVinculosUseCase {
 
     private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
     public ListarVinculosUseCase(MembroGrupoJpaRepository vinculoRepository,
                                   UsuarioJpaRepository usuarioRepository,
-                                  GrupoParoquialJpaRepository grupoParoquialRepository) {
+                                  OrganizacaoJpaRepository organizacaoRepository) {
 
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
     }
 
     /**
@@ -51,18 +51,18 @@ public class ListarVinculosUseCase {
 
         return vinculoRepository.findByFielIdAndAtivoTrue(usuario.getFielId()).stream()
                 .map(m -> {
-                    String orgNome = grupoParoquialRepository.findById(m.getGrupoParoquialId())
-                            .map(GrupoParoquialEntity::getNome)
+                    String orgNome = organizacaoRepository.findById(m.getOrganizacaoId())
+                            .map(OrganizacaoEntity::getNome)
                             .orElse(null);
                     String igrejaNome = m.getIgrejaVinculoId() != null
-                            ? grupoParoquialRepository.findById(m.getIgrejaVinculoId())
-                            .map(GrupoParoquialEntity::getNome).orElse(null)
+                            ? organizacaoRepository.findById(m.getIgrejaVinculoId())
+                            .map(OrganizacaoEntity::getNome).orElse(null)
                             : null;
                     return new VinculoResponse(
                             m.getId(),
-                            m.getGrupoParoquialId(),
+                            m.getOrganizacaoId(),
                             orgNome,
-                            m.getTipoGrupo().name(),
+                            m.getTipoOrganizacao().name(),
                             m.getPapel(),
                             m.isAtivo(),
                             m.getIgrejaVinculoId(),

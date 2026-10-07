@@ -1,17 +1,17 @@
 package br.com.nsfatima.gestao.organizacao.api.v1.controller;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialRequest;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoRequest;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
 import br.com.nsfatima.gestao.organizacao.application.usecase.AdicionarVinculoUseCase;
 import br.com.nsfatima.gestao.organizacao.application.usecase.ObterOrganogramaUseCase;
-import br.com.nsfatima.gestao.organizacao.application.usecase.ListarGrupoParoquialMembrosUseCase;
-import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
+import br.com.nsfatima.gestao.organizacao.application.usecase.ListarOrganizacaoMembrosUseCase;
+import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -47,22 +47,22 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/organizacoes")
 @Tag(name = "Organizações", description = "Gerenciamento de organizações paroquiais (Pastorais, Movimentos, etc.)")
-public class GrupoParoquialController {
+public class OrganizacaoController {
 
-    private final GrupoParoquialService grupoParoquialService;
-    private final ListarGrupoParoquialMembrosUseCase listarGrupoParoquialMembrosUseCase;
+    private final OrganizacaoService organizacaoService;
+    private final ListarOrganizacaoMembrosUseCase listarOrganizacaoMembrosUseCase;
     private final ObterOrganogramaUseCase obterOrganogramaUseCase;
     private final AdicionarVinculoUseCase adicionarVinculoUseCase;
     private final UsuarioJpaRepository usuarioRepository;
 
-    public GrupoParoquialController(
-            GrupoParoquialService grupoParoquialService,
-            ListarGrupoParoquialMembrosUseCase listarGrupoParoquialMembrosUseCase,
+    public OrganizacaoController(
+            OrganizacaoService organizacaoService,
+            ListarOrganizacaoMembrosUseCase listarOrganizacaoMembrosUseCase,
             ObterOrganogramaUseCase obterOrganogramaUseCase,
             AdicionarVinculoUseCase adicionarVinculoUseCase,
             UsuarioJpaRepository usuarioRepository) {
-        this.grupoParoquialService = grupoParoquialService;
-        this.listarGrupoParoquialMembrosUseCase = listarGrupoParoquialMembrosUseCase;
+        this.organizacaoService = organizacaoService;
+        this.listarOrganizacaoMembrosUseCase = listarOrganizacaoMembrosUseCase;
         this.obterOrganogramaUseCase = obterOrganogramaUseCase;
         this.adicionarVinculoUseCase = adicionarVinculoUseCase;
         this.usuarioRepository = usuarioRepository;
@@ -81,13 +81,13 @@ public class GrupoParoquialController {
     @Operation(summary = "Cria uma nova organização", description = "Registra uma nova organização paroquial.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Organização criada com sucesso",
-                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+                    content = @Content(schema = @Schema(implementation = OrganizacaoResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public GrupoParoquialResponse criar(@RequestBody @Valid GrupoParoquialRequest request) {
-        GrupoParoquial org = grupoParoquialService.criar(
+    public OrganizacaoResponse criar(@RequestBody @Valid OrganizacaoRequest request) {
+        Organizacao org = organizacaoService.criar(
                 request.nome(),
                 request.tipo(),
                 request.contato(),
@@ -113,17 +113,17 @@ public class GrupoParoquialController {
     @Operation(summary = "Atualiza uma organização", description = "Atualiza os dados cadastrais e lideranças de uma organização.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organização atualizada com sucesso",
-                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+                    content = @Content(schema = @Schema(implementation = OrganizacaoResponse.class))),
             @ApiResponse(responseCode = "400", description = "Dados da requisição inválidos"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public GrupoParoquialResponse atualizar(
+    public OrganizacaoResponse atualizar(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id,
-            @RequestBody @Valid GrupoParoquialRequest request) {
-        GrupoParoquial org = grupoParoquialService.atualizar(
+            @RequestBody @Valid OrganizacaoRequest request) {
+        Organizacao org = organizacaoService.atualizar(
                 id,
                 request.nome(),
                 request.tipo(),
@@ -138,7 +138,7 @@ public class GrupoParoquialController {
         return toResponse(org);
     }
 
-    private void syncCoordinatorVinculos(GrupoParoquial org, String coordName, String viceCoordName) {
+    private void syncCoordinatorVinculos(Organizacao org, String coordName, String viceCoordName) {
         UUID igrejaId = resolveIgrejaVinculoId(org);
         PapelOrganizacional papel = PapelOrganizacional.COORDENADOR;
 
@@ -146,7 +146,7 @@ public class GrupoParoquialController {
         syncSingleRole(org, viceCoordName, papel, igrejaId);
     }
 
-    private void syncSingleRole(GrupoParoquial org,
+    private void syncSingleRole(Organizacao org,
                                 String nameInput, PapelOrganizacional papel,
                                 UUID igrejaVinculoId) {
 
@@ -172,22 +172,22 @@ public class GrupoParoquialController {
         }
     }
 
-    private UUID resolveIgrejaVinculoId(GrupoParoquial org) {
+    private UUID resolveIgrejaVinculoId(Organizacao org) {
         // CONSELHO tem organização-mãe diretamente na UnidadeTerritorial (Matriz/Comunidade, track
         // linguagem_ubiqua_dominio); PASTORAL/MOVIMENTO têm organização-mãe um CONSELHO, cuja
         // organização-mãe é que é a UnidadeTerritorial; MINISTERIO não tem igreja de vínculo.
-        if (org.getTipo() == TipoGrupo.CONSELHO) {
+        if (org.getTipo() == TipoOrganizacao.CONSELHO) {
             return org.getParentId();
         }
         if (org.getParentId() == null) {
             return null;
         }
-        var parentOpt = grupoParoquialService.obterPorId(org.getParentId());
+        var parentOpt = organizacaoService.obterPorId(org.getParentId());
         if (parentOpt.isEmpty()) {
             return null;
         }
         var parent = parentOpt.get();
-        if (parent.getTipo() == TipoGrupo.CONSELHO) {
+        if (parent.getTipo() == TipoOrganizacao.CONSELHO) {
             return parent.getParentId();
         }
         return null;
@@ -213,7 +213,7 @@ public class GrupoParoquialController {
     public void excluir(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        grupoParoquialService.excluir(id);
+        organizacaoService.excluir(id);
     }
 
     /**
@@ -228,15 +228,15 @@ public class GrupoParoquialController {
     @Operation(summary = "Obtém detalhes de uma organização", description = "Retorna os dados completos de uma organização pelo seu identificador.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Organização encontrada com sucesso",
-                    content = @Content(schema = @Schema(implementation = GrupoParoquialResponse.class))),
+                    content = @Content(schema = @Schema(implementation = OrganizacaoResponse.class))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public ResponseEntity<GrupoParoquialResponse> obter(
+    public ResponseEntity<OrganizacaoResponse> obter(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        return grupoParoquialService.obterPorId(id)
+        return organizacaoService.obterPorId(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -254,12 +254,12 @@ public class GrupoParoquialController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de organizações retornada com sucesso",
                     content = @Content(array = @ArraySchema(
-                            schema = @Schema(implementation = GrupoParoquialResponse.class)))),
+                            schema = @Schema(implementation = OrganizacaoResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public List<GrupoParoquialResponse> listar() {
-        return grupoParoquialService.listar().stream()
+    public List<OrganizacaoResponse> listar() {
+        return organizacaoService.listar().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -277,15 +277,15 @@ public class GrupoParoquialController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de membros retornada com sucesso",
                     content = @Content(array = @ArraySchema(
-                            schema = @Schema(implementation = GrupoParoquialMembroResponse.class)))),
+                            schema = @Schema(implementation = OrganizacaoMembroResponse.class)))),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado"),
             @ApiResponse(responseCode = "404", description = "Organização não encontrada")
     })
-    public List<GrupoParoquialMembroResponse> listarMembros(
+    public List<OrganizacaoMembroResponse> listarMembros(
             @Parameter(description = "Identificador único da organização", required = true)
             @PathVariable UUID id) {
-        return listarGrupoParoquialMembrosUseCase.execute(id);
+        return listarOrganizacaoMembrosUseCase.execute(id);
     }
 
     /**
@@ -306,8 +306,8 @@ public class GrupoParoquialController {
         return obterOrganogramaUseCase.execute();
     }
 
-    private GrupoParoquialResponse toResponse(GrupoParoquial domain) {
-        return new GrupoParoquialResponse(
+    private OrganizacaoResponse toResponse(Organizacao domain) {
+        return new OrganizacaoResponse(
                 domain.getId(),
                 domain.getNome(),
                 domain.getTipo(),

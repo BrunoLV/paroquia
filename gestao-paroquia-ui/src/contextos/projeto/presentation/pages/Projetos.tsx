@@ -110,7 +110,7 @@ const Projetos = () => {
   };
 
   const canTransitionProjeto = (project: Projeto) => {
-    return userCanTransitionProjeto(user, project.grupoParoquialResponsavelId);
+    return userCanTransitionProjeto(user, project.organizacaoResponsavelId);
   };
 
   // Determine which organizations are selectable in the form
@@ -179,7 +179,7 @@ const Projetos = () => {
     setFormId(project.id);
     setFormNome(project.nome);
     setFormDescricao(project.descricao || '');
-    setFormOrgId(project.grupoParoquialResponsavelId);
+    setFormOrgId(project.organizacaoResponsavelId);
 
     // Format dates to YYYY-MM-DD
     setFormInicio(project.inicio ? project.inicio.split('T')[0] : '');
@@ -222,7 +222,7 @@ const Projetos = () => {
     const payload: Record<string, unknown> = {
       nome: formNome,
       descricao: formDescricao || null,
-      grupoParoquialResponsavelId: formOrgId,
+      organizacaoResponsavelId: formOrgId,
       inicio: new Date(formInicio).toISOString(),
       fim: new Date(formFim).toISOString(),
     };
@@ -363,7 +363,7 @@ const Projetos = () => {
                       sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell sx={{ fontWeight: 600 }}>{project.nome}</TableCell>
-                      <TableCell>{getOrgName(project.grupoParoquialResponsavelId)}</TableCell>
+                      <TableCell>{getOrgName(project.organizacaoResponsavelId)}</TableCell>
                       <TableCell>{formatDate(project.inicio)}</TableCell>
                       <TableCell>{formatDate(project.fim)}</TableCell>
                       <TableCell>
@@ -567,7 +567,7 @@ const Projetos = () => {
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <BusinessIcon fontSize="small" color="action" sx={{ fontSize: '1rem' }} />
-                    <Typography variant="body2">{getOrgName(selectedProject.grupoParoquialResponsavelId)}</Typography>
+                    <Typography variant="body2">{getOrgName(selectedProject.organizacaoResponsavelId)}</Typography>
                   </Box>
                 </Box>
                 <Box>

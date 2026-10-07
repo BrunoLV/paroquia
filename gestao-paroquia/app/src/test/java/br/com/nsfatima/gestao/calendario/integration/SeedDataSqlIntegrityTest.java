@@ -76,7 +76,7 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(25, flyway.info().applied().length,
+        assertEquals(26, flyway.info().applied().length,
                 "O baseline deve manter uma migração Flyway por contexto com persistência");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
@@ -93,7 +93,7 @@ public class SeedDataSqlIntegrityTest {
         }, "Executing seed-data.sql statements should not throw any foreign key or SQL execution errors");
 
         Integer organizacoesCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM calendario.grupo_paroquial", Integer.class);
+                "SELECT COUNT(*) FROM calendario.organizacao", Integer.class);
         Integer diocesesCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM calendario.dioceses", Integer.class);
         Integer governoEclesiasticoCount = jdbcTemplate.queryForObject(

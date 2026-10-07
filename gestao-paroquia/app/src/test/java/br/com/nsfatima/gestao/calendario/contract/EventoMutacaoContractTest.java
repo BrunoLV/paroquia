@@ -114,7 +114,7 @@ class EventoMutacaoContractTest {
         entity.setId(EVENTO_ID);
         entity.setTitulo("Evento Mutacao");
         entity.setDescricao("base");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-03-15T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-03-15T11:00:00Z"));
         entity.setStatus("RASCUNHO");
@@ -128,7 +128,7 @@ class EventoMutacaoContractTest {
         entity.setId(EVENTO_ID);
         entity.setTitulo("Evento Cancelamento");
         entity.setDescricao("base confirmado");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-03-15T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-03-15T11:00:00Z"));
         entity.setStatus("CONFIRMADO");

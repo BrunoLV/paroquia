@@ -51,7 +51,7 @@ class AprovacaoFlowRegressionTest {
                         .content("""
                                 {
                                   "titulo": "Suite create approve",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000dd",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000dd",
                                   "inicio": "2027-08-01T10:00:00Z",
                                   "fim": "2027-08-01T11:00:00Z",
                                   "adicionadoExtraJustificativa": "Justificativa formal do secretario"
@@ -85,7 +85,7 @@ class AprovacaoFlowRegressionTest {
                         .content("""
                                 {
                                   "titulo": "Suite update reject",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000dd",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000dd",
                                   "inicio": "2027-08-10T10:00:00Z",
                                   "fim": "2027-08-10T11:00:00Z"
                                 }

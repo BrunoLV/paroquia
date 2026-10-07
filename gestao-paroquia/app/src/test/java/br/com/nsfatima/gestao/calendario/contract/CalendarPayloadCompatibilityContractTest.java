@@ -38,7 +38,7 @@ class CalendarPayloadCompatibilityContractTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(EVENT_ID);
         evento.setTitulo("Evento Compatibilidade");
-        evento.setGrupoParoquialResponsavelId(ORG_ID);
+        evento.setOrganizacaoResponsavelId(ORG_ID);
         evento.setInicioUtc(Instant.now().plusSeconds(3600));
         evento.setFimUtc(Instant.now().plusSeconds(7200));
         evento.setStatus("CONFIRMADO");

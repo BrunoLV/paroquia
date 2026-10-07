@@ -22,11 +22,11 @@ const DashboardSkeleton = () => (
 );
 
 const DashboardContent = () => {
-  const {periodo, grupoParoquialId} = useDashboardFilter();
+  const {periodo, organizacaoId} = useDashboardFilter();
   const {data: metrics, isLoading: isMetricsLoading, error: metricsError} =
-    useDashboardMetrics(periodo, grupoParoquialId);
-  const {data: logistica} = useDashboardLogistica(periodo, grupoParoquialId);
-  const {data: comunidade} = useDashboardComunidade(grupoParoquialId);
+    useDashboardMetrics(periodo, organizacaoId);
+  const {data: logistica} = useDashboardLogistica(periodo, organizacaoId);
+  const {data: comunidade} = useDashboardComunidade(organizacaoId);
   const modal = useDashboardEventoModal();
 
   if (modal.isLoading || isMetricsLoading) {

@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoOrganizacaoAttributeConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -49,9 +49,9 @@ public class ProjetoSolicitacaoAprovacaoEntity extends BaseAuditableEntity {
     @Column(name = "solicitante_papel", nullable = false, length = 64)
     private String solicitantePapel;
 
-    @Convert(converter = TipoGrupoAttributeConverter.class)
-    @Column(name = "solicitante_tipo_grupo_paroquial", nullable = false, length = 64)
-    private TipoGrupo solicitanteTipoGrupo;
+    @Convert(converter = TipoOrganizacaoAttributeConverter.class)
+    @Column(name = "solicitante_tipo_organizacao", nullable = false, length = 64)
+    private TipoOrganizacao solicitanteTipoOrganizacao;
 
     @Column(name = "action_payload_json", length = 4000)
     private String actionPayloadJson;
@@ -118,12 +118,12 @@ public class ProjetoSolicitacaoAprovacaoEntity extends BaseAuditableEntity {
         this.solicitantePapel = solicitantePapel;
     }
 
-    public TipoGrupo getSolicitanteTipoGrupo() {
-        return solicitanteTipoGrupo;
+    public TipoOrganizacao getSolicitanteTipoOrganizacao() {
+        return solicitanteTipoOrganizacao;
     }
 
-    public void setSolicitanteTipoGrupo(TipoGrupo solicitanteTipoGrupo) {
-        this.solicitanteTipoGrupo = solicitanteTipoGrupo;
+    public void setSolicitanteTipoOrganizacao(TipoOrganizacao solicitanteTipoOrganizacao) {
+        this.solicitanteTipoOrganizacao = solicitanteTipoOrganizacao;
     }
 
     public String getActionPayloadJson() {

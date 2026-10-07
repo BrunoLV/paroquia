@@ -37,7 +37,7 @@ class LegacyEventoReadCompatibilityIntegrationTest {
         entity.setId(UUID.randomUUID());
         entity.setTitulo("Evento Legado");
         entity.setDescricao("status legado");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-05-10T08:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-05-10T09:00:00Z"));
         entity.setStatus("STATUS_OBSOLETO");

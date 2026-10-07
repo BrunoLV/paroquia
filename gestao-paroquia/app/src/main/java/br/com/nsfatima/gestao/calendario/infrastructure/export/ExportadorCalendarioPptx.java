@@ -275,7 +275,7 @@ public class ExportadorCalendarioPptx implements ExportadorCalendario {
                 + META_SEPARADOR + e.getFormato().getDescricao()
                 + META_SEPARADOR + turnoLabel(e)
                 + META_SEPARADOR + localLabel(e, localMap)
-                + META_SEPARADOR + orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), NA)
+                + META_SEPARADOR + orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), NA)
                 + (nomeProjeto != null ? META_SEPARADOR + "Projeto: " + nomeProjeto : "");
         metaRun.setText(metaTexto);
         metaRun.setFontSize(10d);

@@ -55,7 +55,7 @@ public class FielAuditPublisher {
         metadata.put("resourceId", recursoId.toString());
         metadata.put("fielId", fielId.toString());
         metadata.put("atorUsuarioId", atorId.toString());
-        metadata.put("grupoParoquialId", unidadeTerritorialId.toString());
+        metadata.put("organizacaoId", unidadeTerritorialId.toString());
         metadata.putAll(detalheOperacional);
         auditoria.log(atorId.toString(), acao, recursoId.toString(), resultado, metadata);
     }

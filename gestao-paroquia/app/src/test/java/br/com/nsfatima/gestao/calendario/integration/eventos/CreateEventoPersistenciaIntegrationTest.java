@@ -26,7 +26,7 @@ class CreateEventoPersistenciaIntegrationTest {
         String payload = """
                 {
                   "titulo": "Retiro Jovem",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                   "inicio": "2026-07-10T14:00:00Z",
                   "fim": "2026-07-10T16:00:00Z"
                 }

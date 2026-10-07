@@ -45,7 +45,7 @@ public class DashboardLogisticaController {
      * organização informados.
      *
      * @param periodo recorte temporal (HOJE, SEMANA ou MES); padrão SEMANA
-     * @param grupoParoquialId organização a filtrar, ou ausente para o escopo do próprio ator
+     * @param organizacaoId organização a filtrar, ou ausente para o escopo do próprio ator
      * @return snapshot de logística do dashboard
      */
     @GetMapping("/logistica")
@@ -63,8 +63,8 @@ public class DashboardLogisticaController {
             @Parameter(description = "Recorte temporal do filtro global")
             @RequestParam(defaultValue = "SEMANA") PeriodoDashboard periodo,
             @Parameter(description = "Organização a filtrar; ausente usa o escopo do ator")
-            @RequestParam(required = false) UUID grupoParoquialId) {
+            @RequestParam(required = false) UUID organizacaoId) {
         var context = actorContextResolver.resolveRequired();
-        return getDashboardLogisticaUseCase.execute(context, periodo, grupoParoquialId);
+        return getDashboardLogisticaUseCase.execute(context, periodo, organizacaoId);
     }
 }

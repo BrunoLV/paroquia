@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.patrimonio.api.error;
 
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoExclusaoBloqueadaException;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoConflitanteException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoManutencaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoPatrimonialNaoEncontradoException;
@@ -41,15 +41,15 @@ public class PatrimonioExceptionHandler extends BaseExceptionHandler {
                 List.of(new ValidationErrorItem(ErrorCodes.RESOURCE_NOT_FOUND.name(), "ativo", ex.getMessage(), null)));
     }
 
-    @ExceptionHandler(AtivoGrupoParoquialInvalidaException.class)
-    public ResponseEntity<ValidationErrorResponse> handleGrupoParoquialInvalida(
-            AtivoGrupoParoquialInvalidaException ex) {
+    @ExceptionHandler(AtivoOrganizacaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleOrganizacaoInvalida(
+            AtivoOrganizacaoInvalidaException ex) {
         return buildValidation(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.DOMAIN_RULE_VIOLATION,
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
-                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "grupoParoquialId", ex.getMessage(), null)));
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "organizacaoId", ex.getMessage(), null)));
     }
 
     @ExceptionHandler(AtivoManutencaoInvalidaException.class)

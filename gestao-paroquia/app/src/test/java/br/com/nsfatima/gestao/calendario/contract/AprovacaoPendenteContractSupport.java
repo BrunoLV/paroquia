@@ -15,7 +15,7 @@ public abstract class AprovacaoPendenteContractSupport {
                 {
                   "titulo": "Missa de teste",
                   "descricao": "Fluxo pendente",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                   "inicioUtc": "2026-12-01T10:00:00Z",
                   "fimUtc": "2026-12-01T11:00:00Z",
                   "status": "CONFIRMADO"

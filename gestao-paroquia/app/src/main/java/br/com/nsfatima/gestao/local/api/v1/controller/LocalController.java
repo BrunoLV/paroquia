@@ -166,8 +166,8 @@ public class LocalController {
     /**
      * Lista todos os locais disponíveis não excluídos para planejar eventos e reuniões.
      *
-     * @param grupoParoquialId ID opcional de filtragem por paróquia/comunidade
-     * @param igrejaId         Alias para grupoParoquialId
+     * @param organizacaoId ID opcional de filtragem por paróquia/comunidade
+     * @param igrejaId         Alias para organizacaoId
      * @return Lista de locais cadastrados
      */
     @GetMapping
@@ -181,10 +181,10 @@ public class LocalController {
     })
     public List<LocalResponse> listar(
             @Parameter(description = "Filtro opcional por organização/grupo paroquial")
-            @RequestParam(required = false) UUID grupoParoquialId,
-            @Parameter(description = "Alias para grupoParoquialId")
+            @RequestParam(required = false) UUID organizacaoId,
+            @Parameter(description = "Alias para organizacaoId")
             @RequestParam(required = false) UUID igrejaId) {
-        UUID idFiltro = igrejaId != null ? igrejaId : grupoParoquialId;
+        UUID idFiltro = igrejaId != null ? igrejaId : organizacaoId;
         return localService.listar(idFiltro).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());

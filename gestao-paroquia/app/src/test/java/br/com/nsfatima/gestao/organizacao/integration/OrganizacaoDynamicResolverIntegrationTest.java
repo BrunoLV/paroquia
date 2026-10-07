@@ -5,11 +5,11 @@ import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,13 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class GrupoParoquialDynamicResolverIntegrationTest {
+class OrganizacaoDynamicResolverIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     @Autowired
     private UsuarioJpaRepository usuarioRepository;
@@ -65,22 +65,22 @@ class GrupoParoquialDynamicResolverIntegrationTest {
         usuarioRepository.save(vice);
 
         // Create organization
-        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(UUID.randomUUID());
         org.setNome("Pastoral do Dynamic Test");
-        org.setTipo(TipoGrupo.PASTORAL);
+        org.setTipo(TipoOrganizacao.PASTORAL);
         org.setContato("test@test.com");
         org.setCoordenador("Fallback Coord Text"); // should be ignored in favor of João
         org.setViceCoordenador("Fallback Vice Text"); // should be ignored in favor of Maria
         org.setAtivo(true);
-        grupoParoquialRepository.save(org);
+        organizacaoRepository.save(org);
 
         // Create vinculos
         MembroGrupoEntity m1 = new MembroGrupoEntity();
         m1.setId(UUID.randomUUID());
         m1.setFielId(coord.getFielId());
-        m1.setGrupoParoquialId(org.getId());
-        m1.setTipoGrupo(TipoGrupo.PASTORAL);
+        m1.setOrganizacaoId(org.getId());
+        m1.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m1.setPapel(PapelOrganizacional.COORDENADOR.storedValue());
         m1.setAtivo(true);
         vinculoRepository.save(m1);
@@ -88,8 +88,8 @@ class GrupoParoquialDynamicResolverIntegrationTest {
         MembroGrupoEntity m2 = new MembroGrupoEntity();
         m2.setId(UUID.randomUUID());
         m2.setFielId(vice.getFielId());
-        m2.setGrupoParoquialId(org.getId());
-        m2.setTipoGrupo(TipoGrupo.PASTORAL);
+        m2.setOrganizacaoId(org.getId());
+        m2.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m2.setPapel(PapelOrganizacional.SECRETARIO_GRUPO.storedValue());
         m2.setAtivo(true);
         vinculoRepository.save(m2);

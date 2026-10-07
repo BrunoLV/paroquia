@@ -71,10 +71,10 @@ public interface EventoValidacaoJpaRepository {
      * Verifica se existe algum evento vinculado a uma determinada organização como responsável,
      * usado para impedir a remoção/desativação de uma organização ainda em uso.
      *
-     * @param grupoParoquialId identificador da organização responsável
+     * @param organizacaoId identificador da organização responsável
      * @return {@code true} caso exista ao menos um evento da organização, {@code false} caso contrário
      */
-    boolean existsByGrupoParoquialResponsavelId(UUID grupoParoquialId);
+    boolean existsByOrganizacaoResponsavelId(UUID organizacaoId);
 
     /**
      * Verifica se já existe uma ocorrência de evento para uma determinada recorrência em um

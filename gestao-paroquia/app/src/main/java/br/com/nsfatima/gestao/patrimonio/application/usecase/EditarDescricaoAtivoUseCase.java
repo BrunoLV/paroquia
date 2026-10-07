@@ -39,7 +39,7 @@ public class EditarDescricaoAtivoUseCase {
         AtivoPatrimonial ativo = carregar(ativoId);
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
-        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());
+        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getOrganizacaoId());
 
         ativo.atualizarDescricao(request.descricao(), Instant.now());
         return AtivoPatrimonialResponse.de(repository.save(ativo));

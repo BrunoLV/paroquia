@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -79,7 +79,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
         entity.setStatus(AprovacaoStatus.PENDENTE);
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
-        entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
+        entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(request.inicio());
@@ -143,7 +143,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
             filha.setStatus(AprovacaoStatus.PENDENTE);
             filha.setSolicitanteId(context.actor());
             filha.setSolicitantePapel(context.role());
-            filha.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
+            filha.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
             filha.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
             filha.setCriadoEmUtc(Instant.now());
             filha.setDataOcorrenciaUtc(occStart);
@@ -153,7 +153,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
                     request.titulo(),
                     request.descricao(),
                     request.categoria(),
-                    request.grupoParoquialResponsavelId(),
+                    request.organizacaoResponsavelId(),
                     request.projetoId(),
                     request.localId(),
                     request.localIds(),
@@ -189,7 +189,7 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
                 request.titulo(),
                 request.descricao(),
                 request.categoria(),
-                request.grupoParoquialResponsavelId(),
+                request.organizacaoResponsavelId(),
                 request.projetoId(),
                 request.inicio(),
                 request.fim(),

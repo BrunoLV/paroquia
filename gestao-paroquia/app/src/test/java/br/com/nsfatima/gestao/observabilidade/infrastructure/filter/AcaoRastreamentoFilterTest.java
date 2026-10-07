@@ -63,7 +63,7 @@ class AcaoRastreamentoFilterTest {
     }
 
     @Test
-    @DisplayName("Deve capturar usuarioId e grupoParoquialId quando autenticado")
+    @DisplayName("Deve capturar usuarioId e organizacaoId quando autenticado")
     void deveCapturarUsuarioAutenticado() throws ServletException, IOException {
         UUID usuarioId = UUID.randomUUID();
         UUID orgId = UUID.randomUUID();
@@ -86,7 +86,7 @@ class AcaoRastreamentoFilterTest {
 
         FilterChain chain = (req, res) -> {
             capturouUsuario.set(MDC.get(AcaoRastreamentoFilter.MDC_USUARIO_ID));
-            capturouGrupo.set(MDC.get(AcaoRastreamentoFilter.MDC_GRUPO_PAROQUIAL_ID));
+            capturouGrupo.set(MDC.get(AcaoRastreamentoFilter.MDC_ORGANIZACAO_ID));
         };
 
         filter.doFilter(request, response, chain);
@@ -94,7 +94,7 @@ class AcaoRastreamentoFilterTest {
         assertThat(capturouUsuario.get()).isEqualTo(usuarioId.toString());
         assertThat(capturouGrupo.get()).isEqualTo(orgId.toString());
         assertThat(MDC.get(AcaoRastreamentoFilter.MDC_USUARIO_ID)).isNull();
-        assertThat(MDC.get(AcaoRastreamentoFilter.MDC_GRUPO_PAROQUIAL_ID)).isNull();
+        assertThat(MDC.get(AcaoRastreamentoFilter.MDC_ORGANIZACAO_ID)).isNull();
     }
 
     @Test

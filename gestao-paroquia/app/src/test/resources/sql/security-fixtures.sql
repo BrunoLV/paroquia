@@ -11,7 +11,7 @@ TRUNCATE TABLE calendario.auditoria_operacoes,
     calendario.eventos_recorrencia,
     calendario.fieis,
     calendario.fiel_dependentes,
-    calendario.grupo_paroquial,
+    calendario.organizacao,
     calendario.locais,
     calendario.membro_grupo,
     calendario.notificacoes,
@@ -37,7 +37,7 @@ VALUES ('00000000-0000-0000-0000-0000000000dd', 'Clero D', 'COMUNIDADE'),
        ('00000000-0000-0000-0000-000000000001', 'Igreja Default', 'MATRIZ'),
        ('00000000-0000-0000-0000-000000000100', 'Igreja Matriz', 'MATRIZ');
 
-INSERT INTO calendario.grupo_paroquial (id, nome, tipo)
+INSERT INTO calendario.organizacao (id, nome, tipo)
 VALUES ('00000000-0000-0000-0000-000000000001', 'Organizacao Default', 'MINISTERIO'),
        ('00000000-0000-0000-0000-0000000000aa', 'Pastoral A', 'PASTORAL'),
        ('00000000-0000-0000-0000-0000000000bb', 'Pastoral B', 'PASTORAL'),
@@ -91,7 +91,7 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'joao.silva', '{noop}senha123', 
        ('00000000-0000-0000-0000-000000000007', 'sem.vinculo', '{noop}senha123', TRUE,
         'f0000000-0000-0000-0000-000000000007', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO calendario.membro_grupo (id, fiel_id, grupo_paroquial_id, tipo_grupo, papel, ativo,
+INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, ativo,
                                       criado_em_utc, atualizado_em_utc)
 VALUES ('10000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'coordenador', TRUE,

@@ -10,7 +10,7 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`MembroGrupo` (Raiz de Agregado):** Identificado por `MembroGrupoId`. Faz o vínculo entre um `FielId` e uma `GrupoParoquialId`, contendo status da participação, data de ingresso, data de desligamento e papel canônico.
+- **`MembroGrupo` (Raiz de Agregado):** Identificado por `MembroGrupoId`. Faz o vínculo entre um `FielId` e uma `OrganizacaoId`, contendo status da participação, data de ingresso, data de desligamento e papel canônico.
 - **`PapelOrganizacional` (Camada C):**
   - `COORDENADOR` (`coordenador`): Gestão de agentes, escalas e proposição de projetos da pastoral ou movimento.
   - `SECRETARIO_GRUPO` (`secretario-grupo`): Apoio operacional e registro interno de presenças.

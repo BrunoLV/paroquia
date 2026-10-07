@@ -62,7 +62,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
     if (user.roles.includes('ADMIN') || user.roles.includes('ROLE_ADMIN')) return true;
 
     // Member can edit if they belong to the organization responsible
-    return user.organizations.some((org) => org.id === event.grupoParoquialResponsavelId);
+    return user.organizations.some((org) => org.id === event.organizacaoResponsavelId);
   };
 
   const handleOpenDetails = (event: Evento) => {

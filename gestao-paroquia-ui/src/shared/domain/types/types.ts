@@ -417,7 +417,7 @@ export interface Projeto {
   descricao: string | null;
   inicio: string;
   fim: string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   status: "ABERTO" | "EM_ANDAMENTO" | "CANCELADO" | "CONCLUIDO";
   /** Flag de UI: marca que o registro acabou de ser atualizado, para destacar/realçar na lista. */
   updated?: boolean;
@@ -462,7 +462,7 @@ export interface Evento {
   titulo: string;
   descricao: string;
   categoria: CategoriaEvento | string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   /** Projeto ao qual este evento pertence, ou `null` se for um evento avulso. */
   projetoId: string | null;
   nomeProjeto: string | null;
@@ -527,7 +527,7 @@ export interface CreateEventoPayload {
   titulo: string;
   descricao?: string;
   categoria: string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   projetoId?: string | null;
   localId?: string | null;
   /** Lista de múltiplos locais/espaços físicos alocados simultaneamente */
@@ -565,7 +565,7 @@ export interface UpdateEventoPayload {
   adicionadoExtraJustificativa?: string | null;
   /** Motivo textual exigido ao transicionar `status` para cancelado. */
   canceladoMotivo?: string | null;
-  grupoParoquialResponsavelId?: string;
+  organizacaoResponsavelId?: string;
   participantes?: string[];
   /** Escopo da edição quando o evento pertence a uma série recorrente: só esta ocorrência, esta e as futuras, ou toda a série. */
   escopoEdicao?: "SOMENTE_ESTE" | "ESTE_E_PROXIMOS" | "TODOS";
@@ -710,7 +710,7 @@ export interface GeneralSummary {
 
 /** Ponto de dados para o gráfico de distribuição de eventos por organização responsável. */
 export interface EventDistribution {
-  grupoParoquialNome: string;
+  organizacaoNome: string;
   quantidadeEventos: number;
 }
 
@@ -765,7 +765,7 @@ export interface WeeklyEvent {
   titulo: string;
   inicio: string;
   localNome: string;
-  grupoParoquialNome: string;
+  organizacaoNome: string;
 }
 
 /** Aniversariante do período (dados mínimos por LGPD: primeiro nome + dia/mês). */
@@ -813,7 +813,7 @@ export interface OcupacaoAmbientes {
 
 /** Contagem de eventos por organização responsável no período. */
 export interface EventosPorResponsavel {
-  grupoParoquialNome: string;
+  organizacaoNome: string;
   quantidade: number;
 }
 
@@ -834,7 +834,7 @@ export interface DashboardLogistica {
 /** Agregado de métricas exibidas na tela inicial (Painel). */
 export interface DashboardMetrics {
   resumoGeral: GeneralSummary;
-  eventosPorGrupoParoquial: EventDistribution[];
+  eventosPorOrganizacao: EventDistribution[];
   projetosPorStatus: ProjetosPorStatus;
   projetosAtivosDetalhes: ProjectDetail[];
   eventosOrfaos: EventoOrfao[];
@@ -874,7 +874,7 @@ export interface OrganogramaNode {
     | "PAROQUIA"
     | "ORGANIZACAO"
     | "UNIDADE_TERRITORIAL"
-    | "GRUPO_PAROQUIAL"
+    | "ORGANIZACAO"
     | "MEMBRO"
     | "GRUPO"
     | string;
@@ -933,7 +933,7 @@ export interface AtivoPatrimonial {
   status: AtivoStatus;
   /** Elegível para reserva no módulo de Reservas; imutável após o cadastro. */
   isReservavel: boolean;
-  grupoParoquialId: string;
+  organizacaoId: string;
   dataAquisicao: string;
   valorAquisicao: number;
   cadastradoPorId?: string | null;
@@ -946,7 +946,7 @@ export interface CadastrarAtivoPayload {
   nome: string;
   descricao?: string | null;
   categoria: AtivoCategoria;
-  grupoParoquialId: string;
+  organizacaoId: string;
   isReservavel: boolean;
   dataAquisicao: string;
   valorAquisicao: number;

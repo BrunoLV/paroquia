@@ -42,9 +42,9 @@ describe('Relatorios Page', () => {
               totalEventosPeriodo: 15, projetosAtivos: 4, solicitacoesPendentes: 3,
               totalFieisAtivos: 50, novosFieisMes: 2, fieisEngajadosPastoral: 30, fieisSemVinculoPastoral: 20
             },
-            eventosPorGrupoParoquial: [
-              { grupoParoquialNome: 'Pastoral Familiar', quantidadeEventos: 8 },
-              { grupoParoquialNome: 'Catequese', quantidadeEventos: 7 },
+            eventosPorOrganizacao: [
+              { organizacaoNome: 'Pastoral Familiar', quantidadeEventos: 8 },
+              { organizacaoNome: 'Catequese', quantidadeEventos: 7 },
             ],
             projetosPorStatus: { planejamento: 2, emExecucao: 4, concluidos: 6, atrasados: 1 },
             projetosAtivosDetalhes: [

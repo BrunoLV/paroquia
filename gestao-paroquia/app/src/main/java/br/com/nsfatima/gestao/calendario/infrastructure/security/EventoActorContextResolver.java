@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -225,8 +225,8 @@ public class EventoActorContextResolver {
                 String defaultOrgType = switch (directPapel) {
                     case SECRETARIO_CONSELHO,
                          MEMBRO_CONSELHO_PASTORAL,
-                         MEMBRO_CONSELHO_ECONOMICO -> TipoGrupo.CONSELHO.name();
-                    default -> TipoGrupo.PASTORAL.name();
+                         MEMBRO_CONSELHO_ECONOMICO -> TipoOrganizacao.CONSELHO.name();
+                    default -> TipoOrganizacao.PASTORAL.name();
                 };
                 return new EventoActorContext(
                         authentication.getName(), directPapel.storedValue(), defaultOrgType, null, null, null);
@@ -257,24 +257,24 @@ public class EventoActorContextResolver {
         return new EventoActorContext(
                 authentication.getName(),
                 PapelOrganizacional.COORDENADOR.storedValue(),
-                TipoGrupo.PASTORAL.name(),
+                TipoOrganizacao.PASTORAL.name(),
                 null,
                 UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 null);
     }
 
-    private boolean aceitaPapel(String tipoOrganizacao, String papelBruto) {
+    private boolean aceitaPapel(String tipoOrganizacaoBruto, String papelBruto) {
         PapelOrganizacional papel = PapelOrganizacional.fromStoredValue(papelBruto);
         if (papel == null) {
             return false;
         }
-        TipoGrupo tipoGrupo;
+        TipoOrganizacao tipoOrganizacao;
         try {
-            tipoGrupo = TipoGrupo.fromStoredValue(tipoOrganizacao);
+            tipoOrganizacao = TipoOrganizacao.fromStoredValue(tipoOrganizacaoBruto);
         } catch (IllegalArgumentException ex) {
             return false;
         }
-        String tipoNormalizado = tipoGrupo == null ? tipoOrganizacao : tipoGrupo.name();
+        String tipoNormalizado = tipoOrganizacao == null ? tipoOrganizacaoBruto : tipoOrganizacao.name();
         return compatibilidadePolicies.stream()
                 .anyMatch(policy -> policy.aceita(tipoNormalizado, papel));
     }
@@ -284,7 +284,7 @@ public class EventoActorContextResolver {
             case PAROCO, VIGARIO, DIACONO_PAROQUIAL, BISPO_DIOCESANO -> ORG_CLERO;
             case ADMIN -> ORG_ADMIN;
             case SECRETARIA_PAROQUIAL -> ORG_SECRETARIA;
-            default -> TipoGrupo.PASTORAL.name();
+            default -> TipoOrganizacao.PASTORAL.name();
         };
     }
 }

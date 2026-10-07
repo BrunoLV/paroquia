@@ -83,7 +83,7 @@ class AtualizarTodosEventosRecorrentesIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo(title);
-        entity.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
+        entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
         entity.setRecorrenciaId(null);
         entity.setInicioUtc(Instant.parse(start));
         entity.setFimUtc(Instant.parse(start).plusSeconds(3600));

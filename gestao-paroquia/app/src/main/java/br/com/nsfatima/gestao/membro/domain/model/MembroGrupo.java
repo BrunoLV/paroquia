@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.membro.domain.model;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -22,8 +22,8 @@ public class MembroGrupo {
 
     private final UUID id;
     private UUID fielId;
-    private UUID grupoParoquialId;
-    private TipoGrupo tipoGrupo;
+    private UUID organizacaoId;
+    private TipoOrganizacao tipoOrganizacao;
     private PapelOrganizacional papel;
     private UUID igrejaVinculoId;
     private LocalDate dataEntrada;
@@ -32,16 +32,16 @@ public class MembroGrupo {
     public MembroGrupo(
             UUID id,
             UUID fielId,
-            UUID grupoParoquialId,
-            TipoGrupo tipoGrupo,
+            UUID organizacaoId,
+            TipoOrganizacao tipoOrganizacao,
             PapelOrganizacional papel,
             UUID igrejaVinculoId,
             LocalDate dataEntrada,
             boolean ativo) {
         this.id = Objects.requireNonNull(id, "ID do vínculo é obrigatório.");
         this.fielId = Objects.requireNonNull(fielId, "Fiel do vínculo é obrigatório.");
-        this.grupoParoquialId = Objects.requireNonNull(grupoParoquialId, "Organização do vínculo é obrigatória.");
-        this.tipoGrupo = Objects.requireNonNull(tipoGrupo, "Tipo de grupo é obrigatório.");
+        this.organizacaoId = Objects.requireNonNull(organizacaoId, "Organização do vínculo é obrigatória.");
+        this.tipoOrganizacao = Objects.requireNonNull(tipoOrganizacao, "Tipo de grupo é obrigatório.");
         this.igrejaVinculoId = igrejaVinculoId;
         this.dataEntrada = dataEntrada;
         this.ativo = ativo;
@@ -52,12 +52,12 @@ public class MembroGrupo {
     public static MembroGrupo novo(
             UUID id,
             UUID fielId,
-            UUID grupoParoquialId,
-            TipoGrupo tipoGrupo,
+            UUID organizacaoId,
+            TipoOrganizacao tipoOrganizacao,
             PapelOrganizacional papel,
             UUID igrejaVinculoId,
             LocalDate dataEntrada) {
-        return new MembroGrupo(id, fielId, grupoParoquialId, tipoGrupo, papel, igrejaVinculoId,
+        return new MembroGrupo(id, fielId, organizacaoId, tipoOrganizacao, papel, igrejaVinculoId,
                 dataEntrada != null ? dataEntrada : LocalDate.now(), true);
     }
 
@@ -68,14 +68,14 @@ public class MembroGrupo {
     /** Reaponta os dados cadastrais do vínculo (fluxo de edição). */
     public void alterarVinculo(
             UUID fielId,
-            UUID grupoParoquialId,
-            TipoGrupo tipoGrupo,
+            UUID organizacaoId,
+            TipoOrganizacao tipoOrganizacao,
             PapelOrganizacional papel,
             UUID igrejaVinculoId,
             LocalDate dataEntrada) {
         this.fielId = Objects.requireNonNull(fielId, "Fiel do vínculo é obrigatório.");
-        this.grupoParoquialId = Objects.requireNonNull(grupoParoquialId, "Organização do vínculo é obrigatória.");
-        this.tipoGrupo = Objects.requireNonNull(tipoGrupo, "Tipo de grupo é obrigatório.");
+        this.organizacaoId = Objects.requireNonNull(organizacaoId, "Organização do vínculo é obrigatória.");
+        this.tipoOrganizacao = Objects.requireNonNull(tipoOrganizacao, "Tipo de grupo é obrigatório.");
         this.igrejaVinculoId = igrejaVinculoId;
         if (dataEntrada != null) {
             this.dataEntrada = dataEntrada;
@@ -104,12 +104,12 @@ public class MembroGrupo {
         return fielId;
     }
 
-    public UUID getGrupoParoquialId() {
-        return grupoParoquialId;
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
     }
 
-    public TipoGrupo getTipoGrupo() {
-        return tipoGrupo;
+    public TipoOrganizacao getTipoOrganizacao() {
+        return tipoOrganizacao;
     }
 
     public PapelOrganizacional getPapel() {

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.aprovacao;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
@@ -90,7 +90,7 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
         entity.setStatus(AprovacaoStatus.PENDENTE);
         entity.setSolicitanteId(context.actor());
         entity.setSolicitantePapel(context.role());
-        entity.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(context.organizationType()));
+        entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
         entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(dataOcorrencia);
@@ -120,9 +120,9 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
                 ? request.descricao() : (eventoExistente != null ? eventoExistente.getDescricao() : null);
         CategoriaEvento categoria = request.categoria() != null
                 ? request.categoria() : (eventoExistente != null ? eventoExistente.getCategoria() : null);
-        UUID grupoId = request.grupoParoquialResponsavelId() != null
-                ? request.grupoParoquialResponsavelId()
-                : (eventoExistente != null ? eventoExistente.getGrupoParoquialResponsavelId() : null);
+        UUID grupoId = request.organizacaoResponsavelId() != null
+                ? request.organizacaoResponsavelId()
+                : (eventoExistente != null ? eventoExistente.getOrganizacaoResponsavelId() : null);
         UUID projetoId = request.projetoId() != null
                 ? request.projetoId() : (eventoExistente != null ? eventoExistente.getProjetoId() : null);
         Instant inicio = request.inicio() != null

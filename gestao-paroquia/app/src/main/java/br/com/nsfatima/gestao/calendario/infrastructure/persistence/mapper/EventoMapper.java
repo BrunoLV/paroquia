@@ -50,7 +50,7 @@ public class EventoMapper {
         entity.setId(UUID.randomUUID());
         entity.setTitulo(request.titulo());
         entity.setDescricao(request.descricao());
-        entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
+        entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
         entity.setProjetoId(request.projetoId());
         UUID primaryLocalId = request.localId();
         if (primaryLocalId == null && request.localIds() != null && !request.localIds().isEmpty()) {
@@ -103,7 +103,7 @@ public class EventoMapper {
         if (entity.getEnvolvidos() != null) {
             participantes = entity.getEnvolvidos().stream()
                     .filter(e -> e.getPapelParticipacao() == PapelEnvolvido.APOIO)
-                    .map(EventoEnvolvidoEntity::getGrupoParoquialId)
+                    .map(EventoEnvolvidoEntity::getOrganizacaoId)
                     .toList();
         }
 
@@ -112,7 +112,7 @@ public class EventoMapper {
                 entity.getTitulo(),
                 entity.getDescricao(),
                 entity.getCategoria(),
-                entity.getGrupoParoquialResponsavelId(),
+                entity.getOrganizacaoResponsavelId(),
                 entity.getProjetoId(),
                 nomeProjeto,
                 entity.getInicioUtc(),
@@ -172,8 +172,8 @@ public class EventoMapper {
         if (request.adicionadoExtraJustificativa() != null) {
             entity.setAdicionadoExtraJustificativa(request.adicionadoExtraJustificativa());
         }
-        if (request.grupoParoquialResponsavelId() != null) {
-            entity.setGrupoParoquialResponsavelId(request.grupoParoquialResponsavelId());
+        if (request.organizacaoResponsavelId() != null) {
+            entity.setOrganizacaoResponsavelId(request.organizacaoResponsavelId());
         }
         if (request.projetoId() != null) {
             entity.setProjetoId(request.projetoId());

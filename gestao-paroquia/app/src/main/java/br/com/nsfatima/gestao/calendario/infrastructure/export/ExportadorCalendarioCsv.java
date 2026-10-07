@@ -83,7 +83,7 @@ public class ExportadorCalendarioCsv implements ExportadorCalendario {
                     .append(formatInstant(e.getFimUtc())).append(";")
                     .append(e.getRecorrenciaId() != null ? "Sim" : "Não").append(";")
                     .append(escapeCsv(localLabel(e, localMap))).append(";")
-                    .append(escapeCsv(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), NA))).append(";")
+                    .append(escapeCsv(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), NA))).append(";")
                     .append(escapeCsv(nomeProjeto)).append(";")
                     .append(escapeCsv(e.getStatus())).append(";")
                     .append(e.getEstadoConflito() != null ? e.getEstadoConflito().name() : "").append("\n");

@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoParoquialEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
@@ -70,7 +70,7 @@ class ProjetoGovernancaIntegrationTest {
                 {
                   "nome": "Projeto Ano Aberto",
                   "descricao": "Teste em ano aberto",
-                  "grupoParoquialResponsavelId": "%s",
+                  "organizacaoResponsavelId": "%s",
                   "inicio": "%d-06-01T00:00:00Z",
                   "fim": "%d-06-30T23:59:59Z"
                 }
@@ -96,7 +96,7 @@ class ProjetoGovernancaIntegrationTest {
                 {
                   "nome": "Projeto Ano Fechado",
                   "descricao": "Teste em ano fechado",
-                  "grupoParoquialResponsavelId": "%s",
+                  "organizacaoResponsavelId": "%s",
                   "inicio": "%d-06-01T00:00:00Z",
                   "fim": "%d-06-30T23:59:59Z"
                 }
@@ -191,7 +191,7 @@ class ProjetoGovernancaIntegrationTest {
                 {
                   "nome": "Projeto Aprovado Criacao",
                   "descricao": "Payload",
-                  "grupoParoquialResponsavelId": "%s",
+                  "organizacaoResponsavelId": "%s",
                   "inicio": "2026-06-01T00:00:00Z",
                   "fim": "2026-06-30T23:59:59Z"
                 }
@@ -203,7 +203,7 @@ class ProjetoGovernancaIntegrationTest {
         req.setStatus(AprovacaoStatus.PENDENTE);
         req.setSolicitanteId("solicitante");
         req.setSolicitantePapel("coordenador");
-        req.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
+        req.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
         req.setCriadoEmUtc(Instant.now());
         req.setActionPayloadJson(payloadJson);
         approvalRepository.saveAndFlush(req);
@@ -231,7 +231,7 @@ class ProjetoGovernancaIntegrationTest {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Evento no Projeto");
-        event.setGrupoParoquialResponsavelId(UUID.fromString(CONSELHO_ORG));
+        event.setOrganizacaoResponsavelId(UUID.fromString(CONSELHO_ORG));
         event.setInicioUtc(Instant.now());
         event.setFimUtc(Instant.now().plusSeconds(3600));
         event.setStatus("CONFIRMADO");
@@ -264,7 +264,7 @@ class ProjetoGovernancaIntegrationTest {
         EventoEntity event = new EventoEntity();
         event.setId(UUID.randomUUID());
         event.setTitulo("Evento Solto");
-        event.setGrupoParoquialResponsavelId(UUID.fromString(CONSELHO_ORG));
+        event.setOrganizacaoResponsavelId(UUID.fromString(CONSELHO_ORG));
         event.setInicioUtc(Instant.now());
         event.setFimUtc(Instant.now().plusSeconds(3600));
         event.setStatus("CONFIRMADO");
@@ -301,7 +301,7 @@ class ProjetoGovernancaIntegrationTest {
         project.setId(UUID.randomUUID());
         project.setNome(nome);
         project.setDescricao("Teste");
-        project.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
+        project.setOrganizacaoResponsavelId(UUID.fromString(orgId));
         project.setStatus(status);
         project.setInicioUtc(Instant.now());
         project.setFimUtc(Instant.now().plusSeconds(86400));

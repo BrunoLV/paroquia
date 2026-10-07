@@ -22,9 +22,9 @@ describe('exportUtils', () => {
       fieisEngajadosPastoral: 25,
       fieisSemVinculoPastoral: 15,
     },
-    eventosPorGrupoParoquial: [
-      { grupoParoquialNome: 'Catequese', quantidadeEventos: 10 },
-      { grupoParoquialNome: 'Pastoral da Família', quantidadeEventos: 5 },
+    eventosPorOrganizacao: [
+      { organizacaoNome: 'Catequese', quantidadeEventos: 10 },
+      { organizacaoNome: 'Pastoral da Família', quantidadeEventos: 5 },
     ],
     projetosPorStatus: { planejamento: 1, emExecucao: 3, concluidos: 5, atrasados: 0 },
     eventosOrfaos: [],
@@ -33,7 +33,7 @@ describe('exportUtils', () => {
         titulo: 'Missa das Crianças',
         inicio: '2026-08-10T10:00:00Z',
         localNome: 'Igreja Matriz',
-        grupoParoquialNome: 'Catequese',
+        organizacaoNome: 'Catequese',
       },
     ],
     projetosAtivosDetalhes: [

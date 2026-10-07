@@ -16,8 +16,8 @@ export const getAtivos = async (): Promise<AtivoPatrimonial[]> => {
 };
 
 /** Lista o inventário de ativos de uma unidade territorial (posse fixa do bem). */
-export const getAtivosPorOrganizacao = async (grupoParoquialId: string): Promise<AtivoPatrimonial[]> => {
-  const response = await apiClient.get<AtivoPatrimonial[]>(`/ativos/organizacao/${grupoParoquialId}`);
+export const getAtivosPorOrganizacao = async (organizacaoId: string): Promise<AtivoPatrimonial[]> => {
+  const response = await apiClient.get<AtivoPatrimonial[]>(`/ativos/organizacao/${organizacaoId}`);
   return response.data;
 };
 

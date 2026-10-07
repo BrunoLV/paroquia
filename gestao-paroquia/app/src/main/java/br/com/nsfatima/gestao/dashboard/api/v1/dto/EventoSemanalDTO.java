@@ -20,6 +20,6 @@ public record EventoSemanalDTO(
         String localNome,
 
         @Schema(description = "Nome da organização/pastoral responsável")
-        String grupoParoquialNome
+        String organizacaoNome
 ) {
 }

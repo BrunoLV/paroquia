@@ -6,10 +6,7 @@ export interface Membro {
   fielNome?: string;
   fielEmail?: string;
   fielTelefone?: string;
-  grupoParoquialId: string;
-  grupoParoquialNome?: string;
-  /** Aliases para compatibilidade */
-  organizacaoId?: string;
+  organizacaoId: string;
   organizacaoNome?: string;
   papel: string;
   dataEntrada?: string;
@@ -20,7 +17,7 @@ export interface Membro {
 
 export interface MembroRequest {
   fielId: string;
-  grupoParoquialId: string;
+  organizacaoId: string;
   papel: string;
   dataEntrada?: string;
   igrejaVinculoId?: string;
@@ -29,7 +26,7 @@ export interface MembroRequest {
 
 export interface PromoverACoordenadorPayload {
   fielId: string;
-  grupoParoquialId: string;
+  organizacaoId: string;
   papel: string;
   username?: string;
   password?: string;
@@ -42,7 +39,7 @@ export interface PromoverACoordenadorResponse {
 }
 
 export const getMembros = async (params?: {
-  grupoParoquialId?: string;
+  organizacaoId?: string;
   fielId?: string;
   ativo?: boolean;
 }): Promise<{ content: Membro[] }> => {

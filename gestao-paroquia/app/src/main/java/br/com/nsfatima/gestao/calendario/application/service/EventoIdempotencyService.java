@@ -112,7 +112,7 @@ public class EventoIdempotencyService {
         String canonical = String.join("|",
                 nullSafe(request.titulo()),
                 nullSafe(request.descricao()),
-                request.grupoParoquialResponsavelId() == null ? "" : request.grupoParoquialResponsavelId().toString(),
+                request.organizacaoResponsavelId() == null ? "" : request.organizacaoResponsavelId().toString(),
                 request.inicio() == null ? "" : request.inicio().toString(),
                 request.fim() == null ? "" : request.fim().toString(),
                 request.status() == null ? "" : request.status().name(),

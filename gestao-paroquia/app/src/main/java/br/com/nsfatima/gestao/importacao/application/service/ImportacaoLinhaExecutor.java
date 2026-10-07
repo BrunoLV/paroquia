@@ -15,13 +15,13 @@ import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 
 import java.time.Instant;
@@ -47,9 +47,9 @@ public class ImportacaoLinhaExecutor {
 
     private final AdicionarMembroUseCase adicionarMembroUseCase;
     private final UsuarioJpaRepository usuarioJpaRepository;
-    private final GrupoParoquialService grupoParoquialService;
+    private final OrganizacaoService organizacaoService;
     private final EventoJpaRepository eventoJpaRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     private final PastoralMovimentoOficialRepository pastoralOficialRepository;
     private final AnoParoquialJpaRepository anoParoquialJpaRepository;
@@ -59,9 +59,9 @@ public class ImportacaoLinhaExecutor {
 
     public ImportacaoLinhaExecutor(AdicionarMembroUseCase adicionarMembroUseCase,
                                    UsuarioJpaRepository usuarioJpaRepository,
-                                   GrupoParoquialService grupoParoquialService,
+                                   OrganizacaoService organizacaoService,
                                    EventoJpaRepository eventoJpaRepository,
-                                   GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+                                   OrganizacaoJpaRepository organizacaoJpaRepository,
                                    UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository,
                                    PastoralMovimentoOficialRepository pastoralOficialRepository,
                                    AnoParoquialJpaRepository anoParoquialJpaRepository,
@@ -70,9 +70,9 @@ public class ImportacaoLinhaExecutor {
                                    ProvisionamentoLiturgicoService provisionamentoLiturgicoService) {
         this.adicionarMembroUseCase = adicionarMembroUseCase;
         this.usuarioJpaRepository = usuarioJpaRepository;
-        this.grupoParoquialService = grupoParoquialService;
+        this.organizacaoService = organizacaoService;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
+        this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
         this.pastoralOficialRepository = pastoralOficialRepository;
         this.anoParoquialJpaRepository = anoParoquialJpaRepository;
@@ -95,7 +95,7 @@ public class ImportacaoLinhaExecutor {
         }
         return switch (tipoEntidade) {
             case MEMBRO -> validarMembro(data);
-            case GRUPO_PAROQUIAL -> validarGrupoParoquial(data);
+            case ORGANIZACAO -> validarOrganizacao(data);
             case EVENTO -> validarEvento(data);
         };
     }
@@ -110,7 +110,7 @@ public class ImportacaoLinhaExecutor {
     public void processarImportacao(TipoEntidadeImportacao tipoEntidade, Map<String, String> data, String actor) {
         switch (tipoEntidade) {
             case MEMBRO -> importMembro(data, actor);
-            case GRUPO_PAROQUIAL -> importGrupoParoquial(data);
+            case ORGANIZACAO -> importOrganizacao(data);
             case EVENTO -> importEvento(data);
             default -> throw new IllegalArgumentException("Tipo de importação desconhecido: " + tipoEntidade);
         }
@@ -126,11 +126,11 @@ public class ImportacaoLinhaExecutor {
             return "Usuário não encontrado: " + username;
         }
 
-        String orgNome = data.getOrDefault("grupoParoquialNome", "").trim();
+        String orgNome = data.getOrDefault("organizacaoNome", "").trim();
         if (orgNome.isBlank()) {
-            return "O campo 'grupoParoquialNome' é obrigatório.";
+            return "O campo 'organizacaoNome' é obrigatório.";
         }
-        var orgOpt = grupoParoquialJpaRepository.findByNomeIgnoreCase(orgNome);
+        var orgOpt = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome);
         if (orgOpt.isEmpty()) {
             return "Organização não encontrada: " + orgNome;
         }
@@ -141,7 +141,7 @@ public class ImportacaoLinhaExecutor {
         return null;
     }
 
-    private String validarGrupoParoquial(Map<String, String> data) {
+    private String validarOrganizacao(Map<String, String> data) {
         if (data.getOrDefault(KEY_NOME, "").isBlank()) {
             return ERR_NOME_REQUIRED;
         }
@@ -163,7 +163,7 @@ public class ImportacaoLinhaExecutor {
 
     private void importMembro(Map<String, String> data, String actor) {
         String username = data.get("usuarioUsername").trim();
-        String orgNome = data.get("grupoParoquialNome").trim();
+        String orgNome = data.get("organizacaoNome").trim();
         String papel = Optional.ofNullable(data.get("papel"))
                 .filter(p -> !p.isBlank()).orElse("MEMBRO_PASTORAL");
         UUID igrejaId = parseUuid(data.get(KEY_IGREJA_ID));
@@ -171,7 +171,7 @@ public class ImportacaoLinhaExecutor {
         var user = usuarioJpaRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Usuário não encontrado: " + username));
-        var org = grupoParoquialJpaRepository.findByNomeIgnoreCase(orgNome)
+        var org = organizacaoJpaRepository.findByNomeIgnoreCase(orgNome)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Organização não encontrada: " + orgNome));
 
@@ -182,15 +182,15 @@ public class ImportacaoLinhaExecutor {
                 actor);
     }
 
-    private void importGrupoParoquial(Map<String, String> data) {
-        TipoGrupo tipoOrg = parseTipoGrupo(data.get("tipo"));
+    private void importOrganizacao(Map<String, String> data) {
+        TipoOrganizacao tipoOrg = parseTipoOrganizacao(data.get("tipo"));
         UUID parentId = resolveParentId(tipoOrg, data.get("parentId"));
         UUID pastoralOficialId =
-                (tipoOrg == TipoGrupo.PASTORAL || tipoOrg == TipoGrupo.MOVIMENTO)
+                (tipoOrg == TipoOrganizacao.PASTORAL || tipoOrg == TipoOrganizacao.MOVIMENTO)
                         ? resolvePastoralOficialId(
                         tipoOrg, data.get("pastoralOficialId"), data.get(KEY_NOME))
                         : null;
-        grupoParoquialService.criar(
+        organizacaoService.criar(
                 data.get(KEY_NOME),
                 tipoOrg,
                 data.get("contato"),
@@ -240,7 +240,7 @@ public class ImportacaoLinhaExecutor {
                         .orElse(CategoriaEvento.ADMINISTRATIVO));
         entity.setLocalId(parseUuid(data.get("localId")));
         entity.setIgrejaVinculoId(parseUuid(data.get(KEY_IGREJA_ID)));
-        entity.setGrupoParoquialResponsavelId(resolveGrupoParoquialResponsavelId(data.get("grupoParoquialId")));
+        entity.setOrganizacaoResponsavelId(resolveOrganizacaoResponsavelId(data.get("organizacaoId")));
 
         if (provisionamentoLiturgicoService != null) {
             var anoLiturgico = provisionamentoLiturgicoService.resolveAndEnsure(entity.getInicioUtc());
@@ -258,23 +258,23 @@ public class ImportacaoLinhaExecutor {
         eventoJpaRepository.save(entity);
     }
 
-    private UUID resolveParentId(TipoGrupo tipo, String inputParentId) {
+    private UUID resolveParentId(TipoOrganizacao tipo, String inputParentId) {
         UUID id = parseUuid(inputParentId);
         if (id != null) {
-            if (grupoParoquialJpaRepository == null || grupoParoquialJpaRepository.existsById(id)) {
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
                 return id;
             }
         }
 
-        if (grupoParoquialJpaRepository == null) {
+        if (organizacaoJpaRepository == null) {
             return null;
         }
-        List<GrupoParoquialEntity> all = grupoParoquialJpaRepository.findAll();
+        List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
         if (all == null || all.isEmpty()) {
             return null;
         }
 
-        if (tipo == TipoGrupo.CONSELHO) {
+        if (tipo == TipoOrganizacao.CONSELHO) {
             if (unidadeTerritorialJpaRepository == null) {
                 return null;
             }
@@ -287,10 +287,10 @@ public class ImportacaoLinhaExecutor {
                     .orElse(null);
         }
 
-        if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
+        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             return all.stream()
-                    .filter(o -> o.getTipo() == TipoGrupo.CONSELHO)
-                    .map(GrupoParoquialEntity::getId)
+                    .filter(o -> o.getTipo() == TipoOrganizacao.CONSELHO)
+                    .map(OrganizacaoEntity::getId)
                     .findFirst()
                     .orElse(all.getFirst().getId());
         }
@@ -298,7 +298,7 @@ public class ImportacaoLinhaExecutor {
         return null;
     }
 
-    private UUID resolvePastoralOficialId(TipoGrupo tipo, String inputId, String orgNome) {
+    private UUID resolvePastoralOficialId(TipoOrganizacao tipo, String inputId, String orgNome) {
         UUID id = parseUuid(inputId);
         if (id != null) {
             if (pastoralOficialRepository == null || pastoralOficialRepository.findById(id).isPresent()) {
@@ -320,16 +320,16 @@ public class ImportacaoLinhaExecutor {
         return null;
     }
 
-    private UUID resolveGrupoParoquialResponsavelId(String inputId) {
+    private UUID resolveOrganizacaoResponsavelId(String inputId) {
         UUID id = parseUuid(inputId);
         if (id != null) {
-            if (grupoParoquialJpaRepository == null || grupoParoquialJpaRepository.existsById(id)) {
+            if (organizacaoJpaRepository == null || organizacaoJpaRepository.existsById(id)) {
                 return id;
             }
         }
 
-        if (grupoParoquialJpaRepository != null) {
-            List<GrupoParoquialEntity> all = grupoParoquialJpaRepository.findAll();
+        if (organizacaoJpaRepository != null) {
+            List<OrganizacaoEntity> all = organizacaoJpaRepository.findAll();
             if (all != null && !all.isEmpty()) {
                 return all.getFirst().getId();
             }
@@ -362,11 +362,11 @@ public class ImportacaoLinhaExecutor {
         }
     }
 
-    private TipoGrupo parseTipoGrupo(String input) {
+    private TipoOrganizacao parseTipoOrganizacao(String input) {
         try {
-            return TipoGrupo.valueOf(input.trim().toUpperCase());
+            return TipoOrganizacao.valueOf(input.trim().toUpperCase());
         } catch (Exception e) {
-            return TipoGrupo.PASTORAL;
+            return TipoOrganizacao.PASTORAL;
         }
     }
 }

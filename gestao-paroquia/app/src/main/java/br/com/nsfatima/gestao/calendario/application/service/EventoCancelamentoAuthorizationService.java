@@ -22,12 +22,12 @@ public class EventoCancelamentoAuthorizationService {
 
     public ModoRequisicaoCancelamento resolveRequestMode(
             EventoActorContext actorContext,
-            UUID eventoGrupoParoquialResponsavelId) {
+            UUID eventoOrganizacaoResponsavelId) {
         return policy.resolveRequestMode(
                 actorContext.role(),
                 actorContext.organizationType(),
                 actorContext.organizationId(),
-                eventoGrupoParoquialResponsavelId);
+                eventoOrganizacaoResponsavelId);
     }
 
     public void assertCanDecideAprovacao(EventoActorContext actorContext) {

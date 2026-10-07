@@ -7,7 +7,7 @@ describe('eventoFormSchema', () => {
     descricao: 'Celebração paroquial',
     categoria: 'LITURGICO',
     status: 'CONFIRMADO',
-    grupoParoquialResponsavelId: 'org-123',
+    organizacaoResponsavelId: 'org-123',
     igrejaVinculoId: 'igreja-123',
     localId: 'local-123',
     projetoId: '',

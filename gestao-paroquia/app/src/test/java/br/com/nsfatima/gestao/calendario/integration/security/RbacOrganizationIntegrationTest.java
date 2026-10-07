@@ -20,7 +20,7 @@ class RbacOrganizationIntegrationTest {
             new MovimentoCompatibilidadePapelPolicy(), new PastoralCompatibilidadePapelPolicy());
 
     @Test
-    void deveImporPapelCatalogPorGrupoParoquialTipo() {
+    void deveImporPapelCatalogPorOrganizacaoTipo() {
         assertTrue(aceita("CONSELHO", PapelOrganizacional.SECRETARIO_CONSELHO));
         assertFalse(aceita("CLERO", PapelOrganizacional.SECRETARIO_CONSELHO));
         assertTrue(aceita("PASTORAL", PapelOrganizacional.COORDENADOR));

@@ -15,14 +15,14 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.importacao.domain.model.TipoEntidadeImportacao;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.application.usecase.AdicionarMembroUseCase;
-import br.com.nsfatima.gestao.organizacao.application.service.GrupoParoquialService;
+import br.com.nsfatima.gestao.organizacao.application.service.OrganizacaoService;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -54,11 +54,11 @@ class ImportacaoLinhaExecutorTest {
     @Mock
     private UsuarioJpaRepository usuarioJpaRepository;
     @Mock
-    private GrupoParoquialService grupoParoquialService;
+    private OrganizacaoService organizacaoService;
     @Mock
     private EventoJpaRepository eventoJpaRepository;
     @Mock
-    private GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private OrganizacaoJpaRepository organizacaoJpaRepository;
     @Mock
     private UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
     @Mock
@@ -73,8 +73,8 @@ class ImportacaoLinhaExecutorTest {
     private ProvisionamentoLiturgicoService provisionamentoLiturgicoService;
 
     private ImportacaoLinhaExecutor novoExecutor() {
-        return new ImportacaoLinhaExecutor(adicionarMembroUseCase, usuarioJpaRepository, grupoParoquialService,
-                eventoJpaRepository, grupoParoquialJpaRepository, unidadeTerritorialJpaRepository,
+        return new ImportacaoLinhaExecutor(adicionarMembroUseCase, usuarioJpaRepository, organizacaoService,
+                eventoJpaRepository, organizacaoJpaRepository, unidadeTerritorialJpaRepository,
                 pastoralOficialRepository, anoParoquialJpaRepository, motorLiturgico, cicloLiturgicoRepository,
                 provisionamentoLiturgicoService);
     }
@@ -113,12 +113,12 @@ class ImportacaoLinhaExecutorTest {
         }
 
         @Test
-        @DisplayName("membro sem grupoParoquialNome é inválido")
+        @DisplayName("membro sem organizacaoNome é inválido")
         void membroSemOrgNome() {
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao"))
                     .thenReturn(Optional.of(new UsuarioEntity()));
             String erro = novoExecutor().validarLinha("MEMBRO", Map.of("usuarioUsername", "joao"));
-            assertThat(erro).isEqualTo("O campo 'grupoParoquialNome' é obrigatório.");
+            assertThat(erro).isEqualTo("O campo 'organizacaoNome' é obrigatório.");
         }
 
         @Test
@@ -126,9 +126,9 @@ class ImportacaoLinhaExecutorTest {
         void membroOrgInexistente() {
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao"))
                     .thenReturn(Optional.of(new UsuarioEntity()));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.empty());
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.empty());
             String erro = novoExecutor().validarLinha("MEMBRO",
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz"));
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz"));
             assertThat(erro).isEqualTo("Organização não encontrada: Matriz");
         }
 
@@ -137,10 +137,10 @@ class ImportacaoLinhaExecutorTest {
         void membroSemPapel() {
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao"))
                     .thenReturn(Optional.of(new UsuarioEntity()));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz"))
-                    .thenReturn(Optional.of(new GrupoParoquialEntity()));
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz"))
+                    .thenReturn(Optional.of(new OrganizacaoEntity()));
             String erro = novoExecutor().validarLinha("MEMBRO",
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz"));
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz"));
             assertThat(erro).isEqualTo("O campo 'papel' é obrigatório.");
         }
 
@@ -149,31 +149,31 @@ class ImportacaoLinhaExecutorTest {
         void membroValido() {
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao"))
                     .thenReturn(Optional.of(new UsuarioEntity()));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz"))
-                    .thenReturn(Optional.of(new GrupoParoquialEntity()));
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz"))
+                    .thenReturn(Optional.of(new OrganizacaoEntity()));
             String erro = novoExecutor().validarLinha("MEMBRO",
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz", "papel", "MEMBRO_PASTORAL"));
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz", "papel", "MEMBRO_PASTORAL"));
             assertThat(erro).isNull();
         }
 
         @Test
         @DisplayName("grupo paroquial sem nome é inválido")
         void grupoSemNome() {
-            String erro = novoExecutor().validarLinha("GRUPO_PAROQUIAL", Map.of());
+            String erro = novoExecutor().validarLinha("ORGANIZACAO", Map.of());
             assertThat(erro).isEqualTo("O campo 'nome' é obrigatório.");
         }
 
         @Test
         @DisplayName("grupo paroquial sem tipo é inválido")
         void grupoSemTipo() {
-            String erro = novoExecutor().validarLinha("GRUPO_PAROQUIAL", Map.of("nome", "Comunidade Sao Jose"));
+            String erro = novoExecutor().validarLinha("ORGANIZACAO", Map.of("nome", "Comunidade Sao Jose"));
             assertThat(erro).isEqualTo("O campo 'tipo' é obrigatório.");
         }
 
         @Test
         @DisplayName("grupo paroquial válido não retorna erro")
         void grupoValido() {
-            String erro = novoExecutor().validarLinha("GRUPO_PAROQUIAL",
+            String erro = novoExecutor().validarLinha("ORGANIZACAO",
                     Map.of("nome", "Comunidade Sao Jose", "tipo", "COMUNIDADE"));
             assertThat(erro).isNull();
         }
@@ -218,7 +218,7 @@ class ImportacaoLinhaExecutorTest {
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> novoExecutor().processarImportacao(TipoEntidadeImportacao.MEMBRO,
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz", "papel", "SECRETARIO"),
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz", "papel", "SECRETARIO"),
                     "actor"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Usuário não encontrado: joao");
@@ -229,10 +229,10 @@ class ImportacaoLinhaExecutorTest {
         void membroOrgInexistenteLancaExcecao() {
             UsuarioEntity usuario = new UsuarioEntity();
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao")).thenReturn(Optional.of(usuario));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.empty());
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> novoExecutor().processarImportacao(TipoEntidadeImportacao.MEMBRO,
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz", "papel", "SECRETARIO"),
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz", "papel", "SECRETARIO"),
                     "actor"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Organização não encontrada: Matriz");
@@ -245,20 +245,20 @@ class ImportacaoLinhaExecutorTest {
             UUID orgId = UUID.randomUUID();
             UsuarioEntity usuario = mock(UsuarioEntity.class);
             when(usuario.getFielId()).thenReturn(fielId);
-            GrupoParoquialEntity org = mock(GrupoParoquialEntity.class);
+            OrganizacaoEntity org = mock(OrganizacaoEntity.class);
             when(org.getId()).thenReturn(orgId);
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao")).thenReturn(Optional.of(usuario));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.of(org));
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.of(org));
 
             novoExecutor().processarImportacao(TipoEntidadeImportacao.MEMBRO,
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz", "papel", "SECRETARIO"),
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz", "papel", "SECRETARIO"),
                     "actor");
 
             ArgumentCaptor<MembroRequest> captor = ArgumentCaptor.forClass(MembroRequest.class);
             verify(adicionarMembroUseCase).execute(captor.capture(), eq("actor"));
             MembroRequest request = captor.getValue();
             assertThat(request.fielId()).isEqualTo(fielId);
-            assertThat(request.grupoParoquialId()).isEqualTo(orgId);
+            assertThat(request.organizacaoId()).isEqualTo(orgId);
             assertThat(request.papel()).isEqualTo("SECRETARIO");
             assertThat(request.dataEntrada()).isEqualTo(LocalDate.now());
             assertThat(request.igrejaId()).isNull();
@@ -272,28 +272,28 @@ class ImportacaoLinhaExecutorTest {
             UUID orgId = UUID.randomUUID();
             UsuarioEntity usuario = mock(UsuarioEntity.class);
             when(usuario.getFielId()).thenReturn(fielId);
-            GrupoParoquialEntity org = mock(GrupoParoquialEntity.class);
+            OrganizacaoEntity org = mock(OrganizacaoEntity.class);
             when(org.getId()).thenReturn(orgId);
             when(usuarioJpaRepository.findByUsernameIgnoreCase("joao")).thenReturn(Optional.of(usuario));
-            when(grupoParoquialJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.of(org));
+            when(organizacaoJpaRepository.findByNomeIgnoreCase("Matriz")).thenReturn(Optional.of(org));
 
             novoExecutor().processarImportacao(TipoEntidadeImportacao.MEMBRO,
-                    Map.of("usuarioUsername", "joao", "grupoParoquialNome", "Matriz"), "actor");
+                    Map.of("usuarioUsername", "joao", "organizacaoNome", "Matriz"), "actor");
 
             ArgumentCaptor<MembroRequest> captor = ArgumentCaptor.forClass(MembroRequest.class);
             verify(adicionarMembroUseCase).execute(captor.capture(), eq("actor"));
             assertThat(captor.getValue().papel()).isEqualTo("MEMBRO_PASTORAL");
             assertThat(captor.getValue().fielId()).isEqualTo(fielId);
-            assertThat(captor.getValue().grupoParoquialId()).isEqualTo(orgId);
+            assertThat(captor.getValue().organizacaoId()).isEqualTo(orgId);
         }
 
         @Test
-        @DisplayName("GRUPO_PAROQUIAL delega para GrupoParoquialService.criar")
-        void grupoParoquialDelegaParaService() {
-            novoExecutor().processarImportacao(TipoEntidadeImportacao.GRUPO_PAROQUIAL,
+        @DisplayName("ORGANIZACAO delega para OrganizacaoService.criar")
+        void organizacaoDelegaParaService() {
+            novoExecutor().processarImportacao(TipoEntidadeImportacao.ORGANIZACAO,
                     Map.of("nome", "Ministerio de Musica", "tipo", "MINISTERIO"), "actor");
 
-            verify(grupoParoquialService).criar("Ministerio de Musica", TipoGrupo.MINISTERIO,
+            verify(organizacaoService).criar("Ministerio de Musica", TipoOrganizacao.MINISTERIO,
                     null, null, null, null, null);
         }
 
@@ -302,11 +302,11 @@ class ImportacaoLinhaExecutorTest {
         void eventoPersisteComStatusDefault() {
             stubProvisionamentoLiturgico();
             when(anoParoquialJpaRepository.findByAno(2026)).thenReturn(Optional.empty());
-            when(grupoParoquialJpaRepository.existsById(any())).thenReturn(true);
+            when(organizacaoJpaRepository.existsById(any())).thenReturn(true);
 
             novoExecutor().processarImportacao(TipoEntidadeImportacao.EVENTO,
                     Map.of("nome", "Missa", "dataInicio", "2026-10-15T10:00:00Z",
-                            "grupoParoquialId", UUID.randomUUID().toString()),
+                            "organizacaoId", UUID.randomUUID().toString()),
                     "actor");
 
             verify(eventoJpaRepository).save(any(EventoEntity.class));
@@ -432,86 +432,86 @@ class ImportacaoLinhaExecutorTest {
     }
 
     @Nested
-    @DisplayName("resolveParentId (via importGrupoParoquial)")
+    @DisplayName("resolveParentId (via importOrganizacao)")
     class ResolveParentId {
 
         @Test
         @DisplayName("parentId inexistente cai para busca automática: CONSELHO usa primeira MATRIZ/COMUNIDADE")
         void conselhoSemParentIdUsaPrimeiraUnidade() {
-            when(grupoParoquialJpaRepository.findAll()).thenReturn(List.of(new GrupoParoquialEntity()));
+            when(organizacaoJpaRepository.findAll()).thenReturn(List.of(new OrganizacaoEntity()));
             UnidadeTerritorialEntity matriz = mock(UnidadeTerritorialEntity.class);
             when(matriz.getTipo()).thenReturn(TipoUnidadeTerritorial.MATRIZ);
             UUID matrizId = UUID.randomUUID();
             when(matriz.getId()).thenReturn(matrizId);
             when(unidadeTerritorialJpaRepository.findAll()).thenReturn(List.of(matriz));
 
-            novoExecutor().processarImportacao(TipoEntidadeImportacao.GRUPO_PAROQUIAL,
+            novoExecutor().processarImportacao(TipoEntidadeImportacao.ORGANIZACAO,
                     Map.of("nome", "Conselho Central", "tipo", "CONSELHO"), "actor");
 
-            verify(grupoParoquialService).criar("Conselho Central", TipoGrupo.CONSELHO,
+            verify(organizacaoService).criar("Conselho Central", TipoOrganizacao.CONSELHO,
                     null, null, null, matrizId, null);
         }
 
         @Test
         @DisplayName("PASTORAL sem parentId usa a primeira organização do tipo CONSELHO como pai")
         void pastoralSemParentIdUsaPrimeiroConselho() {
-            GrupoParoquialEntity conselho = mock(GrupoParoquialEntity.class);
-            when(conselho.getTipo()).thenReturn(TipoGrupo.CONSELHO);
+            OrganizacaoEntity conselho = mock(OrganizacaoEntity.class);
+            when(conselho.getTipo()).thenReturn(TipoOrganizacao.CONSELHO);
             UUID conselhoId = UUID.randomUUID();
             when(conselho.getId()).thenReturn(conselhoId);
-            when(grupoParoquialJpaRepository.findAll()).thenReturn(List.of(conselho));
+            when(organizacaoJpaRepository.findAll()).thenReturn(List.of(conselho));
             when(pastoralOficialRepository.findAll()).thenReturn(List.of());
 
-            novoExecutor().processarImportacao(TipoEntidadeImportacao.GRUPO_PAROQUIAL,
+            novoExecutor().processarImportacao(TipoEntidadeImportacao.ORGANIZACAO,
                     Map.of("nome", "Pastoral da Familia", "tipo", "PASTORAL"), "actor");
 
-            verify(grupoParoquialService).criar("Pastoral da Familia", TipoGrupo.PASTORAL,
+            verify(organizacaoService).criar("Pastoral da Familia", TipoOrganizacao.PASTORAL,
                     null, null, null, conselhoId, null);
         }
 
         @Test
         @DisplayName("tipo desconhecido de organização recai em PASTORAL")
         void tipoOrgDesconhecidoRecaiEmPastoral() {
-            when(grupoParoquialJpaRepository.findAll()).thenReturn(List.of());
+            when(organizacaoJpaRepository.findAll()).thenReturn(List.of());
 
-            novoExecutor().processarImportacao(TipoEntidadeImportacao.GRUPO_PAROQUIAL,
+            novoExecutor().processarImportacao(TipoEntidadeImportacao.ORGANIZACAO,
                     Map.of("nome", "Movimento X", "tipo", "TIPO_INVALIDO"), "actor");
 
-            verify(grupoParoquialService).criar("Movimento X", TipoGrupo.PASTORAL,
+            verify(organizacaoService).criar("Movimento X", TipoOrganizacao.PASTORAL,
                     null, null, null, null, null);
         }
 
         @Test
         @DisplayName("PASTORAL/MOVIMENTO resolve pastoralOficialId pelo tipo quando não informado")
         void pastoralResolvePastoralOficialIdPeloTipo() {
-            when(grupoParoquialJpaRepository.findAll()).thenReturn(List.of());
+            when(organizacaoJpaRepository.findAll()).thenReturn(List.of());
             UUID oficialId = UUID.randomUUID();
             PastoralMovimentoOficial oficial = mock(PastoralMovimentoOficial.class);
-            when(oficial.getTipo()).thenReturn(TipoGrupo.PASTORAL);
+            when(oficial.getTipo()).thenReturn(TipoOrganizacao.PASTORAL);
             when(oficial.getId()).thenReturn(oficialId);
             when(pastoralOficialRepository.findAll()).thenReturn(List.of(oficial));
 
-            novoExecutor().processarImportacao(TipoEntidadeImportacao.GRUPO_PAROQUIAL,
+            novoExecutor().processarImportacao(TipoEntidadeImportacao.ORGANIZACAO,
                     Map.of("nome", "Pastoral da Familia", "tipo", "PASTORAL"), "actor");
 
-            verify(grupoParoquialService).criar("Pastoral da Familia", TipoGrupo.PASTORAL,
+            verify(organizacaoService).criar("Pastoral da Familia", TipoOrganizacao.PASTORAL,
                     null, null, null, null, oficialId);
         }
     }
 
     @Nested
-    @DisplayName("resolveGrupoParoquialResponsavelId (via importEvento)")
-    class ResolveGrupoParoquialResponsavelId {
+    @DisplayName("resolveOrganizacaoResponsavelId (via importEvento)")
+    class ResolveOrganizacaoResponsavelId {
 
         @Test
-        @DisplayName("grupoParoquialId inválido/ausente cai para a primeira organização cadastrada")
-        void semGrupoParoquialIdUsaPrimeiraOrganizacao() {
+        @DisplayName("organizacaoId inválido/ausente cai para a primeira organização cadastrada")
+        void semOrganizacaoIdUsaPrimeiraOrganizacao() {
             stubProvisionamentoLiturgico();
             when(anoParoquialJpaRepository.findByAno(any(Integer.class))).thenReturn(Optional.empty());
-            GrupoParoquialEntity primeira = mock(GrupoParoquialEntity.class);
+            OrganizacaoEntity primeira = mock(OrganizacaoEntity.class);
             UUID primeiraId = UUID.randomUUID();
             when(primeira.getId()).thenReturn(primeiraId);
-            when(grupoParoquialJpaRepository.findAll()).thenReturn(List.of(primeira));
+            when(organizacaoJpaRepository.findAll()).thenReturn(List.of(primeira));
 
             EventoEntity[] captured = new EventoEntity[1];
             when(eventoJpaRepository.save(any(EventoEntity.class))).thenAnswer(inv -> {
@@ -522,16 +522,16 @@ class ImportacaoLinhaExecutorTest {
             novoExecutor().processarImportacao(TipoEntidadeImportacao.EVENTO,
                     Map.of("nome", "Missa", "dataInicio", "2026-10-15T10:00:00Z"), "actor");
 
-            assertThat(captured[0].getGrupoParoquialResponsavelId()).isEqualTo(primeiraId);
+            assertThat(captured[0].getOrganizacaoResponsavelId()).isEqualTo(primeiraId);
         }
 
         @Test
-        @DisplayName("grupoParoquialId válido e existente é utilizado diretamente")
-        void grupoParoquialIdValidoEExistenteEUsadoDiretamente() {
+        @DisplayName("organizacaoId válido e existente é utilizado diretamente")
+        void organizacaoIdValidoEExistenteEUsadoDiretamente() {
             stubProvisionamentoLiturgico();
             when(anoParoquialJpaRepository.findByAno(any(Integer.class))).thenReturn(Optional.empty());
             UUID orgId = UUID.randomUUID();
-            when(grupoParoquialJpaRepository.existsById(orgId)).thenReturn(true);
+            when(organizacaoJpaRepository.existsById(orgId)).thenReturn(true);
 
             EventoEntity[] captured = new EventoEntity[1];
             when(eventoJpaRepository.save(any(EventoEntity.class))).thenAnswer(inv -> {
@@ -541,10 +541,10 @@ class ImportacaoLinhaExecutorTest {
 
             novoExecutor().processarImportacao(TipoEntidadeImportacao.EVENTO,
                     Map.of("nome", "Missa", "dataInicio", "2026-10-15T10:00:00Z",
-                            "grupoParoquialId", orgId.toString()),
+                            "organizacaoId", orgId.toString()),
                     "actor");
 
-            assertThat(captured[0].getGrupoParoquialResponsavelId()).isEqualTo(orgId);
+            assertThat(captured[0].getOrganizacaoResponsavelId()).isEqualTo(orgId);
         }
     }
 }

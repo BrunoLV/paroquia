@@ -18,5 +18,5 @@ public record EventoCanceladoResponse(
         String titulo,
         Instant inicio,
         Instant fim,
-        UUID grupoParoquialResponsavelId) {
+        UUID organizacaoResponsavelId) {
 }

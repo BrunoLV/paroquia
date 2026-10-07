@@ -396,7 +396,7 @@ public class ExportadorCalendarioPdf implements ExportadorCalendario {
         conteudo.add(Chunk.NEWLINE);
 
         String metaLinha2 = "Local: " + localLabel(e, localMap)
-                + "  |  Organização: " + orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), NA)
+                + "  |  Organização: " + orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), NA)
                 + "  |  Status: " + (e.getStatus() != null ? e.getStatus() : NA);
         String nomeProjeto = e.getProjetoId() != null ? projetoMap.get(e.getProjetoId()) : null;
         if (nomeProjeto != null) {

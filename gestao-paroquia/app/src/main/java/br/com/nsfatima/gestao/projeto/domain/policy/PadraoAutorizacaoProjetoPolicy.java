@@ -27,18 +27,18 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
             PapelOrganizacional.SECRETARIO_GRUPO);
 
     @Override
-    public boolean isAtorDeAltoNivel(String rawRole, String rawTipoGrupo) {
+    public boolean isAtorDeAltoNivel(String rawRole, String rawTipoOrganizacao) {
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
         return papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO;
     }
 
     @Override
     public void assertCanCreate(
-            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+            String rawRole, String rawTipoOrganizacao, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para criar projetos");
         }
-        if (!isAtorDeAltoNivel(rawRole, rawTipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(rawRole, rawTipoOrganizacao) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new OperacaoProibidaException("Usuário não pode criar projetos para outra organização");
         }
@@ -46,11 +46,11 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
 
     @Override
     public void assertCanEdit(
-            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
+            String rawRole, String rawTipoOrganizacao, UUID atorOrganizacaoId, UUID targetOrgId) {
         if (!isEditorRole(rawRole)) {
             throw new OperacaoProibidaException("Usuário não tem permissão para editar projetos");
         }
-        if (!isAtorDeAltoNivel(rawRole, rawTipoGrupo) && atorOrganizacaoId != null
+        if (!isAtorDeAltoNivel(rawRole, rawTipoOrganizacao) && atorOrganizacaoId != null
                 && !Objects.equals(atorOrganizacaoId, targetOrgId)) {
             throw new OperacaoProibidaException("Usuário não pode editar projetos de outra organização");
         }
@@ -58,8 +58,8 @@ public final class PadraoAutorizacaoProjetoPolicy implements AutorizacaoProjetoP
 
     @Override
     public void assertCanStartOrConclude(
-            String rawRole, String rawTipoGrupo, UUID atorOrganizacaoId, UUID targetOrgId) {
-        if (isAtorDeAltoNivel(rawRole, rawTipoGrupo)) {
+            String rawRole, String rawTipoOrganizacao, UUID atorOrganizacaoId, UUID targetOrgId) {
+        if (isAtorDeAltoNivel(rawRole, rawTipoOrganizacao)) {
             return;
         }
         PapelOrganizacional papelOrg = PapelOrganizacional.fromStoredValue(rawRole);

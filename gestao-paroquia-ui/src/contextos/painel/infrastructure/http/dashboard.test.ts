@@ -21,7 +21,7 @@ describe('Painel API Client', () => {
         totalEventosPeriodo: 5, projetosAtivos: 2, solicitacoesPendentes: 1,
         totalFieisAtivos: 10, novosFieisMes: 1, fieisEngajadosPastoral: 6, fieisSemVinculoPastoral: 4,
       },
-      eventosPorGrupoParoquial: [],
+      eventosPorOrganizacao: [],
       projetosPorStatus: { planejamento: 0, emExecucao: 0, concluidos: 0, atrasados: 0 },
       projetosAtivosDetalhes: [],
       eventosOrfaos: [],
@@ -32,7 +32,7 @@ describe('Painel API Client', () => {
     const result = await getDashboardMetrics({ periodo: 'SEMANA' });
 
     expect(apiClient.get).toHaveBeenCalledWith('/painel/metricas', {
-      params: { periodo: 'SEMANA', grupoParoquialId: undefined },
+      params: { periodo: 'SEMANA', organizacaoId: undefined },
     });
     expect(result).toEqual(mockData);
   });

@@ -40,7 +40,7 @@ public class AtualizarEventoEnvolvidosUseCase {
                     .map(input -> {
                         EventoEnvolvidoEntity entity = new EventoEnvolvidoEntity();
                         entity.setEventoId(eventoId);
-                        entity.setGrupoParoquialId(input.grupoParoquialId());
+                        entity.setOrganizacaoId(input.organizacaoId());
                         entity.setPapelParticipacao(input.papel());
                         return entity;
                     })
@@ -52,7 +52,7 @@ public class AtualizarEventoEnvolvidosUseCase {
                 eventoEnvolvidoJpaRepository.findByEventoId(eventoId)
                         .stream()
                         .map(entity -> new EventoEnvolvidosResponse.EventoEnvolvidoOutput(
-                                entity.getGrupoParoquialId(),
+                                entity.getOrganizacaoId(),
                                 entity.getPapelParticipacao()))
                         .toList();
 

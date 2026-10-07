@@ -1,12 +1,12 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
-import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
-import br.com.nsfatima.gestao.organizacao.domain.model.GrupoParoquial;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
+import br.com.nsfatima.gestao.organizacao.domain.model.Organizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.organizacao.domain.repository.GrupoParoquialRepository;
+import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
@@ -29,29 +29,29 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-class GrupoParoquialServiceTest {
+class OrganizacaoServiceTest {
 
     private final UUID cleroUnidadeId = UUID.randomUUID();
     private final UUID matrizId = UUID.randomUUID();
     private final UUID conselhoId = UUID.randomUUID();
     private final UUID pastoralOficialId = UUID.randomUUID();
     private final UUID movimentoOficialId = UUID.randomUUID();
-    private GrupoParoquialService service;
-    private GrupoParoquialRepository repository;
+    private OrganizacaoService service;
+    private OrganizacaoRepository repository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private AuditoriaPersistenceService auditLogService;
 
     @BeforeEach
     void setUp() {
-        repository = mock(GrupoParoquialRepository.class);
+        repository = mock(OrganizacaoRepository.class);
         unidadeTerritorialRepository = mock(UnidadeTerritorialJpaRepository.class);
         auditLogService = mock(AuditoriaPersistenceService.class);
         PastoralMovimentoOficialRepository pastoralOficialRepository = mock(PastoralMovimentoOficialRepository.class);
-        service = new GrupoParoquialService(repository, auditLogService,
+        service = new OrganizacaoService(repository, auditLogService,
                 new ValidadorHierarquiaOrganizacional(repository, pastoralOficialRepository,
                         unidadeTerritorialRepository));
 
-        // Setup mock unidades territoriais (Clero/Matriz não são mais GrupoParoquial, track
+        // Setup mock unidades territoriais (Clero/Matriz não são mais Organizacao, track
         // linguagem_ubiqua_dominio)
         UnidadeTerritorialEntity matrizUnidade = new UnidadeTerritorialEntity();
         matrizUnidade.setId(matrizId);
@@ -63,27 +63,27 @@ class GrupoParoquialServiceTest {
         when(unidadeTerritorialRepository.findById(matrizId)).thenReturn(Optional.of(matrizUnidade));
 
         // Setup mock parent
-        GrupoParoquial conselho = new GrupoParoquial(conselhoId,
-                "Conselho", TipoGrupo.CONSELHO, "conselho@test.com", "Coordenador", null, true,
+        Organizacao conselho = new Organizacao(conselhoId,
+                "Conselho", TipoOrganizacao.CONSELHO, "conselho@test.com", "Coordenador", null, true,
                 matrizId, null);
 
         when(repository.findById(conselhoId)).thenReturn(Optional.of(conselho));
 
         // Setup mock official pastorals
         PastoralMovimentoOficial pastoralOficial = new PastoralMovimentoOficial(pastoralOficialId,
-                "Oficial Pastoral", TipoGrupo.PASTORAL);
+                "Oficial Pastoral", TipoOrganizacao.PASTORAL);
 
         PastoralMovimentoOficial movimentoOficial = new PastoralMovimentoOficial(movimentoOficialId,
-                "Oficial Movimento", TipoGrupo.MOVIMENTO);
+                "Oficial Movimento", TipoOrganizacao.MOVIMENTO);
 
         when(pastoralOficialRepository.findById(pastoralOficialId)).thenReturn(Optional.of(pastoralOficial));
         when(pastoralOficialRepository.findById(movimentoOficialId)).thenReturn(Optional.of(movimentoOficial));
     }
 
     @Test
-    void deveCriarGrupoParoquial() {
-        GrupoParoquial created = service.criar("PJ",
-                TipoGrupo.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
+    void deveCriarOrganizacao() {
+        Organizacao created = service.criar("PJ",
+                TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
                 movimentoOficialId);
 
 
@@ -92,26 +92,26 @@ class GrupoParoquialServiceTest {
         assertEquals("Coordenador A", created.getCoordenador());
         assertEquals("Vice Coordenador B", created.getViceCoordenador());
         assertTrue(created.isAtivo());
-        verify(repository).save(any(GrupoParoquial.class));
+        verify(repository).save(any(Organizacao.class));
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test
-    void deveAtualizarGrupoParoquial() {
+    void deveAtualizarOrganizacao() {
         UUID id = UUID.randomUUID();
-        GrupoParoquial org = new GrupoParoquial(id,
-                "PJ", TipoGrupo.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
                 conselhoId, movimentoOficialId);
 
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
         service.atualizar(id,
-                "PJ Novo", TipoGrupo.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
+                "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
                 conselhoId, pastoralOficialId);
 
 
         assertEquals("PJ Novo", org.getNome());
-        assertEquals(TipoGrupo.PASTORAL, org.getTipo());
+        assertEquals(TipoOrganizacao.PASTORAL, org.getTipo());
         assertEquals("Novo Coordenador", org.getCoordenador());
         assertEquals("Novo Vice", org.getViceCoordenador());
         assertFalse(org.isAtivo());
@@ -122,14 +122,14 @@ class GrupoParoquialServiceTest {
     @Test
     void deveLancarExceptionQuandoExcluindoOrgEmUso() {
         UUID id = UUID.randomUUID();
-        GrupoParoquial org = new GrupoParoquial(id,
-                "PJ", TipoGrupo.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
                 conselhoId, movimentoOficialId);
 
         when(repository.findById(id)).thenReturn(Optional.of(org));
         when(repository.hasDependencies(id)).thenReturn(true);
 
-        assertThrows(GrupoParoquialNegocioException.class, () -> service.excluir(id));
+        assertThrows(OrganizacaoNegocioException.class, () -> service.excluir(id));
         verify(repository, never()).delete(id);
         verify(auditLogService, never()).log(anyString(), anyString(), anyString(), anyString(), anyMap());
     }
@@ -137,8 +137,8 @@ class GrupoParoquialServiceTest {
     @Test
     void deveExcluirOrgQuandoNaoEmUso() {
         UUID id = UUID.randomUUID();
-        GrupoParoquial org = new GrupoParoquial(id,
-                "PJ", TipoGrupo.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
+        Organizacao org = new Organizacao(id,
+                "PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", true,
                 conselhoId, movimentoOficialId);
 
         when(repository.findById(id)).thenReturn(Optional.of(org));
@@ -150,40 +150,40 @@ class GrupoParoquialServiceTest {
     }
 
     @Test
-    void deveCriarGrupoParoquialComConselho() {
-        GrupoParoquial created = service.criar("Conselho",
-                TipoGrupo.CONSELHO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
+    void deveCriarOrganizacaoComConselho() {
+        Organizacao created = service.criar("Conselho",
+                TipoOrganizacao.CONSELHO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
                 matrizId, null);
 
 
         assertNotNull(created.getId());
-        assertEquals(TipoGrupo.CONSELHO, created.getTipo());
+        assertEquals(TipoOrganizacao.CONSELHO, created.getTipo());
     }
 
     @Test
     void deveFalhaParaCriarConselhoSemMatrizOuComunidadePai() {
-        assertThrows(GrupoParoquialNegocioException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Conselho Sem Pai",
-                        TipoGrupo.CONSELHO, "test@test.com", "Coord", "Vice", null, null)
+                        TipoOrganizacao.CONSELHO, "test@test.com", "Coord", "Vice", null, null)
 
         );
-        assertThrows(GrupoParoquialNegocioException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Conselho Com Pai Incorreto",
-                        TipoGrupo.CONSELHO, "test@test.com", "Coord", "Vice", cleroUnidadeId, null)
+                        TipoOrganizacao.CONSELHO, "test@test.com", "Coord", "Vice", cleroUnidadeId, null)
 
         );
     }
 
     @Test
     void deveFalhaParaCriarPastoralSemConselhoPai() {
-        assertThrows(GrupoParoquialNegocioException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Sem Pai",
-                        TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
 
         );
-        assertThrows(GrupoParoquialNegocioException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Com Pai Incorreto",
-                        TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
 
         );
     }
@@ -191,26 +191,26 @@ class GrupoParoquialServiceTest {
     @Test
     void deveFalhaParaCriarOrgSePaiEInativo() {
         UUID inactiveId = UUID.randomUUID();
-        GrupoParoquial inactiveParent = new GrupoParoquial(inactiveId,
-                "Conselho Inativo", TipoGrupo.CONSELHO, "conselho@test.com", "Coordenador", null,
+        Organizacao inactiveParent = new Organizacao(inactiveId,
+                "Conselho Inativo", TipoOrganizacao.CONSELHO, "conselho@test.com", "Coordenador", null,
                 false, matrizId, null);
 
         when(repository.findById(inactiveId)).thenReturn(Optional.of(inactiveParent));
 
-        assertThrows(GrupoParoquialNegocioException.class, () ->
+        assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Novo",
-                        TipoGrupo.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId)
 
         );
     }
 
     @Test
     void devePermitirCriandoMinisterioComNuloPai() {
-        GrupoParoquial created = service.criar("Ministério Novo",
-                TipoGrupo.MINISTERIO, "ministerio@test.com", "Coord", "Vice", null, null);
+        Organizacao created = service.criar("Ministério Novo",
+                TipoOrganizacao.MINISTERIO, "ministerio@test.com", "Coord", "Vice", null, null);
 
         assertNotNull(created.getId());
-        assertEquals(TipoGrupo.MINISTERIO, created.getTipo());
+        assertEquals(TipoOrganizacao.MINISTERIO, created.getTipo());
         assertNull(created.getParentId());
     }
 }
