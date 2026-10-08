@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.domain.policy;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.util.UUID;
 
@@ -11,20 +11,20 @@ public interface AutorizacaoEscopoUsuarioPolicy {
 
     boolean canManageOrganizationData(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId);
 
     boolean canApproveEvents(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId);
 
     boolean canAddObservation(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant);

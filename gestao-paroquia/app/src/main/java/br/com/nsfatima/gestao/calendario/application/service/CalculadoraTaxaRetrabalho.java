@@ -57,24 +57,24 @@ public class CalculadoraTaxaRetrabalho {
      * afetados por operações auditadas no período; retorna {@code 0.0} quando não há
      * eventos afetados, para evitar divisão por zero.
      *
-     * @param grupoParoquialId organização cujas operações auditadas serão consideradas
+     * @param organizacaoId organização cujas operações auditadas serão consideradas
      * @param periodo período operacional já resolvido (início/fim) para o cálculo
      * @return indicador com a taxa calculada e os valores de numerador/denominador
      */
     public IndicadorRetrabalhoResponse calcularParaOrganizacao(
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             PeriodoOperacionalPolicy.ResolvedPeriod periodo) {
         long numerador = auditoriaOperacaoJpaRepository.contarOcorrenciasRetrabalhoAdministrativoElegiveis(
-                grupoParoquialId,
+                organizacaoId,
                 periodo.inicio(),
                 periodo.fim());
         long denominador = auditoriaOperacaoJpaRepository.contarEventosDistintosAfetados(
-                grupoParoquialId,
+                organizacaoId,
                 periodo.inicio(),
                 periodo.fim());
         BigDecimal taxa = calcularTaxa(numerador, denominador);
         return new IndicadorRetrabalhoResponse(
-                grupoParoquialId,
+                organizacaoId,
                 new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()),
                 taxa,
                 numerador,
@@ -143,7 +143,7 @@ public class CalculadoraTaxaRetrabalho {
 
         Map<String, Object> detalhes = desserializarDetalhes(registroAuditoria.getDetalhesAuditaveisJson());
         return isTrue(detalhes.get("agendaAlterada"))
-                || isTrue(detalhes.get("grupoParoquialResponsavelAlterada"))
+                || isTrue(detalhes.get("organizacaoResponsavelAlterada"))
                 || isTrue(detalhes.get("cancelamento"));
     }
 

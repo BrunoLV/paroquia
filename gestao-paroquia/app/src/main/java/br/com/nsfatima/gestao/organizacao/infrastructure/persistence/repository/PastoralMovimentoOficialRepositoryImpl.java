@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
+import br.com.nsfatima.gestao.organizacao.domain.model.ReconhecimentoEstatuto;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.PastoralMovimentoOficialEntity;
 import org.springframework.stereotype.Repository;
@@ -29,6 +30,11 @@ public class PastoralMovimentoOficialRepositoryImpl implements PastoralMovimento
         entity.setId(domain.getId());
         entity.setNome(domain.getNome());
         entity.setTipo(domain.getTipo());
+        entity.setAmbito(domain.getAmbito());
+        ReconhecimentoEstatuto rec = domain.getReconhecimento();
+        entity.setEstatutoAutoridade(rec == null ? null : rec.autoridade());
+        entity.setEstatutoData(rec == null ? null : rec.data());
+        entity.setEstatutoReferencia(rec == null ? null : rec.referencia());
         jpaRepository.save(entity);
     }
 
@@ -58,7 +64,10 @@ public class PastoralMovimentoOficialRepositoryImpl implements PastoralMovimento
         return new PastoralMovimentoOficial(
                 entity.getId(),
                 entity.getNome(),
-                entity.getTipo()
+                entity.getTipo(),
+                entity.getAmbito(),
+                entity.getEstatutoAutoridade() == null ? null : new ReconhecimentoEstatuto(
+                        entity.getEstatutoAutoridade(), entity.getEstatutoData(), entity.getEstatutoReferencia())
         );
     }
 }

@@ -33,7 +33,7 @@ public record CriarEventoRequest(
         CategoriaEvento categoria,
 
         @Schema(description = "ID da organização responsável pelo evento")
-        @NotNull UUID grupoParoquialResponsavelId,
+        @NotNull UUID organizacaoResponsavelId,
 
         @Schema(description = "ID do projeto ao qual o evento pertence")
         UUID projetoId,
@@ -104,7 +104,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             List<UUID> localIds,
@@ -120,7 +120,7 @@ public record CriarEventoRequest(
             Boolean confirmarComConflito,
             TipoHorarioEvento tipoHorario,
             FormatoEvento formato) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId,
                 localIds, igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa,
                 participantes, liberarConflitoAgenda, ativoIds, regraRecorrencia, confirmarComConflito,
                 tipoHorario, formato, List.of());
@@ -130,7 +130,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             List<UUID> localIds,
@@ -145,7 +145,7 @@ public record CriarEventoRequest(
             RegraRecorrencia regraRecorrencia,
             Boolean confirmarComConflito,
             TipoHorarioEvento tipoHorario) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId,
                 localIds, igrejaVinculoId,
                 inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, ativoIds,
                 regraRecorrencia, confirmarComConflito, tipoHorario, null);
@@ -155,7 +155,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId,
@@ -168,7 +168,7 @@ public record CriarEventoRequest(
             List<UUID> ativoIds,
             RegraRecorrencia regraRecorrencia,
             Boolean confirmarComConflito) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId,
                 localId != null ? List.of(localId) : List.of(), igrejaVinculoId,
                 inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, ativoIds,
                 regraRecorrencia, confirmarComConflito, TipoHorarioEvento.PERSONALIZADO);
@@ -178,7 +178,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId,
@@ -189,7 +189,7 @@ public record CriarEventoRequest(
             List<UUID> participantes,
             Boolean liberarConflitoAgenda,
             List<UUID> ativoIds) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId,
                 localId != null ? List.of(localId) : List.of(), igrejaVinculoId,
                 inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda, ativoIds,
                 null, false, TipoHorarioEvento.PERSONALIZADO);
@@ -199,7 +199,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId,
@@ -209,7 +209,7 @@ public record CriarEventoRequest(
             String adicionadoExtraJustificativa,
             List<UUID> participantes,
             Boolean liberarConflitoAgenda) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, igrejaVinculoId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId, igrejaVinculoId,
                 inicio, fim, status, adicionadoExtraJustificativa, participantes, liberarConflitoAgenda,
                 List.of(), null, false);
     }
@@ -218,7 +218,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId,
@@ -227,7 +227,7 @@ public record CriarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
-        this(titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, localId,
+        this(titulo, descricao, categoria, organizacaoResponsavelId, projetoId, localId,
                 igrejaVinculoId, inicio, fim, status, adicionadoExtraJustificativa, participantes, false);
     }
 
@@ -235,7 +235,7 @@ public record CriarEventoRequest(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             UUID localId,
             Instant inicio,
@@ -244,7 +244,7 @@ public record CriarEventoRequest(
             String adicionadoExtraJustificativa,
             List<UUID> participantes) {
         this(titulo,
-                descricao, categoria, grupoParoquialResponsavelId, projetoId, localId, null, inicio, fim, status,
+                descricao, categoria, organizacaoResponsavelId, projetoId, localId, null, inicio, fim, status,
                 adicionadoExtraJustificativa, participantes, false);
     }
 

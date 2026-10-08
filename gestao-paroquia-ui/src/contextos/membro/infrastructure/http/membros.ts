@@ -1,4 +1,5 @@
 import apiClient from '@/shared/infrastructure/http/client';
+import { IdoneidadeAgente } from '@/shared/domain/types/types';
 
 export interface Membro {
   id: string;
@@ -6,10 +7,7 @@ export interface Membro {
   fielNome?: string;
   fielEmail?: string;
   fielTelefone?: string;
-  grupoParoquialId: string;
-  grupoParoquialNome?: string;
-  /** Aliases para compatibilidade */
-  organizacaoId?: string;
+  organizacaoId: string;
   organizacaoNome?: string;
   papel: string;
   dataEntrada?: string;
@@ -20,7 +18,7 @@ export interface Membro {
 
 export interface MembroRequest {
   fielId: string;
-  grupoParoquialId: string;
+  organizacaoId: string;
   papel: string;
   dataEntrada?: string;
   igrejaVinculoId?: string;
@@ -29,7 +27,7 @@ export interface MembroRequest {
 
 export interface PromoverACoordenadorPayload {
   fielId: string;
-  grupoParoquialId: string;
+  organizacaoId: string;
   papel: string;
   username?: string;
   password?: string;
@@ -42,7 +40,7 @@ export interface PromoverACoordenadorResponse {
 }
 
 export const getMembros = async (params?: {
-  grupoParoquialId?: string;
+  organizacaoId?: string;
   fielId?: string;
   ativo?: boolean;
 }): Promise<{ content: Membro[] }> => {
@@ -71,5 +69,28 @@ export const promoverACoordenador = async (
     '/membros/promover-coordenador',
     payload
   );
+  return response.data;
+};
+
+export interface RegistroIdoneidade {
+  formacaoConcluidaEm: string | null;
+  vivenciaSacramentalAtestadaEm: string | null;
+  termoProtecaoMenoresEm: string | null;
+  termoProtecaoMenoresValidoAte: string | null;
+  enviadoEm: string | null;
+}
+
+/** Consulta a idoneidade pastoral do agente e as pendências para a função que ele ocupa. */
+export const getIdoneidade = async (membroId: string): Promise<IdoneidadeAgente> => {
+  const response = await apiClient.get<IdoneidadeAgente>(`/membros/${membroId}/idoneidade`);
+  return response.data;
+};
+
+/** Registra a idoneidade pastoral do agente (apenas datas atestadas). */
+export const registrarIdoneidade = async (
+  membroId: string,
+  registro: RegistroIdoneidade
+): Promise<IdoneidadeAgente> => {
+  const response = await apiClient.put<IdoneidadeAgente>(`/membros/${membroId}/idoneidade`, registro);
   return response.data;
 };

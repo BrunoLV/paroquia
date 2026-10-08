@@ -197,18 +197,18 @@ public class AtualizarEventoUseCase {
     private void validateAuthorization(EventoEntity entity,
                                        AtualizarEventoRequest request, EventoActorContext actorContext) {
 
-        if (request.grupoParoquialResponsavelId() != null &&
-                !request.grupoParoquialResponsavelId().equals(entity.getGrupoParoquialResponsavelId())) {
+        if (request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId())) {
             authorizationService.assertCanChangeResponsibleOrganization(actorContext);
         } else {
             authorizationService.assertCanEditGeneral(actorContext,
-                    entity.getGrupoParoquialResponsavelId(), entity.getIgrejaVinculoId());
+                    entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
 
         }
 
         if (request.participantes() != null) {
             authorizationService.assertCanManageParticipants(actorContext,
-                    entity.getGrupoParoquialResponsavelId(), entity.getIgrejaVinculoId());
+                    entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId());
 
         }
 
@@ -219,7 +219,7 @@ public class AtualizarEventoUseCase {
 
     private boolean requiresAprovacao(EventoEntity entity, EventoActorContext actorContext) {
         return authorizationService.resolveModoRequisicaoCriacao(actorContext,
-                entity.getGrupoParoquialResponsavelId(), entity.getIgrejaVinculoId())
+                entity.getOrganizacaoResponsavelId(), entity.getIgrejaVinculoId())
 
                 == ModoRequisicaoCriacao.REQUER_APROVACAO;
     }
@@ -277,7 +277,7 @@ public class AtualizarEventoUseCase {
                     request.localIds(),
                     request.ativoIds(),
                     actorContext.usuarioId(),
-                    saved.getGrupoParoquialResponsavelId(),
+                    saved.getOrganizacaoResponsavelId(),
                     saved.getInicioUtc(),
                     saved.getFimUtc(),
                     saved.getPeriodosList()
@@ -307,7 +307,7 @@ public class AtualizarEventoUseCase {
                             request.titulo(), request.descricao(), request.categoria(),
                             null, null, // Don't update template start/end times via instancia update
                             request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
-                            request.grupoParoquialResponsavelId(), request.participantes(),
+                            request.organizacaoResponsavelId(), request.participantes(),
                             null, request.projetoId(), request.localId(), request.igrejaVinculoId());
                     mapper.applyPatch(eventoBase, templateRequest, status);
                     repository.save(eventoBase);
@@ -327,7 +327,7 @@ public class AtualizarEventoUseCase {
                     request.titulo(), request.descricao(), request.categoria(),
                     null, null, // Don't change time for siblings
                     request.status(), request.adicionadoExtraJustificativa(), request.canceladoMotivo(),
-                    request.grupoParoquialResponsavelId(), request.participantes(),
+                    request.organizacaoResponsavelId(), request.participantes(),
                     null, request.projetoId(), request.localId(), request.igrejaVinculoId());
 
             mapper.applyPatch(instancia, siblingRequest, status);
@@ -393,13 +393,13 @@ public class AtualizarEventoUseCase {
 
         domainService.validateEvento(inicio, fim, status, justificativa);
 
-        UUID org = request.grupoParoquialResponsavelId() != null ? request.grupoParoquialResponsavelId() :
-                entity.getGrupoParoquialResponsavelId();
+        UUID org = request.organizacaoResponsavelId() != null ? request.organizacaoResponsavelId() :
+                entity.getOrganizacaoResponsavelId();
         List<UUID> part = request.participantes() != null ? request.participantes() :
                 envolvimentoRepository.findByEventoId(entity.getId()).stream().map(
-                        EventoEnvolvidoEntity::getGrupoParoquialId).toList();
+                        EventoEnvolvidoEntity::getOrganizacaoId).toList();
 
-        domainService.validateGrupoParoquialParticipantes(org, part);
+        domainService.validateOrganizacaoParticipantes(org, part);
 
         UUID projetoId = request.projetoId() != null ? request.projetoId() : entity.getProjetoId();
         boolean isRecurring = entity.getRecorrenciaId() != null
@@ -449,8 +449,8 @@ public class AtualizarEventoUseCase {
     private void publishMetrics(EventoEntity entity, AtualizarEventoRequest request) {
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
-        boolean orgChanged = request.grupoParoquialResponsavelId() != null &&
-                !request.grupoParoquialResponsavelId().equals(entity.getGrupoParoquialResponsavelId());
+        boolean orgChanged = request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(entity.getOrganizacaoResponsavelId());
 
         if (scheduleChanged || cancellation || orgChanged) {
             metricsPublisher.publishAdministrativeRework(scheduleChanged, cancellation, orgChanged);
@@ -469,14 +469,14 @@ public class AtualizarEventoUseCase {
 
         boolean scheduleChanged = request.inicio() != null || request.fim() != null;
         boolean cancellation = request.status() == EventoStatusInput.CANCELADO;
-        boolean orgChanged = request.grupoParoquialResponsavelId() != null &&
-                !request.grupoParoquialResponsavelId().equals(saved.getGrupoParoquialResponsavelId());
+        boolean orgChanged = request.organizacaoResponsavelId() != null &&
+                !request.organizacaoResponsavelId().equals(saved.getOrganizacaoResponsavelId());
 
         auditPublisher.publish(actorContext.actor(), "atualizar", saved.getId().toString(), result, Map.of(
-                "grupoParoquialId", saved.getGrupoParoquialResponsavelId(),
+                "organizacaoId", saved.getOrganizacaoResponsavelId(),
                 "agendaAlterada", scheduleChanged,
                 "cancelamento", cancellation,
-                "grupoParoquialResponsavelAlterada", orgChanged,
+                "organizacaoResponsavelAlterada", orgChanged,
                 "alteracaoSensivel", request.alteraCamposSensiveis(),
                 "fluxoAprovacao", fluxoAprovacao));
     }
@@ -500,7 +500,7 @@ public class AtualizarEventoUseCase {
                 payload.status(),
                 payload.adicionadoExtraJustificativa(),
                 payload.canceladoMotivo(),
-                payload.grupoParoquialResponsavelId(),
+                payload.organizacaoResponsavelId(),
                 payload.participantes(),
                 null,
                 payload.projetoId(),

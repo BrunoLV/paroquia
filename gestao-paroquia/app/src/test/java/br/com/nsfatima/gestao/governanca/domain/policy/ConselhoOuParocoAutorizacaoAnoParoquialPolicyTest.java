@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.governanca.domain.policy;
 import br.com.nsfatima.gestao.governanca.domain.exception.AnoParoquialNaoAutorizadoException;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ class ConselhoOuParocoAutorizacaoAnoParoquialPolicyTest {
     @DisplayName("nega membro do conselho pastoral e administrador técnico")
     void negaConselhoEAdmin() {
         assertThatThrownBy(() -> policy.assertPodeGerir(
-                PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(), TipoGrupo.CONSELHO.name()))
+                PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL.storedValue(), TipoOrganizacao.CONSELHO.name()))
                 .isInstanceOf(AnoParoquialNaoAutorizadoException.class);
         assertThatThrownBy(() -> policy.assertPodeGerir(PapelGlobal.ADMIN.storedValue(), null))
                 .isInstanceOf(AnoParoquialNaoAutorizadoException.class);
@@ -41,7 +41,7 @@ class ConselhoOuParocoAutorizacaoAnoParoquialPolicyTest {
     @DisplayName("nega coordenador pastoral")
     void negaCoordenadorPastoralForaDoConselho() {
         assertThatThrownBy(() -> policy.assertPodeGerir(
-                PapelOrganizacional.COORDENADOR.storedValue(), TipoGrupo.PASTORAL.name()))
+                PapelOrganizacional.COORDENADOR.storedValue(), TipoOrganizacao.PASTORAL.name()))
                 .isInstanceOf(AnoParoquialNaoAutorizadoException.class);
     }
 }

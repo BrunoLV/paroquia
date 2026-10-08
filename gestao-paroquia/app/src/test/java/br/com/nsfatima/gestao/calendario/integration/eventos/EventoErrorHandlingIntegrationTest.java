@@ -34,7 +34,7 @@ class EventoErrorHandlingIntegrationTest {
                 .andExpect(jsonPath("$.errorCode").value(ErrorCodes.VALIDATION_ERROR.name()))
                 .andExpect(jsonPath("$.errors[?(@.field == 'titulo')].code").value(
                         ErrorCodes.VALIDATION_REQUIRED_FIELD.name()))
-                .andExpect(jsonPath("$.errors[?(@.field == 'grupoParoquialResponsavelId')].code").value(
+                .andExpect(jsonPath("$.errors[?(@.field == 'organizacaoResponsavelId')].code").value(
                         ErrorCodes.VALIDATION_REQUIRED_FIELD.name()));
     }
 
@@ -46,7 +46,7 @@ class EventoErrorHandlingIntegrationTest {
         String payload = """
                 {
                   "titulo": "%s",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-000000000001",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-000000000001",
                   "inicio": "2026-06-11T17:00:00Z",
                   "fim": "2026-06-11T18:00:00Z"
                 }
@@ -69,7 +69,7 @@ class EventoErrorHandlingIntegrationTest {
         String payload = """
                 {
                   "titulo": "Valid Title",
-                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-000000000001",
+                  "organizacaoResponsavelId": "00000000-0000-0000-0000-000000000001",
                   "inicio": "2026-06-11T18:00:00Z",
                   "fim": "2026-06-11T17:00:00Z"
                 }

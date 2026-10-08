@@ -29,7 +29,7 @@ const defaultValues: EventoFormInput = {
   descricao: '',
   categoria: 'PASTORAL',
   status: 'CONFIRMADO',
-  grupoParoquialResponsavelId: '',
+  organizacaoResponsavelId: '',
   igrejaVinculoId: '',
   localId: '',
   localIds: [],
@@ -80,7 +80,7 @@ export const useCadastroEventoForm = ({
 
   const [startDate, orgId, igrejaVinculoId, localId, localIds, projetoId, isRecurring, recurrenceRule] = useWatch({
     control,
-    name: ['startDate', 'grupoParoquialResponsavelId', 'igrejaVinculoId', 'localId', 'localIds', 'projetoId', 'isRecurring', 'recurrenceRule'],
+    name: ['startDate', 'organizacaoResponsavelId', 'igrejaVinculoId', 'localId', 'localIds', 'projetoId', 'isRecurring', 'recurrenceRule'],
   });
   const endDate = useWatch({ control, name: 'endDate' });
 
@@ -108,16 +108,16 @@ export const useCadastroEventoForm = ({
     return organizations.filter((o) => (o.ativo || o.id === igrejaVinculoId) && (o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE'));
   }, [organizations, igrejaVinculoId]);
 
-  const grupoParoquialOptions = useMemo(() => {
+  const organizacaoOptions = useMemo(() => {
     return organizations.filter((o) => (o.ativo || o.id === orgId) && o.tipo !== 'MATRIZ' && o.tipo !== 'COMUNIDADE' && o.tipo !== 'CLERO');
   }, [organizations, orgId]);
 
   const filteredOrganizations = useMemo(() => {
     if (!user) return [];
-    if (isGlobalCreator(user)) return grupoParoquialOptions;
+    if (isGlobalCreator(user)) return organizacaoOptions;
     const userOrgIds = Array.isArray(user.organizations) ? user.organizations.map((org: { id: string }) => org.id) : [];
-    return grupoParoquialOptions.filter((org) => userOrgIds.includes(org.id) || org.id === orgId);
-  }, [user, grupoParoquialOptions, orgId]);
+    return organizacaoOptions.filter((org) => userOrgIds.includes(org.id) || org.id === orgId);
+  }, [user, organizacaoOptions, orgId]);
 
   const selectedLocalIds = Array.isArray(localIds) ? localIds : [];
   const localOptions = useMemo(
@@ -230,7 +230,7 @@ export const useCadastroEventoForm = ({
         titulo: initialEvent.titulo || '',
         descricao: initialEvent.descricao || '',
         categoria: initialEvent.categoria || 'PASTORAL',
-        grupoParoquialResponsavelId: initialEvent.grupoParoquialResponsavelId || '',
+        organizacaoResponsavelId: initialEvent.organizacaoResponsavelId || '',
         igrejaVinculoId: initialEvent.igrejaVinculoId || '',
         localId: initialEvent.localId || (initialEvent.localIds && initialEvent.localIds.length > 0 ? initialEvent.localIds[0] : ''),
         localIds: initialEvent.localIds && initialEvent.localIds.length > 0 ? initialEvent.localIds : (initialEvent.localId ? [initialEvent.localId] : []),
@@ -282,7 +282,7 @@ export const useCadastroEventoForm = ({
   // vazio; roda isolado do reset acima para não ser afetado pela recriação de array.
   useEffect(() => {
     if (!open || initialEvent) return;
-    if (filteredOrganizations.length > 0 && !orgId) setValue('grupoParoquialResponsavelId', filteredOrganizations[0].id);
+    if (filteredOrganizations.length > 0 && !orgId) setValue('organizacaoResponsavelId', filteredOrganizations[0].id);
     if (churches.length > 0 && !igrejaVinculoId) setValue('igrejaVinculoId', churches[0].id);
     if (localOptions.length > 0 && (!localIds || localIds.length === 0) && !localId) {
       setValue('localId', localOptions[0].id);
@@ -315,7 +315,7 @@ export const useCadastroEventoForm = ({
   const onInvalid = (errors: FieldErrors<EventoFormInput>) => {
     const priority: (keyof EventoFormInput)[] = [
       'titulo',
-      'grupoParoquialResponsavelId',
+      'organizacaoResponsavelId',
       'eventDate',
       'startDate',
       'endTime',
@@ -387,7 +387,7 @@ export const useCadastroEventoForm = ({
       descricao: data.descricao,
       categoria: data.categoria,
       formato: data.formato,
-      grupoParoquialResponsavelId: data.grupoParoquialResponsavelId,
+      organizacaoResponsavelId: data.organizacaoResponsavelId,
       igrejaVinculoId: data.igrejaVinculoId || null,
       localId: primaryLocalId,
       localIds: finalLocalIds,

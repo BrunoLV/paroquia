@@ -62,6 +62,9 @@ export interface OrganizacaoMembro {
   papel: string;
   ativo: boolean;
   igrejaVinculoId?: string | null;
+  /** Idoneidade para a função atual; ausente nos itens legados sem vínculo formal. */
+  apto?: boolean | null;
+  pendencias?: string[] | null;
 }
 
 /**

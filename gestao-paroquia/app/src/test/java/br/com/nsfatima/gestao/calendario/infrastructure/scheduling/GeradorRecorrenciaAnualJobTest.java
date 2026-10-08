@@ -49,7 +49,7 @@ class GeradorRecorrenciaAnualJobTest {
         EventoEntity baseEvent = new EventoEntity();
         baseEvent.setId(baseId);
         baseEvent.setTitulo("Missa Dominical");
-        baseEvent.setGrupoParoquialResponsavelId(UUID.randomUUID());
+        baseEvent.setOrganizacaoResponsavelId(UUID.randomUUID());
         baseEvent.setInicioUtc(Instant.parse("2026-01-04T08:00:00Z"));
         baseEvent.setFimUtc(Instant.parse("2026-01-04T09:00:00Z"));
         baseEvent.setStatus("CONFIRMADO");
@@ -89,7 +89,7 @@ class GeradorRecorrenciaAnualJobTest {
         EventoEntity baseEvent = new EventoEntity();
         baseEvent.setId(baseId);
         baseEvent.setTitulo("Encontro Semanal");
-        baseEvent.setGrupoParoquialResponsavelId(UUID.randomUUID());
+        baseEvent.setOrganizacaoResponsavelId(UUID.randomUUID());
         baseEvent.setInicioUtc(Instant.parse("2026-01-04T08:00:00Z"));
         baseEvent.setFimUtc(Instant.parse("2026-01-04T09:00:00Z"));
         baseEvent.setStatus("CONFIRMADO");

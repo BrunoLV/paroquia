@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.membro.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 /**
  * Acesso a persistência dos vínculos {@code Fiel}-organização ({@link MembroGrupoEntity}), unificando o que
- * antes eram três tabelas/repositórios separados (membros, membros_grupoParoquial, membros_organizacoes).
+ * antes eram três tabelas/repositórios separados (membros, membros_organizacao, membros_organizacoes).
  */
 @Repository
 public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntity, UUID> {
@@ -27,36 +27,36 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
      */
     @Query("""
             SELECT m FROM MembroGrupoEntity m
-            WHERE (:grupoParoquialId IS NULL OR m.grupoParoquialId = :grupoParoquialId)
+            WHERE (:organizacaoId IS NULL OR m.organizacaoId = :organizacaoId)
             AND (:fielId IS NULL OR m.fielId = :fielId)
             AND (:ativo IS NULL OR m.ativo = :ativo)
             """)
     Page<MembroGrupoEntity> findByFiltros(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("fielId") UUID fielId,
             @Param("ativo") Boolean ativo,
             Pageable pageable);
 
-    Optional<MembroGrupoEntity> findByFielIdAndGrupoParoquialIdAndAtivoTrue(UUID fielId, UUID grupoParoquialId);
+    Optional<MembroGrupoEntity> findByFielIdAndOrganizacaoIdAndAtivoTrue(UUID fielId, UUID organizacaoId);
 
-    Optional<MembroGrupoEntity> findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(
-            UUID fielId, UUID grupoParoquialId, String papel, UUID igrejaVinculoId);
+    Optional<MembroGrupoEntity> findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+            UUID fielId, UUID organizacaoId, String papel, UUID igrejaVinculoId);
 
-    Optional<MembroGrupoEntity> findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
-            UUID grupoParoquialId, String papel, UUID igrejaVinculoId);
+    Optional<MembroGrupoEntity> findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
+            UUID organizacaoId, String papel, UUID igrejaVinculoId);
 
-    Optional<MembroGrupoEntity> findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(
-            UUID grupoParoquialId, String papel);
+    Optional<MembroGrupoEntity> findByOrganizacaoIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(
+            UUID organizacaoId, String papel);
 
     List<MembroGrupoEntity> findByFielId(UUID fielId);
 
     List<MembroGrupoEntity> findByFielIdAndAtivoTrue(UUID fielId);
 
-    List<MembroGrupoEntity> findByGrupoParoquialIdAndAtivoTrue(UUID grupoParoquialId);
+    List<MembroGrupoEntity> findByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
 
     List<MembroGrupoEntity> findByIgrejaVinculoIdAndAtivoTrue(UUID igrejaVinculoId);
 
-    boolean existsByGrupoParoquialId(UUID grupoParoquialId);
+    boolean existsByOrganizacaoId(UUID organizacaoId);
 
     /**
      * Conta fiéis <em>distintos</em> com pelo menos um vínculo ativo em grupos dos tipos
@@ -69,15 +69,15 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
      */
     @Query("""
             SELECT count(DISTINCT m.fielId) FROM MembroGrupoEntity m
-            WHERE m.ativo = true AND m.tipoGrupo IN :tipos
+            WHERE m.ativo = true AND m.tipoOrganizacao IN :tipos
             """)
-    long contarFieisDistintosEngajados(@Param("tipos") Collection<TipoGrupo> tipos);
+    long contarFieisDistintosEngajados(@Param("tipos") Collection<TipoOrganizacao> tipos);
 
     /**
      * Conta vínculos ativos de um grupo, usado pelo índice de retenção de pastorais.
      *
-     * @param grupoParoquialId identificador do grupo
+     * @param organizacaoId identificador do grupo
      * @return quantidade de vínculos ativos
      */
-    long countByGrupoParoquialIdAndAtivoTrue(UUID grupoParoquialId);
+    long countByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
 }

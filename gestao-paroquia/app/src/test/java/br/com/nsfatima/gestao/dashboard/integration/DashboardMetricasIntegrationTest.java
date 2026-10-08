@@ -45,7 +45,7 @@ class DashboardMetricasIntegrationTest {
                 .andExpect(jsonPath("$.resumoGeral.novosFieisMes").exists())
                 .andExpect(jsonPath("$.resumoGeral.fieisEngajadosPastoral").exists())
                 .andExpect(jsonPath("$.resumoGeral.fieisSemVinculoPastoral").exists())
-                .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray())
+                .andExpect(jsonPath("$.eventosPorOrganizacao").isArray())
                 .andExpect(jsonPath("$.projetosPorStatus.planejamento").exists())
                 .andExpect(jsonPath("$.projetosPorStatus.emExecucao").exists())
                 .andExpect(jsonPath("$.projetosPorStatus.concluidos").exists())
@@ -74,7 +74,7 @@ class DashboardMetricasIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resumoGeral").exists())
-                .andExpect(jsonPath("$.eventosPorGrupoParoquial").isArray());
+                .andExpect(jsonPath("$.eventosPorOrganizacao").isArray());
     }
 
     @Test
@@ -83,7 +83,7 @@ class DashboardMetricasIntegrationTest {
 
         mockMvc.perform(get("/api/v1/painel/metricas")
                         .session(session)
-                        .param("grupoParoquialId", UUID.randomUUID().toString())
+                        .param("organizacaoId", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }

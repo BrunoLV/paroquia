@@ -18,7 +18,7 @@ import java.util.UUID;
  * <ul>
  *   <li>{@code nome} é obrigatório e único;</li>
  *   <li>{@code tipo} é obrigatório;</li>
- *   <li>{@code grupoParoquialId} vincula o local a uma igreja (Matriz ou Comunidade);</li>
+ *   <li>{@code organizacaoId} vincula o local a uma igreja (Matriz ou Comunidade);</li>
  *   <li>{@code deletedAt} implementa o soft delete exigido pelo negócio;</li>
  *   <li>Endereço estruturado (CEP, logradouro, número, complemento, bairro, cidade, UF) é persistido
  *       em colunas dedicadas para busca e exibição padronizada.</li>
@@ -75,8 +75,8 @@ public class LocalEntity extends BaseAuditableEntity {
     @Column(nullable = false)
     private boolean ativo = true;
 
-    @Column(name = "grupo_paroquial_id")
-    private UUID grupoParoquialId;
+    @Column(name = "organizacao_id")
+    private UUID organizacaoId;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
@@ -265,12 +265,12 @@ public class LocalEntity extends BaseAuditableEntity {
         this.ativo = ativo;
     }
 
-    public UUID getGrupoParoquialId() {
-        return grupoParoquialId;
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
     }
 
-    public void setGrupoParoquialId(UUID grupoParoquialId) {
-        this.grupoParoquialId = grupoParoquialId;
+    public void setOrganizacaoId(UUID organizacaoId) {
+        this.organizacaoId = organizacaoId;
     }
 
     public Instant getDeletedAt() {

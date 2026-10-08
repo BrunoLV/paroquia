@@ -172,7 +172,7 @@ const Ativos = () => {
 
   const buildRowActions = (ativo: AtivoPatrimonial): TableAction[] => {
     const actions: TableAction[] = [];
-    const podeGerir = canManageManutencaoAtivo(user, ativo.grupoParoquialId);
+    const podeGerir = canManageManutencaoAtivo(user, ativo.organizacaoId);
 
     if (ativo.isReservavel && ativo.status === 'DISPONIVEL') {
       actions.push({
@@ -207,7 +207,7 @@ const Ativos = () => {
         onClick: () => setEditAtivo(ativo),
       });
     }
-    if (canExcluirAtivo(user, ativo.grupoParoquialId)) {
+    if (canExcluirAtivo(user, ativo.organizacaoId)) {
       actions.push({
         label: 'Excluir',
         icon: <DeleteIcon fontSize="small" color="error" />,

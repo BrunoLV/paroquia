@@ -30,7 +30,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
   projectValidationError,
 }) => {
   const { control, watch } = form;
-  const orgId = watch('grupoParoquialResponsavelId');
+  const orgId = watch('organizacaoResponsavelId');
   const igrejaVinculoId = watch('igrejaVinculoId');
 
   return (
@@ -45,7 +45,7 @@ const EventoOrganizacaoCard: React.FC<EventoOrganizacaoCardProps> = ({
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12 }}>
             <Controller
-              name="grupoParoquialResponsavelId"
+              name="organizacaoResponsavelId"
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small" required>

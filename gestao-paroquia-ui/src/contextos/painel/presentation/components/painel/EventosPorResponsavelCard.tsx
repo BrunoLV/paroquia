@@ -17,9 +17,9 @@ const EventosPorResponsavelCard: React.FC<EventosPorResponsavelCardProps> = ({da
       ) : (
         <Stack spacing={1.5}>
           {data.slice(0, 8).map((item) => (
-            <Box key={item.grupoParoquialNome}>
+            <Box key={item.organizacaoNome}>
               <Stack direction="row" sx={{justifyContent: 'space-between'}}>
-                <Typography variant="body2">{item.grupoParoquialNome}</Typography>
+                <Typography variant="body2">{item.organizacaoNome}</Typography>
                 <Typography variant="body2" sx={{fontWeight: 700}}>{item.quantidade}</Typography>
               </Stack>
               <LinearProgress

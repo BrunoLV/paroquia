@@ -7,13 +7,14 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJ
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.IdoneidadeRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.AuditoriaOperacaoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,7 +59,7 @@ class MembroControllerIntegrationTest {
     @Autowired
     private FielJpaRepository fielRepository;
     @Autowired
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
     @Autowired
     private AuditoriaOperacaoJpaRepository auditoriaRepository;
     @Autowired
@@ -69,12 +72,12 @@ class MembroControllerIntegrationTest {
         membroRepository.deleteAll();
         auditoriaRepository.deleteAll();
 
-        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(UUID.randomUUID());
         org.setNome("Pastoral de Teste " + UUID.randomUUID());
-        org.setTipo(TipoGrupo.PASTORAL);
+        org.setTipo(TipoOrganizacao.PASTORAL);
         org.setAtivo(true);
-        grupoParoquialRepository.saveAndFlush(org);
+        organizacaoRepository.saveAndFlush(org);
         orgId = org.getId();
     }
 
@@ -123,7 +126,7 @@ class MembroControllerIntegrationTest {
         assertThat(membroRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll()).hasSize(1);
         assertThat(auditoriaRepository.findAll().getFirst().getRecursoTipo()).isEqualTo("MEMBRO");
-        assertThat(auditoriaRepository.findAll().getFirst().getGrupoParoquialId()).isEqualTo(orgId);
+        assertThat(auditoriaRepository.findAll().getFirst().getOrganizacaoId()).isEqualTo(orgId);
     }
 
     @Test
@@ -134,7 +137,7 @@ class MembroControllerIntegrationTest {
 
         mockMvc.perform(get("/api/v1/membros")
                         .with(authentication(getParocoAuth()))
-                        .param("grupoParoquialId", orgId.toString()))
+                        .param("organizacaoId", orgId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(2));
@@ -153,7 +156,8 @@ class MembroControllerIntegrationTest {
     @DisplayName("Deve promover um Fiel membro a coordenador criando um novo Usuario mediante provisão do Pároco")
     void devePromoverFielACoordenadorCriandoUsuario() throws Exception {
         UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Carlos Promovido");
-        createMembro(fielId);
+        UUID membroId = createMembro(fielId);
+        atestarIdoneidade(membroId);
 
         var request = new PromoverACoordenadorRequest(
                 fielId, orgId, "coordenador", "carlos.promovido", "senhaForte123");
@@ -168,14 +172,72 @@ class MembroControllerIntegrationTest {
                 .andExpect(jsonPath("$.fielId").value(fielId.toString()));
     }
 
-    private void createMembro(UUID fielId) {
+    @Test
+    @DisplayName("Deve recusar a promoção de um Fiel sem idoneidade pastoral registrada")
+    void deveRecusarPromocaoDeFielSemIdoneidade() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Fiel Sem Idoneidade");
+        createMembro(fielId);
+
+        var request = new PromoverACoordenadorRequest(
+                fielId, orgId, "coordenador", "fiel.sem.idoneidade", "senhaForte123");
+
+        mockMvc.perform(post("/api/v1/membros/promover-coordenador")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Registra a idoneidade e informa quem conferiu o envio")
+    void deveRegistrarEConsultarIdoneidade() throws Exception {
+        UUID fielId = FielTestFixtures.criarFiel(fielRepository, "Fiel Idoneidade");
+        UUID membroId = createMembro(fielId);
+
+        mockMvc.perform(get("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth())))
+                .andExpect(status().isOk());
+
+        var request = new IdoneidadeRequest(LocalDate.of(2025, 1, 1), null, null, null, LocalDate.of(2025, 2, 1));
+        mockMvc.perform(put("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.enviadoEm").value("2025-02-01"))
+                .andExpect(jsonPath("$.enviadoPor").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("Vínculo inexistente retorna 400 e usuário comum não acessa a idoneidade")
+    void deveNegarIdoneidadeSemPermissao() throws Exception {
+        mockMvc.perform(get("/api/v1/membros/" + UUID.randomUUID() + "/idoneidade")
+                        .with(authentication(getParocoAuth())))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/api/v1/membros/" + UUID.randomUUID() + "/idoneidade")
+                        .with(user("fiel").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+
+    private void atestarIdoneidade(UUID membroId) throws Exception {
+        var request = new IdoneidadeRequest(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 1), null, LocalDate.of(2025, 1, 1));
+        mockMvc.perform(put("/api/v1/membros/" + membroId + "/idoneidade")
+                        .with(authentication(getParocoAuth()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    private UUID createMembro(UUID fielId) {
         var entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
-        entity.setGrupoParoquialId(orgId);
-        entity.setTipoGrupo(TipoGrupo.PASTORAL);
+        entity.setOrganizacaoId(orgId);
+        entity.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         entity.setPapel("MEMBRO_ATIVO");
         entity.setAtivo(true);
         membroRepository.saveAndFlush(entity);
+        return entity.getId();
     }
 }

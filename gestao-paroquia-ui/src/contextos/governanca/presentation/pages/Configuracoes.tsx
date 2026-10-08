@@ -41,7 +41,13 @@ import {
   getPastoraisOficiais,
   updatePastoralOficial,
 } from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
-import { AnoParoquialStatus, PAPEL_ECLESIAL_LABELS, PastoralMovimentoOficial } from '@/shared/domain/types/types';
+import {
+  AMBITO_ORGANISMO_LABELS,
+  AmbitoOrganismo,
+  AnoParoquialStatus,
+  PAPEL_ECLESIAL_LABELS,
+  PastoralMovimentoOficial,
+} from '@/shared/domain/types/types';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
@@ -138,7 +144,11 @@ export const Configuracoes = () => {
   const [selectedPO, setSelectedPO] = useState<PastoralMovimentoOficial | null>(null);
   const [poNome, setPoNome] = useState('');
   const [poTipo, setPoTipo] = useState<'PASTORAL' | 'MOVIMENTO'>('PASTORAL');
-  const [poErrors, setPoErrors] = useState<{ nome?: string }>({});
+  const [poAmbito, setPoAmbito] = useState<AmbitoOrganismo | ''>('');
+  const [poEstatutoAutoridade, setPoEstatutoAutoridade] = useState('');
+  const [poEstatutoData, setPoEstatutoData] = useState('');
+  const [poEstatutoReferencia, setPoEstatutoReferencia] = useState('');
+  const [poErrors, setPoErrors] = useState<{ nome?: string; estatuto?: string }>({});
 
   const { data: years = [], isLoading: isLoadingYears, isError: isErrorYears } = useQuery({
     queryKey: ['anosParoquiais'],
@@ -353,6 +363,10 @@ export const Configuracoes = () => {
     setSelectedPO(null);
     setPoNome('');
     setPoTipo('PASTORAL');
+    setPoAmbito('');
+    setPoEstatutoAutoridade('');
+    setPoEstatutoData('');
+    setPoEstatutoReferencia('');
     setPoErrors({});
     setPoModalOpen(true);
   };
@@ -361,21 +375,36 @@ export const Configuracoes = () => {
     setSelectedPO(po);
     setPoNome(po.nome);
     setPoTipo(po.tipo);
+    setPoAmbito(po.ambito ?? '');
+    setPoEstatutoAutoridade(po.estatutoAutoridade ?? '');
+    setPoEstatutoData(po.estatutoData ?? '');
+    setPoEstatutoReferencia(po.estatutoReferencia ?? '');
     setPoErrors({});
     setPoModalOpen(true);
   };
 
   const handleSavePO = () => {
-    const errors: { nome?: string } = {};
+    const errors: { nome?: string; estatuto?: string } = {};
     if (!poNome.trim()) errors.nome = 'Nome é obrigatório.';
+    if (poEstatutoAutoridade.trim() && !poEstatutoData) {
+      errors.estatuto = 'Informe a data do reconhecimento do estatuto.';
+    }
     if (Object.keys(errors).length > 0) {
       setPoErrors(errors);
       return;
     }
+    const payload = {
+      nome: poNome.trim(),
+      tipo: poTipo,
+      ambito: poAmbito || null,
+      estatutoAutoridade: poTipo === 'MOVIMENTO' ? poEstatutoAutoridade.trim() || null : null,
+      estatutoData: poTipo === 'MOVIMENTO' ? poEstatutoData || null : null,
+      estatutoReferencia: poTipo === 'MOVIMENTO' ? poEstatutoReferencia.trim() || null : null,
+    };
     if (selectedPO) {
-      updatePOMutation.mutate({ id: selectedPO.id, data: { nome: poNome.trim(), tipo: poTipo } });
+      updatePOMutation.mutate({ id: selectedPO.id, data: payload });
     } else {
-      createPOMutation.mutate({ nome: poNome.trim(), tipo: poTipo });
+      createPOMutation.mutate(payload);
     }
   };
 
@@ -640,6 +669,7 @@ export const Configuracoes = () => {
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Estatuto</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                     </TableRow>
                   </TableHead>
@@ -649,7 +679,12 @@ export const Configuracoes = () => {
                       .map((po) => (
                         <TableRow key={po.id} hover>
                           <TableCell sx={{ fontWeight: 500 }}>{po.nome}</TableCell>
-                          <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral' : 'Movimento'}</TableCell>
+                          <TableCell>{po.tipo === 'PASTORAL' ? 'Pastoral Orgânica' : 'Movimento Apostólico'}</TableCell>
+                          <TableCell>
+                            {po.estatutoReconhecido
+                              ? `Reconhecido (${po.estatutoAutoridade})`
+                              : po.tipo === 'MOVIMENTO' ? 'Pendente de reconhecimento' : '—'}
+                          </TableCell>
                           <TableCell align="right">
                             <TableActionMenu
                               actions={[
@@ -671,13 +706,13 @@ export const Configuracoes = () => {
                       ))}
                     {pastoraisOficiais.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                        <TableCell colSpan={4} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                           Nenhum tipo cadastrado.
                         </TableCell>
                       </TableRow>
                     )}
                   </TableBody>
-                  <SearchableTablePagination colSpan={3}
+                  <SearchableTablePagination colSpan={4}
                     rowsPerPageOptions={[5, 10, 25]}
                     count={pastoraisOficiais.length}
                     rowsPerPage={poRowsPerPage}
@@ -1009,7 +1044,6 @@ export const Configuracoes = () => {
                       }
                     }
                     addVinculoMutation.mutate({
-                      grupoParoquialId: newVinculoOrgId,
                       organizacaoId: newVinculoOrgId,
                       tipo: selectedOrgObj.tipo,
                       papel: newVinculoPapel,
@@ -1154,10 +1188,53 @@ export const Configuracoes = () => {
                   label="Tipo"
                   onChange={(e) => setPoTipo(e.target.value as 'PASTORAL' | 'MOVIMENTO')}
                 >
-                  <MenuItem value="PASTORAL">Pastoral</MenuItem>
-                  <MenuItem value="MOVIMENTO">Movimento</MenuItem>
+                  <MenuItem value="PASTORAL">Pastoral Orgânica</MenuItem>
+                  <MenuItem value="MOVIMENTO">Movimento Apostólico</MenuItem>
                 </SearchableSelect>
               </FormControl>
+              <FormControl fullWidth size="small">
+                <SearchableSelect
+                  labelId="po-ambito-label"
+                  value={poAmbito}
+                  label="Âmbito"
+                  onChange={(e) => setPoAmbito(e.target.value as AmbitoOrganismo | '')}
+                >
+                  <MenuItem value=""><em>Não informado</em></MenuItem>
+                  {Object.entries(AMBITO_ORGANISMO_LABELS).map(([valor, rotulo]) => (
+                    <MenuItem key={valor} value={valor}>{rotulo}</MenuItem>
+                  ))}
+                </SearchableSelect>
+              </FormControl>
+              {poTipo === 'MOVIMENTO' && (
+                <>
+                  <TextField
+                    label="Autoridade que reconheceu o estatuto"
+                    fullWidth
+                    size="small"
+                    value={poEstatutoAutoridade}
+                    onChange={(e) => setPoEstatutoAutoridade(e.target.value)}
+                    helperText="Movimento só pode ser instanciado com estatuto reconhecido (Cân. 299 e 304)."
+                  />
+                  <TextField
+                    label="Data do reconhecimento"
+                    type="date"
+                    fullWidth
+                    size="small"
+                    value={poEstatutoData}
+                    onChange={(e) => setPoEstatutoData(e.target.value)}
+                    error={!!poErrors.estatuto}
+                    helperText={poErrors.estatuto}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                  />
+                  <TextField
+                    label="Decreto / documento de referência"
+                    fullWidth
+                    size="small"
+                    value={poEstatutoReferencia}
+                    onChange={(e) => setPoEstatutoReferencia(e.target.value)}
+                  />
+                </>
+              )}
             </Stack>
           </Card>
         </DialogContent>

@@ -1,12 +1,15 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
 import br.com.nsfatima.gestao.organizacao.domain.exception.PastoralMovimentoOficialNegocioException;
+import br.com.nsfatima.gestao.organizacao.domain.model.AmbitoOrganismo;
 import br.com.nsfatima.gestao.organizacao.domain.model.PastoralMovimentoOficial;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.ReconhecimentoEstatuto;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +17,7 @@ import java.util.UUID;
 /**
  * Orquestra o ciclo de vida do catálogo oficial de Pastorais e Movimentos ({@link PastoralMovimentoOficial}),
  * garantindo que cada item tenha nome obrigatório e único e tipo restrito a {@code PASTORAL} ou
- * {@code MOVIMENTO}. Este catálogo é referenciado por {@code GrupoParoquial.pastoralOficialId} para garantir
+ * {@code MOVIMENTO}. Este catálogo é referenciado por {@code Organizacao.pastoralOficialId} para garantir
  * que instâncias locais de uma pastoral/movimento em diferentes comunidades compartilhem o mesmo nome/tipo
  * oficial.
  */
@@ -36,16 +39,34 @@ public class PastoralMovimentoOficialService {
      * @throws PastoralMovimentoOficialNegocioException se o nome for ausente/duplicado ou o tipo inválido
      */
     @Transactional
-    public PastoralMovimentoOficial criar(String nome, TipoGrupo tipo) {
+    public PastoralMovimentoOficial criar(String nome, TipoOrganizacao tipo) {
+        return criar(nome, tipo, null, null, null, null);
+    }
+
+    /**
+     * Cria um item do catálogo oficial com âmbito e reconhecimento dos estatutos (Cân. 299 e 304).
+     *
+     * @param ambito âmbito de origem do organismo, ou {@code null}
+     * @param estatutoAutoridade autoridade que reconheceu os estatutos, ou {@code null} se não reconhecido
+     * @param estatutoData data do reconhecimento (obrigatória quando há autoridade)
+     * @param estatutoReferencia decreto/documento do reconhecimento, opcional
+     * @return o item recém-criado
+     * @throws PastoralMovimentoOficialNegocioException se nome/tipo/estatuto forem inválidos
+     */
+    @Transactional
+    public PastoralMovimentoOficial criar(String nome, TipoOrganizacao tipo, AmbitoOrganismo ambito,
+                                          String estatutoAutoridade, LocalDate estatutoData,
+                                          String estatutoReferencia) {
         validate(null, nome, tipo);
-        PastoralMovimentoOficial oficial = new PastoralMovimentoOficial(UUID.randomUUID(), nome, tipo);
+        PastoralMovimentoOficial oficial = new PastoralMovimentoOficial(UUID.randomUUID(), nome, tipo, ambito,
+                montarReconhecimento(estatutoAutoridade, estatutoData, estatutoReferencia));
         repository.save(oficial);
         return oficial;
     }
 
     /**
      * Atualiza nome e tipo de um item existente do catálogo oficial, revalidando as mesmas regras de
-     * {@link #criar(String, TipoGrupo)} (exceto que o próprio item, se já tiver este nome, não conta
+     * {@link #criar(String, TipoOrganizacao)} (exceto que o próprio item, se já tiver este nome, não conta
      * como duplicidade).
      *
      * @param id identificador do item a atualizar
@@ -56,11 +77,30 @@ public class PastoralMovimentoOficialService {
      *     por outro item, ou o tipo for inválido
      */
     @Transactional
-    public PastoralMovimentoOficial atualizar(UUID id, String nome, TipoGrupo tipo) {
+    public PastoralMovimentoOficial atualizar(UUID id, String nome, TipoOrganizacao tipo) {
+        PastoralMovimentoOficial atual = repository.findById(id)
+                .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
+        ReconhecimentoEstatuto rec = atual.getReconhecimento();
+        return atualizar(id, nome, tipo, atual.getAmbito(), rec == null ? null : rec.autoridade(),
+                rec == null ? null : rec.data(), rec == null ? null : rec.referencia());
+    }
+
+    /**
+     * Atualiza um item do catálogo oficial, incluindo âmbito e reconhecimento dos estatutos.
+     *
+     * @return o item atualizado
+     * @throws PastoralMovimentoOficialNegocioException se o item não existir ou os dados forem inválidos
+     */
+    @Transactional
+    public PastoralMovimentoOficial atualizar(UUID id, String nome, TipoOrganizacao tipo, AmbitoOrganismo ambito,
+                                              String estatutoAutoridade, LocalDate estatutoData,
+                                              String estatutoReferencia) {
         PastoralMovimentoOficial oficial = repository.findById(id)
                 .orElseThrow(() -> PastoralMovimentoOficialNegocioException.notFound(id));
         validate(id, nome, tipo);
         oficial.atualizar(nome, tipo);
+        oficial.registrarReconhecimento(ambito, montarReconhecimento(estatutoAutoridade, estatutoData,
+                estatutoReferencia));
         repository.save(oficial);
         return oficial;
     }
@@ -99,11 +139,22 @@ public class PastoralMovimentoOficialService {
         return repository.findAll();
     }
 
-    private void validate(UUID id, String nome, TipoGrupo tipo) {
+    private ReconhecimentoEstatuto montarReconhecimento(String autoridade, LocalDate data, String referencia) {
+        if ((autoridade == null || autoridade.isBlank()) && data == null) {
+            return null;
+        }
+        try {
+            return new ReconhecimentoEstatuto(autoridade, data, referencia);
+        } catch (IllegalArgumentException ex) {
+            throw new PastoralMovimentoOficialNegocioException(ex.getMessage());
+        }
+    }
+
+    private void validate(UUID id, String nome, TipoOrganizacao tipo) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new PastoralMovimentoOficialNegocioException("Nome é obrigatório");
         }
-        if (tipo != TipoGrupo.PASTORAL && tipo != TipoGrupo.MOVIMENTO) {
+        if (tipo != TipoOrganizacao.PASTORAL && tipo != TipoOrganizacao.MOVIMENTO) {
             throw new PastoralMovimentoOficialNegocioException("Tipo deve ser PASTORAL ou MOVIMENTO");
         }
 

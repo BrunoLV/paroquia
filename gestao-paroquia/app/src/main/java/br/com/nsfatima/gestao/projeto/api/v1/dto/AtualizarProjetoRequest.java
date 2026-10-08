@@ -22,7 +22,7 @@ public record AtualizarProjetoRequest(
         @Size(max = 2000) String descricao,
 
         @Schema(description = "Nova organização responsável")
-        UUID grupoParoquialResponsavelId,
+        UUID organizacaoResponsavelId,
 
         @Schema(description = "Nova data de início")
         Instant inicio,

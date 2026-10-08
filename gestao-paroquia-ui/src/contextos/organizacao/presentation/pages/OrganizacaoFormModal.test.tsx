@@ -7,36 +7,26 @@ import {ThemeProvider} from '@mui/material/styles';
 import theme from '@/shared/presentation/theme/theme';
 import {Organizacao} from '@/shared/domain/types/types';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {getOrganizacaoMembros} from '@/contextos/organizacao/infrastructure/http/organizacoes';
 
-vi.mock('@/contextos/organizacao/infrastructure/http/organizacoes', async (importOriginal: any) => {
-  const actual: any = await importOriginal();
-  return {
-    ...actual,
-    getOrganizacaoMembros: vi.fn(),
-  };
-});
-
-const mockGetOrganizacaoMembros = vi.mocked(getOrganizacaoMembros);
 
 describe('OrganizacaoFormModal', () => {
   const mockOnSave = jest.fn();
   const mockOnClose = jest.fn();
 
   const mockOrganizacoes: Organizacao[] = [
-    { id: 'org-clero', nome: 'Clero Paroquial', tipo: 'CLERO', contato: '', ativo: true },
-    { id: 'org-matriz', nome: 'Igreja Matriz', tipo: 'MATRIZ', contato: '', parentId: 'org-clero', ativo: true },
-    { id: 'org-comunidade', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: '', parentId: 'org-clero', ativo: true },
-    { id: 'org-conselho', nome: 'Conselho Pastoral Paroquial (CPP)', tipo: 'CONSELHO_PASTORAL', contato: '', parentId: 'org-matriz', ativo: true },
-
+    { id: 'org-matriz', nome: 'Igreja Matriz', tipo: 'MATRIZ', contato: '', ativo: true },
+    { id: 'org-comunidade', nome: 'Comunidade São José', tipo: 'COMUNIDADE', contato: '', ativo: true },
+    { id: 'org-conselho', nome: 'Conselho Pastoral Paroquial (CPP)', tipo: 'CONSELHO', subtipoConselho: 'CPP', contato: '', parentId: 'org-matriz', ativo: true },
+    { id: 'org-caep', nome: 'Conselho Econômico (CAEP)', tipo: 'CONSELHO', subtipoConselho: 'CAEP', contato: '', parentId: 'org-matriz', ativo: true },
     { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true },
-    { id: 'org-inativo-conselho', nome: 'Conselho Inativo', tipo: 'CONSELHO_PASTORAL', contato: '', parentId: 'org-matriz', ativo: false },
+    { id: 'org-inativo-conselho', nome: 'Conselho Inativo', tipo: 'CONSELHO', subtipoConselho: 'CPP', contato: '', parentId: 'org-matriz', ativo: false },
   ];
 
   const mockPastoraisOficiais = [
     { id: 'po-pastoral-1', nome: 'Catequese Oficial', tipo: 'PASTORAL' as const },
     { id: 'po-pastoral-2', nome: 'Dízimo Oficial', tipo: 'PASTORAL' as const },
-    { id: 'po-movimento-1', nome: 'EJC Oficial', tipo: 'MOVIMENTO' as const },
+    { id: 'po-movimento-1', nome: 'EJC Oficial', tipo: 'MOVIMENTO' as const, estatutoReconhecido: true },
+    { id: 'po-movimento-2', nome: 'Movimento sem Estatuto', tipo: 'MOVIMENTO' as const, estatutoReconhecido: false },
   ];
 
   const defaultProps = {
@@ -80,51 +70,44 @@ describe('OrganizacaoFormModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGetOrganizacaoMembros.mockResolvedValue([]);
   });
 
-  test('filters parent options dynamically based on organization type', () => {
+  test('conselho se articula a Matriz ou Comunidade; demais organismos, a conselho pastoral', () => {
     renderModal();
 
-    // 1. Test for MATRIZ: parent must be CLERO
     const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
     fireEvent.mouseDown(tipoSelect);
-    fireEvent.click(screen.getByRole('option', { name: 'Matriz' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho' }));
 
-    const parentSelect = screen.getByLabelText(/Organização Pai/i);
-    fireEvent.mouseDown(parentSelect);
-
-    expect(screen.getByRole('option', { name: 'Clero Paroquial' })).toBeInTheDocument();
+    fireEvent.mouseDown(screen.getByLabelText(/Matriz \/ Comunidade/i));
+    expect(screen.getByRole('option', { name: 'Igreja Matriz' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Comunidade São José' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' })).not.toBeInTheDocument();
-
   });
 
-  test('displays only active organizations as parent options', () => {
+  test('pastoral aceita só conselhos pastorais ativos como mãe, nunca o CAEP', () => {
     renderModal();
 
-    // 2. Test for PASTORAL: parent must be CONSELHO (and active)
-    const parentSelect = screen.getByLabelText(/Organização Pai/i);
-    fireEvent.mouseDown(parentSelect);
+    fireEvent.mouseDown(screen.getByLabelText(/Conselho Pastoral \(CPP\/CPC\)/i));
 
     expect(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' })).toBeInTheDocument();
-
+    expect(screen.queryByRole('option', { name: 'Conselho Econômico (CAEP)' })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Conselho Inativo' })).not.toBeInTheDocument();
   });
 
-  test('submits parentId correctly on save', async () => {
+  test('submits tipologia, múnus e conselho mãe ao salvar pastoral', async () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
 
-    // Select official type
     fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
 
-    // Open parent dropdown and select Conselho Pastoral
-    const parentSelect = screen.getByLabelText(/Organização Pai/i);
-    fireEvent.mouseDown(parentSelect);
-    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
+    fireEvent.mouseDown(screen.getByLabelText(/Múnus/i));
+    fireEvent.click(screen.getByRole('option', { name: /^Ensinar/ }));
 
+    fireEvent.mouseDown(screen.getByLabelText(/Conselho Pastoral \(CPP\/CPC\)/i));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
 
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
@@ -134,97 +117,98 @@ describe('OrganizacaoFormModal', () => {
         tipo: 'PASTORAL',
         parentId: 'org-conselho',
         pastoralOficialId: 'po-pastoral-1',
+        setorPastoral: 'FORMACAO_ENSINAR',
+        subtipoConselho: null,
       })
     ));
   });
 
-  test('displays official type dropdown only for PASTORAL or MOVIMENTO and filters options accordingly', async () => {
+  test('catálogo oficial só aparece para pastoral e movimento; movimento sem estatuto fica desabilitado', async () => {
     const user = userEvent.setup();
     renderModal();
 
-    // 1. Initially type is PASTORAL. Dropdown should be visible.
-    expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
-    
-    // Open dropdown
     await user.click(screen.getByRole('combobox', { name: /Tipo Oficial \/ Movimento/i }));
-    // Should show PASTORAL types, but NOT MOVIMENTO types
     expect(screen.getByRole('option', { name: 'Catequese Oficial' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Dízimo Oficial' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'EJC Oficial' })).not.toBeInTheDocument();
-
-    // Close options by clicking backdrop or body
     await user.keyboard('{Escape}');
 
-    // 2. Change type to MOVIMENTO
     const tipoSelect = screen.getByLabelText(/^Tipo\s*\*?$/);
     await user.click(tipoSelect);
-    await user.keyboard('{Control>}a{/Control}{Backspace}');
-    await user.type(tipoSelect, 'Movimento');
-    await user.click(screen.getByRole('option', { name: 'Movimento' }));
+    await user.click(screen.getByRole('option', { name: 'Movimento Apostólico' }));
 
-    // Dropdown should still be visible
-    expect(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]).toBeInTheDocument();
     await user.click(screen.getByRole('combobox', { name: /Tipo Oficial \/ Movimento/i }));
-    // Should show MOVIMENTO types, but NOT PASTORAL types
     expect(screen.getByRole('option', { name: 'EJC Oficial' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Catequese Oficial' })).not.toBeInTheDocument();
-
-    // Close options
+    expect(screen.getByRole('option', { name: /Movimento sem Estatuto/ })).toHaveAttribute('aria-disabled', 'true');
     await user.keyboard('{Escape}');
 
-    // 3. Change type to CLERO
-    await user.clear(tipoSelect);
-    await user.type(tipoSelect, 'Clero');
-    await user.click(screen.getByRole('option', { name: 'Clero' }));
-
-    // Dropdown should NOT be visible
+    await user.click(tipoSelect);
+    await user.click(screen.getByRole('option', { name: 'Serviço Paroquial' }));
     expect(screen.queryAllByLabelText(/Tipo Oficial \/ Movimento/i).length).toBe(0);
   });
 
-  test('requires pastoralOficialId to submit successfully', async () => {
+  test('exige vínculo oficial, múnus e conselho mãe para pastoral', async () => {
     renderModal();
 
     fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
-    // Should show validation error and NOT call onSave
     await waitFor(() => expect(screen.getByText('A associação oficial é obrigatória')).toBeInTheDocument());
+    expect(screen.getByText(/O múnus .* é obrigatório/)).toBeInTheDocument();
+    expect(screen.getByText(/Articule o organismo a um conselho pastoral/)).toBeInTheDocument();
     expect(mockOnSave).not.toHaveBeenCalled();
+  });
 
-    // Select official type
+  test('conselho exige subtipo', async () => {
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Novo Conselho' } });
+    fireEvent.mouseDown(screen.getByLabelText(/^Tipo\s*\*?$/));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho' }));
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
+
+    await waitFor(() => expect(screen.getByText('O subtipo do conselho é obrigatório')).toBeInTheDocument());
+    expect(mockOnSave).not.toHaveBeenCalled();
+  });
+
+  test('coordenação não é editável no cadastro: informa o mandato homologado', () => {
+    renderModal({
+      organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true, coordenador: 'Maria da Silva' }
+    });
+
+    expect(screen.queryByRole('combobox', { name: /^Coordenador$/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Coordenação atual: Maria da Silva/)).toBeInTheDocument();
+    expect(screen.getByText(/mandato temporário proposto pelo grupo e homologado pelo Pároco/)).toBeInTheDocument();
+  });
+
+  test('contato é separado em e-mail e telefone e ambos são enviados', async () => {
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
+    fireEvent.change(screen.getByLabelText(/^E-mail$/), { target: { value: 'pastoral@nsfatima.com' } });
+    fireEvent.change(screen.getByLabelText(/^Telefone$/), { target: { value: '(11) 99999-0000' } });
+
     fireEvent.mouseDown(screen.getAllByLabelText(/Tipo Oficial \/ Movimento/i)[0]);
     fireEvent.click(screen.getByRole('option', { name: 'Catequese Oficial' }));
-
-    // Submit again
+    fireEvent.mouseDown(screen.getByLabelText(/Múnus/i));
+    fireEvent.click(screen.getByRole('option', { name: /^Ensinar/ }));
+    fireEvent.mouseDown(screen.getByLabelText(/Conselho Pastoral \(CPP\/CPC\)/i));
+    fireEvent.click(screen.getByRole('option', { name: 'Conselho Pastoral Paroquial (CPP)' }));
     fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
     await waitFor(() => expect(mockOnSave).toHaveBeenCalledWith(
-      expect.objectContaining({
-        nome: 'Nova Pastoral',
-        tipo: 'PASTORAL',
-        pastoralOficialId: 'po-pastoral-1'
-      })
+      expect.objectContaining({ email: 'pastoral@nsfatima.com', telefone: '(11) 99999-0000', contato: null })
     ));
   });
 
-  test('renders coordinator select dropdown and calls getOrganizacaoMembros when parent organization resolves to a church', async () => {
-    mockGetOrganizacaoMembros.mockResolvedValue([
-      { vinculoId: 'm-1', usuarioId: 'u-1', usuarioNome: 'Membro Teste', papel: 'OUTRO', ativo: true }
-    ]);
+  test('e-mail inválido bloqueia o envio', async () => {
+    renderModal();
 
-    renderModal({
-      organizacao: { id: 'org-pastoral', nome: 'Pastoral da Música', tipo: 'PASTORAL', contato: '', parentId: 'org-conselho', ativo: true }
-    });
+    fireEvent.change(screen.getByLabelText(/Nome/i), { target: { value: 'Nova Pastoral' } });
+    fireEvent.change(screen.getByLabelText(/^E-mail$/), { target: { value: 'sem-arroba' } });
+    fireEvent.submit(screen.getByRole('button', { name: /^Salvar$/i }));
 
-    // Expect Coordenador to be rendered as select/combobox
-    const coordSelect = screen.getByRole('combobox', { name: /^Coordenador$/ });
-    expect(coordSelect).toBeInTheDocument();
-
-    fireEvent.mouseDown(coordSelect);
-    
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: 'Membro Teste' })).toBeInTheDocument();
-    });
+    await waitFor(() => expect(screen.getByText('E-mail inválido')).toBeInTheDocument());
+    expect(mockOnSave).not.toHaveBeenCalled();
   });
 
   test('renders action buttons with right alignment and standardized labels', () => {

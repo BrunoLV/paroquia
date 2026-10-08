@@ -57,7 +57,7 @@ public class ExcluirAtivoPatrimonialUseCase {
                 .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
-        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());
+        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getOrganizacaoId());
 
         if (manutencaoRepository.existeEmAbertoPorAtivo(ativo.getId())) {
             throw new AtivoExclusaoBloqueadaException(
@@ -71,7 +71,7 @@ public class ExcluirAtivoPatrimonialUseCase {
         ativo.excluir(Instant.now());
         ativoRepository.save(ativo);
 
-        auditPublisher.publishExclusao(actor.actor(), ativoId, ativo.getGrupoParoquialId());
+        auditPublisher.publishExclusao(actor.actor(), ativoId, ativo.getOrganizacaoId());
         eventPublisher.publishEvent(new AtivoExcluidoEvent(ativoId));
     }
 }

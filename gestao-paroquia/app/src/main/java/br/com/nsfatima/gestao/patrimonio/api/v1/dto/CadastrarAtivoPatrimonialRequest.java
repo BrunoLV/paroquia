@@ -19,7 +19,7 @@ public record CadastrarAtivoPatrimonialRequest(
         @NotBlank @Size(max = 200) String nome,
         @Size(max = 4000) String descricao,
         @NotNull AtivoCategoria categoria,
-        @NotNull UUID grupoParoquialId,
+        @NotNull UUID organizacaoId,
         boolean isReservavel,
         @NotNull LocalDate dataAquisicao,
         @NotNull @PositiveOrZero BigDecimal valorAquisicao

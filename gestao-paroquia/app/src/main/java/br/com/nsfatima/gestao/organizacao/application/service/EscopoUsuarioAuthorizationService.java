@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.policy.AutorizacaoEscopoUsuarioPolicy;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class EscopoUsuarioAuthorizationService {
 
     public boolean canManageOrganizationData(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             UUID targetCommunityId) {
@@ -30,7 +30,7 @@ public class EscopoUsuarioAuthorizationService {
 
     public boolean canApproveEvents(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId) {
         return policy.canApproveEvents(userRole, userOrgType, userOrgId, targetOrgId);
@@ -38,7 +38,7 @@ public class EscopoUsuarioAuthorizationService {
 
     public boolean canAddObservation(
             String userRole,
-            TipoGrupo userOrgType,
+            TipoOrganizacao userOrgType,
             UUID userOrgId,
             UUID targetOrgId,
             boolean isParticipant) {

@@ -5,9 +5,9 @@ import br.com.nsfatima.gestao.dashboard.api.v1.dto.DashboardComunidadeDTO;
 import br.com.nsfatima.gestao.dashboard.api.v1.dto.RetencaoPastoralDTO;
 import br.com.nsfatima.gestao.dashboard.application.service.EscopoDashboardResolver;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +29,15 @@ import java.util.UUID;
 public class ObterRetencaoPastoraisUseCase {
 
     private static final int MINIMO_VOLUNTARIOS = 3;
-    private static final Set<TipoGrupo> TIPOS_COMUNITARIOS =
-            EnumSet.of(TipoGrupo.PASTORAL, TipoGrupo.MOVIMENTO, TipoGrupo.MINISTERIO);
+    private static final Set<TipoOrganizacao> TIPOS_COMUNITARIOS =
+            EnumSet.of(TipoOrganizacao.PASTORAL, TipoOrganizacao.MOVIMENTO, TipoOrganizacao.SERVICO_PAROQUIAL);
 
-    private final GrupoParoquialJpaRepository grupoRepository;
+    private final OrganizacaoJpaRepository grupoRepository;
     private final MembroGrupoJpaRepository membroRepository;
     private final EscopoDashboardResolver escopoResolver;
 
     public ObterRetencaoPastoraisUseCase(
-            GrupoParoquialJpaRepository grupoRepository,
+            OrganizacaoJpaRepository grupoRepository,
             MembroGrupoJpaRepository membroRepository,
             EscopoDashboardResolver escopoResolver) {
         this.grupoRepository = grupoRepository;
@@ -49,14 +49,14 @@ public class ObterRetencaoPastoraisUseCase {
      * Monta o índice de retenção de pastorais para o ator e a organização informados.
      *
      * @param actorContext contexto do ator autenticado
-     * @param grupoParoquialIdSolicitado organização a filtrar, ou {@code null}
+     * @param organizacaoIdSolicitado organização a filtrar, ou {@code null}
      * @return grupos em situação de atenção, do mais crítico ao menos
      * @throws org.springframework.security.access.AccessDeniedException se o ator não puder ver a
      *     organização solicitada
      */
     @Transactional(readOnly = true)
-    public DashboardComunidadeDTO execute(EventoActorContext actorContext, UUID grupoParoquialIdSolicitado) {
-        Optional<UUID> escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado);
+    public DashboardComunidadeDTO execute(EventoActorContext actorContext, UUID organizacaoIdSolicitado) {
+        Optional<UUID> escopo = escopoResolver.resolver(actorContext, organizacaoIdSolicitado);
         List<RetencaoPastoralDTO> alertas = grupoRepository.findByTipoInAndAtivoTrue(TIPOS_COMUNITARIOS).stream()
                 .filter(grupo -> escopo.isEmpty() || escopo.get().equals(grupo.getId()))
                 .map(this::avaliar)
@@ -66,8 +66,8 @@ public class ObterRetencaoPastoraisUseCase {
         return new DashboardComunidadeDTO(alertas);
     }
 
-    private RetencaoPastoralDTO avaliar(GrupoParoquialEntity grupo) {
-        long total = membroRepository.countByGrupoParoquialIdAndAtivoTrue(grupo.getId());
+    private RetencaoPastoralDTO avaliar(OrganizacaoEntity grupo) {
+        long total = membroRepository.countByOrganizacaoIdAndAtivoTrue(grupo.getId());
         boolean temLideranca = grupo.getCoordenador() != null && !grupo.getCoordenador().isBlank();
         List<String> motivos = new ArrayList<>();
         if (total < MINIMO_VOLUNTARIOS) {

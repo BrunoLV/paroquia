@@ -49,7 +49,7 @@ export const CartaoEventoCalendario = ({
   }
 
   const localNome = getLocalName ? getLocalName(evento.localId) : null;
-  const orgNome = getOrgName(evento.grupoParoquialResponsavelId);
+  const orgNome = getOrgName(evento.organizacaoResponsavelId);
   const horarioTexto = formatarHorarioEvento(evento);
   const formatoIcon = getFormatoEventoIcon(evento.formato, 'small');
   const formatoLabel = getFormatoEventoLabel(evento.formato);

@@ -23,15 +23,15 @@ export const useAniversariantes = (janela: PeriodoDashboard) => {
  * Busca a seção de vida comunitária (`GET /dashboard/comunidade` via `getDashboardComunidade`):
  * pastorais em atenção quanto à retenção.
  *
- * Contrato de rede: query param `grupoParoquialId` opcional; 403 quando o ator não pode ver a
+ * Contrato de rede: query param `organizacaoId` opcional; 403 quando o ator não pode ver a
  * comunidade pedida.
  *
- * Query key `['dashboard', 'comunidade', grupoParoquialId ?? null]`. `staleTime` de 5 min.
+ * Query key `['dashboard', 'comunidade', organizacaoId ?? null]`. `staleTime` de 5 min.
  */
-export const useDashboardComunidade = (grupoParoquialId?: string) => {
+export const useDashboardComunidade = (organizacaoId?: string) => {
   return useQuery<DashboardComunidade>({
-    queryKey: ['dashboard', 'comunidade', grupoParoquialId ?? null],
-    queryFn: () => getDashboardComunidade(grupoParoquialId),
+    queryKey: ['dashboard', 'comunidade', organizacaoId ?? null],
+    queryFn: () => getDashboardComunidade(organizacaoId),
     staleTime: 5 * 60 * 1000,
   });
 };

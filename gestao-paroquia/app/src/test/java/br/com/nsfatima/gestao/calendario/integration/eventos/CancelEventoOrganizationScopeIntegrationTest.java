@@ -28,12 +28,12 @@ class CancelEventoOrganizationScopeIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void deveRejeitarPastoralForaResponsavelGrupoParoquialEscopo() throws Exception {
+    void deveRejeitarPastoralForaResponsavelOrganizacaoEscopo() throws Exception {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Escopo organizacional");
-        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-11T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-11T11:00:00Z"));
         evento.setStatus("CONFIRMADO");

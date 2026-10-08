@@ -48,7 +48,7 @@ public class ExportacaoCalendarioController {
      * @param dataInicio início do período para recorte CUSTOMIZADO (ISO-8601)
      * @param dataFim fim do período para recorte CUSTOMIZADO (ISO-8601)
      * @param categorias lista opcional de categorias para filtrar
-     * @param grupoParoquialIds lista opcional de organizações para filtrar
+     * @param organizacaoIds lista opcional de organizações para filtrar
      * @param visualizacao modo de apresentação (AGENDA ou GRADE); só afeta PDF/POWERPOINT
      * @return arquivo gerado para download
      */
@@ -76,12 +76,12 @@ public class ExportacaoCalendarioController {
             @Parameter(description = "Filtrar por múltiplas categorias") @RequestParam(required = false)
             List<String> categorias,
             @Parameter(description = "Filtrar por organizações responsáveis") @RequestParam(required = false)
-            List<UUID> grupoParoquialIds,
+            List<UUID> organizacaoIds,
             @Parameter(description = "Visualização (AGENDA ou GRADE); só se aplica a PDF/POWERPOINT")
             @RequestParam(defaultValue = "AGENDA") String visualizacao) {
 
         byte[] conteudo = exportacaoCalendarioUseCase.execute(formato,
-                opcao, ano, mes, dataInicio, dataFim, categorias, grupoParoquialIds, visualizacao);
+                opcao, ano, mes, dataInicio, dataFim, categorias, organizacaoIds, visualizacao);
 
 
         String nomeArquivo = "calendario_" + opcao.toLowerCase();

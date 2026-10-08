@@ -7,7 +7,7 @@ import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorCont
 import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,13 +41,13 @@ public class EventoPatchAuthorizationService {
      * sem retornar o modo de criação resultante.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @param grupoParoquialResponsavelId identificador da organização responsável pelo evento a ser criado
+     * @param organizacaoResponsavelId identificador da organização responsável pelo evento a ser criado
      * @param igrejaVinculoId identificador da igreja vinculada ao evento a ser criado, ou {@code null}
      * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
      */
     public void assertCanCreate(
-            EventoActorContext actorContext, UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
-        resolveModoRequisicaoCriacao(actorContext, grupoParoquialResponsavelId, igrejaVinculoId);
+            EventoActorContext actorContext, UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
+        resolveModoRequisicaoCriacao(actorContext, organizacaoResponsavelId, igrejaVinculoId);
     }
 
     /**
@@ -83,24 +83,24 @@ public class EventoPatchAuthorizationService {
      * deve ser aplicada imediatamente ou requer aprovação.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @param grupoParoquialResponsavelId identificador da organização responsável pelo evento a ser criado
+     * @param organizacaoResponsavelId identificador da organização responsável pelo evento a ser criado
      * @param igrejaVinculoId identificador da igreja vinculada ao evento a ser criado, ou {@code null}
      * @return modo de criação resultante (imediato ou sujeito a aprovação)
      * @throws AccessDeniedException se o ator não tiver papel ou escopo autorizado a criar o evento
      */
     public ModoRequisicaoCriacao resolveModoRequisicaoCriacao(EventoActorContext actorContext,
-                                                      UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
+                                                      UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
 
         String rawRole = actorContext.role();
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
+        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
 
         if (!policy.isCreatorRole(rawRole)) {
             throw new AccessDeniedException("Usuário não tem permissão para esta operação de criação");
         }
 
         boolean escopoAutorizado = policy.isScopeExempt(rawRole) || actorContext.organizationId() == null
-                || matchesScope(actorContext, grupoParoquialResponsavelId, igrejaVinculoId)
-                || verificarVinculoUsuario(grupoParoquialResponsavelId, igrejaVinculoId, policy.creatorRoles());
+                || matchesScope(actorContext, organizacaoResponsavelId, igrejaVinculoId)
+                || verificarVinculoUsuario(organizacaoResponsavelId, igrejaVinculoId, policy.creatorRoles());
 
         if (!escopoAutorizado) {
             throw new AccessDeniedException(
@@ -117,12 +117,12 @@ public class EventoPatchAuthorizationService {
      * vínculo válido que cubra esse escopo).
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @param eventoGrupoParoquialResponsavelId identificador da organização responsável pelo evento
+     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento
      * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
      * @throws OperacaoProibidaException se o ator não tiver papel ou escopo autorizado a editar o evento
      */
     public void assertCanEditGeneral(EventoActorContext actorContext,
-                                     UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
+                                     UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
 
         String rawRole = actorContext.role();
         if (!policy.isEditorRole(rawRole)) {
@@ -130,8 +130,8 @@ public class EventoPatchAuthorizationService {
         }
 
         boolean escopoAutorizado = policy.isScopeExempt(rawRole) || actorContext.organizationId() == null
-                || matchesScope(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId)
-                || verificarVinculoUsuario(eventoGrupoParoquialResponsavelId,
+                || matchesScope(actorContext, eventoOrganizacaoResponsavelId, eventIgrejaVinculoId)
+                || verificarVinculoUsuario(eventoOrganizacaoResponsavelId,
                         eventIgrejaVinculoId, policy.editorRoles());
 
         if (!escopoAutorizado) {
@@ -146,14 +146,14 @@ public class EventoPatchAuthorizationService {
      * a gestão de participantes é tratada como parte da edição geral do evento.
      *
      * @param actorContext contexto de papel/organização do ator autenticado
-     * @param eventoGrupoParoquialResponsavelId identificador da organização responsável pelo evento
+     * @param eventoOrganizacaoResponsavelId identificador da organização responsável pelo evento
      * @param eventIgrejaVinculoId identificador da igreja vinculada ao evento, ou {@code null}
      * @throws OperacaoProibidaException se o ator não tiver papel ou escopo autorizado a editar o evento
      */
     public void assertCanManageParticipants(EventoActorContext actorContext,
-                                            UUID eventoGrupoParoquialResponsavelId, UUID eventIgrejaVinculoId) {
+                                            UUID eventoOrganizacaoResponsavelId, UUID eventIgrejaVinculoId) {
 
-        assertCanEditGeneral(actorContext, eventoGrupoParoquialResponsavelId, eventIgrejaVinculoId);
+        assertCanEditGeneral(actorContext, eventoOrganizacaoResponsavelId, eventIgrejaVinculoId);
     }
 
     /**
@@ -164,19 +164,19 @@ public class EventoPatchAuthorizationService {
      * @throws OperacaoProibidaException se o ator não for Pároco
      */
     public void assertCanChangeResponsibleOrganization(EventoActorContext actorContext) {
-        TipoGrupo normalizedOrgType = TipoGrupo.fromStoredValue(actorContext.organizationType());
+        TipoOrganizacao normalizedOrgType = TipoOrganizacao.fromStoredValue(actorContext.organizationType());
         policy.assertCanChangeResponsibleOrganization(actorContext.role(), normalizedOrgType);
     }
 
     private boolean matchesScope(EventoActorContext actorContext,
-                                  UUID grupoParoquialResponsavelId, UUID igrejaVinculoId) {
-        boolean matchesOrg = actorContext.organizationId().equals(grupoParoquialResponsavelId);
+                                  UUID organizacaoResponsavelId, UUID igrejaVinculoId) {
+        boolean matchesOrg = actorContext.organizationId().equals(organizacaoResponsavelId);
         boolean matchesChurch = (igrejaVinculoId == null)
                 || (actorContext.igrejaVinculoId() != null && actorContext.igrejaVinculoId().equals(igrejaVinculoId));
         return matchesOrg && matchesChurch;
     }
 
-    private boolean verificarVinculoUsuario(UUID grupoParoquialResponsavelId,
+    private boolean verificarVinculoUsuario(UUID organizacaoResponsavelId,
                                         UUID eventIgrejaVinculoId, Set<PapelOrganizacional> allowedRoles) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -186,7 +186,7 @@ public class EventoPatchAuthorizationService {
         if (auth.getPrincipal() instanceof UsuarioDetails usuarioDetails) {
             return usuarioDetails.getVinculos().stream()
                     .anyMatch(m -> {
-                        boolean sameOrg = m.organizationId().equals(grupoParoquialResponsavelId);
+                        boolean sameOrg = m.organizationId().equals(organizacaoResponsavelId);
                         boolean roleAllowed = allowedRoles.contains(PapelOrganizacional.fromStoredValue(m.role()));
                         boolean sameChurch = (eventIgrejaVinculoId == null) ||
                                 (m.igrejaVinculoId() != null && m.igrejaVinculoId().equals(eventIgrejaVinculoId));

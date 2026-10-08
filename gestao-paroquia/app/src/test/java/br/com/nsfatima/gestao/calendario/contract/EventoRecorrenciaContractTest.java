@@ -34,7 +34,7 @@ class EventoRecorrenciaContractTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(EVENT_ID);
         entity.setTitulo("Evento Base");
-        entity.setGrupoParoquialResponsavelId(ORG_ID);
+        entity.setOrganizacaoResponsavelId(ORG_ID);
         entity.setInicioUtc(Instant.now());
         entity.setFimUtc(Instant.now().plusSeconds(3600));
         entity.setStatus("CONFIRMADO");

@@ -50,8 +50,8 @@ public class EventoEntity extends BaseAuditableEntity {
     @Column(length = 4000)
     private String descricao;
 
-    @Column(name = "grupo_paroquial_responsavel_id", nullable = false)
-    private UUID grupoParoquialResponsavelId;
+    @Column(name = "organizacao_responsavel_id", nullable = false)
+    private UUID organizacaoResponsavelId;
 
     @Column(name = "inicio_utc", nullable = false)
     private Instant inicioUtc;
@@ -212,12 +212,12 @@ public class EventoEntity extends BaseAuditableEntity {
         this.descricao = descricao;
     }
 
-    public UUID getGrupoParoquialResponsavelId() {
-        return grupoParoquialResponsavelId;
+    public UUID getOrganizacaoResponsavelId() {
+        return organizacaoResponsavelId;
     }
 
-    public void setGrupoParoquialResponsavelId(UUID grupoParoquialResponsavelId) {
-        this.grupoParoquialResponsavelId = grupoParoquialResponsavelId;
+    public void setOrganizacaoResponsavelId(UUID organizacaoResponsavelId) {
+        this.organizacaoResponsavelId = organizacaoResponsavelId;
     }
 
     public Instant getInicioUtc() {

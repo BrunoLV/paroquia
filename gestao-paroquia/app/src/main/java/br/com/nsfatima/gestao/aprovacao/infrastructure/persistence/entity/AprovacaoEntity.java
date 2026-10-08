@@ -3,8 +3,8 @@ package br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.domain.model.TipoFalhaAprovacao;
 import br.com.nsfatima.gestao.calendario.domain.type.AprovadorPapel;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoGrupoAttributeConverter;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.converter.TipoOrganizacaoAttributeConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -57,9 +57,9 @@ public class AprovacaoEntity extends BaseAuditableEntity {
     @Column(name = "solicitante_papel", length = 64)
     private String solicitantePapel;
 
-    @Convert(converter = TipoGrupoAttributeConverter.class)
-    @Column(name = "solicitante_tipo_grupo_paroquial", length = 64)
-    private TipoGrupo solicitanteTipoGrupo;
+    @Convert(converter = TipoOrganizacaoAttributeConverter.class)
+    @Column(name = "solicitante_tipo_organizacao", length = 64)
+    private TipoOrganizacao solicitanteTipoOrganizacao;
 
     @Column(name = "aprovador_id")
     private String aprovadorId;
@@ -178,12 +178,12 @@ public class AprovacaoEntity extends BaseAuditableEntity {
         this.solicitantePapel = solicitantePapel;
     }
 
-    public TipoGrupo getSolicitanteTipoGrupo() {
-        return solicitanteTipoGrupo;
+    public TipoOrganizacao getSolicitanteTipoOrganizacao() {
+        return solicitanteTipoOrganizacao;
     }
 
-    public void setSolicitanteTipoGrupo(TipoGrupo solicitanteTipoGrupo) {
-        this.solicitanteTipoGrupo = solicitanteTipoGrupo;
+    public void setSolicitanteTipoOrganizacao(TipoOrganizacao solicitanteTipoOrganizacao) {
+        this.solicitanteTipoOrganizacao = solicitanteTipoOrganizacao;
     }
 
     public String getAprovadorId() {

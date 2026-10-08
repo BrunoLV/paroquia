@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.util.Set;
 
@@ -34,15 +34,15 @@ public interface EventoPatchAuthorizationPolicy {
      * Determina se a criação resultante deve ser aplicada imediatamente ou requer aprovação.
      *
      * @param rawRole papel global ou organizacional do ator
-     * @param tipoGrupo tipo do grupo do ator
+     * @param tipoOrganizacao tipo do grupo do ator
      * @return modo de criação resultante
      */
-    ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoGrupo tipoGrupo);
+    ModoRequisicaoCriacao resolveModoRequisicaoCriacao(String rawRole, TipoOrganizacao tipoOrganizacao);
 
     /**
      * Garante que o ator tem permissão para alterar a organização responsável por um evento.
      *
      * @throws OperacaoProibidaException se o ator não possuir alçada para alterar organização responsável
      */
-    void assertCanChangeResponsibleOrganization(String rawRole, TipoGrupo tipoGrupo);
+    void assertCanChangeResponsibleOrganization(String rawRole, TipoOrganizacao tipoOrganizacao);
 }

@@ -158,12 +158,12 @@ export const canManageAtivos = (user: User | null): boolean => {
  * Quem pode gerir (manutenção, exclusão) um ativo pertencente a uma unidade territorial:
  * Pároco/Bispo e membros do CAE podem gerir em âmbito paroquial; Coordenador gere ativos da sua unidade.
  */
-export const canManageManutencaoAtivo = (user: User | null, grupoParoquialId: string): boolean => {
+export const canManageManutencaoAtivo = (user: User | null, organizacaoId: string): boolean => {
   if (!user) return false;
   if (isParoco(user) || isMembroCae(user)) return true;
 
   if (isCoordenador(user) && Array.isArray(user.organizations)) {
-    return user.organizations.some((org: Organization) => org.id === grupoParoquialId);
+    return user.organizations.some((org: Organization) => org.id === organizacaoId);
   }
   return false;
 };
@@ -211,6 +211,16 @@ export const canManageLocais = (user: User | null): boolean => {
  * Gestão de organizações e vínculos de usuários:
  * Pároco/Bispo (criação de grupos/pastorais e provisão canônica) e ADMIN (gestão técnica de usuários).
  */
+/** Quem atesta a idoneidade pastoral dos agentes: o Pároco/Bispo e a secretaria paroquial. */
+export const canGerirIdoneidade = (user: User | null): boolean =>
+  isParoco(user) || hasRole(user, 'SECRETARIA_PAROQUIAL');
+
+/** Quem pode propor um mandato de coordenação: Pároco/Bispo ou a mesa do conselho pastoral (CPP). */
+export const canProporMandato = (user: User | null): boolean => isParoco(user) || isMembroCpp(user);
+
+/** Somente o Pároco (ou Bispo) homologa, veta ou encerra um mandato: provisão canônica (Cân. 519 e 317). */
+export const canHomologarMandato = (user: User | null): boolean => isParoco(user);
+
 export const canManageOrganizacoes = (user: User | null): boolean => {
   if (!user) return false;
   return isAdmin(user) || isParoco(user);

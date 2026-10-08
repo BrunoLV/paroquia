@@ -6,6 +6,8 @@ export type TipoOrganismoParoquial =
   | "CONSELHO_ECONOMICO"
   | "PASTORAL"
   | "MOVIMENTO"
+  | "SERVICO_PAROQUIAL"
+  | "CONSELHO"
   | "OUTRO";
 
 export type Vocacao = "LEIGO" | "SACERDOTE" | "DIACONO" | "RELIGIOSO";
@@ -210,6 +212,74 @@ export type TipoDocumentoEstrangeiro = "RNE_RNM" | "PASSAPORTE";
 export type SetorPastoral =
   "SANTIFICACAO_LITURGIA" | "FORMACAO_ENSINAR" | "SOCIAL_CARIDADE";
 
+/** Múnus (tríplice missão de Cristo) a que uma pastoral ou serviço serve. */
+export const SETOR_PASTORAL_OPCOES: Record<SetorPastoral, string> = {
+  FORMACAO_ENSINAR: "Ensinar (evangelização, catequese e formação)",
+  SANTIFICACAO_LITURGIA: "Santificar (liturgia, oração e sacramentos)",
+  SOCIAL_CARIDADE: "Governar (caridade organizada e promoção humana)",
+};
+
+/** Natureza do conselho: CPP/CPC são pastorais; CAEP é econômico e nunca acolhe pastorais. */
+export type SubtipoConselho = "CPP" | "CPC" | "CAEP";
+
+export const SUBTIPO_CONSELHO_LABELS: Record<SubtipoConselho, string> = {
+  CPP: "Conselho Pastoral Paroquial (CPP)",
+  CPC: "Conselho Pastoral Comunitário (CPC)",
+  CAEP: "Conselho para Assuntos Econômicos (CAEP)",
+};
+
+/**
+ * Idoneidade pastoral do agente: guarda apenas datas e quem conferiu o envio, nunca o conteúdo dos documentos.
+ * `pendencias` lista o que ainda impede o agente de exercer a função que ocupa.
+ */
+export interface IdoneidadeAgente {
+  formacaoConcluidaEm?: string | null;
+  vivenciaSacramentalAtestadaEm?: string | null;
+  termoProtecaoMenoresEm?: string | null;
+  termoProtecaoMenoresValidoAte?: string | null;
+  enviadoEm?: string | null;
+  enviadoPor?: string | null;
+  apto: boolean;
+  pendencias: string[];
+}
+
+export type FuncaoCoordenacao = "COORDENADOR" | "VICE_COORDENADOR";
+
+export const FUNCAO_COORDENACAO_LABELS: Record<FuncaoCoordenacao, string> = {
+  COORDENADOR: "Coordenador",
+  VICE_COORDENADOR: "Vice-Coordenador",
+};
+
+export type StatusMandato = "PROPOSTO" | "HOMOLOGADO" | "VETADO" | "ENCERRADO";
+
+/**
+ * Mandato temporário de coordenação: proposto pelo grupo ou conselho e só legítimo após a
+ * homologação do Pároco (Cân. 519 e 317).
+ */
+export interface MandatoCoordenacao {
+  id: string;
+  organizacaoId: string;
+  fielId: string;
+  fielNome: string | null;
+  funcao: FuncaoCoordenacao;
+  inicio: string;
+  fim: string;
+  status: StatusMandato;
+  /** `true` quando homologado e dentro do período hoje. */
+  vigente: boolean;
+  motivoVeto?: string | null;
+  decididoEmUtc?: string | null;
+}
+
+export type AmbitoOrganismo = "PAROQUIAL" | "DIOCESANO" | "NACIONAL" | "INTERNACIONAL";
+
+export const AMBITO_ORGANISMO_LABELS: Record<AmbitoOrganismo, string> = {
+  PAROQUIAL: "Paroquial",
+  DIOCESANO: "Diocesano",
+  NACIONAL: "Nacional",
+  INTERNACIONAL: "Internacional",
+};
+
 export type PapelEclesial =
   | "ADMIN"
   | "BISPO_DIOCESANO"
@@ -266,7 +336,10 @@ export interface Organizacao {
   id: string;
   nome: string;
   tipo: TipoOrganismoParoquial | string;
+  /** Espelho legado de leitura (e-mail ou, na falta dele, telefone). */
   contato: string | null;
+  email?: string | null;
+  telefone?: string | null;
   coordenador?: string | null;
   viceCoordenador?: string | null;
   ativo: boolean;
@@ -275,6 +348,8 @@ export interface Organizacao {
   /** ID do registro oficial de Pastoral/Movimento vinculado, quando `tipo` for `PASTORAL` ou `MOVIMENTO`. */
   pastoralOficialId?: string | null;
   setorPastoral?: SetorPastoral | null;
+  /** Natureza do conselho; preenchida somente quando `tipo` for `CONSELHO`. */
+  subtipoConselho?: SubtipoConselho | null;
 }
 
 export type TipoUnidadeTerritorial = 'MATRIZ' | 'COMUNIDADE';
@@ -361,6 +436,13 @@ export interface PastoralMovimentoOficial {
   id: string;
   nome: string;
   tipo: "PASTORAL" | "MOVIMENTO";
+  ambito?: AmbitoOrganismo | null;
+  /** Autoridade que reconheceu os estatutos (Cân. 299 e 304); exigida para movimentos. */
+  estatutoAutoridade?: string | null;
+  estatutoData?: string | null;
+  estatutoReferencia?: string | null;
+  /** Somente leitura: `true` quando há reconhecimento formal dos estatutos. */
+  estatutoReconhecido?: boolean;
 }
 
 /**
@@ -417,7 +499,7 @@ export interface Projeto {
   descricao: string | null;
   inicio: string;
   fim: string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   status: "ABERTO" | "EM_ANDAMENTO" | "CANCELADO" | "CONCLUIDO";
   /** Flag de UI: marca que o registro acabou de ser atualizado, para destacar/realçar na lista. */
   updated?: boolean;
@@ -462,7 +544,7 @@ export interface Evento {
   titulo: string;
   descricao: string;
   categoria: CategoriaEvento | string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   /** Projeto ao qual este evento pertence, ou `null` se for um evento avulso. */
   projetoId: string | null;
   nomeProjeto: string | null;
@@ -527,7 +609,7 @@ export interface CreateEventoPayload {
   titulo: string;
   descricao?: string;
   categoria: string;
-  grupoParoquialResponsavelId: string;
+  organizacaoResponsavelId: string;
   projetoId?: string | null;
   localId?: string | null;
   /** Lista de múltiplos locais/espaços físicos alocados simultaneamente */
@@ -565,7 +647,7 @@ export interface UpdateEventoPayload {
   adicionadoExtraJustificativa?: string | null;
   /** Motivo textual exigido ao transicionar `status` para cancelado. */
   canceladoMotivo?: string | null;
-  grupoParoquialResponsavelId?: string;
+  organizacaoResponsavelId?: string;
   participantes?: string[];
   /** Escopo da edição quando o evento pertence a uma série recorrente: só esta ocorrência, esta e as futuras, ou toda a série. */
   escopoEdicao?: "SOMENTE_ESTE" | "ESTE_E_PROXIMOS" | "TODOS";
@@ -710,7 +792,7 @@ export interface GeneralSummary {
 
 /** Ponto de dados para o gráfico de distribuição de eventos por organização responsável. */
 export interface EventDistribution {
-  grupoParoquialNome: string;
+  organizacaoNome: string;
   quantidadeEventos: number;
 }
 
@@ -765,7 +847,7 @@ export interface WeeklyEvent {
   titulo: string;
   inicio: string;
   localNome: string;
-  grupoParoquialNome: string;
+  organizacaoNome: string;
 }
 
 /** Aniversariante do período (dados mínimos por LGPD: primeiro nome + dia/mês). */
@@ -813,7 +895,7 @@ export interface OcupacaoAmbientes {
 
 /** Contagem de eventos por organização responsável no período. */
 export interface EventosPorResponsavel {
-  grupoParoquialNome: string;
+  organizacaoNome: string;
   quantidade: number;
 }
 
@@ -834,7 +916,7 @@ export interface DashboardLogistica {
 /** Agregado de métricas exibidas na tela inicial (Painel). */
 export interface DashboardMetrics {
   resumoGeral: GeneralSummary;
-  eventosPorGrupoParoquial: EventDistribution[];
+  eventosPorOrganizacao: EventDistribution[];
   projetosPorStatus: ProjetosPorStatus;
   projetosAtivosDetalhes: ProjectDetail[];
   eventosOrfaos: EventoOrfao[];
@@ -874,7 +956,7 @@ export interface OrganogramaNode {
     | "PAROQUIA"
     | "ORGANIZACAO"
     | "UNIDADE_TERRITORIAL"
-    | "GRUPO_PAROQUIAL"
+    | "ORGANIZACAO"
     | "MEMBRO"
     | "GRUPO"
     | string;
@@ -933,7 +1015,7 @@ export interface AtivoPatrimonial {
   status: AtivoStatus;
   /** Elegível para reserva no módulo de Reservas; imutável após o cadastro. */
   isReservavel: boolean;
-  grupoParoquialId: string;
+  organizacaoId: string;
   dataAquisicao: string;
   valorAquisicao: number;
   cadastradoPorId?: string | null;
@@ -946,7 +1028,7 @@ export interface CadastrarAtivoPayload {
   nome: string;
   descricao?: string | null;
   categoria: AtivoCategoria;
-  grupoParoquialId: string;
+  organizacaoId: string;
   isReservavel: boolean;
   dataAquisicao: string;
   valorAquisicao: number;

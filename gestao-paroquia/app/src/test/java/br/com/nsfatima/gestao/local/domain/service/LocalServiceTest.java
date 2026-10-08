@@ -135,9 +135,9 @@ class LocalServiceTest {
         }
 
         @Override
-        public List<Local> findByGrupoParoquialId(UUID grupoParoquialId) {
+        public List<Local> findByOrganizacaoId(UUID organizacaoId) {
             return storage.stream()
-                    .filter(l -> grupoParoquialId != null && grupoParoquialId.equals(l.getGrupoParoquialId()))
+                    .filter(l -> organizacaoId != null && organizacaoId.equals(l.getOrganizacaoId()))
                     .toList();
         }
 

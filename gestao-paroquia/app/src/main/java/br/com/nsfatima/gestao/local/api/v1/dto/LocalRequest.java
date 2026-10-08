@@ -39,7 +39,7 @@ public record LocalRequest(
         boolean ativo,
 
         @Schema(description = "ID da Igreja/Comunidade vinculada")
-        @JsonAlias({"organizacaoId", "grupoParoquialId"})
+        @JsonAlias("organizacaoId")
         UUID igrejaId,
 
         @Schema(description = "CEP formatado", example = "01001-000")

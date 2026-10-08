@@ -186,7 +186,7 @@ class EventoRecorrenciaIntegracaoTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(id);
         entity.setTitulo(titulo);
-        entity.setGrupoParoquialResponsavelId(UUID.fromString(ORG_ID));
+        entity.setOrganizacaoResponsavelId(UUID.fromString(ORG_ID));
         entity.setStatus("CONFIRMADO");
         entity.setInicioUtc(Instant.parse(inicio));
         entity.setFimUtc(Instant.parse(inicio).plusSeconds(3600));

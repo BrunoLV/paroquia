@@ -11,7 +11,7 @@ import {
 export interface DashboardMetricsParams {
   periodo: PeriodoDashboard;
   /** Comunidade/pastoral a filtrar; ausente usa o escopo do próprio ator. */
-  grupoParoquialId?: string;
+  organizacaoId?: string;
 }
 
 /**
@@ -19,13 +19,13 @@ export interface DashboardMetricsParams {
  * distribuição de eventos por organização, distribuição de projetos por status, detalhes dos
  * projetos ativos, eventos órfãos e a agenda da semana corrente. As métricas de volume respeitam
  * o recorte temporal `periodo`; a organização é validada no backend contra o que o ator pode ver
- * (um `grupoParoquialId` sem acesso resulta em 403).
+ * (um `organizacaoId` sem acesso resulta em 403).
  */
 export const getDashboardMetrics = async (
   params: DashboardMetricsParams,
 ): Promise<DashboardMetrics> => {
   const response = await apiClient.get<DashboardMetrics>('/painel/metricas', {
-    params: {periodo: params.periodo, grupoParoquialId: params.grupoParoquialId},
+    params: {periodo: params.periodo, organizacaoId: params.organizacaoId},
   });
   return response.data;
 };
@@ -33,14 +33,14 @@ export const getDashboardMetrics = async (
 /**
  * Busca a seção de logística do Painel (`GET /dashboard/logistica`): choque de horário por
  * local, taxa de ocupação estimada dos ambientes, eventos por responsável e pendências de
- * homologação por tipo. Mesmo filtro (`periodo`, `grupoParoquialId`) e mesma validação de escopo
+ * homologação por tipo. Mesmo filtro (`periodo`, `organizacaoId`) e mesma validação de escopo
  * do endpoint de métricas.
  */
 export const getDashboardLogistica = async (
   params: DashboardMetricsParams,
 ): Promise<DashboardLogistica> => {
   const response = await apiClient.get<DashboardLogistica>('/painel/logistica', {
-    params: {periodo: params.periodo, grupoParoquialId: params.grupoParoquialId},
+    params: {periodo: params.periodo, organizacaoId: params.organizacaoId},
   });
   return response.data;
 };
@@ -63,10 +63,10 @@ export const getAniversariantes = async (
  * número crítico de voluntários ou sem liderança. Escopo validado no backend.
  */
 export const getDashboardComunidade = async (
-  grupoParoquialId?: string,
+  organizacaoId?: string,
 ): Promise<DashboardComunidade> => {
   const response = await apiClient.get<DashboardComunidade>('/painel/comunidade', {
-    params: {grupoParoquialId},
+    params: {organizacaoId},
   });
   return response.data;
 };

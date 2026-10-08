@@ -22,7 +22,7 @@ public record AprovacaoAcaoPayload(
         String titulo,
         String descricao,
         CategoriaEvento categoria,
-        UUID grupoParoquialResponsavelId,
+        UUID organizacaoResponsavelId,
         UUID projetoId,
         Instant inicio,
         Instant fim,
@@ -65,7 +65,7 @@ public record AprovacaoAcaoPayload(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             Instant inicio,
             Instant fim,
@@ -83,7 +83,7 @@ public record AprovacaoAcaoPayload(
             String justificativa,
             TipoHorarioEvento tipoHorario,
             FormatoEvento formato) {
-        this(idempotencyKey, eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId,
+        this(idempotencyKey, eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId,
                 inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes,
                 localId, localIds, igrejaVinculoId, ativoId, ativoNome, ativoIds, justificativa, tipoHorario,
                 formato, List.of());
@@ -95,7 +95,7 @@ public record AprovacaoAcaoPayload(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             Instant inicio,
             Instant fim,
@@ -110,7 +110,7 @@ public record AprovacaoAcaoPayload(
             String ativoNome,
             List<UUID> ativoIds,
             String justificativa) {
-        this(idempotencyKey, eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId,
+        this(idempotencyKey, eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId,
                 inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes,
                 localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, ativoId, ativoNome,
                 ativoIds, justificativa, TipoHorarioEvento.PERSONALIZADO, null);
@@ -122,7 +122,7 @@ public record AprovacaoAcaoPayload(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             Instant inicio,
             Instant fim,
@@ -135,7 +135,7 @@ public record AprovacaoAcaoPayload(
             UUID igrejaVinculoId,
             UUID ativoId,
             String ativoNome) {
-        this(idempotencyKey, eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId,
+        this(idempotencyKey, eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId,
                 inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes,
                 localId, igrejaVinculoId, ativoId, ativoNome,
                 ativoId != null ? List.of(ativoId) : List.of(),
@@ -148,7 +148,7 @@ public record AprovacaoAcaoPayload(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             Instant inicio,
             Instant fim,
@@ -160,7 +160,7 @@ public record AprovacaoAcaoPayload(
             UUID localId) {
         // Construtor de compatibilidade para chamadores que não lidam com alocação de ativo patrimonial.
         this(idempotencyKey,
-                eventoId, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, inicio, fim, status,
+                eventoId, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, inicio, fim, status,
                 adicionadoExtraJustificativa, canceladoMotivo, motivo, participantes, localId, null, null, null);
     }
 }

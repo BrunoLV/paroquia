@@ -4,7 +4,7 @@ import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.projeto.api.v1.dto.CriarProjetoRequest;
 import br.com.nsfatima.gestao.projeto.application.dto.ResultadoCriacaoProjeto;
 import br.com.nsfatima.gestao.projeto.application.service.ProjetoAuthorizationService;
@@ -80,7 +80,7 @@ public class CriarProjetoUseCase {
     @Transactional
     public ResultadoCriacaoProjeto criar(CriarProjetoRequest request) {
         var actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanCreate(actorContext, request.grupoParoquialResponsavelId());
+        authorizationService.assertCanCreate(actorContext, request.organizacaoResponsavelId());
 
         if (request.fim().isBefore(request.inicio())) {
             throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
@@ -105,7 +105,7 @@ public class CriarProjetoUseCase {
             aprovacao.setStatus(AprovacaoStatus.PENDENTE);
             aprovacao.setSolicitanteId(actorContext.actor());
             aprovacao.setSolicitantePapel(actorContext.role());
-            aprovacao.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
+            aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
             try {
                 aprovacao.setActionPayloadJson(objectMapper.writeValueAsString(request));
             } catch (Exception e) {
@@ -125,7 +125,7 @@ public class CriarProjetoUseCase {
                 UUID.randomUUID(),
                 request.nome(),
                 request.descricao(),
-                request.grupoParoquialResponsavelId(),
+                request.organizacaoResponsavelId(),
                 request.inicio(),
                 request.fim());
 

@@ -5,12 +5,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Quantidade de eventos liderados por uma organização/pastoral no período do filtro.
  *
- * @param grupoParoquialNome nome da organização responsável
+ * @param organizacaoNome nome da organização responsável
  * @param quantidade eventos liderados no período
  */
 @Schema(description = "Contagem de eventos por organização responsável no período")
 public record EventosPorResponsavelDTO(
-        String grupoParoquialNome,
+        String organizacaoNome,
         long quantidade
 ) {
 }

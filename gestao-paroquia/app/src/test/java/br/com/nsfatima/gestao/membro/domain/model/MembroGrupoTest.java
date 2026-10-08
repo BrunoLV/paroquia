@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.membro.domain.model;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ class MembroGrupoTest {
 
     private MembroGrupo novo(PapelOrganizacional papel) {
         return MembroGrupo.novo(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                TipoGrupo.PASTORAL, papel, null, LocalDate.of(2026, 1, 1));
+                TipoOrganizacao.PASTORAL, papel, null, LocalDate.of(2026, 1, 1));
     }
 
     @Test

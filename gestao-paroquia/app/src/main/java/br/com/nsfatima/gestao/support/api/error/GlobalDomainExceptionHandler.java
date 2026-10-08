@@ -3,7 +3,7 @@ package br.com.nsfatima.gestao.support.api.error;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
 import br.com.nsfatima.gestao.local.domain.exception.LocalNegocioException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
-import br.com.nsfatima.gestao.organizacao.domain.exception.GrupoParoquialNegocioException;
+import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -61,8 +61,8 @@ public class GlobalDomainExceptionHandler extends BaseExceptionHandler {
      * @param ex exceção de negócio lançada pelo contexto de organização
      * @return resposta HTTP padronizada com o código de erro de violação de regra de domínio
      */
-    @ExceptionHandler(GrupoParoquialNegocioException.class)
-    public ResponseEntity<ValidationErrorResponse> handleOrganizationBusiness(GrupoParoquialNegocioException ex) {
+    @ExceptionHandler(OrganizacaoNegocioException.class)
+    public ResponseEntity<ValidationErrorResponse> handleOrganizationBusiness(OrganizacaoNegocioException ex) {
         HttpStatus status = ex.getMessage().contains("not found") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return buildValidation(
                 status,

@@ -33,7 +33,7 @@ Um projeto é automaticamente classificado como **Em Risco** (`emRisco === true`
 
 ### RN-PROJ-04: Alçada de Autorização de Projetos (`PadraoAutorizacaoProjetoPolicy`)
 - **`PAROCO` e `VIGARIO`:** Possuem alçada global paroquial para criar, editar e transicionar o ciclo de vida de projetos de qualquer pastoral ou comunidade.
-- **`COORDENADOR` e `SECRETARIO_GRUPO`:** Podem propor e gerir projetos estritamente vinculados à sua própria organização (`grupoParoquialResponsavelId` idêntico ao vínculo ativo).
+- **`COORDENADOR` e `SECRETARIO_GRUPO`:** Podem propor e gerir projetos estritamente vinculados à sua própria organização (`organizacaoResponsavelId` idêntico ao vínculo ativo).
 - **`ADMIN`:** Isolado na infraestrutura técnica; não possui alçada sobre projetos pastorais.
 
 ---

@@ -52,7 +52,7 @@ public class ConcluirManutencaoAtivoUseCase {
                 .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
-        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());
+        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getOrganizacaoId());
 
         AtivoManutencao manutencao = manutencaoRepository.findEmAbertoPorAtivo(ativo.getId())
                 .orElseThrow(() -> new AtivoManutencaoInvalidaException(

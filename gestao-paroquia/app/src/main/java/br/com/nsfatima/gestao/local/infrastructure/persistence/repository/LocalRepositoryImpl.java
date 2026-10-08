@@ -5,9 +5,9 @@ import br.com.nsfatima.gestao.local.domain.model.EnderecoLocal;
 import br.com.nsfatima.gestao.local.domain.model.Local;
 import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +28,7 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialJpaRepository;
+    private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
 
     /**
@@ -37,16 +37,16 @@ public class LocalRepositoryImpl implements LocalRepository {
      *
      * @param localJpaRepository            repositório JPA de Locais
      * @param eventoJpaRepository           repositório JPA de Eventos, usado para checar uso de um local
-     * @param grupoParoquialJpaRepository   repositório JPA de Grupos/Pastorais
+     * @param organizacaoJpaRepository   repositório JPA de Grupos/Pastorais
      * @param unidadeTerritorialJpaRepository repositório JPA de Matriz/Comunidades vinculadas
      */
     public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
                                 EventoJpaRepository eventoJpaRepository,
-                                GrupoParoquialJpaRepository grupoParoquialJpaRepository,
+                                OrganizacaoJpaRepository organizacaoJpaRepository,
                                 UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository) {
         this.localJpaRepository = localJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
-        this.grupoParoquialJpaRepository = grupoParoquialJpaRepository;
+        this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
     }
 
@@ -69,8 +69,8 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public List<Local> findByGrupoParoquialId(UUID grupoParoquialId) {
-        return localJpaRepository.findByGrupoParoquialIdAndDeletedAtIsNull(grupoParoquialId).stream()
+    public List<Local> findByOrganizacaoId(UUID organizacaoId) {
+        return localJpaRepository.findByOrganizacaoIdAndDeletedAtIsNull(organizacaoId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
@@ -100,7 +100,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setDescricao(domain.getDescricao());
         entity.setCaracteristicas(domain.getDescricao());
         entity.setAtivo(domain.isAtivo());
-        entity.setGrupoParoquialId(domain.getIgrejaId());
+        entity.setOrganizacaoId(domain.getIgrejaId());
         entity.setDeletedAt(domain.getDeletedAt());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
@@ -121,11 +121,11 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     private Local toDomain(LocalEntity entity) {
         String igrejaNome = null;
-        if (entity.getGrupoParoquialId() != null) {
-            igrejaNome = unidadeTerritorialJpaRepository.findById(entity.getGrupoParoquialId())
+        if (entity.getOrganizacaoId() != null) {
+            igrejaNome = unidadeTerritorialJpaRepository.findById(entity.getOrganizacaoId())
                     .map(UnidadeTerritorialEntity::getNome)
-                    .or(() -> grupoParoquialJpaRepository.findById(entity.getGrupoParoquialId())
-                            .map(GrupoParoquialEntity::getNome))
+                    .or(() -> organizacaoJpaRepository.findById(entity.getOrganizacaoId())
+                            .map(OrganizacaoEntity::getNome))
                     .orElse(null);
         }
 
@@ -155,7 +155,7 @@ public class LocalRepositoryImpl implements LocalRepository {
                 capacidadeMaxima,
                 descricao,
                 entity.isAtivo(),
-                entity.getGrupoParoquialId(),
+                entity.getOrganizacaoId(),
                 igrejaNome,
                 entity.getDeletedAt(),
                 entity.getCreatedAt(),

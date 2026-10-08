@@ -6,8 +6,8 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.entity.AtivoPatrimonialEntity;
 import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.AtivoPatrimonialJpaRepository;
 import br.com.nsfatima.gestao.reserva.application.dto.ReservaDetalheDto;
@@ -40,13 +40,13 @@ class EnriquecedorReservaServiceTest {
 
     @Mock private LocalJpaRepository localRepository;
     @Mock private AtivoPatrimonialJpaRepository ativoRepository;
-    @Mock private GrupoParoquialJpaRepository grupoParoquialRepository;
+    @Mock private OrganizacaoJpaRepository organizacaoRepository;
     @Mock private UsuarioJpaRepository usuarioRepository;
     @Mock private EventoJpaRepository eventoRepository;
 
     private EnriquecedorReservaService service() {
         return new EnriquecedorReservaService(
-                localRepository, ativoRepository, grupoParoquialRepository, usuarioRepository, eventoRepository);
+                localRepository, ativoRepository, organizacaoRepository, usuarioRepository, eventoRepository);
     }
 
     private Reserva reservaLocal(UUID itemId, UUID solicitanteId, UUID orgId, UUID eventoId) {
@@ -63,7 +63,7 @@ class EnriquecedorReservaServiceTest {
         assertThat(service().enriquecer((List<Reserva>) null)).isEmpty();
         assertThat(service().enriquecer(List.of())).isEmpty();
         verifyNoInteractions(
-                localRepository, ativoRepository, grupoParoquialRepository, usuarioRepository, eventoRepository);
+                localRepository, ativoRepository, organizacaoRepository, usuarioRepository, eventoRepository);
     }
 
     @Test
@@ -91,10 +91,10 @@ class EnriquecedorReservaServiceTest {
         solicitante.setUsername("joao.silva");
         when(usuarioRepository.findAllById(any())).thenReturn(List.of(solicitante));
 
-        GrupoParoquialEntity org = new GrupoParoquialEntity();
+        OrganizacaoEntity org = new OrganizacaoEntity();
         org.setId(orgId);
         org.setNome("Pastoral da Liturgia");
-        when(grupoParoquialRepository.findAllById(any())).thenReturn(List.of(org));
+        when(organizacaoRepository.findAllById(any())).thenReturn(List.of(org));
 
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
@@ -132,7 +132,7 @@ class EnriquecedorReservaServiceTest {
         ativo.setNome("Caixa de Som JBL");
         when(ativoRepository.findAllById(any())).thenReturn(List.of(ativo));
         lenient().when(usuarioRepository.findAllById(any())).thenReturn(List.of());
-        lenient().when(grupoParoquialRepository.findAllById(any())).thenReturn(List.of());
+        lenient().when(organizacaoRepository.findAllById(any())).thenReturn(List.of());
 
         ReservaDetalheDto dto = service().enriquecer(reserva);
 
@@ -153,7 +153,7 @@ class EnriquecedorReservaServiceTest {
 
         when(localRepository.findAllById(any())).thenReturn(List.of());
         when(usuarioRepository.findAllById(any())).thenReturn(List.of());
-        when(grupoParoquialRepository.findAllById(any())).thenReturn(List.of());
+        when(organizacaoRepository.findAllById(any())).thenReturn(List.of());
 
         ReservaDetalheDto dto = service().enriquecer(reserva);
 
@@ -192,7 +192,7 @@ class EnriquecedorReservaServiceTest {
 
         when(usuarioRepository.findAllById(any())).thenReturn(List.of(aprovador, cancelador, solicitante));
         when(localRepository.findAllById(any())).thenReturn(List.of());
-        when(grupoParoquialRepository.findAllById(any())).thenReturn(List.of());
+        when(organizacaoRepository.findAllById(any())).thenReturn(List.of());
 
         ReservaDetalheDto dto = service().enriquecer(reserva);
 
@@ -212,7 +212,7 @@ class EnriquecedorReservaServiceTest {
 
         when(localRepository.findAllById(any())).thenReturn(List.of());
         when(usuarioRepository.findAllById(any())).thenReturn(List.of());
-        when(grupoParoquialRepository.findAllById(any())).thenReturn(List.of());
+        when(organizacaoRepository.findAllById(any())).thenReturn(List.of());
 
         List<ReservaDetalheDto> dtos = service().enriquecer(List.of(r1, r2));
 

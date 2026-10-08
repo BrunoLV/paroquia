@@ -45,7 +45,7 @@ public record AtualizarEventoRequest(
         @Size(max = 2000) String canceladoMotivo,
 
         @Schema(description = "Novo ID da organização responsável")
-        UUID grupoParoquialResponsavelId,
+        UUID organizacaoResponsavelId,
 
         @Schema(description = "Lista de IDs das organizações participantes")
         List<UUID> participantes,
@@ -102,7 +102,7 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
@@ -114,7 +114,7 @@ public record AtualizarEventoRequest(
             TipoHorarioEvento tipoHorario,
             FormatoEvento formato) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId,
                 localIds, igrejaVinculoId, liberarConflitoAgenda, ativoIds, tipoHorario, formato, List.of());
     }
 
@@ -127,7 +127,7 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
@@ -138,7 +138,7 @@ public record AtualizarEventoRequest(
             List<UUID> ativoIds,
             TipoHorarioEvento tipoHorario) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId,
                 localIds, igrejaVinculoId,
                 liberarConflitoAgenda, ativoIds, tipoHorario, null);
     }
@@ -152,7 +152,7 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
@@ -161,7 +161,7 @@ public record AtualizarEventoRequest(
             Boolean liberarConflitoAgenda,
             List<UUID> ativoIds) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId,
                 localId != null ? List.of(localId) : null, igrejaVinculoId,
                 liberarConflitoAgenda, ativoIds, null);
     }
@@ -175,7 +175,7 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
@@ -185,7 +185,7 @@ public record AtualizarEventoRequest(
             Boolean liberarConflitoAgenda,
             List<UUID> ativoIds) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId,
                 localIds, igrejaVinculoId,
                 liberarConflitoAgenda, ativoIds, null);
     }
@@ -199,7 +199,7 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
@@ -207,7 +207,7 @@ public record AtualizarEventoRequest(
             UUID igrejaVinculoId,
             Boolean liberarConflitoAgenda) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId,
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId,
                 localId != null ? List.of(localId) : null, igrejaVinculoId,
                 liberarConflitoAgenda, null, null);
     }
@@ -221,14 +221,14 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
             UUID localId,
             UUID igrejaVinculoId) {
         this(titulo, descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId, igrejaVinculoId, false);
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId, igrejaVinculoId, false);
     }
 
     public AtualizarEventoRequest(
@@ -240,14 +240,14 @@ public record AtualizarEventoRequest(
             EventoStatusInput status,
             String adicionadoExtraJustificativa,
             String canceladoMotivo,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             List<UUID> participantes,
             EscopoEdicaoEvento escopoEdicao,
             UUID projetoId,
             UUID localId) {
         this(titulo,
                 descricao, categoria, inicio, fim, status, adicionadoExtraJustificativa, canceladoMotivo,
-                grupoParoquialResponsavelId, participantes, escopoEdicao, projetoId, localId, null, false);
+                organizacaoResponsavelId, participantes, escopoEdicao, projetoId, localId, null, false);
     }
 
     /**
@@ -264,7 +264,7 @@ public record AtualizarEventoRequest(
                 && status == null
                 && adicionadoExtraJustificativa == null
                 && canceladoMotivo == null
-                && grupoParoquialResponsavelId == null
+                && organizacaoResponsavelId == null
                 && participantes == null
                 && projetoId == null
                 && localId == null

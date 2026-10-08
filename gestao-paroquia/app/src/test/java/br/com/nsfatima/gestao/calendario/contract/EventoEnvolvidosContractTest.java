@@ -34,7 +34,7 @@ class EventoEnvolvidosContractTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(EVENT_ID);
         entity.setTitulo("Evento Teste");
-        entity.setGrupoParoquialResponsavelId(ORG_ID);
+        entity.setOrganizacaoResponsavelId(ORG_ID);
         entity.setInicioUtc(Instant.now());
         entity.setFimUtc(Instant.now().plusSeconds(3600));
         entity.setStatus("CONFIRMADO");
@@ -46,11 +46,11 @@ class EventoEnvolvidosContractTest {
         mockMvc.perform(put("/api/v1/eventos/{eventoId}/envolvidos", EVENT_ID)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
-                                "{\"envolvidos\":[{\"grupoParoquialId\":\"00000000-0000-0000-0000-0000000000aa\", " +
+                                "{\"envolvidos\":[{\"organizacaoId\":\"00000000-0000-0000-0000-0000000000aa\", " +
                                         "\"papel\": \"RESPONSAVEL\"}]}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.eventoId").value(EVENT_ID.toString()))
-                .andExpect(jsonPath("$.envolvidos[0].grupoParoquialId").value("00000000-0000-0000-0000-0000000000aa"))
+                .andExpect(jsonPath("$.envolvidos[0].organizacaoId").value("00000000-0000-0000-0000-0000000000aa"))
                 .andExpect(jsonPath("$.envolvidos[0].papel").value("RESPONSAVEL"));
     }
 }

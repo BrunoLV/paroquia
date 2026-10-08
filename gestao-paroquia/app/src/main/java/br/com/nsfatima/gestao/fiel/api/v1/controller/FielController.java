@@ -107,7 +107,7 @@ public class FielController {
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id) {
         var context = actorContextResolver.resolveRequired();
         if (context.organizationId() != null
-                && membroGrupoRepository.findByFielIdAndGrupoParoquialIdAndAtivoTrue(
+                && membroGrupoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(
                         id, context.organizationId()).isEmpty()) {
             throw new AccessDeniedException("Coordenador só pode consultar fiéis vinculados à sua organização");
         }
@@ -208,8 +208,8 @@ public class FielController {
         cicloVidaFielUseCase.desativar(id, context.actor());
     }
 
-    private boolean isCoordenador(String papel, UUID grupoParoquialId) {
-        return grupoParoquialId != null && papel != null
+    private boolean isCoordenador(String papel, UUID organizacaoId) {
+        return organizacaoId != null && papel != null
                 && papel.toUpperCase(Locale.ROOT).contains("COORDENADOR");
     }
 

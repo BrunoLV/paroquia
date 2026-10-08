@@ -8,15 +8,18 @@ import { getUsuarios } from '@/contextos/iam/infrastructure/http/usuarios';
 import { getPastoraisOficiais } from '@/contextos/organizacao/infrastructure/http/pastoraisOficiais';
 import { Organizacao } from '@/shared/domain/types/types';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canManageOrganizacoes } from '@/contextos/iam/presentation/auth/permissions';
+import { canGerirIdoneidade, canHomologarMandato, canManageOrganizacoes, canProporMandato } from '@/contextos/iam/presentation/auth/permissions';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import { OrganizacoesFilterBar } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacoesFilterBar';
 import { OrganizacoesTable } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacoesTable';
+import { OrganizacaoMandatosModal } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMandatosModal';
 import { OrganizacaoMembrosModal } from '@/contextos/organizacao/presentation/components/organizacoes/OrganizacaoMembrosModal';
 import OrganizacaoFormModal from '@/contextos/organizacao/presentation/pages/OrganizacaoFormModal';
+
+const ORGANISMOS = new Set(['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'CONSELHO']);
 
 const Organizacoes: React.FC = () => {
   const { user } = useAuth();
@@ -32,6 +35,8 @@ const Organizacoes: React.FC = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organizacao | null>(null);
+
+  const [mandatosOrg, setMandatosOrg] = useState<Organizacao | null>(null);
 
   const [membrosModalOpen, setMembrosModalOpen] = useState(false);
   const [selectedOrgParaMembros, setSelectedOrgParaMembros] = useState<Organizacao | null>(null);
@@ -85,8 +90,11 @@ const Organizacoes: React.FC = () => {
     [orgs]
   );
 
+  /** A lista é de organismos eclesiais; Matriz e Comunidade ficam em Governo & Território. */
+  const organismos = useMemo(() => orgs.filter((org) => ORGANISMOS.has(org.tipo)), [orgs]);
+
   const filteredOrgs = useMemo(() => {
-    return orgs.filter((org) => {
+    return organismos.filter((org) => {
       const query = searchTerm.toLowerCase().trim();
       const matchesSearch =
         !query ||
@@ -100,7 +108,7 @@ const Organizacoes: React.FC = () => {
         (statusFilter === 'INATIVO' && !org.ativo);
       return matchesSearch && matchesTipo && matchesStatus;
     });
-  }, [orgs, searchTerm, tipoFilter, statusFilter]);
+  }, [organismos, searchTerm, tipoFilter, statusFilter]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -144,6 +152,7 @@ const Organizacoes: React.FC = () => {
           setSelectedOrgParaMembros(org);
           setMembrosModalOpen(true);
         }}
+        onViewMandatos={setMandatosOrg}
         onEdit={(org) => {
           setSelectedOrg(org);
           setModalOpen(true);
@@ -158,7 +167,6 @@ const Organizacoes: React.FC = () => {
         onSave={(data) => saveMutation.mutate(data)}
         organizacao={selectedOrg}
         isPending={saveMutation.isPending}
-        usuarios={usuarios}
         igrejas={igrejas}
         organizacoes={orgs}
         pastoraisOficiais={pastoraisOficiais}
@@ -173,6 +181,15 @@ const Organizacoes: React.FC = () => {
         organizacao={selectedOrgParaMembros}
         igrejas={igrejas}
         usuarios={usuarios}
+        canGerirIdoneidade={canGerirIdoneidade(user)}
+      />
+
+      <OrganizacaoMandatosModal
+        open={!!mandatosOrg}
+        onClose={() => setMandatosOrg(null)}
+        organizacao={mandatosOrg}
+        canPropor={canProporMandato(user)}
+        canHomologar={canHomologarMandato(user)}
       />
     </Container>
   );

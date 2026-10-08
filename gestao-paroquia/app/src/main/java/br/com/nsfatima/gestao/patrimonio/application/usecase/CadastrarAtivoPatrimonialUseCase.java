@@ -10,7 +10,7 @@ import br.com.nsfatima.gestao.patrimonio.domain.model.CodigoTombamento;
 import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoGrupoParoquialInvalidaException;
+import br.com.nsfatima.gestao.patrimonio.domain.exception.AtivoOrganizacaoInvalidaException;
 import br.com.nsfatima.gestao.patrimonio.domain.policy.PropriedadeUnidadeTerritorialPolicy;
 import br.com.nsfatima.gestao.patrimonio.application.service.GeradorNumeroTombamento;
 import br.com.nsfatima.gestao.patrimonio.application.service.PatrimonioAuthorizationService;
@@ -56,10 +56,10 @@ public class CadastrarAtivoPatrimonialUseCase {
     @Transactional
     public AtivoPatrimonialResponse execute(CadastrarAtivoPatrimonialRequest request) {
         EventoActorContext actor = actorContextResolver.resolveRequired();
-        authorizationService.assertPodeGerirPatrimonio(actor, request.grupoParoquialId());
-        UnidadeTerritorialEntity proprietaria = unidadeTerritorialRepository.findById(request.grupoParoquialId())
-                .orElseThrow(() -> new AtivoGrupoParoquialInvalidaException(
-                        "Unidade territorial não encontrada: " + request.grupoParoquialId()));
+        authorizationService.assertPodeGerirPatrimonio(actor, request.organizacaoId());
+        UnidadeTerritorialEntity proprietaria = unidadeTerritorialRepository.findById(request.organizacaoId())
+                .orElseThrow(() -> new AtivoOrganizacaoInvalidaException(
+                        "Unidade territorial não encontrada: " + request.organizacaoId()));
         propriedadeUnidadeTerritorialPolicy.assertPermitida(proprietaria.getTipo());
 
         Instant agora = Instant.now();
@@ -74,13 +74,13 @@ public class CadastrarAtivoPatrimonialUseCase {
                 request.categoria(),
                 request.dataAquisicao(),
                 request.valorAquisicao(),
-                request.grupoParoquialId(),
+                request.organizacaoId(),
                 request.isReservavel(),
                 actor.usuarioId(),
                 agora);
 
         AtivoPatrimonial salvo = repository.save(ativo);
-        auditPublisher.publishCriacao(actor.actor(), salvo.getId().value(), salvo.getGrupoParoquialId());
+        auditPublisher.publishCriacao(actor.actor(), salvo.getId().value(), salvo.getOrganizacaoId());
         return AtivoPatrimonialResponse.de(salvo);
     }
 }

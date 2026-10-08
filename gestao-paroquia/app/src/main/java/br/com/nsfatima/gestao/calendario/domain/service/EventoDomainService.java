@@ -52,21 +52,21 @@ public class EventoDomainService {
      * pode se repetir na lista de participantes e a lista não pode conter
      * duplicatas.
      *
-     * @param grupoParoquialResponsavelId identificador da organização responsável pelo evento
+     * @param organizacaoResponsavelId identificador da organização responsável pelo evento
      * @param participantes lista de identificadores das organizações participantes, ou {@code null}/vazia
      * @throws IllegalArgumentException se a organização responsável estiver ausente, se ela se repetir entre os
      *     participantes, ou se a lista de participantes tiver duplicatas
      */
-    public void validateGrupoParoquialParticipantes(UUID grupoParoquialResponsavelId, List<UUID> participantes) {
-        if (grupoParoquialResponsavelId == null) {
-            throw new IllegalArgumentException("grupoParoquialResponsavelId deve ser informado");
+    public void validateOrganizacaoParticipantes(UUID organizacaoResponsavelId, List<UUID> participantes) {
+        if (organizacaoResponsavelId == null) {
+            throw new IllegalArgumentException("organizacaoResponsavelId deve ser informado");
         }
         if (participantes == null || participantes.isEmpty()) {
             return;
         }
 
-        if (participantes.contains(grupoParoquialResponsavelId)) {
-            throw new IllegalArgumentException("grupoParoquial responsavel nao pode repetir em participantes");
+        if (participantes.contains(organizacaoResponsavelId)) {
+            throw new IllegalArgumentException("organizacao responsavel nao pode repetir em participantes");
         }
 
         if (new HashSet<>(participantes).size() != participantes.size()) {

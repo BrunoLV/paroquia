@@ -65,7 +65,7 @@ public class EnviarAtivoParaManutencaoUseCase {
         AtivoPatrimonial ativo = carregar(ativoId);
 
         EventoActorContext actor = actorContextResolver.resolveRequired();
-        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getGrupoParoquialId());
+        authorizationService.assertPodeGerirPatrimonio(actor, ativo.getOrganizacaoId());
 
         PeriodoManutencao periodo = new PeriodoManutencao(request.dataInicio(), request.dataFimPrevista());
 
@@ -88,7 +88,7 @@ public class EnviarAtivoParaManutencaoUseCase {
         AtivoManutencao salva = manutencaoRepository.save(manutencao);
         ativoRepository.save(ativo);
 
-        auditPublisher.publishManutencao(actor.actor(), ativoId, ativo.getGrupoParoquialId());
+        auditPublisher.publishManutencao(actor.actor(), ativoId, ativo.getOrganizacaoId());
         eventPublisher.publishEvent(new AtivoEnviadoParaManutencaoEvent(
                 ativoId, request.dataInicio(), request.dataFimPrevista()));
 

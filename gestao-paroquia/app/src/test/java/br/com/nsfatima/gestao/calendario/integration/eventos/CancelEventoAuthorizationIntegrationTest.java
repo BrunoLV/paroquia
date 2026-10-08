@@ -45,7 +45,7 @@ class CancelEventoAuthorizationIntegrationTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Evento protegido");
-        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-10T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-10T11:00:00Z"));
         evento.setStatus("CONFIRMADO");
@@ -73,7 +73,7 @@ class CancelEventoAuthorizationIntegrationTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Evento a ser cancelado pelo secretario");
-        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-10T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-10T11:00:00Z"));
         evento.setStatus("CONFIRMADO");
@@ -101,7 +101,7 @@ class CancelEventoAuthorizationIntegrationTest {
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Evento sem justificativa");
-        evento.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         evento.setInicioUtc(Instant.parse("2026-10-10T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-10T11:00:00Z"));
         evento.setStatus("CONFIRMADO");

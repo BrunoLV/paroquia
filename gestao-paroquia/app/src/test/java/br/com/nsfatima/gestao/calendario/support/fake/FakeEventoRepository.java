@@ -48,7 +48,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public Page<EventoEntity> findAllWithFilters(
             Instant inicioUtc, boolean hasInicioUtc,
             Instant fimUtc, boolean hasFimUtc,
-            List<UUID> grupoParoquialIds, boolean hasGrupoParoquialIds,
+            List<UUID> organizacaoIds, boolean hasOrganizacaoIds,
             UUID projetoId, boolean hasProjetoId,
             UUID envolvidoId, boolean hasEnvolvidoId,
             List<CategoriaEvento> categorias, boolean hasCategorias,
@@ -57,10 +57,10 @@ public class FakeEventoRepository implements EventoJpaRepository {
         List<EventoEntity> filtered = storage.stream()
                 .filter(e -> (!hasInicioUtc || !e.getInicioUtc().isBefore(inicioUtc)) &&
                         (!hasFimUtc || !e.getInicioUtc().isAfter(fimUtc)) &&
-                        (!hasGrupoParoquialIds || grupoParoquialIds.contains(e.getGrupoParoquialResponsavelId())) &&
+                        (!hasOrganizacaoIds || organizacaoIds.contains(e.getOrganizacaoResponsavelId())) &&
                         (!hasProjetoId || projetoId.equals(e.getProjetoId())) &&
                         (!hasEnvolvidoId
-                                || e.getGrupoParoquialResponsavelId().equals(envolvidoId)) && // Simplified for fake
+                                || e.getOrganizacaoResponsavelId().equals(envolvidoId)) && // Simplified for fake
                         (!hasCategorias || categorias.contains(e.getCategoria())) &&
                         (!hasStatuses || statuses.contains(e.getStatus())))
                 .toList();
@@ -80,9 +80,9 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
-    public long countByGrupoParoquialAndStatusAndPeriod(UUID orgId, String status, Instant start, Instant end) {
+    public long countByOrganizacaoAndStatusAndPeriod(UUID orgId, String status, Instant start, Instant end) {
         return storage.stream()
-                .filter(e -> e.getGrupoParoquialResponsavelId().equals(orgId) && e.getStatus().equals(status) &&
+                .filter(e -> e.getOrganizacaoResponsavelId().equals(orgId) && e.getStatus().equals(status) &&
                         !e.getInicioUtc().isBefore(start) && e.getInicioUtc().isBefore(end))
                 .count();
     }
@@ -96,17 +96,17 @@ public class FakeEventoRepository implements EventoJpaRepository {
 
 
     @Override
-    public long countByGrupoParoquialAndPeriod(UUID orgId, Instant start, Instant end) {
+    public long countByOrganizacaoAndPeriod(UUID orgId, Instant start, Instant end) {
         return storage.stream()
-                .filter(e -> e.getGrupoParoquialResponsavelId().equals(orgId) &&
+                .filter(e -> e.getOrganizacaoResponsavelId().equals(orgId) &&
                         !e.getInicioUtc().isBefore(start) && e.getInicioUtc().isBefore(end))
                 .count();
     }
 
     @Override
-    public long countDistinctByGrupoParoquialResponsavelIdAndIdIn(UUID orgId, List<UUID> ids) {
+    public long countDistinctByOrganizacaoResponsavelIdAndIdIn(UUID orgId, List<UUID> ids) {
         return storage.stream()
-                .filter(e -> e.getGrupoParoquialResponsavelId().equals(orgId) && ids.contains(e.getId()))
+                .filter(e -> e.getOrganizacaoResponsavelId().equals(orgId) && ids.contains(e.getId()))
                 .count();
     }
 
@@ -143,8 +143,8 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
-    public boolean existsByGrupoParoquialResponsavelId(UUID grupoParoquialId) {
-        return storage.stream().anyMatch(e -> grupoParoquialId.equals(e.getGrupoParoquialResponsavelId()));
+    public boolean existsByOrganizacaoResponsavelId(UUID organizacaoId) {
+        return storage.stream().anyMatch(e -> organizacaoId.equals(e.getOrganizacaoResponsavelId()));
     }
 
     @Override
@@ -217,7 +217,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
         return storage.stream()
                 .filter(e -> !"CANCELADO".equals(e.getStatus()))
                 .filter(e -> !e.getInicioUtc().isBefore(inicio) && e.getInicioUtc().isBefore(fim))
-                .collect(java.util.stream.Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId,
+                .collect(java.util.stream.Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId,
                         java.util.stream.Collectors.counting()))
                 .entrySet().stream()
                 .map(en -> new Object[]{en.getKey(), en.getValue()})

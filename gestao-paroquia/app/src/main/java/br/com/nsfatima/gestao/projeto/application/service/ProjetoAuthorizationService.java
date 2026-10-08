@@ -25,15 +25,15 @@ public class ProjetoAuthorizationService {
      * Valida se o ator pode criar um projeto para o grupo informado.
      *
      * @param actorContext contexto do ator autenticado
-     * @param grupoParoquialResponsavelId organização alvo
+     * @param organizacaoResponsavelId organização alvo
      */
-    public void assertCanCreate(EventoActorContext actorContext, UUID grupoParoquialResponsavelId) {
+    public void assertCanCreate(EventoActorContext actorContext, UUID organizacaoResponsavelId) {
         try {
             policy.assertCanCreate(
                     actorContext.role(),
                     actorContext.organizationType(),
                     actorContext.organizationId(),
-                    grupoParoquialResponsavelId);
+                    organizacaoResponsavelId);
         } catch (OperacaoProibidaException e) {
             throw new AccessDeniedException(e.getMessage());
         }
@@ -43,14 +43,14 @@ public class ProjetoAuthorizationService {
      * Valida se o ator pode editar um projeto existente.
      *
      * @param actorContext contexto do ator autenticado
-     * @param projectGrupoParoquialResponsavelId organização dona do projeto
+     * @param projectOrganizacaoResponsavelId organização dona do projeto
      */
-    public void assertCanEdit(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
+    public void assertCanEdit(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
         policy.assertCanEdit(
                 actorContext.role(),
                 actorContext.organizationType(),
                 actorContext.organizationId(),
-                projectGrupoParoquialResponsavelId);
+                projectOrganizacaoResponsavelId);
     }
 
     /**
@@ -67,27 +67,27 @@ public class ProjetoAuthorizationService {
      * Valida se o ator pode iniciar ou concluir o projeto informado.
      *
      * @param actorContext contexto do ator autenticado
-     * @param projectGrupoParoquialResponsavelId organização dona do projeto
+     * @param projectOrganizacaoResponsavelId organização dona do projeto
      */
-    public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
+    public void assertCanStartOrConclude(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
         policy.assertCanStartOrConclude(
                 actorContext.role(),
                 actorContext.organizationType(),
                 actorContext.organizationId(),
-                projectGrupoParoquialResponsavelId);
+                projectOrganizacaoResponsavelId);
     }
 
     /**
      * Valida se o ator pode cancelar o projeto informado.
      *
      * @param actorContext contexto do ator autenticado
-     * @param projectGrupoParoquialResponsavelId organização dona do projeto
+     * @param projectOrganizacaoResponsavelId organização dona do projeto
      */
-    public void assertCanCancel(EventoActorContext actorContext, UUID projectGrupoParoquialResponsavelId) {
+    public void assertCanCancel(EventoActorContext actorContext, UUID projectOrganizacaoResponsavelId) {
         policy.assertCanCancel(
                 actorContext.role(),
                 actorContext.organizationType(),
                 actorContext.organizationId(),
-                projectGrupoParoquialResponsavelId);
+                projectOrganizacaoResponsavelId);
     }
 }

@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Missa pendente de aprovacao",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-03-10T10:00:00Z",
                                   "fim": "2027-03-10T11:00:00Z",
                                   "adicionadoExtraJustificativa": "Justificativa formal do secretario"
@@ -66,7 +66,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
         assertThat(aprovacao.getEventoId()).isNull();
         assertThat(aprovacao.getActionPayloadJson()).contains("Missa pendente de aprovacao");
         assertThat(aprovacao.getSolicitantePapel()).isEqualTo("secretario-conselho");
-        assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.CONSELHO);
+        assertThat(aprovacao.getSolicitanteTipoOrganizacao()).isEqualTo(TipoOrganizacao.CONSELHO);
         assertThat(eventoJpaRepository.count()).isEqualTo(eventsBefore);
     }
 
@@ -81,7 +81,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Sem justificativa",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-03-10T10:00:00Z",
                                   "fim": "2027-03-10T11:00:00Z"
                                 }
@@ -101,7 +101,7 @@ class CreateEventoAprovacaoPendenteIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Culto pastoral pendente",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000bb",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000bb",
                                   "inicio": "2027-03-11T14:00:00Z",
                                   "fim": "2027-03-11T15:00:00Z"
                                 }

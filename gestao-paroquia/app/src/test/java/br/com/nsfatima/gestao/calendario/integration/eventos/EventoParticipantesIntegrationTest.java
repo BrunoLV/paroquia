@@ -43,7 +43,7 @@ class EventoParticipantesIntegrationTest {
         String payload = """
                 {
                   "titulo": "Evento com Participantes",
-                  "grupoParoquialResponsavelId": "%s",
+                  "organizacaoResponsavelId": "%s",
                   "inicio": "2026-12-01T10:00:00Z",
                   "fim": "2026-12-01T12:00:00Z",
                   "participantes": ["%s"]
@@ -74,7 +74,7 @@ class EventoParticipantesIntegrationTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(eventoId);
         entity.setTitulo("Event for Update Participants");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString(orgId));
+        entity.setOrganizacaoResponsavelId(UUID.fromString(orgId));
         entity.setInicioUtc(Instant.parse("2026-12-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-12-01T11:00:00Z"));
         entity.setStatus("CONFIRMADO");
@@ -83,7 +83,7 @@ class EventoParticipantesIntegrationTest {
         // Add initial involvement
         EventoEnvolvidoEntity inv = new EventoEnvolvidoEntity();
         inv.setEventoId(eventoId);
-        inv.setGrupoParoquialId(UUID.fromString(initialParticipanteId));
+        inv.setOrganizacaoId(UUID.fromString(initialParticipanteId));
         inv.setPapelParticipacao(PapelEnvolvido.APOIO);
         envolvimentoRepository.save(inv);
 

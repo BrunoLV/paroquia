@@ -4,7 +4,7 @@
  * de despacho pastoral). É o contexto maior e mais conectado do app ("god node" do grafo de
  * dependências) — {@code EventoEntity}/{@code EventoJpaRepository} concentram a maior parte das
  * regras de negócio e são referenciados por praticamente todos os demais contextos
- * (aprovacao, projeto, patrimonio, grupoParoquial, dashboard).
+ * (aprovacao, projeto, patrimonio, organizacao, dashboard).
  *
  * <p>Autorização aqui é sempre baseada em papel do ator + escopo de organização
  * ({@code EventoActorContext}/{@code EventoActorContextResolver}), nunca em posse simples do

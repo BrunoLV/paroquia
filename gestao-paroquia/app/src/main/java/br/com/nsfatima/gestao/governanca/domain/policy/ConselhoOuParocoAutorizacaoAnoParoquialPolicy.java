@@ -10,7 +10,7 @@ import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 public final class ConselhoOuParocoAutorizacaoAnoParoquialPolicy implements AutorizacaoAnoParoquialPolicy {
 
     @Override
-    public void assertPodeGerir(String rawRole, String rawTipoGrupo) {
+    public void assertPodeGerir(String rawRole, String rawTipoOrganizacao) {
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
         boolean autorizado = papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO;
         if (!autorizado) {

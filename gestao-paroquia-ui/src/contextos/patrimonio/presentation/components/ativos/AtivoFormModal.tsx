@@ -28,7 +28,7 @@ const emptyForm: AtivoFormInput = {
   nome: '',
   descricao: '',
   categoria: 'ELETRONICO',
-  grupoParoquialId: '',
+  organizacaoId: '',
   isReservavel: false,
   dataAquisicao: '',
   valorAquisicao: 0,
@@ -57,7 +57,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
 
   useEffect(() => {
     if (open) {
-      reset({ ...emptyForm, grupoParoquialId: defaultOrgId ?? '' });
+      reset({ ...emptyForm, organizacaoId: defaultOrgId ?? '' });
     }
   }, [open, defaultOrgId, reset]);
 
@@ -66,7 +66,7 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
       nome: data.nome,
       descricao: data.descricao || null,
       categoria: data.categoria,
-      grupoParoquialId: data.grupoParoquialId,
+      organizacaoId: data.organizacaoId,
       isReservavel: data.isReservavel,
       dataAquisicao: data.dataAquisicao,
       valorAquisicao: Number(data.valorAquisicao),
@@ -92,10 +92,10 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Controller
-                      name="grupoParoquialId"
+                      name="organizacaoId"
                       control={control}
                       render={({ field }) => (
-                        <FormControl fullWidth size="small" required error={Boolean(errors.grupoParoquialId)}>
+                        <FormControl fullWidth size="small" required error={Boolean(errors.organizacaoId)}>
 
                           <SearchableSelect {...field} labelId="create-organizacao-select-label" label="Organização Dona">
                             {organizacoes.map((org) => (
@@ -104,8 +104,8 @@ export const AtivoFormModal: React.FC<AtivoFormModalProps> = ({
                               </MenuItem>
                             ))}
                           </SearchableSelect>
-                          {errors.grupoParoquialId && (
-                            <FormHelperText>{errors.grupoParoquialId.message}</FormHelperText>
+                          {errors.organizacaoId && (
+                            <FormHelperText>{errors.organizacaoId.message}</FormHelperText>
                           )}
                         </FormControl>
                       )}

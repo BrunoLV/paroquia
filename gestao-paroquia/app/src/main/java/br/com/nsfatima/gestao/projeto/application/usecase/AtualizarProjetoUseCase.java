@@ -71,7 +71,7 @@ public class AtualizarProjetoUseCase {
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
         var actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanEdit(actorContext, entity.getGrupoParoquialResponsavelId());
+        authorizationService.assertCanEdit(actorContext, entity.getOrganizacaoResponsavelId());
 
         Projeto projeto = mapper.toDomain(entity);
 
@@ -81,8 +81,8 @@ public class AtualizarProjetoUseCase {
         if (request.descricao() != null) {
             projeto.alterarDescricao(request.descricao());
         }
-        if (request.grupoParoquialResponsavelId() != null) {
-            projeto.transferirResponsavel(request.grupoParoquialResponsavelId());
+        if (request.organizacaoResponsavelId() != null) {
+            projeto.transferirResponsavel(request.organizacaoResponsavelId());
         }
         if (request.inicio() != null || request.fim() != null) {
             Instant novoInicio = request.inicio() != null ? request.inicio() : projeto.getInicio();

@@ -29,11 +29,11 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor         ator responsável pela ação
      * @param ativoId       ativo criado
-     * @param grupoParoquialId organização dona do ativo
+     * @param organizacaoId organização dona do ativo
      */
-    public void publishCriacao(String actor, UUID ativoId, UUID grupoParoquialId) {
+    public void publishCriacao(String actor, UUID ativoId, UUID organizacaoId) {
         auditLogPersistenceService.log(actor, "criar", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, grupoParoquialId, Map.of()));
+                withDefaults(ativoId, organizacaoId, Map.of()));
     }
 
     /**
@@ -41,11 +41,11 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor           ator responsável pela ação
      * @param ativoId         ativo enviado para manutenção
-     * @param grupoParoquialId unidade territorial dona do ativo
+     * @param organizacaoId unidade territorial dona do ativo
      */
-    public void publishManutencao(String actor, UUID ativoId, UUID grupoParoquialId) {
+    public void publishManutencao(String actor, UUID ativoId, UUID organizacaoId) {
         auditLogPersistenceService.log(actor, "enviar-manutencao", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, grupoParoquialId, Map.of()));
+                withDefaults(ativoId, organizacaoId, Map.of()));
     }
 
     /**
@@ -53,11 +53,11 @@ public class PatrimonioAuditPublisher {
      *
      * @param actor           ator responsável pela ação
      * @param ativoId         ativo excluído
-     * @param grupoParoquialId unidade territorial dona do ativo
+     * @param organizacaoId unidade territorial dona do ativo
      */
-    public void publishExclusao(String actor, UUID ativoId, UUID grupoParoquialId) {
+    public void publishExclusao(String actor, UUID ativoId, UUID organizacaoId) {
         auditLogPersistenceService.log(actor, "excluir", ativoId.toString(), RESULT_SUCCESS,
-                withDefaults(ativoId, grupoParoquialId, Map.of()));
+                withDefaults(ativoId, organizacaoId, Map.of()));
     }
 
     /**
@@ -71,12 +71,12 @@ public class PatrimonioAuditPublisher {
                 "ACCESS_DENIED", Map.of("resourceType", TYPE_ATIVO, "errorCategory", "AUTHZ"));
     }
 
-    private Map<String, Object> withDefaults(UUID ativoId, UUID grupoParoquialId, Map<String, Object> metadata) {
+    private Map<String, Object> withDefaults(UUID ativoId, UUID organizacaoId, Map<String, Object> metadata) {
         Map<String, Object> resolved = new LinkedHashMap<>();
         resolved.put("resourceType", TYPE_ATIVO);
         resolved.put("resourceId", ativoId.toString());
-        if (grupoParoquialId != null) {
-            resolved.put("grupoParoquialId", grupoParoquialId.toString());
+        if (organizacaoId != null) {
+            resolved.put("organizacaoId", organizacaoId.toString());
         }
         resolved.putAll(metadata);
         return resolved;

@@ -71,12 +71,12 @@ public class UsuarioAuthorizationService {
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(actorFielId);
         List<UUID> coordinatorOrgIds = actorVinculos.stream()
                 .filter(m -> policy.isCoordinatorRole(m.getPapel()))
-                .map(MembroGrupoEntity::getGrupoParoquialId)
+                .map(MembroGrupoEntity::getOrganizacaoId)
                 .toList();
 
         List<MembroGrupoEntity> targetVinculos = targetFielId == null
                 ? List.of() : vinculoRepository.findByFielIdAndAtivoTrue(targetFielId);
-        List<UUID> targetOrgIds = targetVinculos.stream().map(MembroGrupoEntity::getGrupoParoquialId).toList();
+        List<UUID> targetOrgIds = targetVinculos.stream().map(MembroGrupoEntity::getOrganizacaoId).toList();
 
         policy.assertPodeGerenciarAlvo(coordinatorOrgIds, targetOrgIds);
     }
@@ -110,7 +110,7 @@ public class UsuarioAuthorizationService {
         UUID actorFielId = resolveFielId(actorId);
         boolean isCoordinator = actorFielId != null && vinculoRepository.findByFielIdAndAtivoTrue(actorFielId)
                 .stream()
-                .filter(m -> organizationId.equals(m.getGrupoParoquialId()))
+                .filter(m -> organizationId.equals(m.getOrganizacaoId()))
                 .anyMatch(m -> policy.isCoordinatorRole(m.getPapel()));
 
         policy.assertECoordenadorDaOrganizacao(isCoordinator);

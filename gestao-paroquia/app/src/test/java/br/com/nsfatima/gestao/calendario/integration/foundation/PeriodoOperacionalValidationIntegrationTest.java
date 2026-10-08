@@ -22,7 +22,7 @@ class PeriodoOperacionalValidationIntegrationTest {
     @Test
     void deveRejeitarAmbiguousOperacionalPeriodo() throws Exception {
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("grupoParoquialId", UUID.fromString("00000000-0000-0000-0000-0000000000aa").toString())
+                        .param("organizacaoId", UUID.fromString("00000000-0000-0000-0000-0000000000aa").toString())
                         .param("granularidade", "SEMANAL")
                         .param("inicio", Instant.parse("2026-10-01T00:00:00Z").toString())
                         .param("fim", Instant.parse("2026-10-08T00:00:00Z").toString())

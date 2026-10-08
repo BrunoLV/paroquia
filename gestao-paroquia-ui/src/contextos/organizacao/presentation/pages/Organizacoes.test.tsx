@@ -109,6 +109,13 @@ describe('Organizacoes page (Pastorais e Movimentos)', () => {
     });
   });
 
+  it('lista somente organismos eclesiais, sem Matriz e Comunidade', async () => {
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText('Pastoral Familiar')).toBeInTheDocument());
+    expect(screen.queryByText('Matriz N. S. de Fátima')).not.toBeInTheDocument();
+  });
+
   it('filters pastorais by search text', async () => {
     renderPage();
 

@@ -31,7 +31,7 @@ public record EventoResponse(
         String titulo,
         String descricao,
         CategoriaEvento categoria,
-        UUID grupoParoquialResponsavelId,
+        UUID organizacaoResponsavelId,
         UUID projetoId,
         String nomeProjeto,
         Instant inicio,
@@ -74,7 +74,7 @@ public record EventoResponse(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             String nomeProjeto,
             Instant inicio,
@@ -93,7 +93,7 @@ public record EventoResponse(
             SetorPastoral setorPastoral,
             TipoHorarioEvento tipoHorario,
             FormatoEvento formato) {
-        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+        this(id, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, nomeProjeto, inicio, fim,
                 status, localId, localIds, igrejaVinculoId, participantes, recorrenciaId, estadoConflito,
                 motivoConflito, adicionadoExtraJustificativa, nivelPrioridade, autorizadoPeloCpp,
                 setorPastoral, tipoHorario, formato, List.of());
@@ -104,7 +104,7 @@ public record EventoResponse(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             String nomeProjeto,
             Instant inicio,
@@ -121,7 +121,7 @@ public record EventoResponse(
             Boolean autorizadoPeloCpp,
             SetorPastoral setorPastoral,
             TipoHorarioEvento tipoHorario) {
-        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+        this(id, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, nomeProjeto, inicio, fim,
                 status, localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, participantes,
                 recorrenciaId, estadoConflito, motivoConflito, adicionadoExtraJustificativa, nivelPrioridade,
                 autorizadoPeloCpp, setorPastoral, tipoHorario, FormatoEvento.PRESENCIAL);
@@ -132,7 +132,7 @@ public record EventoResponse(
             String titulo,
             String descricao,
             CategoriaEvento categoria,
-            UUID grupoParoquialResponsavelId,
+            UUID organizacaoResponsavelId,
             UUID projetoId,
             String nomeProjeto,
             Instant inicio,
@@ -148,7 +148,7 @@ public record EventoResponse(
             Integer nivelPrioridade,
             Boolean autorizadoPeloCpp,
             SetorPastoral setorPastoral) {
-        this(id, titulo, descricao, categoria, grupoParoquialResponsavelId, projetoId, nomeProjeto, inicio, fim,
+        this(id, titulo, descricao, categoria, organizacaoResponsavelId, projetoId, nomeProjeto, inicio, fim,
                 status, localId, localId != null ? List.of(localId) : List.of(), igrejaVinculoId, participantes,
                 recorrenciaId, estadoConflito, motivoConflito, adicionadoExtraJustificativa, nivelPrioridade,
                 autorizadoPeloCpp, setorPastoral, TipoHorarioEvento.PERSONALIZADO, FormatoEvento.PRESENCIAL);

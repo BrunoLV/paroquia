@@ -5,13 +5,13 @@ import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEnt
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.EncargoClericalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.api.v1.dto.GrupoParoquialMembroResponse;
+import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoMembroResponse;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganogramaNodeResponse;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,23 +25,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 class ObterOrganogramaUseCaseTest {
 
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
-    private ListarGrupoParoquialMembrosUseCase listMembrosUseCase;
+    private ListarOrganizacaoMembrosUseCase listMembrosUseCase;
     private EncargoClericalJpaRepository encargoClericalRepository;
     private ClerigoJpaRepository clerigoRepository;
     private ObterOrganogramaUseCase getOrganogramaUseCase;
 
     @BeforeEach
     void setUp() {
-        grupoParoquialRepository = Mockito.mock(GrupoParoquialJpaRepository.class);
+        organizacaoRepository = Mockito.mock(OrganizacaoJpaRepository.class);
         unidadeTerritorialRepository = Mockito.mock(UnidadeTerritorialJpaRepository.class);
-        listMembrosUseCase = Mockito.mock(ListarGrupoParoquialMembrosUseCase.class);
+        listMembrosUseCase = Mockito.mock(ListarOrganizacaoMembrosUseCase.class);
         encargoClericalRepository = Mockito.mock(EncargoClericalJpaRepository.class);
         clerigoRepository = Mockito.mock(ClerigoJpaRepository.class);
         when(encargoClericalRepository.findByFuncaoAndAtualTrue(Mockito.any())).thenReturn(List.of());
         getOrganogramaUseCase = new ObterOrganogramaUseCase(
-                grupoParoquialRepository, unidadeTerritorialRepository, listMembrosUseCase,
+                organizacaoRepository, unidadeTerritorialRepository, listMembrosUseCase,
                 encargoClericalRepository, clerigoRepository);
     }
 
@@ -58,34 +58,36 @@ class ObterOrganogramaUseCaseTest {
         when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(matriz));
 
         UUID conselhoId = UUID.randomUUID();
-        GrupoParoquialEntity conselho = new GrupoParoquialEntity();
+        OrganizacaoEntity conselho = new OrganizacaoEntity();
         conselho.setId(conselhoId);
         conselho.setNome("Conselho");
-        conselho.setTipo(TipoGrupo.CONSELHO);
+        conselho.setTipo(TipoOrganizacao.CONSELHO);
         conselho.setCoordenador("Maria do Conselho");
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
 
         UUID pastoralId = UUID.randomUUID();
-        GrupoParoquialEntity pastoral = new GrupoParoquialEntity();
+        OrganizacaoEntity pastoral = new OrganizacaoEntity();
         pastoral.setId(pastoralId);
         pastoral.setNome("Pastoral da Catequese");
-        pastoral.setTipo(TipoGrupo.PASTORAL);
+        pastoral.setTipo(TipoOrganizacao.PASTORAL);
         pastoral.setCoordenador("Maria Oliveira");
         pastoral.setParentId(conselhoId);
         pastoral.setAtivo(true);
 
         // Mock database call
-        when(grupoParoquialRepository.findAll()).thenReturn(List.of(conselho, pastoral));
+        when(organizacaoRepository.findAll()).thenReturn(List.of(conselho, pastoral));
 
         // Mock vinculos
         UUID membroId = UUID.randomUUID();
-        GrupoParoquialMembroResponse memberResp = new GrupoParoquialMembroResponse(
+        OrganizacaoMembroResponse memberResp = new OrganizacaoMembroResponse(
                 UUID.randomUUID(),
                 membroId,
                 "João Santos",
                 "membro",
-                true
+                true,
+                true,
+                List.of()
         );
         when(listMembrosUseCase.execute(pastoralId)).thenReturn(List.of(memberResp));
         when(listMembrosUseCase.execute(conselhoId)).thenReturn(List.of());
@@ -109,7 +111,7 @@ class ObterOrganogramaUseCaseTest {
         // Verify Conselho Node (child of Igreja Matriz)
         OrganogramaNodeResponse conselhoNode = matrizNode.children().getFirst();
         assertThat(conselhoNode.label()).isEqualTo("Conselho");
-        assertThat(conselhoNode.type()).isEqualTo("GRUPO_PAROQUIAL");
+        assertThat(conselhoNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(conselhoNode.subtype()).isEqualTo("CONSELHO");
         assertThat(conselhoNode.responsavelNome()).isEqualTo("Maria do Conselho");
         assertThat(conselhoNode.children()).hasSize(1); // Contains Pastoral da Catequese!
@@ -117,7 +119,7 @@ class ObterOrganogramaUseCaseTest {
         // Verify Pastoral Node (child of Conselho)
         OrganogramaNodeResponse pastoralNode = conselhoNode.children().getFirst();
         assertThat(pastoralNode.label()).isEqualTo("Pastoral da Catequese");
-        assertThat(pastoralNode.type()).isEqualTo("GRUPO_PAROQUIAL");
+        assertThat(pastoralNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(pastoralNode.subtype()).isEqualTo("PASTORAL");
         assertThat(pastoralNode.children()).hasSize(1); // Contains Member
 
@@ -139,7 +141,7 @@ class ObterOrganogramaUseCaseTest {
         matriz.setAtivo(true);
 
         when(unidadeTerritorialRepository.findAll()).thenReturn(List.of(matriz));
-        when(grupoParoquialRepository.findAll()).thenReturn(List.of());
+        when(organizacaoRepository.findAll()).thenReturn(List.of());
 
         UUID parocoId = UUID.randomUUID();
         ClerigoEntity paroco = new ClerigoEntity();

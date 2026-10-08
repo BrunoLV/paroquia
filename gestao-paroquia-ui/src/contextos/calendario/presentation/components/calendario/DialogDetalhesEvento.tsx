@@ -171,7 +171,7 @@ const DialogDetalhesEvento = ({
                   {event.titulo}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                  {getOrgName(event.grupoParoquialResponsavelId, event.igrejaVinculoId)}
+                  {getOrgName(event.organizacaoResponsavelId, event.igrejaVinculoId)}
                 </Typography>
                 <Stack direction="row" spacing={1.5} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
                   <StatusIcon
@@ -252,7 +252,7 @@ const DialogDetalhesEvento = ({
                     <InfoField
                       label="Organização responsável"
                       icon={<BusinessIcon fontSize="inherit" />}
-                      value={getOrgName(event.grupoParoquialResponsavelId, event.igrejaVinculoId)}
+                      value={getOrgName(event.organizacaoResponsavelId, event.igrejaVinculoId)}
                     />
                   </Grid>
                   {event.nomeProjeto && (

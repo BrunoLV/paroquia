@@ -46,7 +46,7 @@ class UpdateEventoAprovacaoAuditTrailIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento trilha update",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000cc",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000cc",
                                   "inicio": "2027-04-20T10:00:00Z",
                                   "fim": "2027-04-20T11:00:00Z"
                                 }

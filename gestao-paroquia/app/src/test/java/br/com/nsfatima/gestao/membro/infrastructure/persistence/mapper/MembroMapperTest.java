@@ -5,7 +5,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,15 +19,15 @@ import static org.mockito.Mockito.when;
 
 class MembroMapperTest {
 
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
     private FielJpaRepository fielRepository;
     private MembroMapper mapper;
 
     @BeforeEach
     void setUp() {
-        grupoParoquialRepository = mock(GrupoParoquialJpaRepository.class);
+        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
         fielRepository = mock(FielJpaRepository.class);
-        mapper = new MembroMapper(grupoParoquialRepository, fielRepository);
+        mapper = new MembroMapper(organizacaoRepository, fielRepository);
     }
 
     @Test

@@ -35,20 +35,20 @@ class AuditoriaInfrastructureIntegrationTest {
     @Test
     @SuppressWarnings("null")
     void devePersistirEstruturadoAuditarTrilhaParaEventoMutacao() {
-        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
         UUID eventoId = UUID.randomUUID();
 
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo("Infra auditoria");
-        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
+        evento.setOrganizacaoResponsavelId(organizacaoId);
         evento.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         evento.setStatus("RASCUNHO");
         eventoJpaRepository.save(evento);
 
         auditLogPersistenceService.log("tester", "atualizar", eventoId.toString(), "sucesso", Map.of(
-                "grupoParoquialId", grupoParoquialId,
+                "organizacaoId", organizacaoId,
                 "contextId", eventoId,
                 "agendaAlterada", true,
                 "correlationId", "corr-infra-001"));
@@ -57,7 +57,7 @@ class AuditoriaInfrastructureIntegrationTest {
                 .hasSize(1)
                 .first()
                 .satisfies(record -> {
-                    assertThat(record.getGrupoParoquialId()).isEqualTo(grupoParoquialId);
+                    assertThat(record.getOrganizacaoId()).isEqualTo(organizacaoId);
                     assertThat(record.getEventoId()).isEqualTo(eventoId);
 
                     assertThat(record.getAcao()).isEqualTo("atualizar");

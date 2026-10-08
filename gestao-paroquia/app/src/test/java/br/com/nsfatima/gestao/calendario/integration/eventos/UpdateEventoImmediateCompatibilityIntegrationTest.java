@@ -43,7 +43,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento conselho",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-12-20T10:00:00Z",
                                   "fim": "2027-12-20T11:00:00Z"
                                 }
@@ -89,7 +89,7 @@ class UpdateEventoImmediateCompatibilityIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento bispo",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-12-20T12:00:00Z",
                                   "fim": "2027-12-20T13:00:00Z"
                                 }

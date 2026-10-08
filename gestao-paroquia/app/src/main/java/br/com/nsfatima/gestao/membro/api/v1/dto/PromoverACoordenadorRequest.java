@@ -12,7 +12,7 @@ import java.util.UUID;
  */
 public record PromoverACoordenadorRequest(
         @NotNull UUID fielId,
-        @NotNull UUID grupoParoquialId,
+        @NotNull UUID organizacaoId,
         @NotBlank String papel,
         String username,
         String password

@@ -45,7 +45,7 @@ public class ProjetoMapper {
                 entity.getId(),
                 entity.getNome(),
                 entity.getDescricao(),
-                entity.getGrupoParoquialResponsavelId(),
+                entity.getOrganizacaoResponsavelId(),
                 entity.getInicioUtc(),
                 entity.getFimUtc(),
                 entity.getStatus(),
@@ -62,7 +62,7 @@ public class ProjetoMapper {
                 entity.getId(),
                 entity.getNome(),
                 entity.getDescricao(),
-                entity.getGrupoParoquialResponsavelId(),
+                entity.getOrganizacaoResponsavelId(),
                 entity.getInicioUtc(),
                 entity.getFimUtc(),
                 entity.getStatus());
@@ -80,7 +80,7 @@ public class ProjetoMapper {
     public void aplicar(Projeto projeto, ProjetoEventoEntity entity) {
         entity.setNome(projeto.getNome());
         entity.setDescricao(projeto.getDescricao());
-        entity.setGrupoParoquialResponsavelId(projeto.getGrupoParoquialResponsavelId());
+        entity.setOrganizacaoResponsavelId(projeto.getOrganizacaoResponsavelId());
         entity.setInicioUtc(projeto.getInicio());
         entity.setFimUtc(projeto.getFim());
         entity.setStatus(projeto.getStatus());

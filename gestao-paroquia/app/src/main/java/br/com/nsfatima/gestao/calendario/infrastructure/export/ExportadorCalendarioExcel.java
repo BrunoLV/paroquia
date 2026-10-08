@@ -152,7 +152,7 @@ public class ExportadorCalendarioExcel implements ExportadorCalendario {
                 row.createCell(6).setCellValue(formatInstant(e.getFimUtc()));
                 row.createCell(7).setCellValue(e.getRecorrenciaId() != null ? "Sim" : "Não");
                 row.createCell(8).setCellValue(localLabel(e, localMap));
-                row.createCell(9).setCellValue(orgMap.getOrDefault(e.getGrupoParoquialResponsavelId(), NA));
+                row.createCell(9).setCellValue(orgMap.getOrDefault(e.getOrganizacaoResponsavelId(), NA));
                 row.createCell(10).setCellValue(
                         e.getProjetoId() != null ? projetoMap.getOrDefault(e.getProjetoId(), "") : "");
                 row.createCell(11).setCellValue(e.getStatus());

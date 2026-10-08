@@ -40,18 +40,18 @@ public class ObterIndicadorRetrabalhoUseCase {
      */
     @Transactional(readOnly = true)
     public IndicadorRetrabalhoResponse execute(
-            UUID grupoParoquialId, String granularidade, Instant inicio, Instant fim) {
-        assertAccessToOrganization(grupoParoquialId);
+            UUID organizacaoId, String granularidade, Instant inicio, Instant fim) {
+        assertAccessToOrganization(organizacaoId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
-        return calculadoraTaxaRetrabalho.calcularParaOrganizacao(grupoParoquialId, periodo);
+        return calculadoraTaxaRetrabalho.calcularParaOrganizacao(organizacaoId, periodo);
     }
 
-    private void assertAccessToOrganization(UUID grupoParoquialId) {
+    private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
-        if (usuarioDetails.findVinculoPorGrupoParoquial(grupoParoquialId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException(
                     "User cannot query operational data outside the responsible organization scope");
         }

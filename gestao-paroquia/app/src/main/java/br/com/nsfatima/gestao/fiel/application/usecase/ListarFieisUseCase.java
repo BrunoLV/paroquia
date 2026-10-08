@@ -60,7 +60,7 @@ public class ListarFieisUseCase {
     }
 
     private List<FielEntity> fieisDoGrupo(UUID grupoId) {
-        Set<UUID> ids = membroGrupoRepository.findByGrupoParoquialIdAndAtivoTrue(grupoId).stream()
+        Set<UUID> ids = membroGrupoRepository.findByOrganizacaoIdAndAtivoTrue(grupoId).stream()
                 .map(MembroGrupoEntity::getFielId)
                 .collect(Collectors.toSet());
         return fielRepository.findByAtivoTrue().stream()

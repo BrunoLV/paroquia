@@ -42,10 +42,10 @@ public interface LocalJpaRepository extends JpaRepository<LocalEntity, UUID> {
     /**
      * Busca os Locais não excluídos vinculados a uma organização (Matriz ou Comunidade) específica.
      *
-     * @param grupoParoquialId ID da organização de subordinação
+     * @param organizacaoId ID da organização de subordinação
      * @return lista de Locais vinculados à organização informada
      */
-    List<LocalEntity> findByGrupoParoquialIdAndDeletedAtIsNull(UUID grupoParoquialId);
+    List<LocalEntity> findByOrganizacaoIdAndDeletedAtIsNull(UUID organizacaoId);
 
     /**
      * Conta os locais ativos não excluídos — capacidade instalada de ambientes.
@@ -66,7 +66,7 @@ public interface LocalJpaRepository extends JpaRepository<LocalEntity, UUID> {
      */
     Optional<LocalEntity> findByNomeIgnoreCase(String nome);
 
-    List<LocalEntity> findByGrupoParoquialId(UUID grupoParoquialId);
+    List<LocalEntity> findByOrganizacaoId(UUID organizacaoId);
 
     long countByAtivoTrue();
 

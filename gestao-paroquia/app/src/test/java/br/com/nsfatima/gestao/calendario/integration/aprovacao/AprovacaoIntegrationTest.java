@@ -66,7 +66,7 @@ class AprovacaoIntegrationTest {
         String createEventPayload = """
                 {
                   "titulo": "Evento Pendente",
-                  "grupoParoquialResponsavelId": "%s",
+                  "organizacaoResponsavelId": "%s",
                   "inicio": "2026-12-01T10:00:00Z",
                   "fim": "2026-12-01T12:00:00Z",
                   "status": "CONFIRMADO"

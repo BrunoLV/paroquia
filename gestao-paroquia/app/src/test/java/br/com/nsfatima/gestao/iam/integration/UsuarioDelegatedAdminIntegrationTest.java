@@ -5,13 +5,13 @@ import br.com.nsfatima.gestao.fiel.support.FielTestFixtures;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class UsuarioDelegatedAdminIntegrationTest {
     private MembroGrupoJpaRepository vinculoRepository;
 
     @Autowired
-    private GrupoParoquialJpaRepository grupoParoquialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     @Autowired
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
@@ -70,20 +70,20 @@ class UsuarioDelegatedAdminIntegrationTest {
         unidadeTerritorialRepository.save(church);
 
         orgId = UUID.randomUUID();
-        var org = new GrupoParoquialEntity();
+        var org = new OrganizacaoEntity();
         org.setId(orgId);
         org.setNome("Pastoral Teste");
-        org.setTipo(TipoGrupo.PASTORAL);
+        org.setTipo(TipoOrganizacao.PASTORAL);
         org.setAtivo(true);
-        grupoParoquialRepository.save(org);
+        organizacaoRepository.save(org);
 
         otherOrgId = UUID.randomUUID();
-        var otherOrg = new GrupoParoquialEntity();
+        var otherOrg = new OrganizacaoEntity();
         otherOrg.setId(otherOrgId);
         otherOrg.setNome("Outra Pastoral");
-        otherOrg.setTipo(TipoGrupo.PASTORAL);
+        otherOrg.setTipo(TipoOrganizacao.PASTORAL);
         otherOrg.setAtivo(true);
-        grupoParoquialRepository.save(otherOrg);
+        organizacaoRepository.save(otherOrg);
 
         coordinatorId = createUser("coordinator");
         memberId = createUser("member");
@@ -109,8 +109,8 @@ class UsuarioDelegatedAdminIntegrationTest {
         MembroGrupoEntity m = new MembroGrupoEntity();
         m.setId(UUID.randomUUID());
         m.setFielId(fielId);
-        m.setGrupoParoquialId(organizationId);
-        m.setTipoGrupo(TipoGrupo.PASTORAL);
+        m.setOrganizacaoId(organizationId);
+        m.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m.setPapel(papel);
         m.setAtivo(true);
         vinculoRepository.save(m);
@@ -165,7 +165,7 @@ class UsuarioDelegatedAdminIntegrationTest {
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"grupoParoquialId\": \"" + orgId
+                        .content("{\"organizacaoId\": \"" + orgId
                                 + "\", \"tipo\": \"PASTORAL\", \"papel\": \"VOLUNTARIO\""
                                 + ", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isCreated());
@@ -179,7 +179,7 @@ class UsuarioDelegatedAdminIntegrationTest {
 
         mockMvc.perform(post("/api/v1/usuarios/" + newUser + "/membros")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"grupoParoquialId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
+                        .content("{\"organizacaoId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
                                 "\"VOLUNTARIO\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isForbidden());
     }

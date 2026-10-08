@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 /**
  * Expõe a API REST de gestão do catálogo oficial de Pastorais e Movimentos da paróquia. Restrita a ADMIN,
- * diferente da API de {@code GrupoParoquial} que também aceita coordenadores locais, pois este catálogo define
+ * diferente da API de {@code Organizacao} que também aceita coordenadores locais, pois este catálogo define
  * o registro-mestre compartilhado por todas as instâncias locais de uma pastoral/movimento.
  */
 @RestController
@@ -64,7 +64,8 @@ public class PastoralMovimentoOficialController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public PastoralMovimentoOficialResponse criar(@RequestBody @Valid PastoralMovimentoOficialRequest request) {
-        PastoralMovimentoOficial oficial = service.criar(request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.criar(request.nome(), request.tipo(), request.ambito(),
+                request.estatutoAutoridade(), request.estatutoData(), request.estatutoReferencia());
         return toResponse(oficial);
     }
 
@@ -91,7 +92,8 @@ public class PastoralMovimentoOficialController {
             @PathVariable UUID id,
             @RequestBody @Valid PastoralMovimentoOficialRequest request) {
 
-        PastoralMovimentoOficial oficial = service.atualizar(id, request.nome(), request.tipo());
+        PastoralMovimentoOficial oficial = service.atualizar(id, request.nome(), request.tipo(), request.ambito(),
+                request.estatutoAutoridade(), request.estatutoData(), request.estatutoReferencia());
         return toResponse(oficial);
     }
 
@@ -167,7 +169,12 @@ public class PastoralMovimentoOficialController {
         return new PastoralMovimentoOficialResponse(
                 domain.getId(),
                 domain.getNome(),
-                domain.getTipo()
+                domain.getTipo(),
+                domain.getAmbito(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().autoridade(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().data(),
+                domain.getReconhecimento() == null ? null : domain.getReconhecimento().referencia(),
+                domain.possuiEstatutoReconhecido()
         );
     }
 }

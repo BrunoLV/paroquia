@@ -80,7 +80,7 @@ const ConteudoDashboard: React.FC<ConteudoDashboardProps> = ({
     {/* Linha 3: Distribuição de Eventos por Organização */}
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, lg: 6 }}>
-        <EventDistributionPieChart data={metrics?.eventosPorGrupoParoquial ?? []} />
+        <EventDistributionPieChart data={metrics?.eventosPorOrganizacao ?? []} />
       </Grid>
     </Grid>
   </Stack>

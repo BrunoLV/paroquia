@@ -28,15 +28,15 @@ public class ListarMembrosUseCase {
     /**
      * Executa a busca paginada aplicando os filtros informados (qualquer parâmetro {@code null} é ignorado).
      *
-     * @param grupoParoquialId filtro por organização, ou {@code null} para não filtrar
+     * @param organizacaoId filtro por organização, ou {@code null} para não filtrar
      * @param fielId        filtro por Fiel, ou {@code null} para não filtrar
      * @param ativo         filtro por situação do vínculo, ou {@code null} para não filtrar
      * @param pageable      paginação/ordenação solicitada
      * @return página de vínculos que atendem aos filtros informados
      */
     @Transactional(readOnly = true)
-    public Page<MembroResponse> execute(UUID grupoParoquialId, UUID fielId, Boolean ativo, Pageable pageable) {
-        return repository.findByFiltros(grupoParoquialId, fielId, ativo, pageable)
+    public Page<MembroResponse> execute(UUID organizacaoId, UUID fielId, Boolean ativo, Pageable pageable) {
+        return repository.findByFiltros(organizacaoId, fielId, ativo, pageable)
                 .map(mapper::toResponse);
     }
 }

@@ -14,7 +14,7 @@ import br.com.nsfatima.gestao.patrimonio.application.usecase.EditarDescricaoAtiv
 import br.com.nsfatima.gestao.patrimonio.application.usecase.EnviarAtivoParaManutencaoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ExcluirAtivoPatrimonialUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ObterMetricasOciosidadeUseCase;
-import br.com.nsfatima.gestao.patrimonio.application.usecase.ListarAtivosPorGrupoParoquialUseCase;
+import br.com.nsfatima.gestao.patrimonio.application.usecase.ListarAtivosPorOrganizacaoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.ListarHistoricoManutencaoAtivoUseCase;
 import br.com.nsfatima.gestao.patrimonio.application.usecase.VerificarConflitoManutencaoUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +61,7 @@ public class AtivoPatrimonialController {
     private static final String RESP_ATIVO_NAO_ENCONTRADO = "Ativo não encontrado";
 
     private final CadastrarAtivoPatrimonialUseCase cadastrarUseCase;
-    private final ListarAtivosPorGrupoParoquialUseCase listarUseCase;
+    private final ListarAtivosPorOrganizacaoUseCase listarUseCase;
     private final BuscarAtivoPatrimonialUseCase buscarUseCase;
     private final EditarDescricaoAtivoUseCase editarDescricaoUseCase;
     private final ExcluirAtivoPatrimonialUseCase excluirUseCase;
@@ -72,7 +72,7 @@ public class AtivoPatrimonialController {
     private final ObterMetricasOciosidadeUseCase metricasOciosidadeUseCase;
 
     public AtivoPatrimonialController(CadastrarAtivoPatrimonialUseCase cadastrarUseCase,
-                                      ListarAtivosPorGrupoParoquialUseCase listarUseCase,
+                                      ListarAtivosPorOrganizacaoUseCase listarUseCase,
                                       BuscarAtivoPatrimonialUseCase buscarUseCase,
                                       EditarDescricaoAtivoUseCase editarDescricaoUseCase,
                                       ExcluirAtivoPatrimonialUseCase excluirUseCase,
@@ -122,7 +122,7 @@ public class AtivoPatrimonialController {
         return listarUseCase.executeTodos();
     }
 
-    @GetMapping("/organizacao/{grupoParoquialId}")
+    @GetMapping("/organizacao/{organizacaoId}")
     @PreAuthorize(AUTHENTICATED)
     @Operation(summary = "Lista o inventário de ativos de uma unidade territorial")
     @ApiResponses({
@@ -132,10 +132,10 @@ public class AtivoPatrimonialController {
             @ApiResponse(responseCode = "401", description = RESP_NAO_AUTENTICADO),
             @ApiResponse(responseCode = "403", description = RESP_ACESSO_NEGADO)
     })
-    public List<AtivoPatrimonialResponse> listarPorGrupoParoquial(
+    public List<AtivoPatrimonialResponse> listarPorOrganizacao(
             @Parameter(description = "Identificador da unidade territorial proprietária", required = true)
-            @PathVariable UUID grupoParoquialId) {
-        return listarUseCase.executePorGrupo(grupoParoquialId);
+            @PathVariable UUID organizacaoId) {
+        return listarUseCase.executePorGrupo(organizacaoId);
     }
 
     @GetMapping("/{id}")

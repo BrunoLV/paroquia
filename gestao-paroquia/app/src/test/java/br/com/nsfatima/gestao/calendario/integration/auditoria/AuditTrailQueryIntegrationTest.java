@@ -55,14 +55,14 @@ class AuditTrailQueryIntegrationTest {
 
     @Test
     @SuppressWarnings("null")
-    void deveConsultaPersistidoAuditarTrilhaPorGrupoParoquialEPeriodo() throws Exception {
-        UUID grupoParoquialId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
-        UUID outraGrupoParoquial = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
-        UUID eventoId = persistEvent(grupoParoquialId, "Evento auditado");
-        persistEvent(outraGrupoParoquial, "Evento fora do escopo");
+    void deveConsultaPersistidoAuditarTrilhaPorOrganizacaoEPeriodo() throws Exception {
+        UUID organizacaoId = UUID.fromString("00000000-0000-0000-0000-0000000000aa");
+        UUID outraOrganizacao = UUID.fromString("00000000-0000-0000-0000-0000000000bb");
+        UUID eventoId = persistEvent(organizacaoId, "Evento auditado");
+        persistEvent(outraOrganizacao, "Evento fora do escopo");
 
         mockMvc.perform(patch("/api/v1/eventos/{eventoId}", eventoId)
-                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
                                 "\"descricao\":\"Atualizacao auditavel\"" +
@@ -70,7 +70,7 @@ class AuditTrailQueryIntegrationTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/v1/eventos/{eventoId}/observacoes", eventoId)
-                        .header("X-Actor-Org-Id", grupoParoquialId.toString())
+                        .header("X-Actor-Org-Id", organizacaoId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" +
                                 "\"tipo\":\"NOTA\"," +
@@ -79,23 +79,23 @@ class AuditTrailQueryIntegrationTest {
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/api/v1/auditoria/eventos/trilha")
-                        .param("grupoParoquialId", grupoParoquialId.toString())
+                        .param("organizacaoId", organizacaoId.toString())
                         .param("inicio", "2026-01-01T00:00:00Z")
                         .param("fim", "2027-01-01T00:00:00Z")
-                        .header("X-Actor-Org-Id", grupoParoquialId.toString()))
+                        .header("X-Actor-Org-Id", organizacaoId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items.length()").value(2))
                 .andExpect(jsonPath("$.items[0].acao").value("atualizar"))
                 .andExpect(jsonPath("$.items[1].acao").value("criar-observacao"));
     }
 
-    private UUID persistEvent(UUID grupoParoquialId, String titulo) {
+    private UUID persistEvent(UUID organizacaoId, String titulo) {
         UUID eventoId = UUID.randomUUID();
         EventoEntity evento = new EventoEntity();
         evento.setId(eventoId);
         evento.setTitulo(titulo);
         evento.setDescricao("descricao-base");
-        evento.setGrupoParoquialResponsavelId(grupoParoquialId);
+        evento.setOrganizacaoResponsavelId(organizacaoId);
         evento.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         evento.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         evento.setStatus("RASCUNHO");

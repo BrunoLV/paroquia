@@ -147,7 +147,7 @@ describe('Organograma Page', () => {
     expect(screen.getByText('Carlos de Oliveira')).toBeInTheDocument();
   });
 
-  test('renders tree correctly with UNIDADE_TERRITORIAL and GRUPO_PAROQUIAL node types', async () => {
+  test('renders tree correctly with UNIDADE_TERRITORIAL and ORGANIZACAO node types', async () => {
     const mockRefactoredData = {
       id: 'ut-clero',
       label: 'Clero Paroquial',
@@ -169,7 +169,7 @@ describe('Organograma Page', () => {
             {
               id: 'gp-conselho',
               label: 'Conselho Pastoral Matriz',
-              type: 'GRUPO_PAROQUIAL',
+              type: 'ORGANIZACAO',
               subtype: 'CONSELHO',
               responsavelNome: 'Coordenador Matriz',
               responsavelPapel: 'COORDENADOR',
@@ -178,7 +178,7 @@ describe('Organograma Page', () => {
                 {
                   id: 'gp-ministerio',
                   label: 'Ministério de Música',
-                  type: 'GRUPO_PAROQUIAL',
+                  type: 'ORGANIZACAO',
                   subtype: 'MINISTERIO',
                   responsavelNome: 'Líder de Música',
                   responsavelPapel: 'COORDENADOR',

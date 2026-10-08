@@ -8,8 +8,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.ParoquiaConfiguracaoRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.GrupoParoquialEntity;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +41,7 @@ public class ExportacaoCalendarioUseCase {
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
     private final ProjetoEventoJpaRepository projetoEventoRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final List<ExportadorCalendario> exportadores;
@@ -49,13 +49,13 @@ public class ExportacaoCalendarioUseCase {
     public ExportacaoCalendarioUseCase(
             EventoJpaRepository eventoRepository,
             LocalJpaRepository localRepository,
-            GrupoParoquialJpaRepository grupoParoquialRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
             ProjetoEventoJpaRepository projetoEventoRepository,
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
             List<ExportadorCalendario> exportadores) {
         this.eventoRepository = eventoRepository;
         this.localRepository = localRepository;
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
         this.projetoEventoRepository = projetoEventoRepository;
         this.paroquiaConfigRepository = paroquiaConfigRepository;
         this.exportadores = exportadores;
@@ -75,7 +75,7 @@ public class ExportacaoCalendarioUseCase {
      * @param dataInicio início do intervalo quando {@code opcao} é "PERIODO"
      * @param dataFim fim do intervalo quando {@code opcao} é "PERIODO"
      * @param categorias categorias de evento usadas para filtrar o conjunto exportado
-     * @param grupoParoquialIds organizações usadas para filtrar o conjunto exportado
+     * @param organizacaoIds organizações usadas para filtrar o conjunto exportado
      * @param visualizacao modo de apresentação visual ("AGENDA" ou "GRADE"), repassado ao exportador
      * @return conteúdo binário do calendário exportado no formato solicitado
      * @throws IllegalArgumentException se {@code opcao} for inválida ou se nenhum
@@ -83,7 +83,7 @@ public class ExportacaoCalendarioUseCase {
      */
     @Transactional(readOnly = true)
     public byte[] execute(String formato, String opcao, Integer ano, Integer mes, Instant dataInicio, Instant dataFim,
-                          List<String> categorias, List<UUID> grupoParoquialIds, String visualizacao) {
+                          List<String> categorias, List<UUID> organizacaoIds, String visualizacao) {
         // 1. Determina o período de tempo (UTC)
         Instant start;
         Instant end;
@@ -119,8 +119,8 @@ public class ExportacaoCalendarioUseCase {
                 true,
                 end,
                 true,
-                grupoParoquialIds,
-                grupoParoquialIds != null && !grupoParoquialIds.isEmpty(),
+                organizacaoIds,
+                organizacaoIds != null && !organizacaoIds.isEmpty(),
                 null,
                 false,
                 null,
@@ -136,8 +136,8 @@ public class ExportacaoCalendarioUseCase {
         Map<UUID, String> localMap = localRepository.findAll().stream()
                 .collect(Collectors.toMap(LocalEntity::getId, LocalEntity::getNome));
 
-        Map<UUID, String> orgMap = grupoParoquialRepository.findAll().stream()
-                .collect(Collectors.toMap(GrupoParoquialEntity::getId, GrupoParoquialEntity::getNome));
+        Map<UUID, String> orgMap = organizacaoRepository.findAll().stream()
+                .collect(Collectors.toMap(OrganizacaoEntity::getId, OrganizacaoEntity::getNome));
 
         Map<UUID, String> projetoMap = projetoEventoRepository.findAll().stream()
                 .collect(Collectors.toMap(ProjetoEventoEntity::getId, ProjetoEventoEntity::getNome));

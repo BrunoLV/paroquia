@@ -20,7 +20,7 @@ public interface AutorizacaoPatrimonioPolicy {
      *
      * @param rawRole papel global ou organizacional do ator
      * @param atorOrganizacaoId ID da organização vinculada ao ator
-     * @param grupoParoquialId ID da unidade territorial proprietária do ativo
+     * @param organizacaoId ID da unidade territorial proprietária do ativo
      */
-    void assertPodeGerirPatrimonio(String rawRole, UUID atorOrganizacaoId, UUID grupoParoquialId);
+    void assertPodeGerirPatrimonio(String rawRole, UUID atorOrganizacaoId, UUID organizacaoId);
 }

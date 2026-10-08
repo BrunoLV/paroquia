@@ -39,7 +39,7 @@ class AprovacoesDecisionExecutionContractTest {
                         .content(String.format("""
                                 {
                                   "titulo": "Contrato decisao aprovada",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2027-07-10T10:00:00Z",
                                   "fim": "2027-07-10T11:00:00Z",
                                   "adicionadoExtraJustificativa": "Justificativa formal do secretario"
@@ -80,7 +80,7 @@ class AprovacoesDecisionExecutionContractTest {
                         .content(String.format("""
                                 {
                                   "titulo": "Contrato decisao rejeitada",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2027-07-11T10:00:00Z",
                                   "fim": "2027-07-11T11:00:00Z",
                                   "adicionadoExtraJustificativa": "Justificativa formal do secretario"

@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.organizacao.infrastructure.config;
 
 import br.com.nsfatima.gestao.organizacao.domain.policy.AutorizacaoEscopoUsuarioPolicy;
 import br.com.nsfatima.gestao.organizacao.domain.policy.PadraoAutorizacaoEscopoUsuarioPolicy;
-import br.com.nsfatima.gestao.organizacao.domain.repository.GrupoParoquialRepository;
+import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepository;
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.application.service.ValidadorHierarquiaOrganizacional;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
@@ -17,11 +17,11 @@ public class OrganizacaoDomainConfig {
 
     @Bean
     public ValidadorHierarquiaOrganizacional validadorHierarquiaOrganizacional(
-            GrupoParoquialRepository grupoParoquialRepository,
+            OrganizacaoRepository organizacaoRepository,
             PastoralMovimentoOficialRepository pastoralOficialRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository) {
         return new ValidadorHierarquiaOrganizacional(
-                grupoParoquialRepository, pastoralOficialRepository, unidadeTerritorialRepository);
+                organizacaoRepository, pastoralOficialRepository, unidadeTerritorialRepository);
     }
 
     @Bean

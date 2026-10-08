@@ -35,7 +35,7 @@ public class AcaoRastreamentoFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcaoRastreamentoFilter.class);
 
     public static final String MDC_USUARIO_ID = "usuarioId";
-    public static final String MDC_GRUPO_PAROQUIAL_ID = "grupoParoquialId";
+    public static final String MDC_ORGANIZACAO_ID = "organizacaoId";
     public static final String MDC_ACAO = "acao";
 
     private static final String PREFIXO_ACTUATOR = "/actuator";
@@ -86,13 +86,13 @@ public class AcaoRastreamentoFilter extends OncePerRequestFilter {
 
     private void configurarMdcContexto(String metodo, String uri) {
         String usuarioId = resolverUsuarioId();
-        String grupoParoquialId = resolverGrupoParoquialId();
+        String organizacaoId = resolverOrganizacaoId();
         String acao = resolverAcao(metodo, uri);
 
         MDC.put(MDC_USUARIO_ID, usuarioId);
         MDC.put(MDC_ACAO, acao);
-        if (grupoParoquialId != null) {
-            MDC.put(MDC_GRUPO_PAROQUIAL_ID, grupoParoquialId);
+        if (organizacaoId != null) {
+            MDC.put(MDC_ORGANIZACAO_ID, organizacaoId);
         }
     }
 
@@ -107,7 +107,7 @@ public class AcaoRastreamentoFilter extends OncePerRequestFilter {
 
     private void limparMdcContexto() {
         MDC.remove(MDC_USUARIO_ID);
-        MDC.remove(MDC_GRUPO_PAROQUIAL_ID);
+        MDC.remove(MDC_ORGANIZACAO_ID);
         MDC.remove(MDC_ACAO);
     }
 
@@ -120,7 +120,7 @@ public class AcaoRastreamentoFilter extends OncePerRequestFilter {
         return "ANONYMOUS";
     }
 
-    private String resolverGrupoParoquialId() {
+    private String resolverOrganizacaoId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof UsuarioDetails user) {
             return user.vinculoPrimario()

@@ -11,14 +11,14 @@ public interface AutorizacaoCancelamentoEventoPolicy {
      * Determina o modo de cancelamento aplicável (imediato ou com aprovação).
      *
      * @param rawRole papel global ou organizacional do ator
-     * @param rawTipoGrupo tipo do grupo do ator
+     * @param rawTipoOrganizacao tipo do grupo do ator
      * @param atorOrgId ID da organização do ator
      * @param eventoOrgId ID da organização responsável pelo evento
      * @return modo de cancelamento aplicável
      */
     ModoRequisicaoCancelamento resolveRequestMode(
             String rawRole,
-            String rawTipoGrupo,
+            String rawTipoOrganizacao,
             UUID atorOrgId,
             UUID eventoOrgId);
 
@@ -26,7 +26,7 @@ public interface AutorizacaoCancelamentoEventoPolicy {
      * Valida se o ator possui permissão para aprovar/recusar solicitações de cancelamento.
      *
      * @param rawRole papel global ou organizacional do ator
-     * @param rawTipoGrupo tipo do grupo do ator
+     * @param rawTipoOrganizacao tipo do grupo do ator
      */
-    void assertCanDecideAprovacao(String rawRole, String rawTipoGrupo);
+    void assertCanDecideAprovacao(String rawRole, String rawTipoOrganizacao);
 }

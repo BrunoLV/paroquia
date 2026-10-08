@@ -62,7 +62,7 @@ public class TestSecurityBypassFilter extends OncePerRequestFilter {
                 ? List.of()
                 : List.of(new LeitorVinculoExterno.Vinculo(
                         organizationId,
-                        "GrupoParoquial",
+                        "Organizacao",
                         organizationType,
                         null,
                         null,

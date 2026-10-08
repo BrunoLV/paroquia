@@ -1,7 +1,7 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.application.dto.AprovacaoAcaoPayload;
 import br.com.nsfatima.gestao.aprovacao.application.mapper.AprovacaoAcaoPayloadMapper;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
@@ -59,7 +59,7 @@ class ApproveUpdateEventoIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento original",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-08-01T10:00:00Z",
                                   "fim": "2027-08-01T11:00:00Z"
                                 }
@@ -131,7 +131,7 @@ class ApproveUpdateEventoIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento snapshot direto",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-09-01T09:00:00Z",
                                   "fim": "2027-09-01T10:00:00Z"
                                 }
@@ -169,7 +169,7 @@ class ApproveUpdateEventoIntegrationTest {
         aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
         aprovacao.setSolicitantePapel("coordenador");
-        aprovacao.setSolicitanteTipoGrupo(TipoGrupo.PASTORAL);
+        aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
         aprovacao.setCorrelationId(aprovacaoId.toString());
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));

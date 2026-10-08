@@ -50,7 +50,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DecidirSolicitacaoAprovacaoUseCase.class);
     private static final String KEY_DECISION_STATUS = "statusDecisao";
-    private static final String KEY_GRUPO_PAROQUIAL_ID = "grupoParoquialId";
+    private static final String KEY_ORGANIZACAO_ID = "organizacaoId";
 
     private final AprovacaoJpaRepository aprovacaoJpaRepository;
     private final AprovacaoMapper aprovacaoMapper;
@@ -195,9 +195,9 @@ public class DecidirSolicitacaoAprovacaoUseCase {
             AprovacaoAcaoPayload payloadFilha = aprovacaoAcaoPayloadMapper.toPayload(filha.getActionPayloadJson());
             AprovacaoAcaoPayload payloadPai = aprovacaoAcaoPayloadMapper.toPayload(pai.getActionPayloadJson());
             if (payloadFilha != null && payloadPai != null) {
-                UUID grupoId = payloadFilha.grupoParoquialResponsavelId() != null
-                        ? payloadFilha.grupoParoquialResponsavelId()
-                        : payloadPai.grupoParoquialResponsavelId();
+                UUID grupoId = payloadFilha.organizacaoResponsavelId() != null
+                        ? payloadFilha.organizacaoResponsavelId()
+                        : payloadPai.organizacaoResponsavelId();
                 var categoria = payloadFilha.categoria() != null
                         ? payloadFilha.categoria()
                         : payloadPai.categoria();
@@ -328,7 +328,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.REPROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
@@ -394,7 +394,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         metadata.put("eventoId", execution.eventoId() == null ? "N/A" : execution.eventoId().toString());
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {
@@ -496,7 +496,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         metadata.put("tipoFalha", tipoFalha.name());
         metadata.put(KEY_DECISION_STATUS, AprovacaoStatus.APROVADA.name());
         if (actorContext.organizationId() != null) {
-            metadata.put(KEY_GRUPO_PAROQUIAL_ID, actorContext.organizationId());
+            metadata.put(KEY_ORGANIZACAO_ID, actorContext.organizationId());
         }
 
         if (auditPublisher != null) {

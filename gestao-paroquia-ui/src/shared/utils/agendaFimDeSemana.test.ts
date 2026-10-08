@@ -6,7 +6,7 @@ const evento = (titulo: string, inicio: string): WeeklyEvent => ({
   titulo,
   inicio,
   localNome: 'Salão',
-  grupoParoquialNome: 'Pastoral A',
+  organizacaoNome: 'Pastoral A',
 });
 
 describe('formatarAgendaFimDeSemana', () => {

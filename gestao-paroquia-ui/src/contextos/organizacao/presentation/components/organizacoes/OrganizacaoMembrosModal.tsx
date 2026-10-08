@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LinkIcon from '@mui/icons-material/Link';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
-import { getOrganizacaoMembros } from '@/contextos/organizacao/infrastructure/http/organizacoes';
+import { getOrganizacaoMembros, OrganizacaoMembro } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { adicionarVinculo, AdicionarVinculoRequest, removerVinculo, Usuario } from '@/contextos/iam/infrastructure/http/usuarios';
 import { Organizacao, PAPEL_ECLESIAL_LABELS } from '@/shared/domain/types/types';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
@@ -15,6 +15,9 @@ import ActionButton from '@/shared/presentation/components/ActionButton';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
 import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
 import { getSituacaoAtivoMeta } from '@/shared/utils/statusMeta/situacaoStatus';
+import { getIdoneidadeMeta } from '@/shared/utils/statusMeta/idoneidadeStatus';
+import { IdoneidadeModal } from '@/contextos/organizacao/presentation/components/organizacoes/IdoneidadeModal';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 
 interface OrganizacaoMembrosModalProps {
   open: boolean;
@@ -22,6 +25,8 @@ interface OrganizacaoMembrosModalProps {
   organizacao: Organizacao | null;
   igrejas: Organizacao[];
   usuarios: Usuario[];
+  /** Permite atestar a idoneidade pastoral do agente (Pároco/Bispo e secretaria paroquial). */
+  canGerirIdoneidade?: boolean;
 }
 
 export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = ({
@@ -30,6 +35,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
   organizacao,
   igrejas,
   usuarios,
+  canGerirIdoneidade = false,
 }) => {
   const { showError, showSuccess } = useNotification();
   const queryClient = useQueryClient();
@@ -37,6 +43,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
   const [novoUsuarioId, setNovoUsuarioId] = useState('');
   const [novoPapel, setNovoPapel] = useState('');
   const [novaIgrejaId, setNovaIgrejaId] = useState('');
+  const [idoneidadeMembro, setIdoneidadeMembro] = useState<OrganizacaoMembro | null>(null);
 
   const { data: membros = [], isLoading } = useQuery({
     queryKey: ['organizacaoMembros', organizacao?.id],
@@ -82,7 +89,6 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
     addMembroMutation.mutate({
       userId: novoUsuarioId,
       request: {
-        grupoParoquialId: organizacao.id,
         organizacaoId: organizacao.id,
         tipo: organizacao.tipo,
         papel: novoPapel,
@@ -92,6 +98,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
   };
 
   return (
+    <>
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Membros - {organizacao?.nome}</DialogTitle>
       <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
@@ -116,6 +123,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                       <TableCell sx={{ fontWeight: 600 }}>Igreja de Atuação</TableCell>
                     )}
                     <TableCell sx={{ fontWeight: 600 }}>Papel</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Idoneidade</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                   </TableRow>
@@ -128,10 +136,16 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                         <TableCell>{igrejas.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                       )}
                       <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
+                      <TableCell><StatusIcon {...getIdoneidadeMeta(m.apto, m.pendencias ?? [])} /></TableCell>
                       <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
                       <TableCell align="right">
                         <TableActionMenu
                           actions={[
+                            ...(canGerirIdoneidade && m.fielId ? [{
+                              label: 'Idoneidade',
+                              icon: <VerifiedUserIcon fontSize="small" color="primary" />,
+                              onClick: () => setIdoneidadeMembro(m),
+                            }] : []),
                             {
                               label: 'Remover',
                               icon: <DeleteIcon fontSize="small" color="error" />,
@@ -145,7 +159,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                   ))}
                   {membros.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={isPastoralOuMovimento ? 5 : 4} align="center" sx={{ py: 2, color: 'text.secondary' }}>
+                      <TableCell colSpan={isPastoralOuMovimento ? 6 : 5} align="center" sx={{ py: 2, color: 'text.secondary' }}>
                         Nenhum membro vinculado a esta pastoral/movimento.
                       </TableCell>
                     </TableRow>
@@ -228,5 +242,13 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
         <ActionButton title="Fechar" icon={<CloseIcon />} color="secondary" onClick={onClose} />
       </DialogActions>
     </Dialog>
+    <IdoneidadeModal
+      open={!!idoneidadeMembro}
+      onClose={() => setIdoneidadeMembro(null)}
+      vinculoId={idoneidadeMembro?.vinculoId ?? null}
+      nome={idoneidadeMembro?.fielNome || idoneidadeMembro?.nomeCompleto || idoneidadeMembro?.usuarioNome || ''}
+      organizacaoId={organizacao?.id}
+    />
+    </>
   );
 };

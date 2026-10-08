@@ -52,8 +52,8 @@ public class AtivoPatrimonialEntity extends BaseAuditableEntity {
     @Column(name = "is_reservavel", nullable = false)
     private boolean reservavel;
 
-    @Column(name = "grupo_paroquial_id", nullable = false)
-    private UUID grupoParoquialId;
+    @Column(name = "organizacao_id", nullable = false)
+    private UUID organizacaoId;
 
     @Column(name = "data_aquisicao", nullable = false)
     private LocalDate dataAquisicao;
@@ -82,7 +82,7 @@ public class AtivoPatrimonialEntity extends BaseAuditableEntity {
             AtivoCategoria categoria,
             AtivoStatus status,
             boolean reservavel,
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             LocalDate dataAquisicao,
             BigDecimal valorAquisicao,
             UUID cadastradoPorId,
@@ -98,7 +98,7 @@ public class AtivoPatrimonialEntity extends BaseAuditableEntity {
         this.categoria = categoria;
         this.status = status;
         this.reservavel = reservavel;
-        this.grupoParoquialId = grupoParoquialId;
+        this.organizacaoId = organizacaoId;
         this.dataAquisicao = dataAquisicao;
         this.valorAquisicao = valorAquisicao;
         this.cadastradoPorId = cadastradoPorId;
@@ -157,11 +157,11 @@ public class AtivoPatrimonialEntity extends BaseAuditableEntity {
         this.reservavel = reservavel;
     }
 
-    public UUID getGrupoParoquialId() {
-        return grupoParoquialId;
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
     }
-    public void setGrupoParoquialId(UUID grupoParoquialId) {
-        this.grupoParoquialId = grupoParoquialId;
+    public void setOrganizacaoId(UUID organizacaoId) {
+        this.organizacaoId = organizacaoId;
     }
 
     public LocalDate getDataAquisicao() {

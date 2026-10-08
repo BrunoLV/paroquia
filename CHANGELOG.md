@@ -8,6 +8,31 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-10-07
+
+### Adicionado
+- **Reformulação Eclesial de Pastorais e Movimentos (módulo `organizacao`):**
+  - **Tipologia:** pastoral orgânica, movimento apostólico, serviço paroquial (substitui `MINISTERIO`) e conselho, com policies de invariantes por tipo; múnus (ensinar, santificar, governar) obrigatório para pastorais e serviços.
+  - **Articulação ao conselho pastoral:** pastorais, movimentos e serviços exigem como organização-mãe um conselho pastoral (CPP/CPC); novo `SubtipoConselho` (CPP, CPC, CAEP), e o CAEP não acolhe organismos pastorais.
+  - **Estatuto de movimentos:** catálogo oficial com âmbito e reconhecimento de estatuto (Cân. 299 e 304); movimento sem estatuto reconhecido não é instanciado.
+  - **Mandato de coordenação:** encargo temporário (máx. 3 anos) proposto pelo grupo/CPP e homologado, vetado ou encerrado pelo Pároco; job diário encerra mandatos vencidos; modal "Coordenação" na lista de organizações.
+  - **Idoneidade e envio dos agentes:** formação, vivência sacramental atestada, termo de proteção de menores e envio; bloqueia proposta/homologação de mandato e promoção a coordenador com pendências; modal de idoneidade na lista de membros.
+  - **Unidade de caixa:** regra de negócio documentada (organizações não têm personalidade jurídica nem caixa próprios).
+  - **E-mail e telefone separados** no cadastro de organização (`contato` permanece como espelho de leitura).
+  - **Dados de teste** do módulo no seed (movimentos, serviços, mandatos em todos os estados e idoneidade mista).
+  - Migrações `V026` a `V030`.
+
+### Modificado
+- **Renomeação `GrupoParoquial` para `Organizacao`** em código, banco (`grupo_paroquial`, `grupo_paroquial_id`, `tipo_grupo`) e contrato REST (`grupoParoquialId` vira `organizacaoId`; `grupoParoquialResponsavelId` vira `organizacaoResponsavelId`).
+- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida.
+- A tela de Pastorais e Movimentos lista somente organismos eclesiais; Matriz e Comunidade ficam em Governo & Território.
+- Mensagens de validação e descrições OpenAPI do módulo `organizacao` passam para português.
+- Documentação `docs/business-rules/organizacao.md` reescrita; `membro.md` e `conselho.md` atualizados.
+
+### Observação de migração
+- O ambiente Docker local usa o `app.jar` pré-compilado do host: recompile (`./gradlew :app:bootJar -x test`) antes de recriar `builder` e `api`, senão a API sobe no código antigo.
+- Subtipo dos conselhos existentes inferido pelo nome (econômico = CAEP, comunitário = CPC, demais = CPP): revisar no cadastro. Lideranças existentes viram mandatos homologados de 1 ano a partir da migração: revisar os períodos. Pastorais e serviços existentes sem múnus precisam recebê-lo ao serem editados.
+
 ## [0.9.0] - 2026-10-06
 
 ### Modificado

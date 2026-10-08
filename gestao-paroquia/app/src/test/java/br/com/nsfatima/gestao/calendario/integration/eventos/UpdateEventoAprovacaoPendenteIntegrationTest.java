@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.calendario.integration.eventos;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
@@ -49,7 +49,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento para editar",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-06-01T10:00:00Z",
                                   "fim": "2027-06-01T11:00:00Z"
                                 }
@@ -92,7 +92,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
         assertThat(aprovacao.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
         assertThat(aprovacao.getActionPayloadJson()).contains("2027-06-02");
         assertThat(aprovacao.getSolicitantePapel()).isEqualTo("coordenador");
-        assertThat(aprovacao.getSolicitanteTipoGrupo()).isEqualTo(TipoGrupo.PASTORAL);
+        assertThat(aprovacao.getSolicitanteTipoOrganizacao()).isEqualTo(TipoOrganizacao.PASTORAL);
 
         // Event should not be modified yet
         var evento = eventoJpaRepository.findById(eventoId).orElseThrow();
@@ -112,7 +112,7 @@ class UpdateEventoAprovacaoPendenteIntegrationTest {
                         .content("""
                                 {
                                   "titulo": "Evento movimento",
-                                  "grupoParoquialResponsavelId": "00000000-0000-0000-0000-0000000000aa",
+                                  "organizacaoResponsavelId": "00000000-0000-0000-0000-0000000000aa",
                                   "inicio": "2027-07-01T09:00:00Z",
                                   "fim": "2027-07-01T10:00:00Z"
                                 }

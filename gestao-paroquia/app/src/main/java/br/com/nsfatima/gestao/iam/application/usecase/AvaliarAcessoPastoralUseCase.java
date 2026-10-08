@@ -2,7 +2,7 @@ package br.com.nsfatima.gestao.iam.application.usecase;
 
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,8 @@ public class AvaliarAcessoPastoralUseCase {
                 .filter(usuario -> !administrativo(usuario.getRoles()))
                 .ifPresent(usuario -> {
                     boolean participa = vinculos.findByFielIdAndAtivoTrue(fielId).stream()
-                            .anyMatch(v -> v.getTipoGrupo() == TipoGrupo.PASTORAL
-                                    || v.getTipoGrupo() == TipoGrupo.MOVIMENTO);
+                            .anyMatch(v -> v.getTipoOrganizacao() == TipoOrganizacao.PASTORAL
+                                    || v.getTipoOrganizacao() == TipoOrganizacao.MOVIMENTO);
                     if (!participa) {
                         usuario.setEnabled(false);
                         usuarios.save(usuario);

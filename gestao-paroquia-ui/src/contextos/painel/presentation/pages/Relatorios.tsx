@@ -85,10 +85,10 @@ const Relatorios: React.FC = () => {
         titulo: (ev.titulo as string) || (ev.nome as string) || 'Evento sem título',
         inicio: (ev.inicio as string) || (ev.dataInicio as string) || (ev.criadoEmUtc as string) || '',
         localNome: (ev.local as { nome?: string })?.nome || (ev.localNome as string) || 'Sem Local',
-        grupoParoquialNome:
+        organizacaoNome:
           (ev.organizacao as { nome?: string })?.nome ||
-          orgMap[ev.grupoParoquialResponsavelId as string] ||
-          (ev.grupoParoquialNome as string) ||
+          orgMap[ev.organizacaoResponsavelId as string] ||
+          (ev.organizacaoNome as string) ||
           'Paróquia',
       }));
     },
@@ -118,13 +118,13 @@ const Relatorios: React.FC = () => {
     // Aggregate counts per organization from fetched filtered events
     const orgCountMap: Record<string, number> = {};
     eventsList.forEach((ev) => {
-      const orgName = ev.grupoParoquialNome || 'Paróquia';
+      const orgName = ev.organizacaoNome || 'Paróquia';
       orgCountMap[orgName] = (orgCountMap[orgName] || 0) + 1;
     });
 
-    const filteredEventosPorGrupoParoquial = Object.entries(orgCountMap).map(
-      ([grupoParoquialNome, quantidadeEventos]) => ({
-        grupoParoquialNome,
+    const filteredEventosPorOrganizacao = Object.entries(orgCountMap).map(
+      ([organizacaoNome, quantidadeEventos]) => ({
+        organizacaoNome,
         quantidadeEventos,
       })
     );
@@ -135,7 +135,7 @@ const Relatorios: React.FC = () => {
         ...metricsData.resumoGeral,
         totalEventosPeriodo: eventsList.length,
       },
-      eventosPorGrupoParoquial: filteredEventosPorGrupoParoquial,
+      eventosPorOrganizacao: filteredEventosPorOrganizacao,
       eventosSemana: eventsList,
     };
   }, [metricsData, isFiltered, customEventsData]);
@@ -403,12 +403,12 @@ const Relatorios: React.FC = () => {
       <Grid container spacing={3} sx={{ mt: 1 }}>
         {/* PieChart - Event Distribution */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <EventDistributionPieChart data={filteredMetrics.eventosPorGrupoParoquial || []} />
+          <EventDistributionPieChart data={filteredMetrics.eventosPorOrganizacao || []} />
         </Grid>
 
         {/* BarChart - Volume Comparison */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <EventVolumeBarChart data={filteredMetrics.eventosPorGrupoParoquial || []} />
+          <EventVolumeBarChart data={filteredMetrics.eventosPorOrganizacao || []} />
         </Grid>
       </Grid>
 
@@ -565,7 +565,7 @@ const Relatorios: React.FC = () => {
                   .map((ev, idx) => (
                     <TableRow key={idx} hover>
                       <TableCell sx={{ fontWeight: 600 }}>{ev.titulo}</TableCell>
-                      <TableCell>{ev.grupoParoquialNome || '-'}</TableCell>
+                      <TableCell>{ev.organizacaoNome || '-'}</TableCell>
                       <TableCell>{ev.localNome || '-'}</TableCell>
                       <TableCell>
                         {new Date(ev.inicio).toLocaleString('pt-BR', {

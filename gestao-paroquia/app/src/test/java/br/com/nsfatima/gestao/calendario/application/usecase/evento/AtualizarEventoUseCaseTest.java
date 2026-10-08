@@ -106,7 +106,7 @@ class AtualizarEventoUseCaseTest {
         EventoEntity entity = new EventoEntity();
         entity.setId(UUID.randomUUID());
         entity.setTitulo("Missa Dominical");
-        entity.setGrupoParoquialResponsavelId(UUID.randomUUID());
+        entity.setOrganizacaoResponsavelId(UUID.randomUUID());
         entity.setInicioUtc(Instant.parse("2026-10-15T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-10-15T11:00:00Z"));
         entity.setStatus(EventoStatusInput.CONFIRMADO.name());

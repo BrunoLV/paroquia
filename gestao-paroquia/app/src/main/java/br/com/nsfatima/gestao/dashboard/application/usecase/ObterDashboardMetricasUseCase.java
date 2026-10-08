@@ -21,8 +21,8 @@ import br.com.nsfatima.gestao.dashboard.domain.service.JanelaTemporalResolver;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
-import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.GrupoParoquialJpaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
@@ -69,13 +69,14 @@ public class ObterDashboardMetricasUseCase {
     private static final int PERCENTUAL_SCALE = 1;
     private static final Set<ProjetoStatus> STATUS_ATIVOS =
             EnumSet.of(ProjetoStatus.ABERTO, ProjetoStatus.EM_ANDAMENTO);
-    private static final Set<TipoGrupo> TIPOS_ENGAJAMENTO = EnumSet.of(TipoGrupo.PASTORAL, TipoGrupo.MOVIMENTO);
+    private static final Set<TipoOrganizacao> TIPOS_ENGAJAMENTO =
+            EnumSet.of(TipoOrganizacao.PASTORAL, TipoOrganizacao.MOVIMENTO);
 
     private final EventoJpaRepository eventoRepository;
     private final ProjetoEventoJpaRepository projetoRepository;
     private final AprovacaoJpaRepository aprovacaoRepository;
     private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository;
-    private final GrupoParoquialJpaRepository grupoParoquialRepository;
+    private final OrganizacaoJpaRepository organizacaoRepository;
     private final LocalJpaRepository localRepository;
     private final FielJpaRepository fielRepository;
     private final MembroGrupoJpaRepository membroRepository;
@@ -88,7 +89,7 @@ public class ObterDashboardMetricasUseCase {
             ProjetoEventoJpaRepository projetoRepository,
             AprovacaoJpaRepository aprovacaoRepository,
             ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository,
-            GrupoParoquialJpaRepository grupoParoquialRepository,
+            OrganizacaoJpaRepository organizacaoRepository,
             LocalJpaRepository localRepository,
             FielJpaRepository fielRepository,
             MembroGrupoJpaRepository membroRepository,
@@ -99,7 +100,7 @@ public class ObterDashboardMetricasUseCase {
         this.projetoRepository = projetoRepository;
         this.aprovacaoRepository = aprovacaoRepository;
         this.projetoAprovacaoRepository = projetoAprovacaoRepository;
-        this.grupoParoquialRepository = grupoParoquialRepository;
+        this.organizacaoRepository = organizacaoRepository;
         this.localRepository = localRepository;
         this.fielRepository = fielRepository;
         this.membroRepository = membroRepository;
@@ -115,7 +116,7 @@ public class ObterDashboardMetricasUseCase {
      * @param actorContext contexto do ator autenticado (define o escopo padrão e o que ele pode ver)
      * @param periodo recorte temporal do filtro global; {@code null} equivale a
      *     {@link PeriodoDashboard#SEMANA}
-     * @param grupoParoquialIdSolicitado organização escolhida no filtro, ou {@code null} para usar o
+     * @param organizacaoIdSolicitado organização escolhida no filtro, ou {@code null} para usar o
      *     escopo do próprio ator
      * @return snapshot consolidado das métricas
      * @throws org.springframework.security.access.AccessDeniedException se o ator não tiver acesso à
@@ -123,10 +124,10 @@ public class ObterDashboardMetricasUseCase {
      */
     @Transactional(readOnly = true)
     public DashboardMetricasDTO execute(
-            EventoActorContext actorContext, PeriodoDashboard periodo, UUID grupoParoquialIdSolicitado) {
+            EventoActorContext actorContext, PeriodoDashboard periodo, UUID organizacaoIdSolicitado) {
         Instant agora = Instant.now();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
-        UUID escopo = escopoResolver.resolver(actorContext, grupoParoquialIdSolicitado).orElse(null);
+        UUID escopo = escopoResolver.resolver(actorContext, organizacaoIdSolicitado).orElse(null);
 
         List<EventoEntity> eventosPeriodo = comEscopo(eventoRepository.findAllInPeriod(janela.inicio(), janela.fim()),
                 escopo);
@@ -172,7 +173,7 @@ public class ObterDashboardMetricasUseCase {
         Set<UUID> ids = aprovacoes.stream()
                 .map(AprovacaoEntity::getEventoId).filter(Objects::nonNull).collect(Collectors.toSet());
         Set<UUID> noEscopo = eventoRepository.findAllById(ids).stream()
-                .filter(e -> orgId.equals(e.getGrupoParoquialResponsavelId()))
+                .filter(e -> orgId.equals(e.getOrganizacaoResponsavelId()))
                 .map(EventoEntity::getId).collect(Collectors.toSet());
         return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getEventoId())).count();
     }
@@ -182,7 +183,7 @@ public class ObterDashboardMetricasUseCase {
                 .map(ProjetoSolicitacaoAprovacaoEntity::getProjetoId)
                 .filter(Objects::nonNull).collect(Collectors.toSet());
         Set<UUID> noEscopo = projetoRepository.findAllById(ids).stream()
-                .filter(p -> orgId.equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> orgId.equals(p.getOrganizacaoResponsavelId()))
                 .map(ProjetoEventoEntity::getId).collect(Collectors.toSet());
         return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getProjetoId())).count();
     }
@@ -190,7 +191,7 @@ public class ObterDashboardMetricasUseCase {
     private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetos, UUID escopo,
                                                    Instant agora) {
         List<ProjetoEventoEntity> visiveis = projetos.stream()
-                .filter(p -> escopo == null || escopo.equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> escopo == null || escopo.equals(p.getOrganizacaoResponsavelId()))
                 .toList();
         int atrasados = (int) visiveis.stream().filter(p -> estaAtrasado(p, agora)).count();
         return new ProjetosPorStatusDTO(
@@ -270,7 +271,7 @@ public class ObterDashboardMetricasUseCase {
             EventoEntity evento, List<ProjetoEventoEntity> projetosAtivos) {
         return projetosAtivos.stream()
                 .filter(p -> p.getInicioUtc() != null && p.getFimUtc() != null)
-                .filter(p -> evento.getGrupoParoquialResponsavelId().equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> evento.getOrganizacaoResponsavelId().equals(p.getOrganizacaoResponsavelId()))
                 .filter(p -> !evento.getInicioUtc().isBefore(p.getInicioUtc())
                         && evento.getInicioUtc().isBefore(p.getFimUtc()))
                 .findFirst();
@@ -278,7 +279,7 @@ public class ObterDashboardMetricasUseCase {
 
     private List<DistribuicaoEventosDTO> distribuicao(List<EventoEntity> eventos, Map<UUID, String> nomes) {
         return eventos.stream()
-                .collect(Collectors.groupingBy(EventoEntity::getGrupoParoquialResponsavelId, Collectors.counting()))
+                .collect(Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId, Collectors.counting()))
                 .entrySet().stream()
                 .map(e -> new DistribuicaoEventosDTO(nomes.getOrDefault(e.getKey(), "Organização Desconhecida"),
                         e.getValue()))
@@ -298,14 +299,14 @@ public class ObterDashboardMetricasUseCase {
                         e.getTitulo(),
                         LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
                         nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
-                        nomesOrg.getOrDefault(e.getGrupoParoquialResponsavelId(), "Organização Desconhecida")))
+                        nomesOrg.getOrDefault(e.getOrganizacaoResponsavelId(), "Organização Desconhecida")))
                 .toList();
     }
 
     private List<ProjetoEventoEntity> filtrarProjetosAtivos(List<ProjetoEventoEntity> projetos, UUID escopo) {
         return projetos.stream()
                 .filter(p -> STATUS_ATIVOS.contains(p.getStatus()))
-                .filter(p -> escopo == null || escopo.equals(p.getGrupoParoquialResponsavelId()))
+                .filter(p -> escopo == null || escopo.equals(p.getOrganizacaoResponsavelId()))
                 .toList();
     }
 
@@ -313,12 +314,12 @@ public class ObterDashboardMetricasUseCase {
         if (escopo == null) {
             return eventos;
         }
-        return eventos.stream().filter(e -> escopo.equals(e.getGrupoParoquialResponsavelId())).toList();
+        return eventos.stream().filter(e -> escopo.equals(e.getOrganizacaoResponsavelId())).toList();
     }
 
     private Map<UUID, String> carregarNomesOrganizacoes() {
         Map<UUID, String> nomes = new HashMap<>();
-        grupoParoquialRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
+        organizacaoRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
         return nomes;
     }
 

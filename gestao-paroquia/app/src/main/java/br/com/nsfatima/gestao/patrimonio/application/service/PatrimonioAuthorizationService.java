@@ -23,10 +23,10 @@ public class PatrimonioAuthorizationService {
      * Valida se o ator pode gerir o patrimônio da unidade indicada.
      *
      * @param actorContext contexto do ator autenticado
-     * @param grupoParoquialId ID da unidade territorial
+     * @param organizacaoId ID da unidade territorial
      */
-    public void assertPodeGerirPatrimonio(EventoActorContext actorContext, UUID grupoParoquialId) {
-        policy.assertPodeGerirPatrimonio(actorContext.role(), actorContext.organizationId(), grupoParoquialId);
+    public void assertPodeGerirPatrimonio(EventoActorContext actorContext, UUID organizacaoId) {
+        policy.assertPodeGerirPatrimonio(actorContext.role(), actorContext.organizationId(), organizacaoId);
     }
 
     /**

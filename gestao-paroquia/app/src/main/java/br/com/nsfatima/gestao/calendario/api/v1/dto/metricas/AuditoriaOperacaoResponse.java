@@ -14,7 +14,7 @@ import java.util.UUID;
 @Schema(description = "Resposta contendo a trilha de auditoria de operações")
 public record AuditoriaOperacaoResponse(
         @Schema(description = "ID da organização analisada")
-        UUID grupoParoquialId,
+        UUID organizacaoId,
 
         @Schema(description = "Período da trilha")
         PeriodoOperacionalResponse periodo,
@@ -36,7 +36,7 @@ public record AuditoriaOperacaoResponse(
             UUID id,
 
             @Schema(description = "ID da organização onde a ação ocorreu")
-            UUID grupoParoquialId,
+            UUID organizacaoId,
 
             @Schema(description = "Tipo de recurso afetado", example = "evento")
             String recursoTipo,

@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * Associação (tabela de junção) entre um {@link EventoEntity} e uma organização envolvida
  * na sua realização, registrando o papel de participação dessa organização (responsável
- * ou apoio). A chave primária composta ({@code evento_id}, {@code grupoParoquial_id}) impede
+ * ou apoio). A chave primária composta ({@code evento_id}, {@code organizacao_id}) impede
  * que a mesma organização seja registrada mais de uma vez para o mesmo evento.
  */
 @Entity
@@ -31,8 +31,8 @@ public class EventoEnvolvidoEntity extends BaseAuditableEntity {
     private UUID eventoId;
 
     @Id
-    @Column(name = "grupo_paroquial_id")
-    private UUID grupoParoquialId;
+    @Column(name = "organizacao_id")
+    private UUID organizacaoId;
 
     /** Papel desta organização na realização do evento: responsável principal ou apenas apoio. */
     @Enumerated(EnumType.STRING)
@@ -47,12 +47,12 @@ public class EventoEnvolvidoEntity extends BaseAuditableEntity {
         this.eventoId = eventoId;
     }
 
-    public UUID getGrupoParoquialId() {
-        return grupoParoquialId;
+    public UUID getOrganizacaoId() {
+        return organizacaoId;
     }
 
-    public void setGrupoParoquialId(UUID grupoParoquialId) {
-        this.grupoParoquialId = grupoParoquialId;
+    public void setOrganizacaoId(UUID organizacaoId) {
+        this.organizacaoId = organizacaoId;
     }
 
     public PapelEnvolvido getPapelParticipacao() {
@@ -69,14 +69,14 @@ public class EventoEnvolvidoEntity extends BaseAuditableEntity {
      */
     public static class Key implements Serializable {
         private UUID eventoId;
-        private UUID grupoParoquialId;
+        private UUID organizacaoId;
 
         public Key() {
         }
 
-        public Key(UUID eventoId, UUID grupoParoquialId) {
+        public Key(UUID eventoId, UUID organizacaoId) {
             this.eventoId = eventoId;
-            this.grupoParoquialId = grupoParoquialId;
+            this.organizacaoId = organizacaoId;
         }
 
         @Override
@@ -87,12 +87,12 @@ public class EventoEnvolvidoEntity extends BaseAuditableEntity {
             if (!(o instanceof Key key)) {
                 return false;
             }
-            return Objects.equals(eventoId, key.eventoId) && Objects.equals(grupoParoquialId, key.grupoParoquialId);
+            return Objects.equals(eventoId, key.eventoId) && Objects.equals(organizacaoId, key.organizacaoId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(eventoId, grupoParoquialId);
+            return Objects.hash(eventoId, organizacaoId);
         }
     }
 }

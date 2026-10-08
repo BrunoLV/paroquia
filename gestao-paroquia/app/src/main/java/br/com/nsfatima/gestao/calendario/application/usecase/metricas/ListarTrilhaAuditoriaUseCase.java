@@ -41,7 +41,7 @@ public class ListarTrilhaAuditoriaUseCase {
      * }
      */
     public AuditoriaOperacaoResponse execute(
-            UUID grupoParoquialId,
+            UUID organizacaoId,
             String granularidade,
             Instant inicio,
             Instant fim,
@@ -49,11 +49,11 @@ public class ListarTrilhaAuditoriaUseCase {
             String acao,
             String resultado,
             String correlationId) {
-        assertAccessToOrganization(grupoParoquialId);
+        assertAccessToOrganization(organizacaoId);
         PeriodoOperacionalPolicy.ResolvedPeriod periodo = periodoOperacionalPolicy.resolve(granularidade, inicio, fim);
 
         List<AuditoriaOperacaoResponse.RegistroAuditavelItem> items = auditLogQueryService.findAuditTrail(
-                grupoParoquialId,
+                organizacaoId,
                 periodo.inicio(),
                 periodo.fim(),
                 ator,
@@ -61,16 +61,16 @@ public class ListarTrilhaAuditoriaUseCase {
                 resultado,
                 correlationId);
 
-        return new AuditoriaOperacaoResponse(grupoParoquialId,
+        return new AuditoriaOperacaoResponse(organizacaoId,
                 new PeriodoOperacionalResponse(periodo.granularidade(), periodo.inicio(), periodo.fim()), items);
     }
 
-    private void assertAccessToOrganization(UUID grupoParoquialId) {
+    private void assertAccessToOrganization(UUID organizacaoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UsuarioDetails usuarioDetails)) {
             throw new AccessDeniedException("Usuário autenticado é obrigatório");
         }
-        if (usuarioDetails.findVinculoPorGrupoParoquial(grupoParoquialId).isEmpty()) {
+        if (usuarioDetails.findVinculoPorOrganizacao(organizacaoId).isEmpty()) {
             throw new AccessDeniedException(
                     "Usuário não pode consultar dados de auditoria fora do escopo da organização responsável");
         }

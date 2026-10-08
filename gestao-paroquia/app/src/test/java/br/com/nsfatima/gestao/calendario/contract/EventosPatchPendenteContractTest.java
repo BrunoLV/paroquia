@@ -44,7 +44,7 @@ class EventosPatchPendenteContractTest {
                         .content(String.format("""
                                 {
                                   "titulo": "Evento para contrato",
-                                  "grupoParoquialResponsavelId": "%s",
+                                  "organizacaoResponsavelId": "%s",
                                   "inicio": "2027-12-01T10:00:00Z",
                                   "fim": "2027-12-01T11:00:00Z"
                                 }

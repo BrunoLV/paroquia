@@ -1,6 +1,6 @@
 package br.com.nsfatima.gestao.projeto.application.usecase;
 
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
@@ -95,7 +95,7 @@ public class TransicionarProjetoUseCase {
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanStartOrConclude(actorContext, projeto.getGrupoParoquialResponsavelId());
+        authorizationService.assertCanStartOrConclude(actorContext, projeto.getOrganizacaoResponsavelId());
 
         Projeto agregado = mapper.toDomain(projeto);
         agregado.iniciar();
@@ -120,7 +120,7 @@ public class TransicionarProjetoUseCase {
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanStartOrConclude(actorContext, projeto.getGrupoParoquialResponsavelId());
+        authorizationService.assertCanStartOrConclude(actorContext, projeto.getOrganizacaoResponsavelId());
 
         Projeto agregado = mapper.toDomain(projeto);
         agregado.concluir();
@@ -160,7 +160,7 @@ public class TransicionarProjetoUseCase {
                 .orElseThrow(() -> new ProjetoNaoEncontradoException(id));
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
-        authorizationService.assertCanCancel(actorContext, projeto.getGrupoParoquialResponsavelId());
+        authorizationService.assertCanCancel(actorContext, projeto.getOrganizacaoResponsavelId());
 
         if (projeto.getStatus() != ProjetoStatus.ABERTO && projeto.getStatus() != ProjetoStatus.EM_ANDAMENTO) {
             throw new IllegalStateException("Somente projetos ABERTO ou EM_ANDAMENTO podem ser cancelados");
@@ -196,7 +196,7 @@ public class TransicionarProjetoUseCase {
             aprovacao.setStatus(AprovacaoStatus.PENDENTE);
             aprovacao.setSolicitanteId(actorContext.actor());
             aprovacao.setSolicitantePapel(actorContext.role());
-            aprovacao.setSolicitanteTipoGrupo(TipoGrupo.fromStoredValue(actorContext.organizationType()));
+            aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
             aprovacao.setCancelarEventosVinculados(cancelarEventosVinculados);
             aprovacao.setCriadoEmUtc(Instant.now());
 
@@ -260,7 +260,7 @@ public class TransicionarProjetoUseCase {
                             UUID.randomUUID(),
                             payloadCriacao.nome(),
                             payloadCriacao.descricao(),
-                            payloadCriacao.grupoParoquialResponsavelId(),
+                            payloadCriacao.organizacaoResponsavelId(),
                             payloadCriacao.inicio(),
                             payloadCriacao.fim());
 

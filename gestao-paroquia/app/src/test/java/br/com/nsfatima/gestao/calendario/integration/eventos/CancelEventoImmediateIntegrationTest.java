@@ -41,7 +41,7 @@ class CancelEventoImmediateIntegrationTest {
         entity.setId(eventoId);
         entity.setTitulo("Cancelamento imediato");
         entity.setDescricao("descricao base");
-        entity.setGrupoParoquialResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
+        entity.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-0000000000aa"));
         entity.setInicioUtc(Instant.parse("2026-10-01T10:00:00Z"));
         entity.setFimUtc(Instant.parse("2026-10-01T11:00:00Z"));
         entity.setStatus("CONFIRMADO");

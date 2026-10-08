@@ -25,16 +25,16 @@ public class EscopoDashboardResolver {
      * de visibilidade descrita na documentação da classe.
      *
      * @param actorContext contexto do ator autenticado
-     * @param grupoParoquialIdSolicitado organização escolhida no filtro, ou {@code null}
+     * @param organizacaoIdSolicitado organização escolhida no filtro, ou {@code null}
      * @return organização efetiva do cálculo ({@link Optional#empty()} = visão global)
      * @throws AccessDeniedException se o ator não tiver acesso à organização solicitada
      */
-    public Optional<UUID> resolver(EventoActorContext actorContext, UUID grupoParoquialIdSolicitado) {
+    public Optional<UUID> resolver(EventoActorContext actorContext, UUID organizacaoIdSolicitado) {
         UUID escopoDoAtor = actorContext.organizationId();
         if (escopoDoAtor == null) {
-            return Optional.ofNullable(grupoParoquialIdSolicitado);
+            return Optional.ofNullable(organizacaoIdSolicitado);
         }
-        if (grupoParoquialIdSolicitado != null && !grupoParoquialIdSolicitado.equals(escopoDoAtor)) {
+        if (organizacaoIdSolicitado != null && !organizacaoIdSolicitado.equals(escopoDoAtor)) {
             throw new AccessDeniedException("Ator sem acesso à organização solicitada no filtro do dashboard");
         }
         return Optional.of(escopoDoAtor);

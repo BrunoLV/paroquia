@@ -37,24 +37,24 @@ public interface EventoEstatisticaJpaRepository {
      * Conta quantos eventos distintos, dentre os identificadores informados, pertencem a uma
      * determinada organização responsável.
      *
-     * @param grupoParoquialId identificador da organização responsável
+     * @param organizacaoId identificador da organização responsável
      * @param eventoIds identificadores de eventos candidatos a serem contados
      * @return quantidade de eventos distintos da organização informada dentre os ids informados
      */
     @Query("""
             select count(distinct e.id) from EventoEntity e
-            where e.grupoParoquialResponsavelId = :grupoParoquialId
+            where e.organizacaoResponsavelId = :organizacaoId
               and e.id in :eventoIds
             """)
-    long countDistinctByGrupoParoquialResponsavelIdAndIdIn(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+    long countDistinctByOrganizacaoResponsavelIdAndIdIn(
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("eventoIds") List<UUID> eventoIds);
 
     /**
      * Conta eventos de uma organização responsável, filtrando por status e por um período de
      * início.
      *
-     * @param grupoParoquialId identificador da organização responsável
+     * @param organizacaoId identificador da organização responsável
      * @param status status do evento a ser considerado na contagem
      * @param inicio limite inferior (inclusive) do início do evento
      * @param fim limite superior (exclusive) do início do evento
@@ -62,13 +62,13 @@ public interface EventoEstatisticaJpaRepository {
      */
     @Query("""
             select count(e) from EventoEntity e
-            where e.grupoParoquialResponsavelId = :grupoParoquialId
+            where e.organizacaoResponsavelId = :organizacaoId
               and e.status = :status
               and e.inicioUtc >= :inicio
               and e.inicioUtc < :fim
             """)
-    long countByGrupoParoquialAndStatusAndPeriod(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+    long countByOrganizacaoAndStatusAndPeriod(
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("status") String status,
             @Param("inicio") Instant inicio,
             @Param("fim") Instant fim);
@@ -77,19 +77,19 @@ public interface EventoEstatisticaJpaRepository {
      * Conta eventos de uma organização responsável dentro de um período de início, sem filtro de
      * status.
      *
-     * @param grupoParoquialId identificador da organização responsável
+     * @param organizacaoId identificador da organização responsável
      * @param inicio limite inferior (inclusive) do início do evento
      * @param fim limite superior (exclusive) do início do evento
      * @return quantidade de eventos que atendem aos critérios informados
      */
     @Query("""
             select count(e) from EventoEntity e
-            where e.grupoParoquialResponsavelId = :grupoParoquialId
+            where e.organizacaoResponsavelId = :organizacaoId
               and e.inicioUtc >= :inicio
               and e.inicioUtc < :fim
             """)
-    long countByGrupoParoquialAndPeriod(
-            @Param("grupoParoquialId") UUID grupoParoquialId,
+    long countByOrganizacaoAndPeriod(
+            @Param("organizacaoId") UUID organizacaoId,
             @Param("inicio") Instant inicio,
             @Param("fim") Instant fim);
 
@@ -133,17 +133,17 @@ public interface EventoEstatisticaJpaRepository {
     /**
      * Conta eventos não cancelados por organização responsável dentro de um período, para o
      * indicador "eventos por responsável" do dashboard. Cada linha é
-     * {@code [grupoParoquialResponsavelId (UUID), quantidade (long)]}.
+     * {@code [organizacaoResponsavelId (UUID), quantidade (long)]}.
      *
      * @param inicio limite inferior (inclusive) do início do evento
      * @param fim limite superior (exclusive) do início do evento
      * @return contagem por organização responsável
      */
     @Query("""
-            select e.grupoParoquialResponsavelId, count(e) from EventoEntity e
+            select e.organizacaoResponsavelId, count(e) from EventoEntity e
             where e.status != 'CANCELADO'
               and e.inicioUtc >= :inicio and e.inicioUtc < :fim
-            group by e.grupoParoquialResponsavelId
+            group by e.organizacaoResponsavelId
             """)
     List<Object[]> contarPorResponsavelNoPeriodo(@Param("inicio") Instant inicio, @Param("fim") Instant fim);
 

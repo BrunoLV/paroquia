@@ -3,9 +3,9 @@ import {PeriodoDashboard} from '@/shared/domain/types/types';
 
 interface DashboardFilterContextType {
   periodo: PeriodoDashboard;
-  grupoParoquialId?: string;
+  organizacaoId?: string;
   setPeriodo: (periodo: PeriodoDashboard) => void;
-  setGrupoParoquialId: (id?: string) => void;
+  setOrganizacaoId: (id?: string) => void;
 }
 
 const DashboardFilterContext = createContext<DashboardFilterContextType | undefined>(undefined);
@@ -24,11 +24,11 @@ export const useDashboardFilter = (): DashboardFilterContextType => {
 
 export const DashboardFilterProvider = ({children}: {children: ReactNode}) => {
   const [periodo, setPeriodo] = useState<PeriodoDashboard>('SEMANA');
-  const [grupoParoquialId, setGrupoParoquialId] = useState<string | undefined>(undefined);
+  const [organizacaoId, setOrganizacaoId] = useState<string | undefined>(undefined);
 
   const value = useMemo(
-    () => ({periodo, grupoParoquialId, setPeriodo, setGrupoParoquialId}),
-    [periodo, grupoParoquialId],
+    () => ({periodo, organizacaoId, setPeriodo, setOrganizacaoId}),
+    [periodo, organizacaoId],
   );
 
   return <DashboardFilterContext.Provider value={value}>{children}</DashboardFilterContext.Provider>;

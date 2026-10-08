@@ -148,13 +148,13 @@ public class LocalService {
     /**
      * Lista os Locais cadastrados não excluídos, opcionalmente restritos a uma paróquia/comunidade.
      *
-     * @param grupoParoquialId ID da organização para filtrar, ou {@code null} para listar todos os Locais
+     * @param organizacaoId ID da organização para filtrar, ou {@code null} para listar todos os Locais
      * @return lista de Locais filtrada
      */
     @Transactional(readOnly = true)
-    public List<Local> listar(UUID grupoParoquialId) {
-        if (grupoParoquialId != null) {
-            return localRepository.findByGrupoParoquialId(grupoParoquialId);
+    public List<Local> listar(UUID organizacaoId) {
+        if (organizacaoId != null) {
+            return localRepository.findByOrganizacaoId(organizacaoId);
         }
         return localRepository.findAll();
     }

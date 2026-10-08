@@ -17,7 +17,7 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
     @Override
     public ModoRequisicaoCancelamento resolveRequestMode(
             String rawRole,
-            String rawTipoGrupo,
+            String rawTipoOrganizacao,
             UUID atorOrgId,
             UUID eventoOrgId) {
 
@@ -50,7 +50,7 @@ public final class PadraoAutorizacaoCancelamentoEventoPolicy implements Autoriza
     }
 
     @Override
-    public void assertCanDecideAprovacao(String rawRole, String rawTipoGrupo) {
+    public void assertCanDecideAprovacao(String rawRole, String rawTipoOrganizacao) {
         PapelGlobal papelGlobal = PapelGlobal.fromStoredValue(rawRole);
         if (papelGlobal == PapelGlobal.PAROCO || papelGlobal == PapelGlobal.BISPO_DIOCESANO) {
             return;

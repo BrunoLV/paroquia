@@ -36,9 +36,9 @@ describe('Painel Page', () => {
               totalEventosPeriodo: 12, projetosAtivos: 3, solicitacoesPendentes: 2,
               totalFieisAtivos: 40, novosFieisMes: 3, fieisEngajadosPastoral: 25, fieisSemVinculoPastoral: 15
             },
-            eventosPorGrupoParoquial: [
-              { grupoParoquialNome: 'Pastoral A', quantidadeEventos: 8 },
-              { grupoParoquialNome: 'Pastoral B', quantidadeEventos: 4 }
+            eventosPorOrganizacao: [
+              { organizacaoNome: 'Pastoral A', quantidadeEventos: 8 },
+              { organizacaoNome: 'Pastoral B', quantidadeEventos: 4 }
             ],
             projetosPorStatus: { planejamento: 1, emExecucao: 2, concluidos: 4, atrasados: 1 },
             projetosAtivosDetalhes: [
@@ -47,7 +47,7 @@ describe('Painel Page', () => {
             ],
             eventosOrfaos: [],
             eventosSemana: [
-              { titulo: 'Missa das Flores', inicio: '2026-06-15T10:00:00.000', localNome: 'Igreja Matriz', grupoParoquialNome: 'Pastoral A' }
+              { titulo: 'Missa das Flores', inicio: '2026-06-15T10:00:00.000', localNome: 'Igreja Matriz', organizacaoNome: 'Pastoral A' }
             ]
           }
         });
@@ -57,7 +57,7 @@ describe('Painel Page', () => {
           data: {
             choquesHorario: [],
             ocupacaoAmbientes: { taxaDiaPercentual: 10, taxaSemanaPercentual: 20, porLocal: [] },
-            eventosPorResponsavel: [{ grupoParoquialNome: 'Pastoral A', quantidade: 3 }],
+            eventosPorResponsavel: [{ organizacaoNome: 'Pastoral A', quantidade: 3 }],
             pendenciasHomologacao: [],
           }
         });

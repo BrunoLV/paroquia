@@ -6,7 +6,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
-import br.com.nsfatima.gestao.organizacao.domain.model.TipoGrupo;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 
@@ -64,7 +64,7 @@ public class AdicionarVinculoUseCase {
      * o papel atribuído for de coordenação exclusiva.
      *
      * @param usuarioId identificador do usuário cujo Fiel será vinculado
-     * @param grupoParoquialId identificador da organização de destino
+     * @param organizacaoId identificador da organização de destino
      * @param tipo tipo da organização de destino
      * @param papel papel organizacional a atribuir
      * @param igrejaVinculoId identificador da igreja/comunidade de contexto; obrigatório para pastorais e
@@ -77,7 +77,7 @@ public class AdicionarVinculoUseCase {
      */
     @Transactional
     public UUID execute(UUID usuarioId,
-                        UUID grupoParoquialId, TipoGrupo tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {
+                        UUID organizacaoId, TipoOrganizacao tipo, PapelOrganizacional papel, UUID igrejaVinculoId) {
 
         var usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario nao encontrado: " + usuarioId));
@@ -86,7 +86,7 @@ public class AdicionarVinculoUseCase {
             throw new IllegalArgumentException("Usuario nao possui vinculo com Fiel: " + usuarioId);
         }
 
-        if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
+        if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             if (igrejaVinculoId == null) {
                 throw new IllegalArgumentException("Igreja de vinculo e obrigatoria para pastorais e movimentos");
             }
@@ -103,7 +103,7 @@ public class AdicionarVinculoUseCase {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Not authenticated");
+            throw new AccessDeniedException("Não autenticado");
         }
 
         boolean isParoco = auth.getAuthorities().stream().anyMatch(a ->
@@ -126,7 +126,7 @@ public class AdicionarVinculoUseCase {
         }
 
         // Regra de hierarquia: vinculação a CONSELHO só pode ser definida por PAROCO ou ADMIN
-        if (tipo == TipoGrupo.CONSELHO
+        if (tipo == TipoOrganizacao.CONSELHO
                 && (papel == PapelOrganizacional.SECRETARIO_CONSELHO
                 || papel == PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL
                 || papel == PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO)) {
@@ -137,14 +137,14 @@ public class AdicionarVinculoUseCase {
         }
 
         // Nota: a regra "PAROCO do CLERO só pode ser definido por ADMIN" deixou de se aplicar aqui — CLERO
-        // não é mais um TipoGrupo (virou UnidadeTerritorial, track linguagem_ubiqua_dominio) e PAROCO virou
+        // não é mais um TipoOrganizacao (virou UnidadeTerritorial, track linguagem_ubiqua_dominio) e PAROCO virou
         // papel global atribuído via AtribuirPapelGlobalUseCase, já restrito a ADMIN (track
         // roles_globais_vs_escopo). Este caminho de vínculo nunca mais recebe tipo=CLERO nem papel=PAROCO.
 
         // Verificação de duplicidade: evitar vínculos duplicados para exatamente a mesma combinação de {fielId,
-        // grupoParoquialId, papel, igrejaVinculoId}
-        var existingVinculo = vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(
-                fielId, grupoParoquialId, papel.name(), igrejaVinculoId);
+        // organizacaoId, papel, igrejaVinculoId}
+        var existingVinculo = vinculoRepository.findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                fielId, organizacaoId, papel.name(), igrejaVinculoId);
 
         if (existingVinculo.isPresent()) {
             var vinculo = existingVinculo.get();
@@ -161,13 +161,13 @@ public class AdicionarVinculoUseCase {
 
         if (isPapelCoordenador) {
             Optional<MembroGrupoEntity> existing;
-            if (tipo == TipoGrupo.PASTORAL || tipo == TipoGrupo.MOVIMENTO) {
-                existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
-                        grupoParoquialId, papel.name(), igrejaVinculoId);
+            if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
+                existing = vinculoRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdAndAtivoTrue(
+                        organizacaoId, papel.name(), igrejaVinculoId);
 
             } else {
-                existing = vinculoRepository.findByGrupoParoquialIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(
-                        grupoParoquialId, papel.name());
+                existing = vinculoRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(
+                        organizacaoId, papel.name());
 
             }
             existing.ifPresent(old -> {
@@ -176,8 +176,8 @@ public class AdicionarVinculoUseCase {
 
                 // Transição: rebaixar coordenador anterior para papel de membro ativo
                 String papelRebaixado = PapelOrganizacional.MEMBRO_ATIVO.name();
-                var membroAnteriorOpt = vinculoRepository.findByFielIdAndGrupoParoquialIdAndPapelAndIgrejaVinculoId(
-                        old.getFielId(), grupoParoquialId, papelRebaixado, igrejaVinculoId);
+                var membroAnteriorOpt = vinculoRepository.findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
+                        old.getFielId(), organizacaoId, papelRebaixado, igrejaVinculoId);
                 if (membroAnteriorOpt.isPresent()) {
                     var m = membroAnteriorOpt.get();
                     m.setAtivo(true);
@@ -186,8 +186,8 @@ public class AdicionarVinculoUseCase {
                     MembroGrupoEntity demoted = new MembroGrupoEntity();
                     demoted.setId(UUID.randomUUID());
                     demoted.setFielId(old.getFielId());
-                    demoted.setGrupoParoquialId(grupoParoquialId);
-                    demoted.setTipoGrupo(tipo);
+                    demoted.setOrganizacaoId(organizacaoId);
+                    demoted.setTipoOrganizacao(tipo);
                     demoted.setPapel(papelRebaixado);
                     demoted.setIgrejaVinculoId(igrejaVinculoId);
                     demoted.setAtivo(true);
@@ -199,8 +199,8 @@ public class AdicionarVinculoUseCase {
         MembroGrupoEntity entity = new MembroGrupoEntity();
         entity.setId(UUID.randomUUID());
         entity.setFielId(fielId);
-        entity.setGrupoParoquialId(grupoParoquialId);
-        entity.setTipoGrupo(tipo);
+        entity.setOrganizacaoId(organizacaoId);
+        entity.setTipoOrganizacao(tipo);
         entity.setPapel(papel.name());
         entity.setIgrejaVinculoId(igrejaVinculoId);
         entity.setAtivo(true);

@@ -34,7 +34,7 @@ describe('Projetos Page', () => {
       descricao: 'Projeto de reforma estrutural',
       inicio: '2026-05-01T00:00:00Z',
       fim: '2026-08-30T00:00:00Z',
-      grupoParoquialResponsavelId: 'org-1',
+      organizacaoResponsavelId: 'org-1',
       status: 'EM_ANDAMENTO'
     },
     {
@@ -43,7 +43,7 @@ describe('Projetos Page', () => {
       descricao: 'Encontro de jovens',
       inicio: '2026-06-01T00:00:00Z',
       fim: '2026-06-15T00:00:00Z',
-      grupoParoquialResponsavelId: 'org-2',
+      organizacaoResponsavelId: 'org-2',
       status: 'CONCLUIDO'
     }
   ];
