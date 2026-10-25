@@ -903,59 +903,15 @@ VALUES
 ('b1c2d3e4-f5a6-7b8c-9d0e-1f2a3b4c5d20', 'SAGRADO_CORACAO', 'Sagrado Coração de Jesus', 'MOVEL', NULL, NULL, 68, 'BRANCO', 2.0, 2, 'Solenidade do Sagrado Coração de Jesus', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
--- Decisões do Conselho Pastoral Comunitário (CPC Atas / Homologações)
-INSERT INTO calendario.cpc_decisoes (
-    id, titulo, pauta_descricao, data_reuniao, comunidade_id, conselho_tipo, status_homologacao,
-    solicitante_id, solicitante_nome, homologador_id, motivo_veto, criado_em_utc, decidido_em_utc, version
+-- Atas de reunião do Conselho Pastoral Comunitário (CPC): homologada, pendente de homologação e vetada
+INSERT INTO calendario.ata_reuniao (
+    id, tipo, organizacao_convocante_id, organizacao_associada_id, titulo, data_reuniao, carater, modalidade,
+    status, conteudo, numero, ano, membros_convocados, redator_id, homologador_id, motivo_veto, decidido_em_utc,
+    ata_retificada_id, justificativa_retificacao, criado_em_utc
 ) VALUES
-    (
-        '91000000-0000-0000-0000-000000000001',
-        'Aprovação das Obras de Reforma do Salão Comunitário',
-        'Aprovação do orçamento para reparo do telhado e pintura externa do Salão da Comunidade São José Allamano.',
-        '2026-05-10',
-        '00000000-0000-0000-0000-000000000200',
-        'CPC',
-        'HOMOLOGADO',
-        '10000000-0000-0000-0000-000000000013',
-        'Lúcia Fernandes',
-        '10000000-0000-0000-0000-000000000001',
-        NULL,
-        '2026-05-11T10:00:00Z',
-        '2026-05-12T14:30:00Z',
-        0
-    ),
-    (
-        '91000000-0000-0000-0000-000000000002',
-        'Aquisição de Novo Sistema de Som para Santo Agostinho',
-        'Proposta de compra de microfones sem fio e mesa de som para as celebrações comunitárias.',
-        '2026-06-01',
-        '00000000-0000-0000-0000-000000000300',
-        'CPC',
-        'PENDENTE_HOMOLOGACAO',
-        '10000000-0000-0000-0000-000000000013',
-        'Lúcia Fernandes',
-        NULL,
-        NULL,
-        '2026-06-02T09:00:00Z',
-        NULL,
-        0
-    ),
-    (
-        '91000000-0000-0000-0000-000000000003',
-        'Alteração dos Horários das Missas de Domingo',
-        'Mudança do horário da missa matutina das 08h00 para 07h30.',
-        '2026-04-15',
-        '00000000-0000-0000-0000-000000000200',
-        'CPC',
-        'VETADO',
-        '10000000-0000-0000-0000-000000000013',
-        'Lúcia Fernandes',
-        '10000000-0000-0000-0000-000000000001',
-        'Horário inviabiliza atendimento de confissões prévias pelo pároco.',
-        '2026-04-16T11:00:00Z',
-        '2026-04-17T16:00:00Z',
-        0
-    )
+    ('91000000-0000-0000-0000-000000000001', 'REUNIAO_CPC', '00000000-0000-0000-0000-0000000002c0', NULL, 'Aprovação das Obras de Reforma do Salão Comunitário', '2026-05-10', 'ORDINARIA', 'PRESENCIAL', 'HOMOLOGADA', '{"titulo": "Aprovação das Obras de Reforma do Salão Comunitário", "dataReuniao": "2026-05-10", "local": "Salão da Comunidade São José Allamano", "carater": "ORDINARIA", "modalidade": "PRESENCIAL", "presenca": {"nominal": [{"fielId": "1f000000-0000-0000-0000-000000000005", "funcao": "Secretário do Conselho", "situacao": "PRESENTE"}, {"fielId": "1f000000-0000-0000-0000-000000000007", "funcao": null, "situacao": "PRESENTE"}], "total": null}, "ataAnterior": {"ataId": null, "aprovacao": "NAO_APLICAVEL", "ressalvas": null}, "itens": [{"ordem": 1, "titulo": "Aprovação das Obras de Reforma do Salão Comunitário", "relato": "Orçamento para reparo do telhado e pintura externa do salão.", "deliberacoes": [{"ordem": 1, "texto": "Aprovar o orçamento para reparo do telhado e pintura externa do salão.", "resultado": "PARECER_FAVORAVEL", "votacao": {"favor": 2, "contra": 0, "abstencoes": 0}, "conflitos": []}]}]}', 1, 2026, NULL, 'maria.conselho', '10000000-0000-0000-0000-000000000001', NULL, '2026-05-12T14:30:00Z', NULL, NULL, '2026-05-11T10:00:00Z'),
+    ('91000000-0000-0000-0000-000000000002', 'REUNIAO_CPC', '00000000-0000-0000-0000-0000000003c0', NULL, 'Aquisição de Novo Sistema de Som', '2026-06-01', 'ORDINARIA', 'PRESENCIAL', 'PENDENTE_HOMOLOGACAO', '{"titulo": "Aquisição de Novo Sistema de Som", "dataReuniao": "2026-06-01", "local": "Igreja Santo Agostinho", "carater": "ORDINARIA", "modalidade": "PRESENCIAL", "presenca": {"nominal": [{"fielId": "1f000000-0000-0000-0000-000000000005", "funcao": "Secretário do Conselho", "situacao": "PRESENTE"}, {"fielId": "1f000000-0000-0000-0000-000000000007", "funcao": null, "situacao": "PRESENTE"}], "total": null}, "ataAnterior": {"ataId": null, "aprovacao": "NAO_APLICAVEL", "ressalvas": null}, "itens": [{"ordem": 1, "titulo": "Aquisição de Novo Sistema de Som", "relato": "Proposta de compra de microfones sem fio e mesa de som para as celebrações.", "deliberacoes": [{"ordem": 1, "texto": "Recomendar a compra de microfones sem fio e mesa de som.", "resultado": "PARECER_FAVORAVEL", "votacao": {"favor": 2, "contra": 0, "abstencoes": 0}, "conflitos": []}]}]}', NULL, NULL, NULL, 'maria.conselho', NULL, NULL, NULL, NULL, NULL, '2026-06-02T09:00:00Z'),
+    ('91000000-0000-0000-0000-000000000003', 'REUNIAO_CPC', '00000000-0000-0000-0000-0000000002c0', NULL, 'Alteração dos Horários das Missas de Domingo', '2026-04-15', 'ORDINARIA', 'PRESENCIAL', 'VETADA', '{"titulo": "Alteração dos Horários das Missas de Domingo", "dataReuniao": "2026-04-15", "local": "Salão da Comunidade São José Allamano", "carater": "ORDINARIA", "modalidade": "PRESENCIAL", "presenca": {"nominal": [{"fielId": "1f000000-0000-0000-0000-000000000005", "funcao": "Secretário do Conselho", "situacao": "PRESENTE"}, {"fielId": "1f000000-0000-0000-0000-000000000007", "funcao": null, "situacao": "PRESENTE"}], "total": null}, "ataAnterior": {"ataId": null, "aprovacao": "NAO_APLICAVEL", "ressalvas": null}, "itens": [{"ordem": 1, "titulo": "Alteração dos Horários das Missas de Domingo", "relato": "Mudança do horário da missa matutina das 08h00 para 07h30.", "deliberacoes": [{"ordem": 1, "texto": "Mudar o horário da missa matutina das 08h00 para 07h30.", "resultado": "PARECER_FAVORAVEL", "votacao": {"favor": 2, "contra": 0, "abstencoes": 0}, "conflitos": []}]}]}', NULL, NULL, NULL, 'maria.conselho', '10000000-0000-0000-0000-000000000001', 'Horário inviabiliza atendimento de confissões prévias pelo pároco.', '2026-04-17T16:00:00Z', NULL, NULL, '2026-04-16T11:00:00Z')
 ON CONFLICT (id) DO NOTHING;
 
 -- Grupos Paroquiais Envolvidos em Eventos
