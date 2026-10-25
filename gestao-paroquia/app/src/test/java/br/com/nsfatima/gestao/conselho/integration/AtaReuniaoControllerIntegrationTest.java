@@ -104,6 +104,16 @@ class AtaReuniaoControllerIntegrationTest {
         return vinculado(organizacao, "secretario-conselho");
     }
 
+    /** Secretário do CPP A com conta de acesso real, ligada ao seu cadastro de fiel (o primeiro membro). */
+    private RequestPostProcessor secretarioComConta() {
+        UUID usuario = UUID.randomUUID();
+        jdbc.update("INSERT INTO calendario.usuarios (id, username, password_hash, enabled, roles, fiel_id) "
+                + "VALUES (?, ?, 'x', TRUE, 'SECRETARIO_CONSELHO', ?)", usuario, "sec-" + usuario, membrosA.get(0));
+        UsuarioDetails detalhes = new UsuarioDetails(usuario, "sec-" + usuario, "x", true, "",
+                List.of(new Vinculo(cppA, "CONSELHO", "secretario-conselho")));
+        return authentication(new UsernamePasswordAuthenticationToken(detalhes, null, detalhes.getAuthorities()));
+    }
+
     private static RequestPostProcessor paroco() {
         return user("paroco").roles("PAROCO");
     }
@@ -185,6 +195,47 @@ class AtaReuniaoControllerIntegrationTest {
         mockMvc.perform(get(BASE + "/tipos-reuniao").with(secretario(caep)))
                 .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CAEP')].organizacoesRedacao[0]")
                         .value(org.hamcrest.Matchers.contains(caep.toString())));
+    }
+
+    @Test
+    @DisplayName("informa ao redator o seu fiel e a função com que deve constar na presença")
+    void presencaDoRedator() throws Exception {
+        mockMvc.perform(get(BASE + "/redator-presenca").param("tipo", "REUNIAO_CPP")
+                        .param("organizacaoId", cppA.toString()).with(secretarioComConta()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fielId").value(membrosA.get(0).toString()))
+                .andExpect(jsonPath("$.funcao").value("Secretário(a)"));
+        mockMvc.perform(get(BASE + "/redator-presenca").param("tipo", "REUNIAO_CPP")
+                        .param("organizacaoId", cppB.toString()).with(secretarioComConta()))
+                .andExpect(status().isNoContent());
+        mockMvc.perform(get(BASE + "/redator-presenca").param("tipo", "REUNIAO_CPP")
+                        .param("organizacaoId", cppA.toString()).with(paroco()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("a ata exige o redator presente com a função de secretário e rejeita funções em conflito")
+    void funcoesDaPresenca() throws Exception {
+        String semFuncao = corpoCpp(cppA, 3);
+        String secretario = membrosA.get(0).toString() + "\",";
+        String comFuncao = semFuncao.replace(secretario, secretario + "\"funcao\":\"Secretário(a)\",");
+
+        mockMvc.perform(post(ATAS).with(secretarioComConta()).contentType(MediaType.APPLICATION_JSON)
+                        .content(semFuncao))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("redator")));
+        mockMvc.perform(post(ATAS).with(secretarioComConta()).contentType(MediaType.APPLICATION_JSON)
+                        .content(comFuncao))
+                .andExpect(status().isCreated());
+
+        String outro = membrosA.get(1).toString() + "\",";
+        mockMvc.perform(post(ATAS).with(secretarioComConta()).contentType(MediaType.APPLICATION_JSON)
+                        .content(comFuncao.replace(outro, outro + "\"funcao\":\"Secretário(a)\",")))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("uma pessoa")));
+        mockMvc.perform(post(ATAS).with(secretarioComConta()).contentType(MediaType.APPLICATION_JSON)
+                        .content(comFuncao.replace(outro, outro + "\"funcao\":\"Chefe\",")))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

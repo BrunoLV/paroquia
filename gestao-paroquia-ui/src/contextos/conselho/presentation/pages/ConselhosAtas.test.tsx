@@ -8,7 +8,7 @@ import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 import { NotificationProvider } from '@/shared/presentation/context/NotificationContext';
 import * as atasApi from '@/contextos/conselho/infrastructure/http/atas';
 import { Ata, AtaResumo, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
-import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
+import { getOrganizacaoMembros, getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 
 const usuario = vi.hoisted(() => ({ roles: ['PAROCO'] as string[] }));
 
@@ -87,6 +87,7 @@ describe('ConselhosAtas', () => {
     usuario.roles = ['PAROCO'];
     vi.mocked(atasApi.listarAtas).mockResolvedValue({ itens: [pendente, homologada], total: 2, pagina: 0, tamanho: 10 });
     vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([]);
+    vi.mocked(atasApi.obterPresencaRedator).mockResolvedValue(null);
     vi.mocked(atasApi.obterAta).mockResolvedValue(detalhe);
     vi.mocked(atasApi.obterTrilha).mockResolvedValue([
       { id: 't1', acao: 'RASCUNHAR', ator: 'secretario', perfil: 'SECRETARIO_CONSELHO', ocorridoEmUtc: '2026-06-01T10:00:00Z' },
@@ -222,5 +223,42 @@ describe('ConselhosAtas', () => {
     await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
     expect(await screen.findByRole('option', { name: 'CPP Matriz' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'CPP Outra Comunidade' })).not.toBeInTheDocument();
+  });
+
+  it('já inclui o redator como presente e Secretário(a), e não deixa repetir função única nem pessoa', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp]);
+    vi.mocked(atasApi.obterPresencaRedator).mockResolvedValue({ fielId: 'f1', funcao: 'Secretário(a)' });
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    vi.mocked(getOrganizacaoMembros).mockResolvedValue([
+      { fielId: 'f1', fielNome: 'Maria da Silva', ativo: true },
+      { fielId: 'f2', fielNome: 'João Pereira', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacaoMembros>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião do CPP' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+
+    expect(await within(dialogo).findByDisplayValue('Maria da Silva')).toBeDisabled();
+    expect(within(dialogo).getByDisplayValue('Secretário(a)')).toBeDisabled();
+    expect(within(dialogo).getAllByRole('button', { name: 'Remover pessoa' })[0]).toBeDisabled();
+
+    await user.click(within(dialogo).getByRole('button', { name: /Adicionar pessoa/i }));
+    const funcoes = within(dialogo).getAllByRole('combobox', { name: /Função/i });
+    await user.click(funcoes[1]);
+    expect(await screen.findByRole('option', { name: 'Secretário(a)' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('option', { name: 'Presidente' })).not.toHaveAttribute('aria-disabled', 'true');
+    await user.keyboard('{Escape}');
+
+    const pessoas = within(dialogo).getAllByRole('combobox', { name: /Pessoa/i });
+    await user.click(pessoas[1]);
+    expect(await screen.findByRole('option', { name: 'João Pereira' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Maria da Silva' })).not.toBeInTheDocument();
   });
 });

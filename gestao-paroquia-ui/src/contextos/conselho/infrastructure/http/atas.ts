@@ -6,8 +6,10 @@ import {
   FiltroAtas,
   OpcoesExportacao,
   PaginaAtas,
+  PresencaRedator,
   RascunharAtaPayload,
   RegistroAuditoria,
+  TipoReuniao,
   TipoReuniaoInfo,
 } from '@/contextos/conselho/domain/ata';
 
@@ -16,6 +18,12 @@ const BASE = '/conselhos';
 /** Tipos de reunião com as regras de cada um (homologação, quórum, presença, votação). */
 export const listarTiposReuniao = async (): Promise<TipoReuniaoInfo[]> =>
   (await apiClient.get<TipoReuniaoInfo[]>(`${BASE}/tipos-reuniao`)).data;
+
+/** Presença do próprio redator na ata nova; `null` se ele não redige o tipo no órgão ou não tem cadastro de fiel. */
+export const obterPresencaRedator = async (tipo: TipoReuniao, organizacaoId: string): Promise<PresencaRedator | null> => {
+  const resposta = await apiClient.get<PresencaRedator | ''>(`${BASE}/redator-presenca`, { params: { tipo, organizacaoId } });
+  return resposta.status === 204 || !resposta.data ? null : resposta.data;
+};
 
 /** Atas visíveis ao usuário; o escopo por órgão é aplicado no servidor. */
 export const listarAtas = async (filtro: FiltroAtas = {}): Promise<PaginaAtas> =>

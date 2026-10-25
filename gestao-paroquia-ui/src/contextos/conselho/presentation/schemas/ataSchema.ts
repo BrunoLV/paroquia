@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   Ata,
   ConteudoAtaPayload,
+  funcaoEhUnica,
   RascunharAtaPayload,
   TipoReuniao,
   TipoReuniaoInfo,
@@ -42,6 +43,27 @@ const presencaSchema = z.object({
   situacao: z.enum(SITUACOES),
 });
 
+/** Conflitos da lista de presença: pessoa repetida, função única repetida e função de quem não esteve presente. */
+const validarFuncoes = (presencas: z.infer<typeof presencaSchema>[], ctx: z.RefinementCtx): void => {
+  const pessoas = new Set<string>();
+  const funcoes = new Set<string>();
+  presencas.forEach((p, i) => {
+    if (p.fielId && pessoas.has(p.fielId)) {
+      ctx.addIssue({ code: 'custom', path: ['presencas', i, 'fielId'], message: 'Esta pessoa já consta na lista.' });
+    }
+    pessoas.add(p.fielId);
+    if (!p.funcao) return;
+    if (p.situacao !== 'PRESENTE') {
+      ctx.addIssue({ code: 'custom', path: ['presencas', i, 'funcao'], message: 'Só quem esteve presente exerce função.' });
+    } else if (funcaoEhUnica(p.funcao)) {
+      if (funcoes.has(p.funcao)) {
+        ctx.addIssue({ code: 'custom', path: ['presencas', i, 'funcao'], message: `A função ${p.funcao} só pode ser exercida por uma pessoa.` });
+      }
+      funcoes.add(p.funcao);
+    }
+  });
+};
+
 /**
  * Formulário da ata. Reflete só o formato do conteúdo; quais campos valem (lista nominal ou total, votação) é regra
  * do tipo de reunião, vinda do servidor, e é aplicada em `paraConteudoPayload`.
@@ -70,6 +92,7 @@ export const ataSchema = z
     if (dados.aprovacaoAtaAnterior === 'APROVADA_COM_RESSALVAS' && !dados.ressalvasAtaAnterior.trim()) {
       ctx.addIssue({ code: 'custom', path: ['ressalvasAtaAnterior'], message: 'Informe as ressalvas feitas à ata anterior.' });
     }
+    validarFuncoes(dados.presencas, ctx);
   });
 
 export type AtaFormInput = z.infer<typeof ataSchema>;

@@ -31,7 +31,7 @@ class NarrativaAtaFormatterTest {
     void presenca() {
         List<String> paragrafos = NarrativaAtaFormatter.paragrafos(paraImpressao(rascunhoCompleto()));
 
-        assertThat(paragrafos.get(1)).isEqualTo("Estiveram presentes: Maria da Silva e João Pereira (Coordenador). "
+        assertThat(paragrafos.get(1)).isEqualTo("Estiveram presentes: Maria da Silva e João Pereira (Coordenador(a)). "
                 + "Justificaram a ausência: Ana Souza.");
     }
 

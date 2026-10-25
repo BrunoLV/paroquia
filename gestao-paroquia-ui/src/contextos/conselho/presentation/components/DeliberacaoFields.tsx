@@ -4,6 +4,7 @@ import { Checkbox, FormControl, FormControlLabel, Grid, MenuItem, Paper, Stack, 
 import DeleteIcon from '@mui/icons-material/Delete';
 import GavelIcon from '@mui/icons-material/Gavel';
 import ActionButton from '@/shared/presentation/components/ActionButton';
+import IconActionButton from '@/shared/presentation/components/IconActionButton';
 import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import { RESULTADO_LABEL } from '@/contextos/conselho/domain/ata';
 import { AtaFormInput } from '@/contextos/conselho/presentation/schemas/ataSchema';
@@ -61,7 +62,7 @@ export const DeliberacaoFields: React.FC<DeliberacaoFieldsProps> = ({ item, indi
           ))}
         </Grid>
         {conflitos.map((c, k) => (
-          <Grid container spacing={2} key={c.id}>
+          <Grid container spacing={2} key={c.id} sx={{ alignItems: 'flex-start' }}>
             <Grid size={{ xs: 12, sm: 4 }}>
               <Controller name={`${base}.conflitos.${k}.declaranteFielId`} control={control} render={({ field }) => (
                 <FormControl fullWidth size="small">
@@ -78,9 +79,8 @@ export const DeliberacaoFields: React.FC<DeliberacaoFieldsProps> = ({ item, indi
                 error={Boolean(erros?.conflitos?.[k]?.descricao)} helperText={erros?.conflitos?.[k]?.descricao?.message}
                 {...register(`${base}.conflitos.${k}.descricao`)} />
             </Grid>
-            <Grid size={{ xs: 3, sm: 1 }}>
-              <ActionButton title="Remover conflito" label="Remover" icon={<DeleteIcon />} color="error" variant="outlined"
-                onClick={() => remove(k)} />
+            <Grid size={{ xs: 3, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <IconActionButton title="Remover conflito" icon={<DeleteIcon />} color="error" onClick={() => remove(k)} />
             </Grid>
           </Grid>
         ))}

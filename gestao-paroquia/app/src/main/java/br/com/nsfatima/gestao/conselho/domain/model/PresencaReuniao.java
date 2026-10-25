@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.conselho.domain.model;
 
 import br.com.nsfatima.gestao.conselho.domain.exception.AtaInvalidaException;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,9 +24,15 @@ public record PresencaReuniao(List<Presenca> nominal, Integer total) {
             throw new AtaInvalidaException("A presença é nominal ou quantitativa, nunca as duas.");
         }
         Set<UUID> vistos = new HashSet<>();
+        Set<FuncaoPresenca> funcoesUnicas = EnumSet.noneOf(FuncaoPresenca.class);
         for (Presenca presenca : nominal) {
             if (!vistos.add(presenca.fielId())) {
                 throw new AtaInvalidaException("O mesmo fiel não pode constar duas vezes na presença.");
+            }
+            FuncaoPresenca funcao = presenca.funcao() == null ? null : FuncaoPresenca.doRotulo(presenca.funcao());
+            if (funcao != null && funcao.ehUnica() && !funcoesUnicas.add(funcao)) {
+                throw new AtaInvalidaException("A função " + funcao.getRotulo()
+                        + " só pode ser exercida por uma pessoa na reunião.");
             }
         }
     }

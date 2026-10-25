@@ -1,0 +1,85 @@
+import React from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { FormControl, Grid, MenuItem } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconActionButton from '@/shared/presentation/components/IconActionButton';
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import { FUNCOES_PRESENCA, funcaoEhUnica, SITUACAO_PRESENCA_LABEL } from '@/contextos/conselho/domain/ata';
+import { AtaFormInput } from '@/contextos/conselho/presentation/schemas/ataSchema';
+import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
+
+interface AtaPresencaLinhaProps {
+  indice: number;
+  candidatos: Candidato[];
+  /** Linha do redator: fixa, não se edita nem se remove. */
+  fixa: boolean;
+  onRemover: () => void;
+}
+
+/** As funções fixas, mais o valor já gravado quando ele não pertence à lista (ata antiga), para não perdê-lo. */
+const opcoesDeFuncao = (atual: string): string[] => {
+  const rotulos = FUNCOES_PRESENCA.map((f) => f.rotulo);
+  return atual && !rotulos.includes(atual) ? [atual, ...rotulos] : rotulos;
+};
+
+/**
+ * Uma pessoa da lista de presença. As opções já impedem os conflitos: quem consta em outra linha não aparece em
+ * "Pessoa", função única usada em outra linha fica desabilitada e quem não esteve presente não tem função.
+ */
+export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, candidatos, fixa, onRemover }) => {
+  const { control, setValue, formState: { errors } } = useFormContext<AtaFormInput>();
+  const presencas = useWatch({ control, name: 'presencas' });
+  const outras = presencas.filter((_, j) => j !== indice);
+  const pessoasUsadas = new Set(outras.map((p) => p.fielId));
+  const funcoesUsadas = new Set(outras.map((p) => p.funcao).filter(Boolean));
+  const ausente = (presencas[indice]?.situacao ?? 'PRESENTE') !== 'PRESENTE';
+  const erro = errors.presencas?.[indice];
+
+  return (
+    <Grid container spacing={2} sx={{ alignItems: 'flex-start' }}>
+      <Grid size={{ xs: 12, sm: 5 }}>
+        <Controller name={`presencas.${indice}.fielId`} control={control} render={({ field }) => (
+          <FormControl fullWidth size="small">
+            <SearchableSelect {...field} labelId={`presenca-${indice}`} label="Pessoa" required disabled={fixa}
+              error={Boolean(erro?.fielId)} helperText={erro?.fielId?.message}>
+              {candidatos.filter((c) => c.id === field.value || !pessoasUsadas.has(c.id))
+                .map((c) => <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>)}
+            </SearchableSelect>
+          </FormControl>
+        )} />
+      </Grid>
+      <Grid size={{ xs: 12, sm: 3 }}>
+        <Controller name={`presencas.${indice}.funcao`} control={control} render={({ field }) => (
+          <FormControl fullWidth size="small">
+            <SearchableSelect {...field} labelId={`funcao-${indice}`} label="Função" disabled={fixa || ausente}
+              error={Boolean(erro?.funcao)} helperText={erro?.funcao?.message}>
+              {opcoesDeFuncao(field.value).map((f) => (
+                <MenuItem key={f} value={f} disabled={f !== field.value && funcaoEhUnica(f) && funcoesUsadas.has(f)}>
+                  {f}
+                </MenuItem>
+              ))}
+            </SearchableSelect>
+          </FormControl>
+        )} />
+      </Grid>
+      <Grid size={{ xs: 9, sm: 3 }}>
+        <Controller name={`presencas.${indice}.situacao`} control={control} render={({ field }) => (
+          <FormControl fullWidth size="small">
+            <SearchableSelect {...field} labelId={`situacao-${indice}`} label="Situação" disabled={fixa}
+              onChange={(e) => {
+                field.onChange(e);
+                if (e.target.value !== 'PRESENTE') setValue(`presencas.${indice}.funcao`, '');
+              }}>
+              {Object.entries(SITUACAO_PRESENCA_LABEL).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+            </SearchableSelect>
+          </FormControl>
+        )} />
+      </Grid>
+      <Grid size={{ xs: 3, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <IconActionButton title="Remover pessoa" icon={<DeleteIcon />} color="error" disabled={fixa} onClick={onRemover} />
+      </Grid>
+    </Grid>
+  );
+};
+
+export default AtaPresencaLinha;

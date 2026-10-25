@@ -63,6 +63,8 @@ public class RascunharAtaUseCase {
                 ? null : exigirOrganizacao(comando.organizacaoAssociadaId());
         validadorPresenca.validar(RegrasTipoReuniaoPolicy.para(comando.tipo()), comando.conteudo(),
                 convocante.id(), comando.organizacaoAssociadaId());
+        validadorPresenca.exigirRedatorPresente(ator, RegrasTipoReuniaoPolicy.para(comando.tipo()),
+                comando.conteudo(), convocante.id());
 
         AtaReuniao ata = repository.salvar(AtaReuniao.rascunhar(AtaReuniaoId.gerar(), comando.tipo(), convocante,
                 associada, comando.conteudo(), ator.login(), Instant.now()));

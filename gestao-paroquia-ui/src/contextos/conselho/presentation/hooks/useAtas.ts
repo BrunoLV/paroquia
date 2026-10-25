@@ -6,6 +6,7 @@ import {
   homologarAta,
   listarAtas,
   listarTiposReuniao,
+  obterPresencaRedator,
   obterAta,
   obterTrilha,
   rascunharAta,
@@ -19,6 +20,7 @@ import {
   FiltroAtas,
   OpcoesExportacao,
   RascunharAtaPayload,
+  TipoReuniao,
 } from '@/contextos/conselho/domain/ata';
 import { getLocais } from '@/contextos/local/infrastructure/http/locais';
 import { getOrganizacaoMembros } from '@/contextos/organizacao/infrastructure/http/organizacoes';
@@ -33,6 +35,7 @@ export const atasKeys = {
   detalhe: (id: string) => ['atas', 'detalhe', id] as const,
   trilha: (id: string) => ['atas', 'trilha', id] as const,
   tipos: ['atas', 'tipos'] as const,
+  redator: (tipo: string, organizacaoId: string) => ['atas', 'redator', tipo, organizacaoId] as const,
   membros: (organizacaoId: string) => ['atas', 'membros', organizacaoId] as const,
 };
 
@@ -53,6 +56,15 @@ export const useTrilha = (id: string | null, habilitado: boolean) =>
 /** Catálogo de tipos de reunião; muda raramente, então fica em cache por toda a sessão. */
 export const useTiposReuniao = () =>
   useQuery({ queryKey: atasKeys.tipos, queryFn: listarTiposReuniao, staleTime: Infinity });
+
+/** Presença do usuário como redator do tipo no órgão, para já incluí-lo na lista com a função certa. */
+export const usePresencaRedator = (tipo: string, organizacaoId: string) =>
+  useQuery({
+    queryKey: atasKeys.redator(tipo, organizacaoId),
+    queryFn: () => obterPresencaRedator(tipo as TipoReuniao, organizacaoId),
+    enabled: Boolean(tipo && organizacaoId),
+    staleTime: Infinity,
+  });
 
 /** Mutação que invalida o cache de atas e informa sucesso ou erro ao usuário. */
 const useMutacaoAta = <TInput, TOutput>(fn: (input: TInput) => Promise<TOutput>, sucesso: string, erro: string) => {

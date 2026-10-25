@@ -50,6 +50,7 @@ public class AtualizarRascunhoAtaUseCase {
         AtaReuniao ata = autorizacao.carregar(id, ator, AcaoAta.REDIGIR);
         validadorPresenca.validar(ata.regras(), conteudo, ata.getOrganizacaoConvocanteId(),
                 ata.getOrganizacaoAssociadaId());
+        validadorPresenca.exigirRedatorPresente(ator, ata.regras(), conteudo, ata.getOrganizacaoConvocanteId());
 
         String antes = auditoria.capturar(ata);
         ata.redigir(conteudo);

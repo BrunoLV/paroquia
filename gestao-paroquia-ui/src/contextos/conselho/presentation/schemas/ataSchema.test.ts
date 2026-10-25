@@ -30,7 +30,7 @@ const valida = (): AtaFormInput => ({
   organizacaoConvocanteId: 'org-1',
   titulo: ' Reunião de junho ',
   local: 'Salão paroquial',
-  presencas: [{ fielId: 'f1', funcao: ' Coordenador ', situacao: 'PRESENTE' }],
+  presencas: [{ fielId: 'f1', funcao: 'Coordenador(a)', situacao: 'PRESENTE' }],
   itens: [
     {
       ...itemVazio(),
@@ -67,6 +67,22 @@ describe('ataSchema', () => {
     expect(!resultado.success && resultado.error.issues[0].path).toEqual(['ressalvasAtaAnterior']);
   });
 
+  it('barra pessoa repetida, função única repetida e função de quem não esteve presente', () => {
+    const presencas = [
+      { fielId: 'f1', funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
+      { fielId: 'f2', funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
+      { fielId: 'f1', funcao: '', situacao: 'PRESENTE' as const },
+      { fielId: 'f3', funcao: 'Membro', situacao: 'AUSENTE' as const },
+      { fielId: 'f4', funcao: 'Membro', situacao: 'PRESENTE' as const },
+      { fielId: 'f5', funcao: 'Membro', situacao: 'PRESENTE' as const },
+    ];
+
+    const resultado = ataSchema.safeParse({ ...valida(), presencas });
+    const caminhos = resultado.success ? [] : resultado.error.issues.map((i) => i.path.join('.'));
+
+    expect(caminhos).toEqual(['presencas.1.funcao', 'presencas.2.fielId', 'presencas.3.funcao']);
+  });
+
   it('não aceita ata anterior sem dizer se foi aprovada', () => {
     const resultado = ataSchema.safeParse({ ...valida(), ataAnteriorId: 'a1' });
 
@@ -88,7 +104,7 @@ describe('paraConteudoPayload', () => {
     const payload = paraConteudoPayload(valida(), regras());
 
     expect(payload.titulo).toBe('Reunião de junho');
-    expect(payload.presenca.nominal).toEqual([{ fielId: 'f1', funcao: 'Coordenador', situacao: 'PRESENTE' }]);
+    expect(payload.presenca.nominal).toEqual([{ fielId: 'f1', funcao: 'Coordenador(a)', situacao: 'PRESENTE' }]);
     expect(payload.itens[0].relato).toBeUndefined();
     expect(payload.itens[0].deliberacoes[0]).toMatchObject({ texto: 'Aprovar', votacao: { favor: 2, contra: 0, abstencoes: 0 } });
     expect(payload.itens[0].deliberacoes[1].votacao).toBeUndefined();

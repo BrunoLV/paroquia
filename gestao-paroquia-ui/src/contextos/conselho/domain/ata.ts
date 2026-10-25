@@ -57,20 +57,32 @@ export const RESULTADO_LABEL: Record<ResultadoDeliberacao, string> = {
   INFORMATIVA: 'Informativa',
 };
 
-/** Funções que a pessoa exerce na reunião; opções fixas para que a ata e a exportação usem sempre o mesmo vocabulário. */
-export const FUNCOES_PRESENCA = [
-  'Pároco',
-  'Vigário paroquial',
-  'Diácono',
-  'Presidente',
-  'Vice-presidente',
-  'Secretário(a)',
-  'Tesoureiro(a)',
-  'Coordenador(a)',
-  'Representante de pastoral ou movimento',
-  'Membro',
-  'Convidado(a)',
-] as const;
+/**
+ * Funções que a pessoa exerce na reunião, em lista fechada para que a ata e a exportação usem sempre o mesmo
+ * vocabulário. As `unica` só podem ser exercidas por uma pessoa por reunião. Espelha o catálogo do servidor, que é
+ * quem valida.
+ */
+export const FUNCOES_PRESENCA: readonly { rotulo: string; unica: boolean }[] = [
+  { rotulo: 'Pároco', unica: true },
+  { rotulo: 'Vigário paroquial', unica: true },
+  { rotulo: 'Diácono', unica: false },
+  { rotulo: 'Presidente', unica: true },
+  { rotulo: 'Vice-presidente', unica: true },
+  { rotulo: 'Secretário(a)', unica: true },
+  { rotulo: 'Tesoureiro(a)', unica: true },
+  { rotulo: 'Coordenador(a)', unica: false },
+  { rotulo: 'Representante de pastoral ou movimento', unica: false },
+  { rotulo: 'Membro', unica: false },
+  { rotulo: 'Convidado(a)', unica: false },
+];
+
+export const funcaoEhUnica = (rotulo: string): boolean => FUNCOES_PRESENCA.some((f) => f.rotulo === rotulo && f.unica);
+
+/** Fiel que redige a ata e a função com que deve constar na lista de presença. */
+export interface PresencaRedator {
+  fielId: string;
+  funcao: string;
+}
 
 export const SITUACAO_PRESENCA_LABEL: Record<SituacaoPresenca, string> = {
   PRESENTE: 'Presente',

@@ -1,32 +1,42 @@
-import React from 'react';
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
-import { Card, CardContent, FormControl, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { Card, CardContent, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
-import { FUNCOES_PRESENCA, SITUACAO_PRESENCA_LABEL, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { AtaFormInput, presencaVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
 import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
+import AtaPresencaLinha from '@/contextos/conselho/presentation/components/AtaPresencaLinha';
+import { usePresencaRedator } from '@/contextos/conselho/presentation/hooks/useAtas';
 
 interface AtaPresencaCardProps {
   regras: TipoReuniaoInfo | undefined;
   candidatos: Candidato[];
 }
 
-/** As funções fixas, mais o valor já gravado quando ele não pertence à lista (ata antiga), para não perdê-lo. */
-const opcoesDeFuncao = (atual: string): string[] =>
-  atual && !(FUNCOES_PRESENCA as readonly string[]).includes(atual) ? [atual, ...FUNCOES_PRESENCA] : [...FUNCOES_PRESENCA];
-
 /**
  * Cartão "Presença": lista nominal (a pessoa é identificada pelo cadastro, nunca digitada) ou, nas assembleias,
  * apenas o total de participantes. Qual modo vale é regra do tipo de reunião.
  */
 export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candidatos }) => {
-  const { control, register, getValues, formState: { errors } } = useFormContext<AtaFormInput>();
-  const { fields, append, remove } = useFieldArray({ control, name: 'presencas' });
+  const { control, register, getValues, setValue, formState: { errors } } = useFormContext<AtaFormInput>();
+  const { fields, append, insert, remove } = useFieldArray({ control, name: 'presencas' });
   const quantitativa = regras?.modoPresenca === 'QUANTITATIVA';
+  const presencas = useWatch({ control, name: 'presencas' });
+  const tipo = useWatch({ control, name: 'tipo' });
+  const orgaoId = useWatch({ control, name: 'organizacaoConvocanteId' });
+  const redator = usePresencaRedator(regras && !quantitativa ? tipo : '', orgaoId).data ?? null;
+
+  // Quem redige a ata é sempre incluído como presente, com a função do seu papel (o servidor confere o mesmo).
+  useEffect(() => {
+    if (!redator) return;
+    const atuais = getValues('presencas');
+    const i = atuais.findIndex((p) => p.fielId === redator.fielId);
+    const linha = { fielId: redator.fielId, funcao: redator.funcao, situacao: 'PRESENTE' as const };
+    if (i === -1) insert(0, linha);
+    else if (atuais[i].funcao !== linha.funcao || atuais[i].situacao !== linha.situacao) setValue(`presencas.${i}`, linha);
+  }, [redator, presencas, getValues, insert, setValue]);
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -43,39 +53,8 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
         ) : (
           <Stack spacing={2}>
             {fields.map((campo, i) => (
-              <Grid container spacing={2} key={campo.id}>
-                <Grid size={{ xs: 12, sm: 5 }}>
-                  <Controller name={`presencas.${i}.fielId`} control={control} render={({ field }) => (
-                    <FormControl fullWidth size="small">
-                      <SearchableSelect {...field} labelId={`presenca-${i}`} label="Pessoa" required
-                        error={Boolean(errors.presencas?.[i]?.fielId)} helperText={errors.presencas?.[i]?.fielId?.message}>
-                        {candidatos.map((c) => <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>)}
-                      </SearchableSelect>
-                    </FormControl>
-                  )} />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 3 }}>
-                  <Controller name={`presencas.${i}.funcao`} control={control} render={({ field }) => (
-                    <FormControl fullWidth size="small">
-                      <SearchableSelect {...field} labelId={`funcao-${i}`} label="Função">
-                        {opcoesDeFuncao(field.value).map((f) => <MenuItem key={f} value={f}>{f}</MenuItem>)}
-                      </SearchableSelect>
-                    </FormControl>
-                  )} />
-                </Grid>
-                <Grid size={{ xs: 8, sm: 3 }}>
-                  <Controller name={`presencas.${i}.situacao`} control={control} render={({ field }) => (
-                    <FormControl fullWidth size="small">
-                      <SearchableSelect {...field} labelId={`situacao-${i}`} label="Situação">
-                        {Object.entries(SITUACAO_PRESENCA_LABEL).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
-                      </SearchableSelect>
-                    </FormControl>
-                  )} />
-                </Grid>
-                <Grid size={{ xs: 4, sm: 1 }}>
-                  <ActionButton title="Remover" icon={<DeleteIcon />} color="error" variant="outlined" onClick={() => remove(i)} />
-                </Grid>
-              </Grid>
+              <AtaPresencaLinha key={campo.id} indice={i} candidatos={candidatos} onRemover={() => remove(i)}
+                fixa={redator !== null && presencas?.[i]?.fielId === redator.fielId} />
             ))}
             <Stack direction="row" spacing={1}>
               <ActionButton title="Adicionar pessoa" icon={<AddIcon />} variant="outlined" onClick={() => append(presencaVazia())} />

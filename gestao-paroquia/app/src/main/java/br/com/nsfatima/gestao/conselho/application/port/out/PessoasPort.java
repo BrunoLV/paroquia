@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.conselho.application.port.out;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +19,14 @@ public interface PessoasPort {
      * @return identificadores dos fiéis membros
      */
     Set<UUID> membrosAtivos(UUID organizacaoId);
+
+    /**
+     * Fiel associado a uma conta de acesso.
+     *
+     * @param usuarioId identificador do usuário; pode ser nulo
+     * @return o fiel do usuário, ou vazio se não há (usuário sem cadastro de fiel, como o clero)
+     */
+    Optional<UUID> fielDoUsuario(UUID usuarioId);
 
     /**
      * Nomes de fiéis.
