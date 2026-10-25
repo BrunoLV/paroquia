@@ -57,6 +57,21 @@ export const RESULTADO_LABEL: Record<ResultadoDeliberacao, string> = {
   INFORMATIVA: 'Informativa',
 };
 
+/** Funções que a pessoa exerce na reunião; opções fixas para que a ata e a exportação usem sempre o mesmo vocabulário. */
+export const FUNCOES_PRESENCA = [
+  'Pároco',
+  'Vigário paroquial',
+  'Diácono',
+  'Presidente',
+  'Vice-presidente',
+  'Secretário(a)',
+  'Tesoureiro(a)',
+  'Coordenador(a)',
+  'Representante de pastoral ou movimento',
+  'Membro',
+  'Convidado(a)',
+] as const;
+
 export const SITUACAO_PRESENCA_LABEL: Record<SituacaoPresenca, string> = {
   PRESENTE: 'Presente',
   AUSENTE_JUSTIFICADA: 'Ausência justificada',

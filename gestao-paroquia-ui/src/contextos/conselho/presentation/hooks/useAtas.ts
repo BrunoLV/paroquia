@@ -20,6 +20,7 @@ import {
   OpcoesExportacao,
   RascunharAtaPayload,
 } from '@/contextos/conselho/domain/ata';
+import { getLocais } from '@/contextos/local/infrastructure/http/locais';
 import { getOrganizacaoMembros } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
@@ -127,4 +128,10 @@ export const useCandidatosPresenca = (organizacaoIds: string[]): Candidato[] => 
     if (m.fielId && m.ativo) porId.set(m.fielId, m.fielNome ?? m.nomeCompleto ?? 'Pessoa sem nome');
   }));
   return Array.from(porId, ([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+};
+
+/** Nomes dos locais ativos cadastrados, em ordem alfabética, para escolher onde a reunião aconteceu. */
+export const useLocaisAtivos = (): string[] => {
+  const { data = [] } = useQuery({ queryKey: ['locais'], queryFn: getLocais });
+  return data.filter((l) => l.ativo).map((l) => l.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
 };

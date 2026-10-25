@@ -5,6 +5,7 @@ import EventIcon from '@mui/icons-material/Event';
 import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
 import { Organizacao } from '@/shared/domain/types/types';
 import { CARATER_LABEL, MODALIDADE_LABEL, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { useLocaisAtivos } from '@/contextos/conselho/presentation/hooks/useAtas';
 import { AtaFormInput } from '@/contextos/conselho/presentation/schemas/ataSchema';
 import { associadosDoTipo, convocantesDoTipo } from '@/contextos/conselho/presentation/components/ataFormTipos';
 
@@ -19,6 +20,7 @@ interface AtaDadosCardProps {
 /** Cartão "Dados da reunião": tipo, órgãos, título, data, local, caráter e modalidade. */
 export const AtaDadosCard: React.FC<AtaDadosCardProps> = ({ tipos, regras, organizacoes, edicao }) => {
   const { control, register, formState: { errors } } = useFormContext<AtaFormInput>();
+  const locais = useLocaisAtivos();
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -71,8 +73,15 @@ export const AtaDadosCard: React.FC<AtaDadosCardProps> = ({ tipos, regras, organ
               helperText={errors.dataReuniao?.message} {...register('dataReuniao')} />
           </Grid>
           <Grid size={{ xs: 12, sm: 8 }}>
-            <TextField label="Local" required fullWidth size="small" error={Boolean(errors.local)}
-              helperText={errors.local?.message} {...register('local')} />
+            <Controller name="local" control={control} render={({ field }) => (
+              <FormControl fullWidth size="small">
+                <SearchableSelect {...field} labelId="ata-local" label="Local" required
+                  error={Boolean(errors.local)} helperText={errors.local?.message}>
+                  {(field.value && !locais.includes(field.value) ? [field.value, ...locais] : locais)
+                    .map((nome) => <MenuItem key={nome} value={nome}>{nome}</MenuItem>)}
+                </SearchableSelect>
+              </FormControl>
+            )} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Controller name="carater" control={control} render={({ field }) => (

@@ -77,6 +77,7 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 - A presença é **nominal** (lista de pessoas, identificadas pelo cadastro de fiéis, nunca digitadas) ou **por total de participantes**, conforme o tipo. Nos colegiados e nos organismos, só podem constar **membros ativos** do órgão (na reunião conjunta, dos dois órgãos); nas demais reuniões nominais, qualquer fiel cadastrado.
 - O **quórum** é a maioria absoluta dos membros ativos convocados (metade mais um); na reunião conjunta, a maioria absoluta do total de membros dos dois conselhos. O total de convocados é **congelado na submissão** para que o quórum de uma ata não mude quando a composição do órgão mudar. O quórum é **informativo**: consta da ata e dos documentos, mas não impede a lavratura.
 - Ausência justificada não conta como presença.
+- A **função** de cada pessoa na reunião é escolhida de uma lista fixa (Pároco, Vigário paroquial, Diácono, Presidente, Vice-presidente, Secretário(a), Tesoureiro(a), Coordenador(a), Representante de pastoral ou movimento, Membro, Convidado(a)); o **local** da reunião é escolhido entre os locais ativos cadastrados.
 
 ### RN-CON-06: Modelo da Ata
 - A ata é **estruturada**: cabeçalho da reunião, presença, leitura e aprovação da ata anterior, **itens de pauta** numerados com relato resumido e as **deliberações** de cada item.

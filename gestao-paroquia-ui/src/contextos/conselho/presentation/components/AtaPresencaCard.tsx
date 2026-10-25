@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
-import { SITUACAO_PRESENCA_LABEL, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { FUNCOES_PRESENCA, SITUACAO_PRESENCA_LABEL, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { AtaFormInput, presencaVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
 import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
 
@@ -14,6 +14,10 @@ interface AtaPresencaCardProps {
   regras: TipoReuniaoInfo | undefined;
   candidatos: Candidato[];
 }
+
+/** As funções fixas, mais o valor já gravado quando ele não pertence à lista (ata antiga), para não perdê-lo. */
+const opcoesDeFuncao = (atual: string): string[] =>
+  atual && !(FUNCOES_PRESENCA as readonly string[]).includes(atual) ? [atual, ...FUNCOES_PRESENCA] : [...FUNCOES_PRESENCA];
 
 /**
  * Cartão "Presença": lista nominal (a pessoa é identificada pelo cadastro, nunca digitada) ou, nas assembleias,
@@ -51,7 +55,13 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
                   )} />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 3 }}>
-                  <TextField label="Função" fullWidth size="small" {...register(`presencas.${i}.funcao`)} />
+                  <Controller name={`presencas.${i}.funcao`} control={control} render={({ field }) => (
+                    <FormControl fullWidth size="small">
+                      <SearchableSelect {...field} labelId={`funcao-${i}`} label="Função">
+                        {opcoesDeFuncao(field.value).map((f) => <MenuItem key={f} value={f}>{f}</MenuItem>)}
+                      </SearchableSelect>
+                    </FormControl>
+                  )} />
                 </Grid>
                 <Grid size={{ xs: 8, sm: 3 }}>
                   <Controller name={`presencas.${i}.situacao`} control={control} render={({ field }) => (

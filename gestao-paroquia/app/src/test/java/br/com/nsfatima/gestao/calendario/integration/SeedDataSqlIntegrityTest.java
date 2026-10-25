@@ -330,6 +330,12 @@ public class SeedDataSqlIntegrityTest {
                 """, String.class))
                 .as("Todo redator da massa precisa ter login e papel de redação no órgão convocante")
                 .isEmpty();
+        assertThat(jdbcTemplate.queryForList("""
+                SELECT a.conteudo::jsonb ->> 'local'
+                FROM calendario.ata_reuniao a
+                WHERE NOT EXISTS (SELECT 1 FROM calendario.locais l WHERE l.nome = a.conteudo::jsonb ->> 'local')
+                """, String.class))
+                .as("O local de cada ata precisa ser um local cadastrado").isEmpty();
         assertThat(contar("SELECT COUNT(*) FROM calendario.usuarios WHERE username = 'padre.pedro' "
                 + "AND roles = 'PAROCO'")).isEqualTo(1);
         assertThat(contar("SELECT COUNT(*) FROM calendario.ata_reuniao WHERE status = 'PENDENTE_HOMOLOGACAO'"))

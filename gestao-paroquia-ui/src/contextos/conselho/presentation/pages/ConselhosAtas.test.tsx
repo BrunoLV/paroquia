@@ -23,6 +23,14 @@ vi.mock('@/contextos/organizacao/infrastructure/http/organizacoes', () => ({
   getOrganizacaoMembros: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock('@/contextos/local/infrastructure/http/locais', () => ({
+  getLocais: vi.fn().mockResolvedValue([
+    { id: 'l1', nome: 'Salão paroquial', tipo: 'SALAO', capacidadeMaxima: 80, ativo: true },
+    { id: 'l2', nome: 'Capela São José', tipo: 'CAPELA', capacidadeMaxima: 50, ativo: true },
+    { id: 'l3', nome: 'Sala interditada', tipo: 'SALA', capacidadeMaxima: 10, ativo: false },
+  ]),
+}));
+
 const pendente: AtaResumo = {
   id: 'ata-1', tipo: 'REUNIAO_CPP', tipoRotulo: 'Reunião do Conselho Pastoral Paroquial (CPP)',
   titulo: 'Reforma do telhado da capela', dataReuniao: '2026-06-01', organizacaoConvocanteId: 'cpp-1',
@@ -162,5 +170,25 @@ describe('ConselhosAtas', () => {
     await waitFor(() => expect(atasApi.baixarCompilacao).toHaveBeenCalledWith(
       expect.objectContaining({ organizacaoId: undefined }),
       { formato: 'PDF', layout: 'ESTRUTURADA', conteudo: 'SOMENTE_DECISOES' }));
+  });
+
+  it('local e função são escolhidos de listas, não digitados', async () => {
+    const user = userEvent.setup();
+    usuario.roles = ['SECRETARIO_CONSELHO'];
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+
+    await user.click(within(dialogo).getByRole('combobox', { name: /Local/i }));
+    expect(await screen.findByRole('option', { name: 'Salão paroquial' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Capela São José' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Sala interditada' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('option', { name: 'Capela São José' }));
+
+    await user.click(within(dialogo).getByRole('button', { name: /Adicionar pessoa/i }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Função/i }));
+    expect(await screen.findByRole('option', { name: 'Pároco' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Secretário(a)' })).toBeInTheDocument();
   });
 });
