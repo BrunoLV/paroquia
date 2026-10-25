@@ -4,7 +4,7 @@ import { Card, CardContent, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import { TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { funcaoEhUnica, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { AtaFormInput, presencaVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
 import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
 import AtaPresencaLinha from '@/contextos/conselho/presentation/components/AtaPresencaLinha';
@@ -74,8 +74,15 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
               <ActionButton title="Incluir todos os membros" icon={<GroupsIcon />} variant="outlined"
                 disabled={candidatos.length === 0}
                 onClick={() => {
-                  const ja = new Set(getValues('presencas').map((p) => p.fielId));
-                  candidatos.filter((c) => !c.clerigo && !ja.has(c.id)).forEach((c) => append({ ...presencaVazia(), fielId: c.id }));
+                  const atuais = getValues('presencas');
+                  const ja = new Set(atuais.map((p) => p.fielId));
+                  const funcoes = new Set(atuais.map((p) => p.funcao).filter(Boolean));
+                  candidatos.filter((c) => !c.clerigo && !ja.has(c.id)).forEach((c) => {
+                    const sugerida = c.funcaoSugerida && !(funcaoEhUnica(c.funcaoSugerida) && funcoes.has(c.funcaoSugerida))
+                      ? c.funcaoSugerida : '';
+                    if (sugerida) funcoes.add(sugerida);
+                    append({ ...presencaVazia(), fielId: c.id, funcao: sugerida });
+                  });
                 }} />
             </Stack>
           </Stack>

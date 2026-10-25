@@ -198,8 +198,8 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                   label="Papel"
                   onChange={(e) => setNovoPapel(e.target.value)}
                 >
-                  <MenuItem value="COORDENADOR">Coordenador de Grupo/Pastoral</MenuItem>
-                  <MenuItem value="SECRETARIO_GRUPO">Secretário de Grupo/Pastoral</MenuItem>
+                  <MenuItem value="COORDENADOR">Coordenador (grupo, pastoral ou conselho)</MenuItem>
+                  <MenuItem value="SECRETARIO_GRUPO">Secretário de Grupo/Pastoral ou Vice-coordenador</MenuItem>
                   <MenuItem value="MEMBRO_ATIVO">Membro Ativo</MenuItem>
                   <MenuItem value="VOLUNTARIO">Voluntário</MenuItem>
                   <MenuItem value="SECRETARIO_CONSELHO">Secretário de Conselho</MenuItem>

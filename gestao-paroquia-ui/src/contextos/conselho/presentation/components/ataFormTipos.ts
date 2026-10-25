@@ -10,7 +10,22 @@ export interface Candidato {
   nome: string;
   clerigo?: boolean;
   paroco?: boolean;
+  /** Função na reunião que o vínculo do membro com o órgão sugere (secretário, coordenador, vice). */
+  funcaoSugerida?: string;
 }
+
+/**
+ * Função que o papel do membro no órgão sugere. O coordenador e o vice-coordenador (papel de secretário de grupo)
+ * são membros do órgão: nos conselhos exercem a coordenação do conselho; nas pastorais, a da pastoral.
+ */
+export const funcaoSugerida = (tipoOrganizacao: string | undefined, papel: string | undefined): string | undefined => {
+  const codigo = (papel ?? '').toLowerCase().replace(/_/g, '-');
+  const conselho = tipoOrganizacao === 'CONSELHO';
+  if (codigo === 'secretario-conselho') return 'Secretário(a)';
+  if (codigo === 'coordenador') return conselho ? 'Coordenador(a) do conselho' : 'Coordenador(a) de pastoral ou organismo';
+  if (codigo === 'secretario-grupo') return conselho ? 'Vice-coordenador(a) do conselho' : 'Secretário(a)';
+  return undefined;
+};
 
 /** Órgãos que o tipo aceita como convocante e pelos quais o usuário pode redigir, conforme o servidor. */
 export const convocantesDoTipo = (organizacoes: Organizacao[], regras: TipoReuniaoInfo | undefined): Organizacao[] => {

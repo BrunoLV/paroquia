@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RoleCatalogContractTest {
 
@@ -21,6 +22,13 @@ class RoleCatalogContractTest {
     @Test
     void deveRejeitarSecretarioForaConselho() {
         assertFalse(aceita("PASTORAL", PapelOrganizacional.SECRETARIO_CONSELHO));
+    }
+
+    @Test
+    void deveAceitarCoordenadorEViceComoMembrosDoConselho() {
+        assertTrue(new ConselhoCompatibilidadePapelPolicy().aceita("CONSELHO", PapelOrganizacional.COORDENADOR));
+        assertTrue(new ConselhoCompatibilidadePapelPolicy().aceita("CONSELHO", PapelOrganizacional.SECRETARIO_GRUPO));
+        assertFalse(new ConselhoCompatibilidadePapelPolicy().aceita("CONSELHO", PapelOrganizacional.VOLUNTARIO));
     }
 
     private boolean aceita(String tipo, PapelOrganizacional papel) {

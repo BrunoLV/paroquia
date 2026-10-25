@@ -45,7 +45,9 @@ export const AtaFormModal: React.FC<AtaFormModalProps> = ({ open, edicao, tipos,
   const convocante = useWatch({ control, name: 'organizacaoConvocanteId' });
   const associada = useWatch({ control, name: 'organizacaoAssociadaId' });
   const regras = tipos.find((t) => t.codigo === tipo);
-  const candidatos = useCandidatosPresenca(regras?.exigeOrganizacaoAssociada ? [convocante, associada] : [convocante]);
+  const candidatos = useCandidatosPresenca(
+    regras?.exigeOrganizacaoAssociada ? [convocante, associada] : [convocante], organizacoes,
+  );
   const { data: vizinhas } = useAtas({ organizacaoId: convocante || undefined, tamanho: 100 });
 
   const handleClose = () => confirmDiscard(isDirty, onClose);

@@ -46,7 +46,12 @@ export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, cand
               error={Boolean(erro?.fielId)} helperText={erro?.fielId?.message}
               onChange={(e) => {
                 field.onChange(e);
-                setValue(`presencas.${indice}.clerigo`, candidatos.find((c) => c.id === e.target.value)?.clerigo ?? false);
+                const escolhida = candidatos.find((c) => c.id === e.target.value);
+                setValue(`presencas.${indice}.clerigo`, escolhida?.clerigo ?? false);
+                const sugerida = escolhida?.funcaoSugerida;
+                if (sugerida && !presencas[indice]?.funcao && !(funcaoEhUnica(sugerida) && funcoesUsadas.has(sugerida))) {
+                  setValue(`presencas.${indice}.funcao`, sugerida);
+                }
               }}>
               {candidatos.filter((c) => c.id === field.value || !pessoasUsadas.has(c.id))
                 .map((c) => <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>)}

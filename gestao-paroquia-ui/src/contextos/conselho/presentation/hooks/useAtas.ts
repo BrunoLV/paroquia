@@ -25,7 +25,8 @@ import {
 } from '@/contextos/conselho/domain/ata';
 import { getLocais } from '@/contextos/local/infrastructure/http/locais';
 import { getOrganizacaoMembros } from '@/contextos/organizacao/infrastructure/http/organizacoes';
-import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
+import { Candidato, funcaoSugerida } from '@/contextos/conselho/presentation/components/ataFormTipos';
+import { Organizacao } from '@/shared/domain/types/types';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
 
@@ -132,18 +133,23 @@ export const useExportarCompilacao = () =>
  * Pessoas que podem constar na presença ou declarar conflito: membros ativos do órgão convocante e, na reunião
  * conjunta, do associado, e o clero. Sem duplicatas; membros e clero, cada grupo em ordem de nome.
  */
-export const useCandidatosPresenca = (organizacaoIds: string[]): Candidato[] => {
+export const useCandidatosPresenca = (organizacaoIds: string[], organizacoes: Organizacao[] = []): Candidato[] => {
   const ids = organizacaoIds.filter(Boolean);
   const resultados = useQueries({
     queries: ids.map((id) => ({ queryKey: atasKeys.membros(id), queryFn: () => getOrganizacaoMembros(id) })),
   });
-  const porId = new Map<string, string>();
-  resultados.forEach((r) => (r.data ?? []).forEach((m) => {
-    if (m.fielId && m.ativo) porId.set(m.fielId, m.fielNome ?? m.nomeCompleto ?? 'Pessoa sem nome');
+  const porId = new Map<string, Candidato>();
+  resultados.forEach((r, i) => (r.data ?? []).forEach((m) => {
+    if (m.fielId && m.ativo && !porId.has(m.fielId)) {
+      const tipo = organizacoes.find((o) => o.id === ids[i])?.tipo;
+      porId.set(m.fielId, {
+        id: m.fielId, nome: m.fielNome ?? m.nomeCompleto ?? 'Pessoa sem nome', funcaoSugerida: funcaoSugerida(tipo, m.papel),
+      });
+    }
   }));
   const clero = useQuery({ queryKey: atasKeys.clero, queryFn: listarClero, staleTime: Infinity }).data ?? [];
   const ordenar = (a: Candidato, b: Candidato) => a.nome.localeCompare(b.nome, 'pt-BR');
-  const membros = Array.from(porId, ([id, nome]) => ({ id, nome })).sort(ordenar);
+  const membros = Array.from(porId.values()).sort(ordenar);
   return [...membros, ...clero.map((c) => ({ id: c.id, nome: c.nome, clerigo: true, paroco: c.paroco })).sort(ordenar)];
 };
 

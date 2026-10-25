@@ -315,4 +315,32 @@ describe('ConselhosAtas', () => {
     expect(await screen.findByRole('option', { name: 'Pe. João Vigário' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Pe. Pedro da Silva' })).not.toBeInTheDocument();
   });
+
+  it('o coordenador e o vice do conselho são membros e já vêm com a função que o vínculo sugere', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    vi.mocked(getOrganizacaoMembros).mockResolvedValue([
+      { fielId: 'f1', fielNome: 'Maria da Silva', papel: 'SECRETARIO_CONSELHO', ativo: true },
+      { fielId: 'f2', fielNome: 'José Coordenador', papel: 'COORDENADOR', ativo: true },
+      { fielId: 'f3', fielNome: 'Ana Vice', papel: 'SECRETARIO_GRUPO', ativo: true },
+      { fielId: 'f4', fielNome: 'Carlos Membro', papel: 'MEMBRO_CONSELHO_PASTORAL', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacaoMembros>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião do CPP' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+    await user.click(within(dialogo).getByRole('button', { name: /Incluir todos os membros/i }));
+
+    expect(await within(dialogo).findByDisplayValue('Coordenador(a) do conselho')).toBeInTheDocument();
+    expect(within(dialogo).getByDisplayValue('Vice-coordenador(a) do conselho')).toBeInTheDocument();
+    expect(within(dialogo).getByDisplayValue('Secretário(a)')).toBeInTheDocument();
+    expect(within(dialogo).getByDisplayValue('Carlos Membro')).toBeInTheDocument();
+  });
 });
