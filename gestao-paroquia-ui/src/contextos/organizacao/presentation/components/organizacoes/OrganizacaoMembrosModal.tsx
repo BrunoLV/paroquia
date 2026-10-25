@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LinkIcon from '@mui/icons-material/Link';
 import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
-import { getOrganizacaoMembros, OrganizacaoMembro } from '@/contextos/organizacao/infrastructure/http/organizacoes';
+import { getOrganizacaoMembros, getPapeisPorTipo, OrganizacaoMembro } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { adicionarVinculo, AdicionarVinculoRequest, removerVinculo, Usuario } from '@/contextos/iam/infrastructure/http/usuarios';
 import { Organizacao, PAPEL_ECLESIAL_LABELS } from '@/shared/domain/types/types';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
@@ -50,6 +50,20 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
     queryFn: () => getOrganizacaoMembros(organizacao!.id),
     enabled: open && !!organizacao,
   });
+
+  const { data: papeisPorTipo = {} } = useQuery({
+    queryKey: ['organizacoes', 'papeis'],
+    queryFn: getPapeisPorTipo,
+    staleTime: Infinity,
+    enabled: open,
+  });
+  const papeisDoTipo = organizacao ? papeisPorTipo[organizacao.tipo] ?? [] : [];
+  /** No conselho, o coordenador e o vice (papel de secretário de grupo) coordenam o conselho, não uma pastoral. */
+  const rotuloDoPapel = (codigo: string, descricao?: string): string => {
+    if (organizacao?.tipo === 'CONSELHO' && codigo === 'COORDENADOR') return 'Coordenador do conselho';
+    if (organizacao?.tipo === 'CONSELHO' && codigo === 'SECRETARIO_GRUPO') return 'Vice-coordenador do conselho';
+    return PAPEL_ECLESIAL_LABELS[codigo] ?? descricao ?? codigo;
+  };
 
   const addMembroMutation = useMutation({
     mutationFn: ({ userId, request }: { userId: string; request: AdicionarVinculoRequest }) =>
@@ -135,7 +149,7 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                       {isPastoralOuMovimento && (
                         <TableCell>{igrejas.find((o) => o.id === m.igrejaVinculoId)?.nome || '-'}</TableCell>
                       )}
-                      <TableCell>{PAPEL_ECLESIAL_LABELS[m.papel] || m.papel}</TableCell>
+                      <TableCell>{rotuloDoPapel(m.papel)}</TableCell>
                       <TableCell><StatusIcon {...getIdoneidadeMeta(m.apto, m.pendencias ?? [])} /></TableCell>
                       <TableCell><StatusIcon {...getSituacaoAtivoMeta(m.ativo)} /></TableCell>
                       <TableCell align="right">
@@ -198,13 +212,9 @@ export const OrganizacaoMembrosModal: React.FC<OrganizacaoMembrosModalProps> = (
                   label="Papel"
                   onChange={(e) => setNovoPapel(e.target.value)}
                 >
-                  <MenuItem value="COORDENADOR">Coordenador (grupo, pastoral ou conselho)</MenuItem>
-                  <MenuItem value="SECRETARIO_GRUPO">Secretário de Grupo/Pastoral ou Vice-coordenador</MenuItem>
-                  <MenuItem value="MEMBRO_ATIVO">Membro Ativo</MenuItem>
-                  <MenuItem value="VOLUNTARIO">Voluntário</MenuItem>
-                  <MenuItem value="SECRETARIO_CONSELHO">Secretário de Conselho</MenuItem>
-                  <MenuItem value="MEMBRO_CONSELHO_PASTORAL">Membro do Conselho Pastoral (CPP/CPC)</MenuItem>
-                  <MenuItem value="MEMBRO_CONSELHO_ECONOMICO">Membro do Conselho Econômico (CAE)</MenuItem>
+                  {papeisDoTipo.map((p) => (
+                    <MenuItem key={p.codigo} value={p.codigo}>{rotuloDoPapel(p.codigo, p.descricao)}</MenuItem>
+                  ))}
                 </SearchableSelect>
               </FormControl>
 

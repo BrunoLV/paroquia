@@ -55,11 +55,16 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 - A duração máxima é de **3 anos** (`PoliticaDuracaoMandato`); a renovação é um novo mandato, sempre homologado.
 - Não pode haver dois mandatos proposto/homologado concomitantes para a mesma função e período na mesma organização.
 - Só um **membro ativo** da organização pode ser proposto.
-- Ao homologar, o vínculo do fiel assume o papel da função (`COORDENADOR` ou `SECRETARIO_GRUPO` para vice) e o nome é espelhado em `coordenador`/`viceCoordenador`. Ao encerrar (por decisão ou pelo job diário de mandatos vencidos), o vínculo volta a `MEMBRO_ATIVO` e o espelho é limpo.
+- Ao homologar, o vínculo do fiel assume o papel da função (`COORDENADOR` ou `SECRETARIO_GRUPO` para vice) e o nome é espelhado em `coordenador`/`viceCoordenador`. Ao encerrar (por decisão ou pelo job diário de mandatos vencidos), o vínculo volta ao papel de membro comum do tipo (`MEMBRO_ATIVO`; no conselho, membro do conselho pastoral ou econômico conforme o subtipo) e o espelho é limpo.
+- O coordenador e o vice-coordenador **não deixam de ser membros**: em qualquer organização, conselho inclusive, o fiel precisa ser membro ativo e o seu vínculo é promovido.
 - `coordenador` e `viceCoordenador` informados nas requisições de cadastro de organização são ignorados: a liderança só muda por mandato.
 
 ### RN-ORG-06: Idoneidade e Envio dos Agentes
 - Ver `membro.md` (RN-MEM-04). A proposta e a homologação de mandato exigem agente idôneo para coordenar.
+
+### RN-ORG-07: Papéis de Vínculo por Tipo de Organização
+- Existe **uma única tabela** de quais papéis um vínculo pode ter em cada tipo de organização. Pastoral, movimento e serviço paroquial admitem coordenador, secretário de grupo (que é também o papel do vice-coordenador), membro ativo e voluntário. O conselho admite secretário de conselho, membro do conselho pastoral, membro do conselho econômico, coordenador e vice-coordenador (secretário de grupo).
+- Todos os caminhos que criam ou alteram vínculo (cadastro de membros, promoção a coordenador, vínculo por usuário e mandato de coordenação) recusam o papel que o tipo não admite. O contexto do calendário consulta a mesma tabela para decidir autorização, e a interface só oferece os papéis válidos do tipo.
 
 ---
 

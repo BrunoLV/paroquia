@@ -18,6 +18,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.FuncaoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.MandatoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.StatusMandato;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.MandatoCoordenacaoRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -59,6 +60,7 @@ class MandatoCoordenacaoServiceTest {
         organizacao = new OrganizacaoEntity();
         organizacao.setId(organizacaoId);
         organizacao.setAtivo(true);
+        organizacao.setTipo(TipoOrganizacao.PASTORAL);
         when(organizacoes.findById(organizacaoId)).thenReturn(Optional.of(organizacao));
         when(fieis.existsById(fielId)).thenReturn(true);
         FielEntity fiel = new FielEntity();
@@ -177,6 +179,23 @@ class MandatoCoordenacaoServiceTest {
         assertThat(m.getStatus()).isEqualTo(StatusMandato.ENCERRADO);
         assertThat(membro.getPapel()).isEqualTo(PapelOrganizacional.MEMBRO_ATIVO.storedValue());
         assertThat(organizacao.getViceCoordenador()).isNull();
+    }
+
+    @Test
+    void noConselhoOCoordenadorContinuaMembroEVoltaAoPapelDeMembroDoSubtipo() {
+        organizacao.setTipo(TipoOrganizacao.CONSELHO);
+        organizacao.setSubtipoConselho(SubtipoConselho.CAEP);
+        membro.setTipoOrganizacao(TipoOrganizacao.CONSELHO);
+        membro.setPapel(PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO.storedValue());
+        MandatoCoordenacao m = MandatoCoordenacao.propor(organizacaoId, fielId, FuncaoCoordenacao.COORDENADOR,
+                HOJE, HOJE.plusYears(2));
+        when(mandatos.findById(m.getId())).thenReturn(Optional.of(m));
+
+        service.homologar(m.getId());
+        assertThat(membro.getPapel()).isEqualTo(PapelOrganizacional.COORDENADOR.storedValue());
+
+        service.encerrar(m.getId());
+        assertThat(membro.getPapel()).isEqualTo(PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO.storedValue());
     }
 
     @Test

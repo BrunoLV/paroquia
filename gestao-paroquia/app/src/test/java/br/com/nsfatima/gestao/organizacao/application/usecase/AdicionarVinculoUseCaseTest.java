@@ -10,6 +10,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,7 @@ class AdicionarVinculoUseCaseTest {
     private SecurityContext originalContext;
 
     private UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
+    private OrganizacaoJpaRepository organizacaoRepository;
 
     @BeforeEach
     void setUp() {
@@ -55,8 +57,9 @@ class AdicionarVinculoUseCaseTest {
         usuarioRepository = mock(UsuarioJpaRepository.class);
         papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         unidadeTerritorialRepository = mock(UnidadeTerritorialJpaRepository.class);
+        organizacaoRepository = mock(OrganizacaoJpaRepository.class);
         useCase = new AdicionarVinculoUseCase(vinculoRepository, usuarioRepository, unidadeTerritorialRepository,
-                papelGlobalAuthorizationService);
+                papelGlobalAuthorizationService, organizacaoRepository);
         originalContext = SecurityContextHolder.getContext();
 
         var defaultIgreja = new UnidadeTerritorialEntity();
@@ -120,6 +123,46 @@ class AdicionarVinculoUseCaseTest {
 
         assertFalse(existing.isAtivo());
         verify(vinculoRepository).save(existing);
+    }
+
+    @Test
+    void deveRecusarPapelQueOTipoDeOrganizacaoNaoAdmite() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                UUID.randomUUID(), TipoOrganizacao.PASTORAL, PapelOrganizacional.SECRETARIO_CONSELHO,
+                UUID.randomUUID()));
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                UUID.randomUUID(), TipoOrganizacao.CONSELHO, PapelOrganizacional.VOLUNTARIO, null));
+    }
+
+    @Test
+    void deveRebaixarOCoordenadorDoConselhoParaMembroDoSubtipo() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        var caep = new br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity();
+        caep.setSubtipoConselho(br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho.CAEP);
+        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(caep));
+        UUID anterior = UUID.randomUUID();
+        MembroGrupoEntity existing = new MembroGrupoEntity();
+        existing.setId(UUID.randomUUID());
+        existing.setFielId(anterior);
+        existing.setOrganizacaoId(organizacaoId);
+        existing.setPapel(PapelOrganizacional.COORDENADOR.name());
+        existing.setAtivo(true);
+        when(vinculoRepository.findByOrganizacaoIdAndPapelAndIgrejaVinculoIdNullAndAtivoTrue(organizacaoId,
+                PapelOrganizacional.COORDENADOR.name())).thenReturn(Optional.of(existing));
+        when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(i -> i.getArgument(0));
+
+        useCase.execute(usuarioId, organizacaoId, TipoOrganizacao.CONSELHO, PapelOrganizacional.COORDENADOR, null);
+
+        verify(vinculoRepository).save(org.mockito.ArgumentMatchers.argThat((MembroGrupoEntity m) ->
+                anterior.equals(m.getFielId())
+                        && PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO.name().equals(m.getPapel())));
     }
 
     @Test

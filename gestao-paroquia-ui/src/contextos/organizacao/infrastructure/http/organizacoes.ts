@@ -52,6 +52,16 @@ export const deleteOrganizacao = async (id: string): Promise<void> => {
   await apiClient.delete(`/organizacoes/${id}`);
 };
 
+/** Papel de vínculo admitido num tipo de organização. */
+export interface PapelOrganizacional {
+  codigo: string;
+  descricao: string;
+}
+
+/** Papéis de vínculo por tipo de organização: fonte única do servidor, usada para oferecer só os válidos. */
+export const getPapeisPorTipo = async (): Promise<Record<string, PapelOrganizacional[]>> =>
+  (await apiClient.get<Record<string, PapelOrganizacional[]>>('/organizacoes/papeis')).data;
+
 export interface OrganizacaoMembro {
   vinculoId: string;
   fielId?: string;

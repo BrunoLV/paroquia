@@ -11,6 +11,7 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGru
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,7 @@ public class AdicionarMembroUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(m -> {

@@ -6,6 +6,10 @@ import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
+import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
@@ -45,12 +49,15 @@ public class AdicionarVinculoUseCase {
     private final UsuarioJpaRepository usuarioRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
     private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
+    private final OrganizacaoJpaRepository organizacaoRepository;
 
     public AdicionarVinculoUseCase(
             MembroGrupoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
-            PapelGlobalAuthorizationService papelGlobalAuthorizationService) {
+            PapelGlobalAuthorizationService papelGlobalAuthorizationService,
+            OrganizacaoJpaRepository organizacaoRepository) {
+        this.organizacaoRepository = organizacaoRepository;
         this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
@@ -85,6 +92,7 @@ public class AdicionarVinculoUseCase {
         if (fielId == null) {
             throw new IllegalArgumentException("Usuario nao possui vinculo com Fiel: " + usuarioId);
         }
+        PapeisPorTipoOrganizacao.exigir(tipo, papel);
 
         if (tipo == TipoOrganizacao.PASTORAL || tipo == TipoOrganizacao.MOVIMENTO) {
             if (igrejaVinculoId == null) {
@@ -126,10 +134,7 @@ public class AdicionarVinculoUseCase {
         }
 
         // Regra de hierarquia: vinculação a CONSELHO só pode ser definida por PAROCO ou ADMIN
-        if (tipo == TipoOrganizacao.CONSELHO
-                && (papel == PapelOrganizacional.SECRETARIO_CONSELHO
-                || papel == PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL
-                || papel == PapelOrganizacional.MEMBRO_CONSELHO_ECONOMICO)) {
+        if (tipo == TipoOrganizacao.CONSELHO) {
             if (!isGlobal) {
                 throw new AccessDeniedException(
                         "Apenas o Pároco ou Admin podem definir membros e secretários do Conselho");
@@ -175,7 +180,7 @@ public class AdicionarVinculoUseCase {
                 vinculoRepository.save(old);
 
                 // Transição: rebaixar coordenador anterior para papel de membro ativo
-                String papelRebaixado = PapelOrganizacional.MEMBRO_ATIVO.name();
+                String papelRebaixado = PapeisPorTipoOrganizacao.papelDeMembro(tipo, subtipoDe(organizacaoId)).name();
                 var membroAnteriorOpt = vinculoRepository.findByFielIdAndOrganizacaoIdAndPapelAndIgrejaVinculoId(
                         old.getFielId(), organizacaoId, papelRebaixado, igrejaVinculoId);
                 if (membroAnteriorOpt.isPresent()) {
@@ -206,5 +211,9 @@ public class AdicionarVinculoUseCase {
         entity.setAtivo(true);
 
         return vinculoRepository.save(entity).getId();
+    }
+
+    private SubtipoConselho subtipoDe(UUID organizacaoId) {
+        return organizacaoRepository.findById(organizacaoId).map(OrganizacaoEntity::getSubtipoConselho).orElse(null);
     }
 }

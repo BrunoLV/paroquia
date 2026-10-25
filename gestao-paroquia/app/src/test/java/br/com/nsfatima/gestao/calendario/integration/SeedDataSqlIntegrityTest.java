@@ -11,6 +11,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniaoId;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusAta;
 import br.com.nsfatima.gestao.conselho.domain.model.TipoReuniao;
@@ -367,6 +370,23 @@ public class SeedDataSqlIntegrityTest {
                     WHERE m.organizacao_id = o.id AND m.ativo AND m.papel = 'secretario-grupo'
                       AND f.nome = o.vice_coordenador)
                 """, String.class)).as("O vice-coordenador do conselho é membro, com o papel de vice").isEmpty();
+    }
+
+    @Test
+    void todoVinculoDaMassaDeveTerPapelValidoParaOTipoDaOrganizacao() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        List<String> invalidos = jdbcTemplate.query("""
+                SELECT o.nome || ': ' || m.papel, o.tipo, m.papel
+                FROM calendario.membro_grupo m JOIN calendario.organizacao o ON o.id = m.organizacao_id
+                """, (rs, i) -> PapeisPorTipoOrganizacao.aceita(TipoOrganizacao.valueOf(rs.getString(2)),
+                        PapelOrganizacional.fromStoredValue(rs.getString(3))) ? null : rs.getString(1))
+                .stream().filter(Objects::nonNull).toList();
+
+        assertThat(invalidos).as("Vínculos com papel que o tipo de organização não admite").isEmpty();
     }
 
     private AtaReuniao ata(String id) {

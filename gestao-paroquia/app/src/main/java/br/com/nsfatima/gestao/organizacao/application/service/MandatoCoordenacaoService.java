@@ -11,6 +11,7 @@ import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioExc
 import br.com.nsfatima.gestao.organizacao.domain.model.FuncaoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.MandatoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.MandatoCoordenacaoRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -78,6 +79,10 @@ public class MandatoCoordenacaoService {
         }
         if (!fielRepository.existsById(fielId)) {
             throw new OrganizacaoNegocioException("Fiel não encontrado: " + fielId);
+        }
+        if (!PapeisPorTipoOrganizacao.aceita(organizacao.getTipo(), funcao.papelEquivalente())) {
+            throw new OrganizacaoNegocioException("Organização do tipo " + organizacao.getTipo()
+                    + " não admite a função " + funcao + ".");
         }
         if (membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId).isEmpty()) {
             throw new OrganizacaoNegocioException("O fiel precisa ser membro ativo da organização para coordená-la.");
@@ -210,7 +215,10 @@ public class MandatoCoordenacaoService {
     }
 
     private void desinvestir(MandatoCoordenacao mandato) {
-        aplicarPapel(mandato, PapelOrganizacional.MEMBRO_ATIVO);
+        PapelOrganizacional membroComum = organizacaoRepository.findById(mandato.getOrganizacaoId())
+                .map(o -> PapeisPorTipoOrganizacao.papelDeMembro(o.getTipo(), o.getSubtipoConselho()))
+                .orElse(PapelOrganizacional.MEMBRO_ATIVO);
+        aplicarPapel(mandato, membroComum);
         espelhar(mandato, null);
     }
 

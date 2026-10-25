@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.calendario.domain.policy.CompatibilidadePapelOrgan
 import br.com.nsfatima.gestao.calendario.domain.policy.ConselhoCompatibilidadePapelPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.MovimentoCompatibilidadePapelPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.PastoralCompatibilidadePapelPolicy;
+import br.com.nsfatima.gestao.calendario.domain.policy.ServicoParoquialCompatibilidadePapelPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.IntegridadeCalendarioPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.PeriodoOperacionalPolicy;
 import br.com.nsfatima.gestao.calendario.domain.policy.AnoParoquialFechadoPolicy;
@@ -85,6 +86,11 @@ public class CalendarioDomainConfig {
     @Bean
     public CompatibilidadePapelOrganizacionalPolicy conselhoCompatibilidadePapelPolicy() {
         return new ConselhoCompatibilidadePapelPolicy();
+    }
+
+    @Bean
+    public CompatibilidadePapelOrganizacionalPolicy servicoParoquialCompatibilidadePapelPolicy() {
+        return new ServicoParoquialCompatibilidadePapelPolicy();
     }
 
     @Bean
