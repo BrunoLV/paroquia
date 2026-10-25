@@ -61,6 +61,7 @@ import {
   isAdmin,
 } from '@/contextos/iam/presentation/auth/permissions';
 import { IdentidadeVisualTab } from '@/contextos/governanca/presentation/components/configuracoes/IdentidadeVisualTab';
+import { PrivacidadeDpoTab } from '@/contextos/governanca/presentation/components/configuracoes/PrivacidadeDpoTab';
 import ImportModal from '@/contextos/importacao/presentation/components/ImportModal';
 import PageHeader from '@/shared/presentation/components/PageHeader';
 import StatusIcon from '@/shared/presentation/components/StatusIcon';
@@ -437,6 +438,9 @@ export const Configuracoes = () => {
           {canManageIdentidadeVisual(user) && (
             <Tab value="identidade-visual" label="Identidade Visual" {...a11yProps('identidade-visual')} sx={{ fontWeight: 600 }} />
           )}
+          {canManageIdentidadeVisual(user) && (
+            <Tab value="privacidade" label="Privacidade & DPO (LGPD)" {...a11yProps('privacidade')} sx={{ fontWeight: 600 }} />
+          )}
           {isAuthorizedUsers && (
             <Tab value="usuarios" label="Membros / Usuários" {...a11yProps('usuarios')} sx={{ fontWeight: 600 }} />
           )}
@@ -539,6 +543,13 @@ export const Configuracoes = () => {
       {canManageIdentidadeVisual(user) && (
         <CustomTabPanel value="identidade-visual" currentValue={tabValue}>
           <IdentidadeVisualTab />
+        </CustomTabPanel>
+      )}
+
+      {/* Tab: Privacidade & DPO */}
+      {canManageIdentidadeVisual(user) && (
+        <CustomTabPanel value="privacidade" currentValue={tabValue}>
+          <PrivacidadeDpoTab />
         </CustomTabPanel>
       )}
 

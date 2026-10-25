@@ -2,7 +2,7 @@ import SearchableSelect from '@/shared/presentation/components/SearchableSelect'
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Card, CardContent, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, InputAdornment, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Card, CardContent, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, Grid, InputAdornment, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { fetchAddressByCep } from '@/shared/infrastructure/external/viaCep';
 import BadgeIcon from '@mui/icons-material/Badge';
@@ -15,6 +15,7 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import SaveIcon from '@mui/icons-material/Save';
+import SecurityIcon from '@mui/icons-material/Security';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import { Fiel, Organizacao, UpdateFielPayload } from '@/shared/domain/types/types';
 import {
@@ -153,6 +154,24 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
   const paisOrigem = watch('paisOrigem');
   const tipoDocumentoEstrangeiro = watch('tipoDocumentoEstrangeiro');
   const estrangeiro = paisOrigem !== 'BRA';
+  const dataNascimento = watch('dataNascimento');
+
+  const isMenor = (() => {
+    if (!dataNascimento) return false;
+    const parts = dataNascimento.split('-');
+    if (parts.length === 3) {
+      const ano = parseInt(parts[0], 10);
+      const mes = parseInt(parts[1], 10) - 1;
+      const dia = parseInt(parts[2], 10);
+      const nasc = new Date(ano, mes, dia);
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - nasc.getFullYear();
+      const m = hoje.getMonth() - nasc.getMonth();
+      if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+      return idade < 18;
+    }
+    return false;
+  })();
 
   const handleVincular = () => {
     if (!destino) return;
@@ -686,6 +705,106 @@ export const FielEditModal: React.FC<FielEditModalProps> = ({
                     </Stack>
                   </Grid>
                 </Grid>
+              </CardContent>
+            </Card>
+
+            {/* Privacidade e Consentimento LGPD */}
+            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
+                  <SecurityIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Privacidade e consentimento (LGPD)
+                  </Typography>
+                </Stack>
+                <Stack spacing={1.5}>
+                  {isMenor && (
+                    <Alert severity="info" sx={{ mb: 1 }}>
+                      <strong>Salvaguarda de Menores (Art. 14, § 1º da LGPD)</strong>
+                      <br />
+                      O titular é menor de 18 anos. O consentimento deve ser outorgado por pelo menos um dos pais ou pelo responsável legal.
+                    </Alert>
+                  )}
+                  {isMenor && (
+                    <Grid container spacing={2} sx={{ mb: 1 }}>
+                      <Grid size={{ xs: 12, sm: 7 }}>
+                        <Controller
+                          name="responsavelMenorNome"
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              value={field.value ?? ''}
+                              required
+                              fullWidth
+                              size="small"
+                              label="Nome do responsável legal"
+                              placeholder="Nome completo do pai, mãe ou tutor"
+                              error={Boolean(errors.responsavelMenorNome)}
+                              helperText={errors.responsavelMenorNome?.message}
+                            />
+                          )}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 5 }}>
+                        <Controller
+                          name="responsavelMenorCpf"
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              value={field.value ?? ''}
+                              required
+                              fullWidth
+                              size="small"
+                              label="CPF do responsável legal"
+                              placeholder="000.000.000-00"
+                              onChange={(e) => field.onChange(formatCpf(e.target.value))}
+                              error={Boolean(errors.responsavelMenorCpf)}
+                              helperText={errors.responsavelMenorCpf?.message}
+                            />
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                  )}
+                  <Controller
+                    name="termoConsentimentoAceito"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            checked={Boolean(field.value)}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                        }
+                        label={
+                          isMenor
+                            ? "Na qualidade de responsável legal, declaro ciência e autorizo o tratamento de dados pessoais do menor conforme o Termo Geral de Privacidade da Paróquia"
+                            : "Declaro ciência e concordância com o Termo Geral de Privacidade e Tratamento de Dados da Paróquia"
+                        }
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="usoImagemAutorizado"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            checked={Boolean(field.value)}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                        }
+                        label="Autorizo o uso de imagem e voz em registros fotográficos e transmissões de atividades pastorais"
+                      />
+                    )}
+                  />
+                </Stack>
               </CardContent>
             </Card>
 

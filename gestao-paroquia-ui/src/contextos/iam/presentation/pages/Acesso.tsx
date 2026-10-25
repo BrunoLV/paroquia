@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Paper,
   TextField,
   Typography,
@@ -14,6 +15,8 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import LoginIcon from '@mui/icons-material/Login';
+import ShieldIcon from '@mui/icons-material/Shield';
+import PolicyIcon from '@mui/icons-material/Policy';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
@@ -241,6 +244,31 @@ const Acesso = () => {
                     setIsResetModalOpen(true);
                   }}
                   sx={{ textTransform: 'none', fontWeight: 500 }}
+                />
+              </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center' }}>
+                <ActionButton
+                  title="Acessar Portal de Consentimento e Privacidade (Fiel / Clérigo)"
+                  label="Portal do Fiel: Consentimento LGPD"
+                  icon={<ShieldIcon />}
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  onClick={() => navigate('/portal/consentimento')}
+                  sx={{ textTransform: 'none', fontSize: '0.8rem', width: '100%' }}
+                />
+                <ActionButton
+                  title="Visualizar Política de Privacidade"
+                  label="Política de Privacidade"
+                  icon={<PolicyIcon />}
+                  variant="text"
+                  size="small"
+                  color="inherit"
+                  onClick={() => navigate('/politica-privacidade')}
+                  sx={{ textTransform: 'none', fontSize: '0.75rem', color: 'text.secondary' }}
                 />
               </Box>
             </Box>

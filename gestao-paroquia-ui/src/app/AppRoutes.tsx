@@ -26,6 +26,8 @@ const Notificacoes = lazy(() => import('@/contextos/iam/presentation/pages/Notif
 const AjustesCadastrais = lazy(() => import('@/contextos/governanca/presentation/pages/AjustesCadastrais'));
 const Reservas = lazy(() => import('@/contextos/reserva/presentation/pages/Reservas'));
 const UnidadesTerritoriais = lazy(() => import('@/contextos/organizacao/presentation/pages/UnidadesTerritoriais'));
+const PortalConsentimento = lazy(() => import('@/contextos/governanca/presentation/pages/PortalConsentimentoPage'));
+const PoliticaPrivacidade = lazy(() => import('@/contextos/governanca/presentation/pages/PoliticaPrivacidadePage'));
 
 const RouteFallback = () => (
   <Box sx={{p: 4}}>
@@ -74,6 +76,8 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/acesso" element={<RouteContent><Acesso /></RouteContent>} />
+      <Route path="/portal/consentimento" element={<RouteContent><PortalConsentimento /></RouteContent>} />
+      <Route path="/politica-privacidade" element={<RouteContent><PoliticaPrivacidade /></RouteContent>} />
       <Route
         path="/*"
         element={

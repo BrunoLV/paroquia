@@ -42,6 +42,61 @@ function validarIdentificacaoCivil(
   }
 }
 
+function calcularIdade(dataNascStr?: string): number | null {
+  if (!dataNascStr) return null;
+  const parts = dataNascStr.split('-');
+  if (parts.length === 3) {
+    const ano = parseInt(parts[0], 10);
+    const mes = parseInt(parts[1], 10) - 1;
+    const dia = parseInt(parts[2], 10);
+    const nasc = new Date(ano, mes, dia);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+      idade--;
+    }
+    return idade;
+  }
+  const nasc = new Date(dataNascStr);
+  if (isNaN(nasc.getTime())) return null;
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - nasc.getFullYear();
+  const m = hoje.getMonth() - nasc.getMonth();
+  if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+    idade--;
+  }
+  return idade;
+}
+
+function validarSalvaguardaMenor(
+  data: {
+    dataNascimento?: string;
+    termoConsentimentoAceito?: boolean;
+    responsavelMenorNome?: string;
+    responsavelMenorCpf?: string;
+  },
+  ctx: z.RefinementCtx,
+) {
+  const idade = calcularIdade(data.dataNascimento);
+  if (idade !== null && idade < 18 && data.termoConsentimentoAceito) {
+    if (!data.responsavelMenorNome?.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['responsavelMenorNome'],
+        message: 'Nome do responsável legal é obrigatório para menores de 18 anos (Art. 14 LGPD)',
+      });
+    }
+    if (!data.responsavelMenorCpf?.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['responsavelMenorCpf'],
+        message: 'CPF do responsável legal é obrigatório para menores de 18 anos',
+      });
+    }
+  }
+}
+
 function validarEnderecoCompleto(
   endereco: {
     logradouro?: string;
@@ -91,11 +146,16 @@ export const fielCreateSchema = z
     unidadeTerritorialId: z.string().min(1, 'Selecione a igreja que frequenta'),
     isDizimista: z.boolean(),
     permitirDivulgacaoAniversario: z.boolean(),
+    termoConsentimentoAceito: z.boolean().optional(),
+    usoImagemAutorizado: z.boolean().optional(),
+    responsavelMenorNome: z.string().optional(),
+    responsavelMenorCpf: z.string().optional(),
     endereco: enderecoSchema,
   })
   .superRefine((data, ctx) => {
     validarIdentificacaoCivil(data, ctx);
     validarEnderecoCompleto(data.endereco, ctx);
+    validarSalvaguardaMenor(data, ctx);
   });
 
 export type FielCreateFormInput = z.infer<typeof fielCreateSchema>;
@@ -123,11 +183,16 @@ export const fielEditSchema = z
     unidadeTerritorialId: z.string().min(1, 'Selecione a igreja que frequenta'),
     isDizimista: z.boolean(),
     permitirDivulgacaoAniversario: z.boolean(),
+    termoConsentimentoAceito: z.boolean().optional(),
+    usoImagemAutorizado: z.boolean().optional(),
+    responsavelMenorNome: z.string().optional(),
+    responsavelMenorCpf: z.string().optional(),
     endereco: enderecoSchema,
   })
   .superRefine((data, ctx) => {
     validarIdentificacaoCivil(data, ctx);
     validarEnderecoCompleto(data.endereco, ctx);
+    validarSalvaguardaMenor(data, ctx);
   });
 
 export type FielEditFormInput = z.infer<typeof fielEditSchema>;

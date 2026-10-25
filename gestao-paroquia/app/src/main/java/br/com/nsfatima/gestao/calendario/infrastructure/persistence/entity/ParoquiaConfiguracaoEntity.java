@@ -70,6 +70,18 @@ public class ParoquiaConfiguracaoEntity extends BaseAuditableEntity {
     @Column(name = "cor_secundaria_hex", nullable = false, length = 7)
     private String corSecundariaHex = "#808080";
 
+    /** Nome formal do Encarregado de Proteção de Dados (DPO) institucional. */
+    @Column(name = "dpo_nome", length = 150)
+    private String dpoNome;
+
+    /** E-mail institucional oficial do DPO para atendimento aos titulares e à ANPD. */
+    @Column(name = "dpo_email", length = 150)
+    private String dpoEmail;
+
+    /** Telefone institucional para contato com o DPO. */
+    @Column(name = "dpo_telefone", length = 20)
+    private String dpoTelefone;
+
     public UUID getId() {
         return id;
     }
@@ -163,6 +175,30 @@ public class ParoquiaConfiguracaoEntity extends BaseAuditableEntity {
 
     public void setCorSecundariaHex(String corSecundariaHex) {
         this.corSecundariaHex = corSecundariaHex;
+    }
+
+    public String getDpoNome() {
+        return dpoNome;
+    }
+
+    public void setDpoNome(String dpoNome) {
+        this.dpoNome = dpoNome;
+    }
+
+    public String getDpoEmail() {
+        return dpoEmail;
+    }
+
+    public void setDpoEmail(String dpoEmail) {
+        this.dpoEmail = dpoEmail;
+    }
+
+    public String getDpoTelefone() {
+        return dpoTelefone;
+    }
+
+    public void setDpoTelefone(String dpoTelefone) {
+        this.dpoTelefone = dpoTelefone;
     }
 
     /**

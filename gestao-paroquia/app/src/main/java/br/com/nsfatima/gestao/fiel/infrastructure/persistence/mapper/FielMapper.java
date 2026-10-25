@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper;
 
+import br.com.nsfatima.gestao.fiel.api.v1.dto.ConsentimentoLgpdDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.ContatoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.EnderecoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
@@ -51,7 +52,14 @@ public class FielMapper {
                         unidade.getTipo().name()),
                 fiel.isDizimista(),
                 fiel.isPermitirDivulgacaoAniversario(),
-                fiel.isAtivo());
+                fiel.isAtivo(),
+                new ConsentimentoLgpdDto(
+                        fiel.isTermoConsentimentoAceito(),
+                        fiel.getDataHoraConsentimentoUtc(),
+                        fiel.getIpConsentimento(),
+                        fiel.getVersaoTermoConsentimento(),
+                        fiel.isUsoImagemAutorizado(),
+                        fiel.isPermitirDivulgacaoAniversario()));
     }
 
     public FielContatoResponse toContatoResponse(FielEntity fiel) {

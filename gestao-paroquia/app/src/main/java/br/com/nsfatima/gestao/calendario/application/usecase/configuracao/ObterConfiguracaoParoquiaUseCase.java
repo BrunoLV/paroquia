@@ -69,7 +69,10 @@ public class ObterConfiguracaoParoquiaUseCase {
                 temClaro,
                 temEscuro,
                 "/api/v1/configuracao-paroquia/logo/claro.png",
-                "/api/v1/configuracao-paroquia/logo/escuro.png"
+                "/api/v1/configuracao-paroquia/logo/escuro.png",
+                config != null ? config.getDpoNome() : null,
+                config != null ? config.getDpoEmail() : null,
+                config != null ? config.getDpoTelefone() : null
         );
     }
 
