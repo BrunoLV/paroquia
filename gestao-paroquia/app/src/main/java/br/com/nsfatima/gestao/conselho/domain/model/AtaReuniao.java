@@ -267,6 +267,13 @@ public final class AtaReuniao {
         }
     }
 
+    /** Retrato completo do agregado, usado pela persistência e pela trilha de auditoria. */
+    public Estado estado() {
+        return new Estado(id, tipo, organizacaoConvocanteId, organizacaoAssociadaId, redatorId, criadoEmUtc,
+                ataRetificadaId, justificativaRetificacao, conteudo, status, numero, ano, membrosConvocados,
+                homologadorId, motivoVeto, decididoEmUtc);
+    }
+
     /** Regras do tipo de reunião desta ata. */
     public RegrasTipoReuniao regras() {
         return RegrasTipoReuniaoPolicy.para(tipo);

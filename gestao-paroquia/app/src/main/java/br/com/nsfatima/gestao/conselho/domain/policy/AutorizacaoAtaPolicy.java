@@ -49,7 +49,8 @@ public final class AutorizacaoAtaPolicy {
      * @return as ações permitidas, vazio se o ator não pode nem ler
      */
     public static Set<AcaoAta> acoesPermitidas(AtorOrganizacao ator, RegrasTipoReuniao regras, StatusAta status) {
-        boolean leitor = leituraEmQualquerOrganizacao(ator.papeisGlobais()) || !ator.papeisNaOrganizacao().isEmpty();
+        boolean leitor = leituraEmQualquerOrganizacao(ator.papeisGlobais())
+                || !ator.papeisNaOrganizacao().isEmpty() || !ator.papeisNaAssociada().isEmpty();
         if (!leitor) {
             return Set.of();
         }

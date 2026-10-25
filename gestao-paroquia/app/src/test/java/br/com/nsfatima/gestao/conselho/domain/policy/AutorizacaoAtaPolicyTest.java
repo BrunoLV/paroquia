@@ -91,6 +91,17 @@ class AutorizacaoAtaPolicyTest {
     }
 
     @Test
+    @DisplayName("na reunião conjunta, o secretário do órgão associado só lê: redigir é do convocante")
+    void orgaoAssociadoSoLe() {
+        RegrasTipoReuniao conjunta = RegrasTipoReuniaoPolicy.para(TipoReuniao.REUNIAO_CONJUNTA_CPP_CAEP);
+        AtorOrganizacao secretarioDoCaep = new AtorOrganizacao(Set.of(), Set.of(),
+                Set.of(PapelOrganizacional.SECRETARIO_CONSELHO));
+
+        assertThat(AutorizacaoAtaPolicy.acoesPermitidas(secretarioDoCaep, conjunta, StatusAta.RASCUNHO))
+                .containsExactlyInAnyOrder(AcaoAta.LER, AcaoAta.EXPORTAR);
+    }
+
+    @Test
     @DisplayName("secretaria paroquial lê qualquer órgão e vê a trilha")
     void secretariaParoquial() {
         AtorOrganizacao secretaria = ator(Set.of(PapelGlobal.SECRETARIA_PAROQUIAL), Set.of());
