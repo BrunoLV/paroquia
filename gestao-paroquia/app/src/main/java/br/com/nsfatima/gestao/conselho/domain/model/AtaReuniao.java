@@ -9,7 +9,7 @@ import br.com.nsfatima.gestao.conselho.domain.policy.RegrasTipoReuniao;
 import br.com.nsfatima.gestao.conselho.domain.policy.RegrasTipoReuniaoPolicy;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +30,9 @@ import java.util.UUID;
  * integral e validada contra as regras do tipo. As organizações são referenciadas apenas por ID.</p>
  */
 public final class AtaReuniao {
+
+    /** A série numérica vira no ano civil de Brasília, não no de Greenwich. */
+    private static final ZoneId FUSO_DA_NUMERACAO = ZoneId.of("America/Sao_Paulo");
 
     /** Estado completo para reconstituir o agregado a partir da persistência. */
     public record Estado(
@@ -196,7 +199,7 @@ public final class AtaReuniao {
     }
 
     private void selar(StatusAta destino, NumeradorAta numerador, Instant agora) {
-        int anoDaAta = agora.atZone(ZoneOffset.UTC).getYear();
+        int anoDaAta = agora.atZone(FUSO_DA_NUMERACAO).getYear();
         this.numero = numerador.proximo(organizacaoConvocanteId, anoDaAta);
         this.ano = anoDaAta;
         this.status = destino;

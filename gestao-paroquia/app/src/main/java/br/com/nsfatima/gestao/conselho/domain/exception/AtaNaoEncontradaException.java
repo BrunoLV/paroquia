@@ -11,4 +11,8 @@ public class AtaNaoEncontradaException extends RuntimeException {
     public AtaNaoEncontradaException(UUID id) {
         super("Ata não encontrada com ID: " + id);
     }
+
+    public AtaNaoEncontradaException(String mensagem) {
+        super(mensagem);
+    }
 }

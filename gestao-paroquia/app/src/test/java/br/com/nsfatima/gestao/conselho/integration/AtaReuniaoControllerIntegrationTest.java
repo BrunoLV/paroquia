@@ -2,6 +2,8 @@ package br.com.nsfatima.gestao.conselho.integration;
 
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno.Vinculo;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,17 +20,22 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -293,5 +300,93 @@ class AtaReuniaoControllerIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(12))
                 .andExpect(jsonPath("$[0].codigo").value("REUNIAO_CPP"))
                 .andExpect(jsonPath("$[0].exigeHomologacao").value(true));
+    }
+
+    @Test
+    @DisplayName("exporta ata homologada em PDF como documento oficial, com nome, tipo e sem cache")
+    void exportaPdfOficial() throws Exception {
+        String id = criarPendente().get("id").asString();
+        mockMvc.perform(post(ATAS + "/" + id + "/homologacao").with(paroco())).andExpect(status().isOk());
+
+        MvcResult resultado = mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "PDF")
+                        .with(secretario(cppA)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("Cache-Control", containsString("no-store")))
+                .andExpect(header().string("Content-Disposition", matchesPattern(
+                        "attachment; filename=\"ata-001-\\d{4}-reuniao-cpp\\.pdf\".*")))
+                .andReturn();
+
+        byte[] pdf = resultado.getResponse().getContentAsByteArray();
+        assertThat(new String(pdf, 0, 5, StandardCharsets.US_ASCII)).isEqualTo("%PDF-");
+    }
+
+    @Test
+    @DisplayName("exporta minuta em Word, narrativa, e o arquivo abre como .docx")
+    void exportaMinutaDocx() throws Exception {
+        String id = criarPendente().get("id").asString();
+
+        MvcResult resultado = mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "DOCX")
+                        .param("layout", "NARRATIVA").with(paroco()))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", containsString("ata-minuta-reuniao-cpp.docx")))
+                .andReturn();
+
+        try (XWPFDocument docx = new XWPFDocument(new ByteArrayInputStream(
+                resultado.getResponse().getContentAsByteArray()));
+             XWPFWordExtractor extrator = new XWPFWordExtractor(docx)) {
+            assertThat(extrator.getText()).contains("MINUTA — SEM EFEITO")
+                    .contains("realizou-se, em caráter ordinário");
+        }
+    }
+
+    @Test
+    @DisplayName("quem não pode ler a ata não a exporta: 404")
+    void exportacaoForaDoEscopo() throws Exception {
+        String id = criarRascunho().get("id").asString();
+
+        mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "PDF").with(secretario(cppB)))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "PDF")
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("cada exportação fica na trilha de auditoria, com formato, layout e situação")
+    void exportacaoAuditada() throws Exception {
+        String id = criarPendente().get("id").asString();
+        mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "PDF").with(secretario(cppA)))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(ATAS + "/" + id + "/exportacao").param("formato", "DOCX").param("conteudo",
+                        "SOMENTE_DECISOES").with(paroco()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get(ATAS + "/" + id + "/historico").with(paroco()))
+                .andExpect(jsonPath("$[?(@.acao == 'EXPORTAR_PDF')].ator").value("usuario-secretario-conselho"))
+                .andExpect(jsonPath("$[?(@.acao == 'EXPORTAR_DOCX')].ator").value("paroco"));
+        String parametros = jdbc.queryForObject("SELECT valores_posteriores FROM calendario.ata_historico "
+                + "WHERE ata_id = ?::uuid AND acao = 'EXPORTAR_DOCX'", String.class, id);
+        assertThat(parametros).contains("\"conteudo\":\"SOMENTE_DECISOES\"")
+                .contains("\"status\":\"PENDENTE_HOMOLOGACAO\"");
+    }
+
+    @Test
+    @DisplayName("compilação inclui só atas seladas do escopo e responde 404 quando não há nenhuma")
+    void compilacao() throws Exception {
+        mockMvc.perform(get(ATAS + "/exportacao").param("organizacaoId", cppA.toString()).param("formato", "PDF")
+                        .with(paroco()))
+                .andExpect(status().isNotFound());
+
+        String id = criarPendente().get("id").asString();
+        mockMvc.perform(post(ATAS + "/" + id + "/homologacao").with(paroco())).andExpect(status().isOk());
+
+        mockMvc.perform(get(ATAS + "/exportacao").param("organizacaoId", cppA.toString()).param("formato", "PDF")
+                        .with(secretario(cppA)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", containsString("livro-de-atas.pdf")));
+        mockMvc.perform(get(ATAS + "/exportacao").param("organizacaoId", cppA.toString()).param("formato", "PDF")
+                        .with(secretario(cppB)))
+                .andExpect(status().isNotFound());
     }
 }
