@@ -181,13 +181,11 @@ export const canApprove = (user: User | null): boolean => {
 };
 
 /**
- * Homologação ou veto de atas e decisões dos conselhos (CPP, CPC, CAE):
- * exclusivamente Pároco (ou Bispo Diocesano) conforme Cân. 536 §2.
+ * Dica de interface: quem pode ter papel de redator de ata em algum órgão (secretário de conselho ou de grupo,
+ * coordenador). A autorização real é do servidor, por órgão e tipo de reunião; aqui só se decide se vale a pena
+ * oferecer o botão "Nova ata". A homologação e o veto são ações calculadas pelo servidor em `ata.acoes`.
  */
-export const canHomologarDecisao = (user: User | null): boolean => {
-  if (!user) return false;
-  return isParoco(user);
-};
+export const canRedigirAta = (user: User | null): boolean => isSecretario(user) || isCoordenador(user);
 
 /**
  * Trava, abertura e conclusão do Ano Paroquial:
