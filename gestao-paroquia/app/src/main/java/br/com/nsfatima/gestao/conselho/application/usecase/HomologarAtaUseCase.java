@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.conselho.application.dto.AtaVisao;
 import br.com.nsfatima.gestao.conselho.application.dto.AtorAutenticado;
 import br.com.nsfatima.gestao.conselho.application.service.AtaAuditoriaService;
 import br.com.nsfatima.gestao.conselho.application.service.AtaVisaoMontador;
+import br.com.nsfatima.gestao.conselho.application.service.CompatibilidadeOrgaoAta;
 import br.com.nsfatima.gestao.conselho.application.service.ConselhoAuthorizationService;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
 import br.com.nsfatima.gestao.conselho.domain.policy.AcaoAta;
@@ -25,13 +26,16 @@ public class HomologarAtaUseCase {
 
     private final AtaRepository repository;
     private final ConselhoAuthorizationService autorizacao;
+    private final CompatibilidadeOrgaoAta compatibilidade;
     private final AtaAuditoriaService auditoria;
     private final AtaVisaoMontador montador;
 
     public HomologarAtaUseCase(AtaRepository repository, ConselhoAuthorizationService autorizacao,
-                               AtaAuditoriaService auditoria, AtaVisaoMontador montador) {
+                               CompatibilidadeOrgaoAta compatibilidade, AtaAuditoriaService auditoria,
+                               AtaVisaoMontador montador) {
         this.repository = repository;
         this.autorizacao = autorizacao;
+        this.compatibilidade = compatibilidade;
         this.auditoria = auditoria;
         this.montador = montador;
     }
@@ -46,6 +50,7 @@ public class HomologarAtaUseCase {
     public AtaVisao execute(UUID id) {
         AtorAutenticado ator = autorizacao.atorAtual();
         AtaReuniao ata = autorizacao.carregar(id, ator, AcaoAta.HOMOLOGAR);
+        compatibilidade.exigir(ata);
 
         String antes = auditoria.capturar(ata);
         ata.homologar(ator.login(), repository, Instant.now());

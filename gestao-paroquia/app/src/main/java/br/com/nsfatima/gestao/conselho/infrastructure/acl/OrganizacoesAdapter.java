@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * Camada anticorrupção sobre o contexto de organizações: lê pela porta de domínio pública e devolve ao
- * conselho apenas id, tipo e subtipo, sem expor o agregado de Organização.
+ * conselho apenas id, tipo, subtipo e organização-mãe, sem expor o agregado de Organização.
  */
 @Component
 public class OrganizacoesAdapter implements OrganizacoesPort {
@@ -29,7 +29,7 @@ public class OrganizacoesAdapter implements OrganizacoesPort {
     public Optional<ReferenciaOrganizacao> buscar(UUID id) {
         return organizacoes.findById(id)
                 .filter(Organizacao::isAtivo)
-                .map(o -> new ReferenciaOrganizacao(o.getId(), o.getTipo(), o.getSubtipoConselho()));
+                .map(o -> new ReferenciaOrganizacao(o.getId(), o.getTipo(), o.getSubtipoConselho(), o.getParentId()));
     }
 
     @Override

@@ -114,17 +114,23 @@ public final class AtaReuniao {
                 redatorId, agora, null, null, conteudo, StatusAta.RASCUNHO, null, null, null, null, null, null));
     }
 
-    private static void exigirOrganizacoesCompativeis(TipoReuniao tipo, ReferenciaOrganizacao convocante,
-                                                      ReferenciaOrganizacao associada) {
+    /**
+     * Confere se o tipo de reunião admite os órgãos informados. Vale na criação e deve ser repetida quando a ata
+     * avança (submissão e homologação), pois os órgãos podem ter mudado desde o rascunho.
+     *
+     * @throws TipoReuniaoIncompativelException se o convocante não pode convocar o tipo ou o associado não serve
+     */
+    public static void exigirOrganizacoesCompativeis(TipoReuniao tipo, ReferenciaOrganizacao convocante,
+                                                     ReferenciaOrganizacao associada) {
         RegrasTipoReuniao regras = RegrasTipoReuniaoPolicy.para(tipo);
         if (!regras.aceitaConvocante(convocante)) {
             throw new TipoReuniaoIncompativelException(
                     "A organização informada não pode convocar: " + tipo.getRotulo() + ".");
         }
         if (regras.exigeOrganizacaoAssociada()) {
-            if (associada == null || !regras.aceitaAssociada(associada)) {
-                throw new TipoReuniaoIncompativelException(
-                        "A reunião conjunta exige a organização associada (CAEP).");
+            if (associada == null || !regras.aceitaAssociada(convocante, associada)) {
+                throw new TipoReuniaoIncompativelException("A reunião conjunta exige, como organização associada, "
+                        + "o CAEP da mesma unidade do órgão convocante.");
             }
         } else if (associada != null) {
             throw new TipoReuniaoIncompativelException("Este tipo de reunião não admite organização associada.");

@@ -73,6 +73,9 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 ### RN-CON-04: Regras por Tipo de Reunião
 - Cada tipo define quais órgãos o convocam, se exige homologação, se apura quórum, como se registra a presença, se admite votação e quais papéis redigem (tabela da seção 3). Um tipo só pode ser convocado por órgão compatível; a reunião conjunta exige o Conselho de Assuntos Econômicos (CAEP) como órgão associado.
 - Os tipos que não exigem homologação terminam em `REGISTRADA`, selados e imutáveis, sem passar pelo Pároco.
+- **Consistência entre tipo e órgão:** a coluna "Convocante" da tabela da seção 3 é a regra, e ela é conferida em quatro pontos: na criação da ata; de novo ao editar o rascunho, ao submeter e ao homologar, porque o órgão pode ter sido desativado ou ter mudado de natureza desde o rascunho (o veto continua possível); no formulário, que só oferece os tipos e órgãos pelos quais o usuário redige; e por um gatilho do banco, que impede gravar ata de tipo incompatível com o órgão mesmo por carga direta.
+- **Reunião conjunta:** o CAEP associado precisa ser da **mesma unidade** (mesma organização-mãe) do CPP convocante. Assim o quórum e os membros dos dois conselhos dizem respeito à mesma comunidade de fiéis. Um tipo que não é conjunta não admite órgão associado.
+- A "Reunião do CAEP" aceita o conselho econômico da paróquia e o das comunidades, pois não há outro tipo para as reuniões deste último.
 
 ### RN-CON-05: Presença e Quórum
 - A presença é **nominal** (lista de pessoas, identificadas pelo cadastro de fiéis, nunca digitadas) ou **por total de participantes**, conforme o tipo. Nos colegiados e nos organismos, só podem constar **membros ativos** do órgão (na reunião conjunta, dos dois órgãos); nas demais reuniões nominais, qualquer fiel cadastrado.

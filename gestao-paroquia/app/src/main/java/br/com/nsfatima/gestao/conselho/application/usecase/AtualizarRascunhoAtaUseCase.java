@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.conselho.application.dto.AtaVisao;
 import br.com.nsfatima.gestao.conselho.application.dto.AtorAutenticado;
 import br.com.nsfatima.gestao.conselho.application.service.AtaAuditoriaService;
 import br.com.nsfatima.gestao.conselho.application.service.AtaVisaoMontador;
+import br.com.nsfatima.gestao.conselho.application.service.CompatibilidadeOrgaoAta;
 import br.com.nsfatima.gestao.conselho.application.service.ConselhoAuthorizationService;
 import br.com.nsfatima.gestao.conselho.application.service.ValidadorPresencaAta;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
@@ -24,15 +25,17 @@ public class AtualizarRascunhoAtaUseCase {
     private final AtaRepository repository;
     private final ConselhoAuthorizationService autorizacao;
     private final ValidadorPresencaAta validadorPresenca;
+    private final CompatibilidadeOrgaoAta compatibilidade;
     private final AtaAuditoriaService auditoria;
     private final AtaVisaoMontador montador;
 
     public AtualizarRascunhoAtaUseCase(AtaRepository repository, ConselhoAuthorizationService autorizacao,
-                                       ValidadorPresencaAta validadorPresenca, AtaAuditoriaService auditoria,
-                                       AtaVisaoMontador montador) {
+                                       ValidadorPresencaAta validadorPresenca, CompatibilidadeOrgaoAta compatibilidade,
+                                       AtaAuditoriaService auditoria, AtaVisaoMontador montador) {
         this.repository = repository;
         this.autorizacao = autorizacao;
         this.validadorPresenca = validadorPresenca;
+        this.compatibilidade = compatibilidade;
         this.auditoria = auditoria;
         this.montador = montador;
     }
@@ -48,6 +51,7 @@ public class AtualizarRascunhoAtaUseCase {
     public AtaVisao execute(UUID id, ConteudoAta conteudo) {
         AtorAutenticado ator = autorizacao.atorAtual();
         AtaReuniao ata = autorizacao.carregar(id, ator, AcaoAta.REDIGIR);
+        compatibilidade.exigir(ata);
         validadorPresenca.validar(ata.regras(), conteudo, ata.getOrganizacaoConvocanteId(),
                 ata.getOrganizacaoAssociadaId());
         validadorPresenca.exigirRedatorPresente(ator, ata.regras(), conteudo, ata.getOrganizacaoConvocanteId());

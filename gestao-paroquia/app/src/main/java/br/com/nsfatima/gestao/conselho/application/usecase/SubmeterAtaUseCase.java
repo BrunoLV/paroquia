@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.conselho.application.dto.AtaVisao;
 import br.com.nsfatima.gestao.conselho.application.dto.AtorAutenticado;
 import br.com.nsfatima.gestao.conselho.application.service.AtaAuditoriaService;
 import br.com.nsfatima.gestao.conselho.application.service.AtaVisaoMontador;
+import br.com.nsfatima.gestao.conselho.application.service.CompatibilidadeOrgaoAta;
 import br.com.nsfatima.gestao.conselho.application.service.ConselhoAuthorizationService;
 import br.com.nsfatima.gestao.conselho.application.service.ValidadorPresencaAta;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
@@ -27,15 +28,17 @@ public class SubmeterAtaUseCase {
     private final AtaRepository repository;
     private final ConselhoAuthorizationService autorizacao;
     private final ValidadorPresencaAta validadorPresenca;
+    private final CompatibilidadeOrgaoAta compatibilidade;
     private final AtaAuditoriaService auditoria;
     private final AtaVisaoMontador montador;
 
     public SubmeterAtaUseCase(AtaRepository repository, ConselhoAuthorizationService autorizacao,
-                              ValidadorPresencaAta validadorPresenca, AtaAuditoriaService auditoria,
-                              AtaVisaoMontador montador) {
+                              ValidadorPresencaAta validadorPresenca, CompatibilidadeOrgaoAta compatibilidade,
+                              AtaAuditoriaService auditoria, AtaVisaoMontador montador) {
         this.repository = repository;
         this.autorizacao = autorizacao;
         this.validadorPresenca = validadorPresenca;
+        this.compatibilidade = compatibilidade;
         this.auditoria = auditoria;
         this.montador = montador;
     }
@@ -50,6 +53,7 @@ public class SubmeterAtaUseCase {
     public AtaVisao execute(UUID id) {
         AtorAutenticado ator = autorizacao.atorAtual();
         AtaReuniao ata = autorizacao.carregar(id, ator, AcaoAta.SUBMETER);
+        compatibilidade.exigir(ata);
         int membros = ata.regras().aplicaQuorum()
                 ? validadorPresenca.membros(ata.getOrganizacaoConvocanteId(), ata.getOrganizacaoAssociadaId()).size()
                 : 0;

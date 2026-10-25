@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { Card, CardContent, FormControl, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
@@ -19,7 +19,8 @@ interface AtaDadosCardProps {
 
 /** Cartão "Dados da reunião": tipo, órgãos, título, data, local, caráter e modalidade. */
 export const AtaDadosCard: React.FC<AtaDadosCardProps> = ({ tipos, regras, organizacoes, edicao }) => {
-  const { control, register, formState: { errors } } = useFormContext<AtaFormInput>();
+  const { control, register, setValue, formState: { errors } } = useFormContext<AtaFormInput>();
+  const convocanteId = useWatch({ control, name: 'organizacaoConvocanteId' });
   const locais = useLocaisAtivos();
 
   return (
@@ -44,6 +45,10 @@ export const AtaDadosCard: React.FC<AtaDadosCardProps> = ({ tipos, regras, organ
             <Controller name="organizacaoConvocanteId" control={control} render={({ field }) => (
               <FormControl fullWidth size="small">
                 <SearchableSelect {...field} labelId="ata-convocante" label="Órgão convocante" required
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setValue('organizacaoAssociadaId', '');
+                  }}
                   disabled={edicao || !regras} error={Boolean(errors.organizacaoConvocanteId)}
                   helperText={errors.organizacaoConvocanteId?.message}>
                   {convocantesDoTipo(organizacoes, regras).map((o) => <MenuItem key={o.id} value={o.id}>{o.nome}</MenuItem>)}
@@ -57,7 +62,7 @@ export const AtaDadosCard: React.FC<AtaDadosCardProps> = ({ tipos, regras, organ
                 <FormControl fullWidth size="small">
                   <SearchableSelect {...field} labelId="ata-associada" label="Conselho de Assuntos Econômicos (CAEP)"
                     required disabled={edicao}>
-                    {associadosDoTipo(organizacoes).map((o) => <MenuItem key={o.id} value={o.id}>{o.nome}</MenuItem>)}
+                    {associadosDoTipo(organizacoes, organizacoes.find((o) => o.id === convocanteId)).map((o) => <MenuItem key={o.id} value={o.id}>{o.nome}</MenuItem>)}
                   </SearchableSelect>
                 </FormControl>
               )} />

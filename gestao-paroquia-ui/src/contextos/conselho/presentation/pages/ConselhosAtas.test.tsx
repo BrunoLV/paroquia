@@ -261,4 +261,28 @@ describe('ConselhosAtas', () => {
     expect(await screen.findByRole('option', { name: 'João Pereira' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Maria da Silva' })).not.toBeInTheDocument();
   });
+
+  it('na reunião conjunta, só oferece o CAEP da mesma unidade do órgão convocante', async () => {
+    const user = userEvent.setup();
+    const conjunta = { ...tipoRegra('REUNIAO_CONJUNTA_CPP_CAEP', 'Reunião conjunta CPP e CAEP', 'CPP', ['cpp-1']),
+      exigeOrganizacaoAssociada: true };
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([conjunta]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true, parentId: 'matriz' },
+      { id: 'caep-1', nome: 'CAEP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CAEP', ativo: true, parentId: 'matriz' },
+      { id: 'caep-2', nome: 'CAEP Comunidade', tipo: 'CONSELHO', subtipoConselho: 'CAEP', ativo: true, parentId: 'comunidade' },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião conjunta CPP e CAEP' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Conselho de Assuntos Econômicos/i }));
+
+    expect(await screen.findByRole('option', { name: 'CAEP Matriz' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'CAEP Comunidade' })).not.toBeInTheDocument();
+  });
 });

@@ -21,6 +21,9 @@ export const convocantesDoTipo = (organizacoes: Organizacao[], regras: TipoReuni
   );
 };
 
-/** Órgão associado da reunião conjunta: sempre o conselho de assuntos econômicos (CAEP). */
-export const associadosDoTipo = (organizacoes: Organizacao[]): Organizacao[] =>
-  organizacoes.filter((o) => o.ativo && o.tipo === 'CONSELHO' && o.subtipoConselho === 'CAEP');
+/** Órgão associado da reunião conjunta: o CAEP da mesma unidade (mesma organização-mãe) do órgão convocante. */
+export const associadosDoTipo = (organizacoes: Organizacao[], convocante: Organizacao | undefined): Organizacao[] =>
+  convocante
+    ? organizacoes.filter((o) => o.ativo && o.tipo === 'CONSELHO' && o.subtipoConselho === 'CAEP'
+      && (o.parentId ?? null) === (convocante.parentId ?? null))
+    : [];

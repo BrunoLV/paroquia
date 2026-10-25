@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -41,10 +42,14 @@ public record RegrasTipoReuniao(
                 || subtiposConselho.contains(organizacao.subtipo());
     }
 
-    /** Indica se a organização pode figurar como segunda organização de uma reunião conjunta (o CAEP). */
-    public boolean aceitaAssociada(ReferenciaOrganizacao organizacao) {
+    /**
+     * Indica se a organização pode figurar como segunda organização de uma reunião conjunta: o CAEP da mesma
+     * unidade do órgão convocante, para que quórum e membros digam respeito à mesma comunidade de fiéis.
+     */
+    public boolean aceitaAssociada(ReferenciaOrganizacao convocante, ReferenciaOrganizacao associada) {
         return exigeOrganizacaoAssociada
-                && organizacao.tipo() == TipoOrganizacao.CONSELHO
-                && organizacao.subtipo() == SubtipoConselho.CAEP;
+                && associada.tipo() == TipoOrganizacao.CONSELHO
+                && associada.subtipo() == SubtipoConselho.CAEP
+                && Objects.equals(convocante.unidadeId(), associada.unidadeId());
     }
 }

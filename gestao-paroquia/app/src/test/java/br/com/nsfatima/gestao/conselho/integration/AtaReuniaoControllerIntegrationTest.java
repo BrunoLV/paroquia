@@ -7,6 +7,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -57,6 +58,8 @@ class AtaReuniaoControllerIntegrationTest {
     private ObjectMapper objectMapper;
     @Autowired
     private JdbcTemplate jdbc;
+    @Autowired
+    private EntityManager entityManager;
 
     private UUID cppA;
     private UUID cppB;
@@ -236,6 +239,24 @@ class AtaReuniaoControllerIntegrationTest {
         mockMvc.perform(post(ATAS).with(secretarioComConta()).contentType(MediaType.APPLICATION_JSON)
                         .content(comFuncao.replace(outro, outro + "\"funcao\":\"Chefe\",")))
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @DisplayName("órgão desativado depois do rascunho não deixa a ata avançar, nem ser homologada, mas ainda ser vetada")
+    void orgaoDesativadoNaoDeixaAvancar() throws Exception {
+        String rascunho = criarRascunho().get("id").asString();
+        String pendente = criarPendente().get("id").asString();
+        jdbc.update("UPDATE calendario.organizacao SET ativo = FALSE WHERE id = ?", cppA);
+        entityManager.clear();
+
+        mockMvc.perform(post(ATAS + "/" + rascunho + "/submissao").with(secretario(cppA)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("inativo")));
+        mockMvc.perform(post(ATAS + "/" + pendente + "/homologacao").with(paroco()))
+                .andExpect(status().isUnprocessableEntity());
+        mockMvc.perform(post(ATAS + "/" + pendente + "/veto").with(paroco()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"motivo\":\"Órgão desativado\"}"))
+                .andExpect(status().isOk());
     }
 
     @Test
