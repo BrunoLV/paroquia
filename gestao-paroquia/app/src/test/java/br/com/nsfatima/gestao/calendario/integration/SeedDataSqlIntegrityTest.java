@@ -10,6 +10,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
+import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniaoId;
+import br.com.nsfatima.gestao.conselho.domain.model.StatusAta;
+import br.com.nsfatima.gestao.conselho.domain.repository.AtaRepository;
 import br.com.nsfatima.gestao.sacramento.application.service.RequisitosAssentoRegistry;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramentalId;
@@ -48,6 +52,9 @@ public class SeedDataSqlIntegrityTest {
 
     @Autowired
     private RequisitosAssentoRegistry requisitosAssento;
+
+    @Autowired
+    private AtaRepository ataRepository;
 
     @BeforeEach
     @AfterEach
@@ -279,6 +286,30 @@ public class SeedDataSqlIntegrityTest {
                     .as("Livro reservado não aparece na listagem da Secretaria")
                     .noneMatch(a -> a.getVisibilidade() == Visibilidade.RESERVADO);
         });
+    }
+
+    @Test
+    void seedDeAtasDeveCarregarPeloAgregadoComSeladaNumeradaPendenteEVetada() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+            AtaReuniao homologada = ata("91000000-0000-0000-0000-000000000001");
+            AtaReuniao pendente = ata("91000000-0000-0000-0000-000000000002");
+            AtaReuniao vetada = ata("91000000-0000-0000-0000-000000000003");
+            assertThat(homologada.getStatus()).isEqualTo(StatusAta.HOMOLOGADA);
+            assertThat(homologada.identificacao()).contains("001/2026");
+            assertThat(pendente.getStatus()).isEqualTo(StatusAta.PENDENTE_HOMOLOGACAO);
+            assertThat(vetada.getStatus()).isEqualTo(StatusAta.VETADA);
+            assertThat(vetada.getMotivoVeto()).isNotBlank();
+            assertThat(homologada.getConteudo().itens()).hasSize(1);
+        });
+    }
+
+    private AtaReuniao ata(String id) {
+        return ataRepository.buscarPorId(AtaReuniaoId.fromString(id)).orElseThrow();
     }
 
     private int contar(String sql) {
