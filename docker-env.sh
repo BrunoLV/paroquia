@@ -273,7 +273,7 @@ cmd_seed() {
 
     if docker compose ps db --format json 2>/dev/null | grep -q '"running"'; then
         log_info "Executando carga de dados no container gestao-db..."
-        docker compose exec -T db psql -U postgres -d calendario < "$seed_file"
+        docker compose exec -T db psql -v ON_ERROR_STOP=1 -U postgres -d calendario < "$seed_file"
         log_success "Seed de dados aplicado com sucesso no banco de dados!"
     else
         log_error "Container gestao-db não está em execução. Inicie o banco antes de aplicar o seed."

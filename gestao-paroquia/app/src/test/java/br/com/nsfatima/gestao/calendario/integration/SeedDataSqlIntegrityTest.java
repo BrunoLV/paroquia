@@ -311,6 +311,31 @@ public class SeedDataSqlIntegrityTest {
         });
     }
 
+    @Test
+    void cenarioDeAtasDeveTerRedatorComLoginEVinculoDeRedacaoEPorocoParaHomologar() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        assertThat(jdbcTemplate.queryForList("""
+                SELECT a.id::text || ' ' || a.redator_id
+                FROM calendario.ata_reuniao a
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM calendario.usuarios u
+                    JOIN calendario.membro_grupo m ON m.fiel_id = u.fiel_id
+                    WHERE u.username = a.redator_id AND u.enabled AND m.ativo
+                      AND m.organizacao_id = a.organizacao_convocante_id
+                      AND m.papel IN ('secretario-conselho', 'secretario-grupo', 'coordenador'))
+                """, String.class))
+                .as("Todo redator da massa precisa ter login e papel de redação no órgão convocante")
+                .isEmpty();
+        assertThat(contar("SELECT COUNT(*) FROM calendario.usuarios WHERE username = 'padre.pedro' "
+                + "AND roles = 'PAROCO'")).isEqualTo(1);
+        assertThat(contar("SELECT COUNT(*) FROM calendario.ata_reuniao WHERE status = 'PENDENTE_HOMOLOGACAO'"))
+                .as("O Pároco precisa ter atas para homologar").isPositive();
+    }
+
     private AtaReuniao ata(String id) {
         return ataRepository.buscarPorId(AtaReuniaoId.fromString(id)).orElseThrow();
     }
