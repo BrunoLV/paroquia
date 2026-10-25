@@ -1,5 +1,5 @@
 import { Organizacao } from '@/shared/domain/types/types';
-import { TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { Ata, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 
 /**
  * Pessoa que pode constar na presença ou declarar conflito: membro ativo do órgão convocante ou associado, ou
@@ -71,3 +71,16 @@ export const associadosDoTipo = (organizacoes: Organizacao[], convocante: Organi
     ? organizacoes.filter((o) => o.ativo && o.tipo === 'CONSELHO' && o.subtipoConselho === 'CAEP'
       && (o.parentId ?? null) === (convocante.parentId ?? null))
     : [];
+
+/**
+ * Pessoas já citadas na presença da ata em edição, para o seletor mostrar o nome de quem não está na lista
+ * carregada: um fiel de reunião de presença livre que não é membro de nenhum órgão, ou um membro que saiu depois.
+ */
+export const citadosNaAta = (ata: Ata | null): Candidato[] =>
+  (ata?.conteudo.presencas ?? []).filter((p) => !p.clerigo).map((p) => ({ id: p.fielId, nome: p.nome }));
+
+/** Acrescenta à lista os candidatos que ela ainda não tem, mantendo a ordem: primeiro a lista, depois os extras. */
+export const mesclarCandidatos = (base: Candidato[], extras: Candidato[]): Candidato[] => {
+  const ids = new Set(base.map((c) => c.id));
+  return [...base, ...extras.filter((c) => !ids.has(c.id) && ids.add(c.id))];
+};

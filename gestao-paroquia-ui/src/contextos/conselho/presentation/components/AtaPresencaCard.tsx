@@ -4,22 +4,25 @@ import { Card, CardContent, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import { funcaoEhUnica, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { funcaoEhUnica, PessoaOpcao, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { AtaFormInput, presencaVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
 import { Candidato } from '@/contextos/conselho/presentation/components/ataFormTipos';
+import AtaBuscaFiel from '@/contextos/conselho/presentation/components/AtaBuscaFiel';
 import AtaPresencaLinha from '@/contextos/conselho/presentation/components/AtaPresencaLinha';
 import { usePresencaRedator } from '@/contextos/conselho/presentation/hooks/useAtas';
 
 interface AtaPresencaCardProps {
   regras: TipoReuniaoInfo | undefined;
   candidatos: Candidato[];
+  /** Avisa que um fiel veio da busca e passa a constar na presença, para que as listas passem a oferecê-lo. */
+  onFielBuscado: (pessoa: PessoaOpcao) => void;
 }
 
 /**
  * Cartão "Presença": lista nominal (a pessoa é identificada pelo cadastro, nunca digitada) ou, nas assembleias,
  * apenas o total de participantes. Qual modo vale é regra do tipo de reunião.
  */
-export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candidatos }) => {
+export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candidatos, onFielBuscado }) => {
   const { control, register, getValues, setValue, formState: { errors } } = useFormContext<AtaFormInput>();
   const { fields, append, insert, remove } = useFieldArray({ control, name: 'presencas' });
   const quantitativa = regras?.modoPresenca === 'QUANTITATIVA';
@@ -85,6 +88,14 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
                   });
                 }} />
             </Stack>
+            {regras?.modoPresenca === 'NOMINAL_LIVRE' && (
+              <AtaBuscaFiel tipo={tipo} organizacaoId={orgaoId} onEscolher={(pessoa) => {
+                onFielBuscado(pessoa);
+                if (!getValues('presencas').some((p) => p.fielId === pessoa.id)) {
+                  append({ ...presencaVazia(), fielId: pessoa.id });
+                }
+              }} />
+            )}
           </Stack>
         )}
       </CardContent>

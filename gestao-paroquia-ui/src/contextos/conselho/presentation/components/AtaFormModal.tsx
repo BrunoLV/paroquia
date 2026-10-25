@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
@@ -11,7 +11,7 @@ import { Organizacao } from '@/shared/domain/types/types';
 import { Ata, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { useAtas, useCandidatosPresenca } from '@/contextos/conselho/presentation/hooks/useAtas';
 import { AtaFormInput, ataParaFormulario, ataSchema, ataVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
-import { organismosDoConvocante } from '@/contextos/conselho/presentation/components/ataFormTipos';
+import { Candidato, citadosNaAta, mesclarCandidatos, organismosDoConvocante } from '@/contextos/conselho/presentation/components/ataFormTipos';
 import AtaAnteriorCard from '@/contextos/conselho/presentation/components/AtaAnteriorCard';
 import AtaDadosCard from '@/contextos/conselho/presentation/components/AtaDadosCard';
 import AtaItensCard from '@/contextos/conselho/presentation/components/AtaItensCard';
@@ -38,18 +38,23 @@ export const AtaFormModal: React.FC<AtaFormModalProps> = ({ open, edicao, tipos,
   const metodos = useForm<AtaFormInput>({ resolver: zodResolver(ataSchema), defaultValues: inicial });
   const { control, handleSubmit, reset, formState: { isDirty } } = metodos;
 
+  const [buscados, setBuscados] = useState<Candidato[]>([]);
+
   useEffect(() => {
-    if (open) reset(inicial);
+    if (!open) return;
+    reset(inicial);
+    setBuscados([]);
   }, [open, inicial, reset]);
 
   const tipo = useWatch({ control, name: 'tipo' });
   const convocante = useWatch({ control, name: 'organizacaoConvocanteId' });
   const associada = useWatch({ control, name: 'organizacaoAssociadaId' });
   const regras = tipos.find((t) => t.codigo === tipo);
-  const candidatos = useCandidatosPresenca(
+  const doOrgao = useCandidatosPresenca(
     regras?.exigeOrganizacaoAssociada ? [convocante, associada] : [convocante], organizacoes,
     organismosDoConvocante(organizacoes, regras, convocante),
   );
+  const candidatos = mesclarCandidatos(doOrgao, [...citadosNaAta(edicao), ...buscados]);
   const { data: vizinhas } = useAtas({ organizacaoId: convocante || undefined, tamanho: 100 });
 
   const handleClose = () => confirmDiscard(isDirty, onClose);
@@ -62,7 +67,8 @@ export const AtaFormModal: React.FC<AtaFormModalProps> = ({ open, edicao, tipos,
           <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
             <Stack spacing={2.5}>
               <AtaDadosCard tipos={tipos} regras={regras} organizacoes={organizacoes} edicao={edicao !== null} />
-              <AtaPresencaCard regras={regras} candidatos={candidatos} />
+              <AtaPresencaCard regras={regras} candidatos={candidatos}
+                onFielBuscado={(p) => setBuscados((atuais) => [...atuais, { id: p.id, nome: p.nome }])} />
               <AtaAnteriorCard atasDoOrgao={vizinhas?.itens ?? []} ataAtualId={edicao?.id ?? null} />
               <AtaItensCard permiteVotacao={regras?.permiteVotacao ?? false} candidatos={candidatos} />
             </Stack>

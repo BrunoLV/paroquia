@@ -7,6 +7,7 @@ import {
   FiltroAtas,
   OpcoesExportacao,
   PaginaAtas,
+  PessoaOpcao,
   PresencaRedator,
   RascunharAtaPayload,
   RegistroAuditoria,
@@ -22,6 +23,10 @@ export const listarTiposReuniao = async (): Promise<TipoReuniaoInfo[]> =>
 
 /** Clérigos ativos que o redator pode incluir na presença; vazio para quem não redige nenhum órgão. */
 export const listarClero = async (): Promise<ClerigoOpcao[]> => (await apiClient.get<ClerigoOpcao[]>(`${BASE}/clero`)).data;
+
+/** Fiéis ativos pelo nome, para a presença das reuniões de presença livre; o servidor exige ao menos 3 letras. */
+export const buscarFieis = async (tipo: TipoReuniao, organizacaoId: string, busca: string): Promise<PessoaOpcao[]> =>
+  (await apiClient.get<PessoaOpcao[]>(`${BASE}/fieis`, { params: { tipo, organizacaoId, busca } })).data;
 
 /** Presença do próprio redator na ata nova; `null` se ele não redige o tipo no órgão ou não tem cadastro de fiel. */
 export const obterPresencaRedator = async (tipo: TipoReuniao, organizacaoId: string): Promise<PresencaRedator | null> => {

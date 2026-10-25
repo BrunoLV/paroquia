@@ -90,18 +90,24 @@ class AtaReuniaoControllerIntegrationTest {
     }
 
     private UUID novoMembro(UUID organizacao, String papel) {
+        UUID fiel = novoFiel(null, true);
+        jdbc.update("INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, "
+                        + "ativo, criado_em_utc, atualizado_em_utc) VALUES (?, ?, ?, 'CONSELHO', ?, TRUE, "
+                        + "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)", UUID.randomUUID(), fiel, organizacao, papel);
+        return fiel;
+    }
+
+    /** Fiel sem vínculo com órgão nenhum; sem nome informado, recebe "Fiel " e o próprio id. */
+    private UUID novoFiel(String nome, boolean ativo) {
         UUID fiel = UUID.randomUUID();
         String digitos = fiel.toString().replaceAll("[^0-9]", "0");
         String cpf = (digitos + "00000000000").substring(0, 11);
         jdbc.update("INSERT INTO calendario.fieis (id, nome, cpf, cpf_hash, data_nascimento, email, telefone, "
                         + "endereco_logradouro, vocacao, ativo, criado_em_utc, atualizado_em_utc, criado_por, "
                         + "atualizado_por) VALUES (?, ?, ?, ?, '1990-01-01', ?, '11911111111', 'Rua 1', 'LEIGO', "
-                        + "TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'teste', 'teste')",
-                fiel, "Fiel " + fiel, cpf, fiel.toString().replace("-", "") + fiel.toString().replace("-", ""),
-                fiel + "@example.com");
-        jdbc.update("INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, "
-                        + "ativo, criado_em_utc, atualizado_em_utc) VALUES (?, ?, ?, 'CONSELHO', ?, TRUE, "
-                        + "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)", UUID.randomUUID(), fiel, organizacao, papel);
+                        + "?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'teste', 'teste')",
+                fiel, nome == null ? "Fiel " + fiel : nome, cpf,
+                fiel.toString().replace("-", "") + fiel.toString().replace("-", ""), fiel + "@example.com", ativo);
         return fiel;
     }
 
@@ -528,5 +534,56 @@ class AtaReuniaoControllerIntegrationTest {
         mockMvc.perform(get(ATAS + "/exportacao").param("organizacaoId", cppA.toString()).param("formato", "PDF")
                         .with(secretario(cppB)))
                 .andExpect(status().isNotFound());
+    }
+    @Test
+    @DisplayName("na reunião de presença livre o redator busca qualquer fiel ativo pelo nome, sem acento nem caixa")
+    void redatorBuscaFielNaPresencaLivre() throws Exception {
+        UUID joao = novoFiel("João Álvares da Silva", true);
+        novoFiel("João Inativo Silva", false);
+
+        String resposta = mockMvc.perform(get(BASE + "/fieis").with(secretario(cppA))
+                        .param("tipo", "REUNIAO_PASTORAL").param("organizacaoId", cppA.toString())
+                        .param("busca", "joao alvares"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andReturn().getResponse().getContentAsString();
+
+        JsonNode achado = objectMapper.readTree(resposta).get(0);
+        assertThat(achado.get("id").asString()).isEqualTo(joao.toString());
+        assertThat(achado.get("nome").asString()).isEqualTo("João Álvares da Silva");
+        assertThat(achado.propertyNames()).containsExactlyInAnyOrder("id", "nome");
+    }
+
+    @Test
+    @DisplayName("a busca de fiéis é negada fora do papel de redator, nos tipos só de membros e com termo curto")
+    void buscaDeFieisTemLimites() throws Exception {
+        mockMvc.perform(get(BASE + "/fieis").with(secretario(cppB))
+                        .param("tipo", "REUNIAO_PASTORAL").param("organizacaoId", cppA.toString())
+                        .param("busca", "fiel"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get(BASE + "/fieis").with(secretario(cppA))
+                        .param("tipo", "REUNIAO_CPP").param("organizacaoId", cppA.toString())
+                        .param("busca", "fiel"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get(BASE + "/fieis").with(secretario(cppA))
+                        .param("tipo", "REUNIAO_PASTORAL").param("organizacaoId", cppA.toString())
+                        .param("busca", "fi"))
+                .andExpect(status().isUnprocessableContent());
+    }
+
+    @Test
+    @DisplayName("na reunião de presença livre consta qualquer fiel ativo, mas não o inativo")
+    void presencaLivreAceitaFielAtivoQualquer() throws Exception {
+        UUID semVinculo = novoFiel(null, true);
+        UUID inativo = novoFiel(null, false);
+        String base = corpoCpp(cppA, 3).replace("REUNIAO_CPP", "REUNIAO_PASTORAL");
+
+        mockMvc.perform(post(ATAS).with(secretario(cppA)).contentType(MediaType.APPLICATION_JSON)
+                        .content(base.replace(membrosA.get(0).toString(), semVinculo.toString())))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post(ATAS).with(secretario(cppA)).contentType(MediaType.APPLICATION_JSON)
+                        .content(base.replace(membrosA.get(0).toString(), inativo.toString())))
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("inativa")));
     }
 }

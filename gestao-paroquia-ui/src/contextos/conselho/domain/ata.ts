@@ -129,6 +129,12 @@ export interface TipoReuniaoInfo {
 }
 
 /** Clérigo que pode constar na presença, com a função que o encargo sugere. */
+/** Fiel encontrado pela busca de presença: só identificador e nome. */
+export interface PessoaOpcao {
+  id: string;
+  nome: string;
+}
+
 export interface ClerigoOpcao {
   id: string;
   nome: string;

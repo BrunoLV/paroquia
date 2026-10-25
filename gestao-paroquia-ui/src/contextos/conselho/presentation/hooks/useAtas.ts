@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   atualizarAta,
   baixarAta,
   baixarCompilacao,
+  buscarFieis,
   homologarAta,
   listarAtas,
   listarClero,
@@ -39,6 +41,7 @@ export const atasKeys = {
   tipos: ['atas', 'tipos'] as const,
   clero: ['atas', 'clero'] as const,
   redator: (tipo: string, organizacaoId: string) => ['atas', 'redator', tipo, organizacaoId] as const,
+  fieis: (tipo: string, organizacaoId: string, termo: string) => ['atas', 'fieis', tipo, organizacaoId, termo] as const,
   membros: (organizacaoId: string) => ['atas', 'membros', organizacaoId] as const,
 };
 
@@ -68,6 +71,27 @@ export const usePresencaRedator = (tipo: string, organizacaoId: string) =>
     enabled: Boolean(tipo && organizacaoId),
     staleTime: Infinity,
   });
+
+/** Menor termo que o servidor aceita na busca de fiéis. */
+export const TERMO_MINIMO_BUSCA = 3;
+
+/**
+ * Busca de fiéis pelo nome para a presença das reuniões de presença livre. Espera o usuário parar de digitar
+ * antes de consultar, para não pedir a cada tecla, e só consulta com o termo mínimo que o servidor exige.
+ */
+export const useBuscaFieis = (tipo: string, organizacaoId: string, digitado: string) => {
+  const [termo, setTermo] = useState('');
+  useEffect(() => {
+    const espera = setTimeout(() => setTermo(digitado.trim()), 300);
+    return () => clearTimeout(espera);
+  }, [digitado]);
+  return useQuery({
+    queryKey: atasKeys.fieis(tipo, organizacaoId, termo),
+    queryFn: () => buscarFieis(tipo as TipoReuniao, organizacaoId, termo),
+    enabled: Boolean(tipo && organizacaoId) && termo.length >= TERMO_MINIMO_BUSCA,
+    staleTime: 30_000,
+  });
+};
 
 /** Mutação que invalida o cache de atas e informa sucesso ou erro ao usuário. */
 const useMutacaoAta = <TInput, TOutput>(fn: (input: TInput) => Promise<TOutput>, sucesso: string, erro: string) => {

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Confere a lista nominal de presença contra o cadastro, o que o agregado não pode fazer por conhecer
  * pessoas só por identificador: nos colegiados e organismos todos devem ser membros ativos do órgão (ou do
- * órgão associado); nas demais reuniões nominais, apenas devem existir no cadastro de fiéis.
+ * órgão associado); nas demais reuniões nominais, apenas devem ser fiéis ativos do cadastro.
  */
 @Service
 public class ValidadorPresencaAta {
@@ -56,8 +56,8 @@ public class ValidadorPresencaAta {
             if (!membros(convocanteId, associadaId).containsAll(ids)) {
                 throw new AtaInvalidaException("A presença deve conter apenas membros ativos do órgão.");
             }
-        } else if (!pessoas.nomes(ids).keySet().containsAll(ids)) {
-            throw new AtaInvalidaException("A presença cita pessoa não cadastrada.");
+        } else if (!pessoas.fieisAtivos(ids).containsAll(ids)) {
+            throw new AtaInvalidaException("A presença cita pessoa não cadastrada ou inativa.");
         }
     }
 

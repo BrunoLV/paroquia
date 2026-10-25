@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.conselho.application.port.out;
 
 import br.com.nsfatima.gestao.conselho.application.dto.ClerigoAtivo;
+import br.com.nsfatima.gestao.conselho.application.dto.PessoaOpcao;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,4 +46,21 @@ public interface PessoasPort {
      * @return nome por identificador; pessoas inexistentes ficam de fora
      */
     Map<UUID, String> nomes(Collection<UUID> fielIds);
+
+    /**
+     * Dos identificadores informados, os que são de fiéis com cadastro ativo.
+     *
+     * @param fielIds pessoas a conferir
+     * @return os identificadores de fiéis ativos
+     */
+    Set<UUID> fieisAtivos(Collection<UUID> fielIds);
+
+    /**
+     * Busca fiéis ativos pelo nome, sem diferenciar maiúsculas nem acentos.
+     *
+     * @param termo trecho do nome
+     * @param limite máximo de resultados
+     * @return fiéis encontrados, em ordem de nome
+     */
+    List<PessoaOpcao> buscarFieisPorNome(String termo, int limite);
 }

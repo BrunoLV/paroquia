@@ -3,9 +3,11 @@ package br.com.nsfatima.gestao.conselho.infrastructure.acl;
 import br.com.nsfatima.gestao.clero.application.usecase.GerenciarClerigoUseCase;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.conselho.application.dto.ClerigoAtivo;
+import br.com.nsfatima.gestao.conselho.application.dto.PessoaOpcao;
 import br.com.nsfatima.gestao.conselho.application.port.out.PessoasPort;
 import br.com.nsfatima.gestao.conselho.domain.model.FuncaoPresenca;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
+import br.com.nsfatima.gestao.fiel.application.usecase.ConsultarFieisAtivosUseCase;
 import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ObterUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
@@ -31,13 +33,16 @@ public class PessoasAdapter implements PessoasPort {
 
     private final ListarOrganizacaoMembrosUseCase membros;
     private final ObterFielUseCase fieis;
+    private final ConsultarFieisAtivosUseCase consultaFieis;
     private final ObterUsuarioUseCase usuarios;
     private final GerenciarClerigoUseCase clero;
 
     public PessoasAdapter(ListarOrganizacaoMembrosUseCase membros, ObterFielUseCase fieis,
+                          ConsultarFieisAtivosUseCase consultaFieis,
                           ObterUsuarioUseCase usuarios, GerenciarClerigoUseCase clero) {
         this.membros = membros;
         this.fieis = fieis;
+        this.consultaFieis = consultaFieis;
         this.usuarios = usuarios;
         this.clero = clero;
     }
@@ -87,6 +92,17 @@ public class PessoasAdapter implements PessoasPort {
             }
         }
         return nomes;
+    }
+
+    @Override
+    public Set<UUID> fieisAtivos(Collection<UUID> fielIds) {
+        return consultaFieis.idsAtivos(fielIds);
+    }
+
+    @Override
+    public List<PessoaOpcao> buscarFieisPorNome(String termo, int limite) {
+        return consultaFieis.buscarPorNome(termo, limite).stream()
+                .map(f -> new PessoaOpcao(f.fielId(), f.nome())).toList();
     }
 
     private static boolean ehParoco(FuncaoEclesiastica funcao) {

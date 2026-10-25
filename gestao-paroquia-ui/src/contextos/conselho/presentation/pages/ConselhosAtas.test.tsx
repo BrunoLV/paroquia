@@ -374,4 +374,48 @@ describe('ConselhosAtas', () => {
     await user.click(await screen.findByRole('option', { name: 'Paula Coordenadora (Catequese)' }));
     expect(await within(dialogo).findByDisplayValue('Coordenador(a) de pastoral ou organismo')).toBeInTheDocument();
   });
+  it('na reunião de presença livre busca fiéis pelo nome no servidor e os inclui na presença', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([
+      { ...tipoCpp, codigo: 'REUNIAO_PASTORAL', rotulo: 'Reunião de Pastoral', modoPresenca: 'NOMINAL_LIVRE' },
+      tipoCpp,
+    ]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    vi.mocked(atasApi.buscarFieis).mockResolvedValue([{ id: 'f9', nome: 'Marta de Souza' }]);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião de Pastoral' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+
+    const busca = within(dialogo).getByRole('combobox', { name: /Buscar fiel pelo nome/i });
+    await user.type(busca, 'ma');
+    expect(atasApi.buscarFieis).not.toHaveBeenCalled();
+    await user.type(busca, 'rt');
+    await user.click(await screen.findByRole('option', { name: 'Marta de Souza' }));
+
+    expect(atasApi.buscarFieis).toHaveBeenCalledWith('REUNIAO_PASTORAL', 'cpp-1', 'mart');
+    expect(await within(dialogo).findByDisplayValue('Marta de Souza')).toBeInTheDocument();
+  });
+
+  it('nos tipos de presença só de membros não há busca de fiéis', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião do CPP' }));
+
+    expect(within(dialogo).queryByRole('combobox', { name: /Buscar fiel pelo nome/i })).not.toBeInTheDocument();
+  });
 });
