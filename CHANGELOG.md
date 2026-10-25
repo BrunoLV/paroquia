@@ -73,7 +73,7 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### Modificado
 - **Renomeação `GrupoParoquial` para `Organizacao`** em código, banco (`grupo_paroquial`, `grupo_paroquial_id`, `tipo_grupo`) e contrato REST (`grupoParoquialId` vira `organizacaoId`; `grupoParoquialResponsavelId` vira `organizacaoResponsavelId`).
-- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida.
+- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida. A API e o modelo de importação de organizações não aceitam mais esses campos em texto: a coordenação é escolhida entre os membros pelo mandato.
 - A tela de Pastorais e Movimentos lista somente organismos eclesiais; Matriz e Comunidade ficam em Governo & Território.
 - Mensagens de validação e descrições OpenAPI do módulo `organizacao` passam para português.
 - Documentação `docs/business-rules/organizacao.md` reescrita; `membro.md` e `conselho.md` atualizados.

@@ -96,7 +96,7 @@ class OrganizacaoServiceTest {
     @Test
     void deveCriarOrganizacao() {
         Organizacao created = service.criar("PJ",
-                TipoOrganizacao.MOVIMENTO, "pj@test.com", "Coordenador A", "Vice Coordenador B", conselhoId,
+                TipoOrganizacao.MOVIMENTO, "pj@test.com", conselhoId,
                 movimentoOficialId);
 
 
@@ -119,7 +119,7 @@ class OrganizacaoServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(org));
 
         service.atualizar(id,
-                "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", "Novo Coordenador", "Novo Vice", false,
+                "PJ Novo", TipoOrganizacao.PASTORAL, "pj2@test.com", false,
                 conselhoId, pastoralOficialId, SetorPastoral.FORMACAO_ENSINAR, null);
 
 
@@ -165,7 +165,7 @@ class OrganizacaoServiceTest {
     @Test
     void deveCriarOrganizacaoComConselho() {
         Organizacao created = service.criar("Conselho",
-                TipoOrganizacao.CONSELHO, "financeiro@test.com", "Pedro Finanças", "Ana Administração",
+                TipoOrganizacao.CONSELHO, "financeiro@test.com",
                 matrizId, null, null, SubtipoConselho.CAEP);
 
 
@@ -177,12 +177,12 @@ class OrganizacaoServiceTest {
     void deveFalhaParaCriarConselhoSemMatrizOuComunidadePai() {
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Conselho Sem Pai",
-                        TipoOrganizacao.CONSELHO, "test@test.com", "Coord", "Vice", null, null)
+                        TipoOrganizacao.CONSELHO, "test@test.com", null, null)
 
         );
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Conselho Com Pai Incorreto",
-                        TipoOrganizacao.CONSELHO, "test@test.com", "Coord", "Vice", cleroUnidadeId, null)
+                        TipoOrganizacao.CONSELHO, "test@test.com", cleroUnidadeId, null)
 
         );
     }
@@ -191,12 +191,12 @@ class OrganizacaoServiceTest {
     void deveFalhaParaCriarPastoralSemConselhoPai() {
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Sem Pai",
-                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", null, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", null, pastoralOficialId)
 
         );
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Com Pai Incorreto",
-                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", matrizId, pastoralOficialId)
+                        TipoOrganizacao.PASTORAL, "test@test.com", matrizId, pastoralOficialId)
 
         );
     }
@@ -212,7 +212,7 @@ class OrganizacaoServiceTest {
 
         assertThrows(OrganizacaoNegocioException.class, () ->
                 service.criar("Pastoral Novo",
-                        TipoOrganizacao.PASTORAL, "test@test.com", "Coord", "Vice", inactiveId, pastoralOficialId,
+                        TipoOrganizacao.PASTORAL, "test@test.com", inactiveId, pastoralOficialId,
                         SetorPastoral.FORMACAO_ENSINAR, null)
 
         );
@@ -221,7 +221,7 @@ class OrganizacaoServiceTest {
     @Test
     void deveCriarServicoParoquialArticuladoAoCpp() {
         Organizacao created = service.criar("Coroinhas",
-                TipoOrganizacao.SERVICO_PAROQUIAL, "coroinhas@test.com", "Coord", "Vice", conselhoId, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, "coroinhas@test.com", conselhoId, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null);
 
         assertNotNull(created.getId());
@@ -232,7 +232,7 @@ class OrganizacaoServiceTest {
     @Test
     void naoDeveCriarServicoParoquialSemConselhoPastoral() {
         assertThrows(OrganizacaoNegocioException.class, () -> service.criar("Coroinhas",
-                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", "Coord", "Vice", null, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", null, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null));
     }
 
@@ -245,7 +245,7 @@ class OrganizacaoServiceTest {
         when(mandatoRepository.existeVigente(id, LocalDate.of(2026, 6, 1))).thenReturn(true);
 
         assertThrows(OrganizacaoNegocioException.class, () -> service.atualizar(id, "Coroinhas",
-                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", null, null, false, conselhoId, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, "c@test.com", false, conselhoId, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null));
         verify(repository, never()).save(any(Organizacao.class));
     }
@@ -253,7 +253,7 @@ class OrganizacaoServiceTest {
     @Test
     void deveGuardarEmailETelefoneSeparadosEEspelharNoContato() {
         Organizacao created = service.criar("Coroinhas",
-                TipoOrganizacao.SERVICO_PAROQUIAL, null, null, null, conselhoId, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, null, conselhoId, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null, "coroinhas@test.com", "(11) 99999-0000");
 
         assertEquals("coroinhas@test.com", created.getEmail());
@@ -264,10 +264,10 @@ class OrganizacaoServiceTest {
     @Test
     void deveClassificarContatoLegadoEmEmailOuTelefone() {
         Organizacao comEmail = service.criar("Coroinhas A",
-                TipoOrganizacao.SERVICO_PAROQUIAL, "a@test.com", null, null, conselhoId, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, "a@test.com", conselhoId, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null);
         Organizacao comTelefone = service.criar("Coroinhas B",
-                TipoOrganizacao.SERVICO_PAROQUIAL, "(11) 3333-4444", null, null, conselhoId, null,
+                TipoOrganizacao.SERVICO_PAROQUIAL, "(11) 3333-4444", conselhoId, null,
                 SetorPastoral.SANTIFICACAO_LITURGIA, null);
 
         assertEquals("a@test.com", comEmail.getEmail());

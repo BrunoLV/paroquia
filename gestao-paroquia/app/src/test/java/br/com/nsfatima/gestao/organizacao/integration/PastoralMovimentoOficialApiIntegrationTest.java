@@ -117,8 +117,6 @@ class PastoralMovimentoOficialApiIntegrationTest {
                   "tipo": "PASTORAL",
                   "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "semlink@teste.com",
-                  "coordenador": "Coordenador",
-                  "viceCoordenador": "Vice",
                   "parentId": "%s",
                   "ativo": true
                 }
@@ -159,8 +157,6 @@ class PastoralMovimentoOficialApiIntegrationTest {
                   "tipo": "PASTORAL",
                   "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "crianca@teste.com",
-                  "coordenador": "Coordenador",
-                  "viceCoordenador": "Vice",
                   "parentId": "%s",
                   "pastoralOficialId": "%s",
                   "ativo": true

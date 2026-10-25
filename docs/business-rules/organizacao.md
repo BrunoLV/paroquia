@@ -57,7 +57,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 - Só um **membro ativo** da organização pode ser proposto.
 - Ao homologar, o vínculo do fiel assume o papel da função (`COORDENADOR` ou `SECRETARIO_GRUPO` para vice) e o nome é espelhado em `coordenador`/`viceCoordenador`. Ao encerrar (por decisão ou pelo job diário de mandatos vencidos), o vínculo volta ao papel de membro comum do tipo (`MEMBRO_ATIVO`; no conselho, membro do conselho pastoral ou econômico conforme o subtipo) e o espelho é limpo.
 - O coordenador e o vice-coordenador **não deixam de ser membros**: em qualquer organização, conselho inclusive, o fiel precisa ser membro ativo e o seu vínculo é promovido.
-- `coordenador` e `viceCoordenador` informados nas requisições de cadastro de organização são ignorados: a liderança só muda por mandato.
+- O cadastro de organização (API e importação em lote) não aceita coordenador nem vice-coordenador: a requisição que os envia é recusada, pois a liderança só muda por mandato de um membro existente.
 
 ### RN-ORG-06: Idoneidade e Envio dos Agentes
 - Ver `membro.md` (RN-MEM-04). A proposta e a homologação de mandato exigem agente idôneo para coordenar.

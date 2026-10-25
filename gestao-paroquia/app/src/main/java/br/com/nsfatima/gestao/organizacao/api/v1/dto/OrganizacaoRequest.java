@@ -15,7 +15,7 @@ import java.util.UUID;
  * Payload de criação/atualização de uma organização. A combinação de {@code tipo}, {@code parentId} e
  * {@code pastoralOficialId} é validada por {@code OrganizacaoService.validateHierarchy} contra as regras da
  * hierarquia organizacional (ex.: Pastoral/Movimento exige {@code pastoralOficialId} e organização-mãe do
- * tipo {@code CONSELHO_PASTORAL}).
+ * tipo {@code CONSELHO_PASTORAL}). A coordenação não é informada aqui: nasce do mandato homologado de um membro.
  */
 @Schema(description = "Requisição para criar ou atualizar uma organização")
 public record OrganizacaoRequest(
@@ -31,14 +31,6 @@ public record OrganizacaoRequest(
         @Schema(description = "Informação de contato", example = "pj@nsfatima.com")
         @Size(max = 255, message = "O contato não pode exceder 255 caracteres")
         String contato,
-
-        @Schema(description = "Nome do coordenador", example = "João Silva")
-        @Size(max = 255, message = "O nome do coordenador não pode exceder 255 caracteres")
-        String coordenador,
-
-        @Schema(description = "Nome do vice-coordenador", example = "Maria Santos")
-        @Size(max = 255, message = "O nome do vice-coordenador não pode exceder 255 caracteres")
-        String viceCoordenador,
 
         @Schema(description = "Indica se a organização está ativa", example = "true")
         boolean ativo,
