@@ -36,12 +36,6 @@ public class OrganizacaoEntity extends BaseAuditableEntity {
     @Column()
     private String contato;
 
-    @Column(name = "coordenador")
-    private String coordenador;
-
-    @Column(name = "vice_coordenador")
-    private String viceCoordenador;
-
     @Column(nullable = false)
     private boolean ativo = true;
     @Column(name = "parent_id")
@@ -118,22 +112,6 @@ public class OrganizacaoEntity extends BaseAuditableEntity {
 
     public void setContato(String contato) {
         this.contato = contato;
-    }
-
-    public String getCoordenador() {
-        return coordenador;
-    }
-
-    public void setCoordenador(String coordenador) {
-        this.coordenador = coordenador;
-    }
-
-    public String getViceCoordenador() {
-        return viceCoordenador;
-    }
-
-    public void setViceCoordenador(String viceCoordenador) {
-        this.viceCoordenador = viceCoordenador;
     }
 
     public UUID getParentId() {

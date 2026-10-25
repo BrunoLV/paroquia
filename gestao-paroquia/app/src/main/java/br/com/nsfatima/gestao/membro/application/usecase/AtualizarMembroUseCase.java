@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -65,7 +64,7 @@ public class AtualizarMembroUseCase {
         MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
 
-        FielEntity fiel = fielRepository.findById(request.fielId())
+        fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
 
         OrganizacaoEntity organizacao = organizacaoRepository.findById(request.organizacaoId())
@@ -100,7 +99,6 @@ public class AtualizarMembroUseCase {
 
         MembroGrupoEntity saved = repository.save(entity);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
 
         auditPublisher.publish(actor, "atualizar", saved.getId().toString(), "sucesso");
 

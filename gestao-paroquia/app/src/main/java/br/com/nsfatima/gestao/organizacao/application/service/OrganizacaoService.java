@@ -106,7 +106,6 @@ public class OrganizacaoService {
                                 SubtipoConselho subtipoConselho, String email, String telefone) {
 
         hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
-        // a coordenação só nasce de mandato homologado: o espelho começa vazio
         Organizacao org = new Organizacao(UUID.randomUUID(),
                 nome, tipo, contato, null, null, true, parentId, pastoralOficialId,
                 setorPastoral, subtipoConselho);

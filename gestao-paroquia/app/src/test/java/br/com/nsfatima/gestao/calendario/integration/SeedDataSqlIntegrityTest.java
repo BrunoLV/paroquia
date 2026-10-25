@@ -88,8 +88,8 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(34, flyway.info().applied().length,
-                "O esquema deve conter as 34 migrações Flyway versionadas");
+        assertEquals(36, flyway.info().applied().length,
+                "O esquema deve conter as 36 migrações Flyway versionadas");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
         assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");
@@ -351,25 +351,18 @@ public class SeedDataSqlIntegrityTest {
     }
 
     @Test
-    void coordenadorEViceDosConselhosDevemSerMembrosComOPapel() throws Exception {
+    void todoConselhoDeveTerCoordenadorComoMembro() throws Exception {
         var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
         try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
         }
 
         assertThat(jdbcTemplate.queryForList("""
-                SELECT o.nome || ' / ' || o.coordenador FROM calendario.organizacao o
-                WHERE o.tipo = 'CONSELHO' AND o.coordenador IS NOT NULL AND NOT EXISTS (
-                    SELECT 1 FROM calendario.membro_grupo m JOIN calendario.fieis f ON f.id = m.fiel_id
-                    WHERE m.organizacao_id = o.id AND m.ativo AND m.papel = 'coordenador' AND f.nome = o.coordenador)
-                """, String.class)).as("O coordenador do conselho é membro, com o papel de coordenador").isEmpty();
-        assertThat(jdbcTemplate.queryForList("""
-                SELECT o.nome || ' / ' || o.vice_coordenador FROM calendario.organizacao o
-                WHERE o.tipo = 'CONSELHO' AND o.vice_coordenador IS NOT NULL AND NOT EXISTS (
-                    SELECT 1 FROM calendario.membro_grupo m JOIN calendario.fieis f ON f.id = m.fiel_id
-                    WHERE m.organizacao_id = o.id AND m.ativo AND m.papel = 'secretario-grupo'
-                      AND f.nome = o.vice_coordenador)
-                """, String.class)).as("O vice-coordenador do conselho é membro, com o papel de vice").isEmpty();
+                SELECT o.nome FROM calendario.organizacao o
+                WHERE o.tipo = 'CONSELHO' AND NOT EXISTS (
+                    SELECT 1 FROM calendario.membro_grupo m
+                    WHERE m.organizacao_id = o.id AND m.ativo AND m.papel = 'coordenador')
+                """, String.class)).as("Todo conselho tem um coordenador que é membro, com esse papel").isEmpty();
     }
 
     @Test

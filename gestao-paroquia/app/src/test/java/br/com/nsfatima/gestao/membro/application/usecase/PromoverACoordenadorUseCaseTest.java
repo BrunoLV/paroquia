@@ -155,7 +155,7 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     @Test
-    void deveAtualizarPapelDoVinculoESincronizarLideranca() {
+    void deveAtualizarPapelDoVinculoSemCopiarALiderancaNaOrganizacao() {
         authenticateAsGlobal(true);
         var usuarioExistente = new UsuarioEntity();
         when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(usuarioExistente));
@@ -165,7 +165,7 @@ class PromoverACoordenadorUseCaseTest {
         var captor = ArgumentCaptor.forClass(MembroGrupoEntity.class);
         verify(membroRepository).save(captor.capture());
         assertThat(captor.getValue().getPapel()).isEqualTo("coordenador");
-        verify(organizacaoRepository).save(any(OrganizacaoEntity.class));
+        verify(organizacaoRepository, never()).save(any(OrganizacaoEntity.class));
     }
 
     @Test

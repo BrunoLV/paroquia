@@ -185,30 +185,10 @@ public class ObterOrganogramaUseCase {
                 ))
                 .toList();
 
-        // Encontrar nomes do responsável (coordenador) e vice-responsável
-        String responsavelNome = org.getCoordenador();
+        // A coordenação é derivada dos vínculos: coordenador e vice-coordenador (secretário de grupo) são membros.
+        String responsavelNome = nomeComPapel(membros, "COORDENADOR");
         String responsavelPapel = "COORDENADOR";
-        String viceResponsavelNome = org.getViceCoordenador();
-
-        // Fallback caso não estejam definidos na organização mas estejam nos membros
-        if (responsavelNome == null || responsavelNome.isBlank()) {
-            responsavelNome = membros.stream()
-                    .filter(m -> "COORDENADOR".equalsIgnoreCase(m.papel()) || "PAROCO".equalsIgnoreCase(m.papel()))
-                    .map(OrganizacaoMembroResponse::fielNome)
-                    .findFirst()
-                    .orElse(null);
-        }
-        if (viceResponsavelNome == null || viceResponsavelNome.isBlank()) {
-            viceResponsavelNome = membros.stream()
-                    .filter(m -> "SECRETARIO_GRUPO".equalsIgnoreCase(m.papel())
-                            || "SECRETARIO_CONSELHO".equalsIgnoreCase(m.papel())
-                            || "secretario-grupo".equalsIgnoreCase(m.papel())
-                            || "secretario-conselho".equalsIgnoreCase(m.papel())
-                            || "VIGARIO".equalsIgnoreCase(m.papel()))
-                    .map(OrganizacaoMembroResponse::fielNome)
-                    .findFirst()
-                    .orElse(null);
-        }
+        String viceResponsavelNome = nomeComPapel(membros, "SECRETARIO_GRUPO");
 
         nosFilhos.addAll(nosMembros);
 
@@ -222,5 +202,13 @@ public class ObterOrganogramaUseCase {
                 viceResponsavelNome,
                 nosFilhos
         );
+    }
+
+    private static String nomeComPapel(List<OrganizacaoMembroResponse> membros, String papel) {
+        return membros.stream()
+                .filter(m -> papel.equalsIgnoreCase(m.papel().replace('-', '_')))
+                .map(OrganizacaoMembroResponse::fielNome)
+                .findFirst()
+                .orElse(null);
     }
 }

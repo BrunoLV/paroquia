@@ -62,7 +62,6 @@ class ObterOrganogramaUseCaseTest {
         conselho.setId(conselhoId);
         conselho.setNome("Conselho");
         conselho.setTipo(TipoOrganizacao.CONSELHO);
-        conselho.setCoordenador("Maria do Conselho");
         conselho.setParentId(matrizId);
         conselho.setAtivo(true);
 
@@ -71,7 +70,6 @@ class ObterOrganogramaUseCaseTest {
         pastoral.setId(pastoralId);
         pastoral.setNome("Pastoral da Catequese");
         pastoral.setTipo(TipoOrganizacao.PASTORAL);
-        pastoral.setCoordenador("Maria Oliveira");
         pastoral.setParentId(conselhoId);
         pastoral.setAtivo(true);
 
@@ -90,7 +88,8 @@ class ObterOrganogramaUseCaseTest {
                 List.of()
         );
         when(listMembrosUseCase.execute(pastoralId)).thenReturn(List.of(memberResp));
-        when(listMembrosUseCase.execute(conselhoId)).thenReturn(List.of());
+        when(listMembrosUseCase.execute(conselhoId)).thenReturn(List.of(new OrganizacaoMembroResponse(
+                UUID.randomUUID(), UUID.randomUUID(), "Maria do Conselho", "coordenador", true, true, List.of())));
 
         // Execute Use Case
         OrganogramaNodeResponse root = getOrganogramaUseCase.execute();
@@ -114,7 +113,7 @@ class ObterOrganogramaUseCaseTest {
         assertThat(conselhoNode.type()).isEqualTo("ORGANIZACAO");
         assertThat(conselhoNode.subtype()).isEqualTo("CONSELHO");
         assertThat(conselhoNode.responsavelNome()).isEqualTo("Maria do Conselho");
-        assertThat(conselhoNode.children()).hasSize(1); // Contains Pastoral da Catequese!
+        assertThat(conselhoNode.children()).hasSize(2); // Pastoral da Catequese e o coordenador
 
         // Verify Pastoral Node (child of Conselho)
         OrganogramaNodeResponse pastoralNode = conselhoNode.children().getFirst();

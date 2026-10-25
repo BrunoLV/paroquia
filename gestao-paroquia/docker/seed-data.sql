@@ -218,26 +218,26 @@ ON CONFLICT (id) DO UPDATE SET
 -- Grupos Paroquiais (Conselhos/Pastorais/Movimentos). Conselhos têm organização-mãe diretamente na
 -- UnidadeTerritorial (Matriz/Comunidade). Pastorais têm organização-mãe um Conselho. Os antigos 4 tipos de
 -- conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) colapsaram em um único tipo CONSELHO.
-INSERT INTO calendario.organizacao (id, nome, tipo, contato, coordenador, vice_coordenador, ativo, parent_id, pastoral_oficial_id, version)
+INSERT INTO calendario.organizacao (id, nome, tipo, contato, ativo, parent_id, pastoral_oficial_id, version)
 VALUES
     -- Conselhos Paroquiais (organização-mãe: Igreja Matriz)
-    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', 'José do Conselho', 'Ana do Conselho', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
-    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO', 'economico@nsfatima.com', 'Ana Administração', NULL, TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
+    ('00000000-0000-0000-0000-0000000000cc', 'Conselho Pastoral Paroquial', 'CONSELHO', 'cpp@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
+    ('00000000-0000-0000-0000-000000000099', 'Conselho Econômico Paroquial', 'CONSELHO', 'economico@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000100', NULL, 0),
     -- Conselhos Comunitários (organização-mãe: cada Comunidade)
-    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', 'Rafael Secretário São José', NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO', 'cec.saojose@nsfatima.com', 'Marcos Tesoureiro São José', NULL, TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', 'Clara Fiel Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
-    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO', 'cec.santoagostinho@nsfatima.com', 'Mateus Tesoureiro Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    ('00000000-0000-0000-0000-0000000002c0', 'Conselho Pastoral Comunitário - São José Allamano', 'CONSELHO', 'cpc.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000002e0', 'Conselho Econômico Comunitário - São José Allamano', 'CONSELHO', 'cec.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000200', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003c0', 'Conselho Pastoral Comunitário - Santo Agostinho', 'CONSELHO', 'cpc.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
+    ('00000000-0000-0000-0000-0000000003e0', 'Conselho Econômico Comunitário - Santo Agostinho', 'CONSELHO', 'cec.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-000000000300', NULL, 0),
     -- Pastorais Paroquiais (organização-mãe: CPP)
-    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', 'Tiago Pascom', NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
-    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', 'Pedro Junior', 'Lucas dos Santos', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
-    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', 'Maria Oliveira', 'Lúcia de Oliveira', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
-    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', 'Isabel Batismo', NULL, TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
+    ('00000000-0000-0000-0000-0000000000aa', 'Pastoral da Comunicação', 'PASTORAL', 'pascom@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000014', 0),
+    ('00000000-0000-0000-0000-0000000000bb', 'Pastoral da Juventude', 'PASTORAL', 'juventude@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000012', 0),
+    ('00000000-0000-0000-0000-0000000000ee', 'Pastoral da Catequese', 'PASTORAL', 'catequese@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000021', 0),
+    ('00000000-0000-0000-0000-0000000000ff', 'Pastoral do Batismo', 'PASTORAL', 'batismo@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000000cc', '50000000-0000-0000-0000-000000000020', 0),
     -- Pastorais Comunitárias (filhas dos CPCs)
-    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', 'Marta Acolhida São José', NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
-    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', 'Paulo Dízimo São José', NULL, TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
-    ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', 'João Santos', NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000018', 0),
-    ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', 'Teresa Social Santo Agostinho', NULL, TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
+    ('00000000-0000-0000-0000-0000000002a1', 'Pastoral da Acolhida - São José Allamano', 'PASTORAL', 'acolhida.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000022', 0),
+    ('00000000-0000-0000-0000-0000000002d1', 'Pastoral do Dízimo - São José Allamano', 'PASTORAL', 'dizimo.saojose@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000002c0', '50000000-0000-0000-0000-000000000025', 0),
+    ('00000000-0000-0000-0000-0000000003a1', 'Pastoral da Liturgia - Santo Agostinho', 'PASTORAL', 'liturgia.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000018', 0),
+    ('00000000-0000-0000-0000-0000000003b1', 'Pastoral Social - Santo Agostinho', 'PASTORAL', 'social.santoagostinho@nsfatima.com', TRUE, '00000000-0000-0000-0000-0000000003c0', '50000000-0000-0000-0000-000000000028', 0)
 ON CONFLICT (id) DO NOTHING;
 
 -- Classificação eclesial das organizações semeadas (subtipo de conselho e múnus das pastorais).
@@ -1579,15 +1579,6 @@ VALUES
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000004a3', '1f000000-0000-0000-0000-000000000009', 'COORDENADOR', CURRENT_DATE, CURRENT_DATE + INTERVAL '2 years', 'PROPOSTO', NULL, NULL, NULL),
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000004b1', '1f000000-0000-0000-0000-000000000003', 'COORDENADOR', CURRENT_DATE - INTERVAL '1 year', CURRENT_DATE + INTERVAL '1 year', 'HOMOLOGADO', 'seed', NULL, now()),
     (gen_random_uuid(), '00000000-0000-0000-0000-0000000004b3', '1f000000-0000-0000-0000-000000000025', 'COORDENADOR', CURRENT_DATE - INTERVAL '6 months', CURRENT_DATE + INTERVAL '30 months', 'HOMOLOGADO', 'seed', NULL, now());
-
--- Espelho de leitura: nome do fiel com mandato homologado na coordenação.
-UPDATE calendario.organizacao o
-SET coordenador = f.nome
-FROM calendario.mandato_coordenacao m
-JOIN calendario.fieis f ON f.id = m.fiel_id
-WHERE m.organizacao_id = o.id AND m.status = 'HOMOLOGADO' AND m.funcao = 'COORDENADOR'
-  AND o.id IN ('00000000-0000-0000-0000-0000000004a1', '00000000-0000-0000-0000-0000000004b1',
-               '00000000-0000-0000-0000-0000000004b3');
 
 -- Contato institucional separado: e-mail (a partir do contato semeado) e telefone fictício por organização.
 UPDATE calendario.organizacao SET email = contato WHERE contato LIKE '%@%' AND email IS NULL;

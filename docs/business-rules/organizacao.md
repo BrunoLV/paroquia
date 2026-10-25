@@ -14,7 +14,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 
 ## 2. Agregados, Entidades e Value Objects Principais
 
-- **`Organizacao` (Raiz de Agregado):** identificada por `OrganizacaoId`. Contém nome, contato, tipo, múnus (`SetorPastoral`), subtipo de conselho, vínculo com o catálogo oficial, organização-mãe (`parentId`) e status ativo/inativo. `coordenador` e `viceCoordenador` são apenas o **espelho de leitura** do mandato vigente.
+- **`Organizacao` (Raiz de Agregado):** identificada por `OrganizacaoId`. Contém nome, contato, tipo, múnus (`SetorPastoral`), subtipo de conselho, vínculo com o catálogo oficial, organização-mãe (`parentId`) e status ativo/inativo. O coordenador e o vice-coordenador **não são gravados na organização**: a leitura os deriva dos vínculos de membro ativos com os papéis de coordenador e de vice (secretário de grupo).
 - **`TipoOrganizacao`:**
   - `PASTORAL` — **pastoral orgânica**: ação direta da Igreja local, vinculada ao plano de pastoral da paróquia e da diocese (ex.: Batismo, Catequese, Dízimo).
   - `MOVIMENTO` — **movimento apostólico ou associação de fiéis**: espiritualidade, método e itinerário próprios, de âmbito diocesano, nacional ou internacional (ex.: RCC, ECC, Terço dos Homens). Exige estatuto reconhecido.
@@ -55,7 +55,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 - A duração máxima é de **3 anos** (`PoliticaDuracaoMandato`); a renovação é um novo mandato, sempre homologado.
 - Não pode haver dois mandatos proposto/homologado concomitantes para a mesma função e período na mesma organização.
 - Só um **membro ativo** da organização pode ser proposto.
-- Ao homologar, o vínculo do fiel assume o papel da função (`COORDENADOR` ou `SECRETARIO_GRUPO` para vice) e o nome é espelhado em `coordenador`/`viceCoordenador`. Ao encerrar (por decisão ou pelo job diário de mandatos vencidos), o vínculo volta ao papel de membro comum do tipo (`MEMBRO_ATIVO`; no conselho, membro do conselho pastoral ou econômico conforme o subtipo) e o espelho é limpo.
+- Ao homologar, o vínculo do fiel assume o papel da função (`COORDENADOR` ou `SECRETARIO_GRUPO` para vice) e a organização passa a exibir o nome dele como coordenador ou vice. Ao encerrar (por decisão ou pelo job diário de mandatos vencidos), o vínculo volta ao papel de membro comum do tipo (`MEMBRO_ATIVO`; no conselho, membro do conselho pastoral ou econômico conforme o subtipo) e a organização deixa de exibi-lo na coordenação.
 - O coordenador e o vice-coordenador **não deixam de ser membros**: em qualquer organização, conselho inclusive, o fiel precisa ser membro ativo e o seu vínculo é promovido.
 - O cadastro de organização (API e importação em lote) não aceita coordenador nem vice-coordenador: a requisição que os envia é recusada, pois a liderança só muda por mandato de um membro existente.
 
@@ -65,6 +65,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 ### RN-ORG-07: Papéis de Vínculo por Tipo de Organização
 - Existe **uma única tabela** de quais papéis um vínculo pode ter em cada tipo de organização. Pastoral, movimento e serviço paroquial admitem coordenador, secretário de grupo (que é também o papel do vice-coordenador), membro ativo e voluntário. O conselho admite secretário de conselho, membro do conselho pastoral, membro do conselho econômico, coordenador e vice-coordenador (secretário de grupo).
 - Todos os caminhos que criam ou alteram vínculo (cadastro de membros, promoção a coordenador, vínculo por usuário e mandato de coordenação) recusam o papel que o tipo não admite. O contexto do calendário consulta a mesma tabela para decidir autorização, e a interface só oferece os papéis válidos do tipo.
+- O banco repete a regra: um vínculo com papel que o tipo da organização não admite não é gravado. Os vínculos antigos que já a violavam foram trocados pelo papel de membro comum do tipo, e a troca fica registrada com o papel anterior.
 
 ---
 

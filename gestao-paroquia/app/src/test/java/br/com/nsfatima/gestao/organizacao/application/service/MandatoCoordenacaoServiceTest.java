@@ -115,7 +115,6 @@ class MandatoCoordenacaoServiceTest {
 
         assertThat(m.getStatus()).isEqualTo(StatusMandato.PROPOSTO);
         verify(mandatos).save(m);
-        assertThat(organizacao.getCoordenador()).isNull();
     }
 
     @Test
@@ -163,22 +162,19 @@ class MandatoCoordenacaoServiceTest {
 
         assertThat(m.getStatus()).isEqualTo(StatusMandato.HOMOLOGADO);
         assertThat(membro.getPapel()).isEqualTo(PapelOrganizacional.COORDENADOR.storedValue());
-        assertThat(organizacao.getCoordenador()).isEqualTo("Maria da Silva");
     }
 
     @Test
-    void encerrarDevolveOFielAMembroAtivoELimpaOEspelho() {
+    void encerrarDevolveOFielAMembroAtivo() {
         MandatoCoordenacao m = MandatoCoordenacao.propor(organizacaoId, fielId, FuncaoCoordenacao.VICE_COORDENADOR,
                 HOJE, HOJE.plusYears(2));
         when(mandatos.findById(m.getId())).thenReturn(Optional.of(m));
         service.homologar(m.getId());
-        assertThat(organizacao.getViceCoordenador()).isEqualTo("Maria da Silva");
 
         service.encerrar(m.getId());
 
         assertThat(m.getStatus()).isEqualTo(StatusMandato.ENCERRADO);
         assertThat(membro.getPapel()).isEqualTo(PapelOrganizacional.MEMBRO_ATIVO.storedValue());
-        assertThat(organizacao.getViceCoordenador()).isNull();
     }
 
     @Test

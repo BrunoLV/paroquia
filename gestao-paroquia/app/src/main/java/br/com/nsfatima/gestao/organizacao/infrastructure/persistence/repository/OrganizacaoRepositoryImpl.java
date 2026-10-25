@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
 
     private static final String PAPEL_COORDENADOR = "coordenador";
-    private static final String PAPEL_SECRETARIO = "secretario";
+    private static final String PAPEL_VICE_COORDENADOR = "secretario-grupo";
 
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final MembroGrupoJpaRepository membroGrupoJpaRepository;
@@ -51,8 +51,6 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         entity.setNome(domain.getNome());
         entity.setTipo(domain.getTipo());
         entity.setContato(domain.getContato());
-        entity.setCoordenador(domain.getCoordenador());
-        entity.setViceCoordenador(domain.getViceCoordenador());
         entity.setAtivo(domain.isAtivo());
         entity.setParentId(domain.getParentId());
         entity.setPastoralOficialId(domain.getPastoralOficialId());
@@ -92,8 +90,8 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
     }
 
     private Organizacao toDomain(OrganizacaoEntity entity) {
-        String coordName = resolveRoleMemberName(entity.getId(), PAPEL_COORDENADOR, entity.getCoordenador());
-        String viceName = resolveRoleMemberName(entity.getId(), PAPEL_SECRETARIO, entity.getViceCoordenador());
+        String coordName = nomeDoMembroComPapel(entity.getId(), PAPEL_COORDENADOR);
+        String viceName = nomeDoMembroComPapel(entity.getId(), PAPEL_VICE_COORDENADOR);
 
         Organizacao organizacao = new Organizacao(
                 entity.getId(),
@@ -112,29 +110,14 @@ public class OrganizacaoRepositoryImpl implements OrganizacaoRepository {
         return organizacao;
     }
 
-    private String resolveRoleMemberName(UUID orgId, String roleKeyword, String fallback) {
+    /** Nome do fiel com vínculo ativo e o papel dado: a coordenação é derivada dos vínculos, nunca copiada. */
+    private String nomeDoMembroComPapel(UUID orgId, String papel) {
         return membroGrupoJpaRepository.findByOrganizacaoIdAndAtivoTrue(orgId).stream()
-                .filter(m -> {
-                    if (m.getPapel() == null) {
-                        return false;
-                    }
-                    String p = m.getPapel().toLowerCase();
-                    if (PAPEL_COORDENADOR.equalsIgnoreCase(roleKeyword)) {
-                        return "coordenador".equals(p);
-                    }
-                    if (PAPEL_SECRETARIO.equalsIgnoreCase(roleKeyword)) {
-                        return p.startsWith(PAPEL_SECRETARIO);
-                    }
-                    return p.contains(roleKeyword.toLowerCase());
-                })
+                .filter(m -> papel.equalsIgnoreCase(m.getPapel()))
                 .findFirst()
-                .map(m -> {
-                    String name = fielRepository.findById(m.getFielId())
-                            .map(FielEntity::getNome)
-                            .orElse(fallback);
-                    return (name != null && !name.trim().isEmpty()) ? name : fallback;
-                })
-                .orElse(fallback);
+                .flatMap(m -> fielRepository.findById(m.getFielId()))
+                .map(FielEntity::getNome)
+                .orElse(null);
     }
 
 }

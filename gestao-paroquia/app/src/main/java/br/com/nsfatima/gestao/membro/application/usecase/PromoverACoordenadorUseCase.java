@@ -103,7 +103,6 @@ public class PromoverACoordenadorUseCase {
         membroGrupoMapper.aplicar(membroAgregado, membro);
         membroRepository.save(membro);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
 
         var usuarioExistente = usuarioRepository.findByFielId(request.fielId());
         boolean usuarioCriado = usuarioExistente.isEmpty();
