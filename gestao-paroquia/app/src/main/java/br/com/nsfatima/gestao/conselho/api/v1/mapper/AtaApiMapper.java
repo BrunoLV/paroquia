@@ -62,7 +62,8 @@ public class AtaApiMapper {
             return PresencaReuniao.vazia();
         }
         List<Presenca> nominal = r.nominal() == null ? List.of() : r.nominal().stream()
-                .map((PresencaItemRequest p) -> new Presenca(p.fielId(), p.funcao(), p.situacao())).toList();
+                .map((PresencaItemRequest p) -> new Presenca(p.fielId(), p.clerigo(), p.funcao(), p.situacao()))
+                .toList();
         return new PresencaReuniao(nominal, r.total());
     }
 
@@ -107,7 +108,8 @@ public class AtaApiMapper {
 
     private static ConteudoAtaResponse conteudo(ConteudoAta c, Map<UUID, String> nomes) {
         List<PresencaResponse> presencas = c.presenca().nominal().stream()
-                .map(p -> new PresencaResponse(p.fielId(), nome(nomes, p.fielId()), p.funcao(), p.situacao()))
+                .map(p -> new PresencaResponse(p.fielId(), p.clerigo(), nome(nomes, p.fielId()), p.funcao(),
+                        p.situacao()))
                 .toList();
         return new ConteudoAtaResponse(c.titulo(), c.dataReuniao(), c.local(), c.carater(), c.modalidade(),
                 presencas, c.presenca().total(), c.ataAnterior().ataId(), c.ataAnterior().aprovacao(),
@@ -152,7 +154,7 @@ public class AtaApiMapper {
         RegrasTipoReuniao r = info.regras();
         return new TipoReuniaoResponse(info.tipo(), info.tipo().getRotulo(), r.exigeHomologacao(), r.aplicaQuorum(),
                 r.modoPresenca(), r.permiteVotacao(), r.exigeOrganizacaoAssociada(), r.tiposConvocantes(),
-                r.subtiposConselho(), r.papeisRedatores(), info.organizacoesRedacao());
+                r.subtiposConselho(), r.papeisRedatores(), info.organizacoesRedacao(), r.presidenciaNata());
     }
 
     /** Entrada da trilha, sem IP nem estados serializados. */

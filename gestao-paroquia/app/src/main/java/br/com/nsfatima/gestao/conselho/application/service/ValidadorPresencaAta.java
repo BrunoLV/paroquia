@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.conselho.application.service;
 
 import br.com.nsfatima.gestao.conselho.application.dto.AtorAutenticado;
+import br.com.nsfatima.gestao.conselho.application.dto.ClerigoAtivo;
 import br.com.nsfatima.gestao.conselho.application.port.out.PessoasPort;
 import br.com.nsfatima.gestao.conselho.domain.exception.AtaInvalidaException;
 import br.com.nsfatima.gestao.conselho.domain.model.ConteudoAta;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Confere a lista nominal de presença contra o cadastro, o que o agregado não pode fazer por conhecer
@@ -40,8 +42,16 @@ public class ValidadorPresencaAta {
         if (nominal.isEmpty()) {
             return;
         }
+        Set<UUID> clerigos = new HashSet<>();
         Set<UUID> ids = new HashSet<>();
-        nominal.forEach(p -> ids.add(p.fielId()));
+        nominal.forEach(p -> (p.clerigo() ? clerigos : ids).add(p.fielId()));
+        if (!clerigos.isEmpty() && !pessoas.clerigosAtivos().stream().map(ClerigoAtivo::id)
+                .collect(Collectors.toSet()).containsAll(clerigos)) {
+            throw new AtaInvalidaException("A presença cita clérigo não cadastrado ou inativo.");
+        }
+        if (ids.isEmpty()) {
+            return;
+        }
         if (regras.modoPresenca() == ModoPresenca.NOMINAL_MEMBROS) {
             if (!membros(convocanteId, associadaId).containsAll(ids)) {
                 throw new AtaInvalidaException("A presença deve conter apenas membros ativos do órgão.");
@@ -64,8 +74,8 @@ public class ValidadorPresencaAta {
         if (conteudo.presenca().nominal().isEmpty() || esperada.isEmpty() || fiel.isEmpty()) {
             return;
         }
-        boolean consta = conteudo.presenca().nominal().stream().anyMatch(p -> p.fielId().equals(fiel.get())
-                && p.presente() && esperada.get().getRotulo().equals(p.funcao()));
+        boolean consta = conteudo.presenca().nominal().stream().anyMatch(p -> !p.clerigo()
+                && p.fielId().equals(fiel.get()) && p.presente() && esperada.get().getRotulo().equals(p.funcao()));
         if (!consta) {
             throw new AtaInvalidaException("O redator da ata deve constar na presença como presente, com a função "
                     + esperada.get().getRotulo() + ".");

@@ -30,7 +30,7 @@ public final class AtaFixtures {
     public static PresencaReuniao tresPresentes() {
         return PresencaReuniao.nominal(List.of(
                 new Presenca(FIEL_A, null, SituacaoPresenca.PRESENTE),
-                new Presenca(FIEL_B, "Coordenador(a)", SituacaoPresenca.PRESENTE),
+                new Presenca(FIEL_B, "Coordenador(a) de pastoral ou organismo", SituacaoPresenca.PRESENTE),
                 new Presenca(FIEL_C, null, SituacaoPresenca.AUSENTE_JUSTIFICADA)));
     }
 

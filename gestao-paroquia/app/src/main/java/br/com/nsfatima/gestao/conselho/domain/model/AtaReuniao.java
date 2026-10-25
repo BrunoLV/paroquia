@@ -154,7 +154,8 @@ public final class AtaReuniao {
     public void submeter(Integer membrosConvocados, NumeradorAta numerador, Instant agora) {
         exigirStatus(StatusAta.RASCUNHO, "Somente rascunhos podem ser submetidos.");
         exigirCompleta(membrosConvocados);
-        this.membrosConvocados = regras().aplicaQuorum() ? membrosConvocados : null;
+        this.membrosConvocados = regras().aplicaQuorum()
+                ? membrosConvocados + (regras().presidenciaNata() ? 1 : 0) : null;
         this.motivoVeto = null;
         this.decididoEmUtc = null;
         if (regras().exigeHomologacao()) {
@@ -293,7 +294,7 @@ public final class AtaReuniao {
         if (!regras().aplicaQuorum() || membrosConvocados == null) {
             return Optional.empty();
         }
-        return Optional.of(QuorumPolicy.avaliar(membrosConvocados, conteudo.presenca().presentes()));
+        return Optional.of(QuorumPolicy.avaliar(membrosConvocados, conteudo.presenca().presentesNoQuorum()));
     }
 
     /** Número da ata no formato {@code 003/2026}, ou vazio enquanto ainda é minuta. */

@@ -77,7 +77,8 @@ class AtaReuniaoTest {
 
         assertThat(ata.getStatus()).isEqualTo(StatusAta.PENDENTE_HOMOLOGACAO);
         assertThat(ata.quorum()).hasValueSatisfying(q -> {
-            assertThat(q.minimoNecessario()).isEqualTo(3);
+            assertThat(q.membrosConvocados()).as("5 membros e o Pároco, presidente nato").isEqualTo(6);
+            assertThat(q.minimoNecessario()).isEqualTo(4);
             assertThat(q.presentes()).isEqualTo(2);
             assertThat(q.atingido()).isFalse();
         });

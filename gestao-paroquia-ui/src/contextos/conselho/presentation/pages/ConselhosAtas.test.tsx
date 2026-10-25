@@ -35,7 +35,7 @@ vi.mock('@/contextos/local/infrastructure/http/locais', () => ({
 const tipoRegra = (codigo: TipoReuniaoInfo['codigo'], rotulo: string, subtipo: string, orgaos: string[]): TipoReuniaoInfo => ({
   codigo, rotulo, exigeHomologacao: true, aplicaQuorum: true, modoPresenca: 'NOMINAL_MEMBROS', permiteVotacao: true,
   exigeOrganizacaoAssociada: false, tiposConvocantes: ['CONSELHO'], subtiposConselho: [subtipo],
-  papeisRedatores: ['SECRETARIO_CONSELHO'], organizacoesRedacao: orgaos,
+  papeisRedatores: ['SECRETARIO_CONSELHO'], organizacoesRedacao: orgaos, presidenciaNata: true,
 });
 const tipoCpp = tipoRegra('REUNIAO_CPP', 'Reunião do CPP', 'CPP', ['cpp-1']);
 const tipoCaep = tipoRegra('REUNIAO_CAEP', 'Reunião do CAEP', 'CAEP', []);
@@ -88,6 +88,7 @@ describe('ConselhosAtas', () => {
     vi.mocked(atasApi.listarAtas).mockResolvedValue({ itens: [pendente, homologada], total: 2, pagina: 0, tamanho: 10 });
     vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([]);
     vi.mocked(atasApi.obterPresencaRedator).mockResolvedValue(null);
+    vi.mocked(atasApi.listarClero).mockResolvedValue([]);
     vi.mocked(atasApi.obterAta).mockResolvedValue(detalhe);
     vi.mocked(atasApi.obterTrilha).mockResolvedValue([
       { id: 't1', acao: 'RASCUNHAR', ator: 'secretario', perfil: 'SECRETARIO_CONSELHO', ocorridoEmUtc: '2026-06-01T10:00:00Z' },
@@ -284,5 +285,34 @@ describe('ConselhosAtas', () => {
 
     expect(await screen.findByRole('option', { name: 'CAEP Matriz' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'CAEP Comunidade' })).not.toBeInTheDocument();
+  });
+
+  it('já inclui o Pároco como Presidente nos conselhos, sem poder trocá-lo nem removê-lo', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp]);
+    vi.mocked(atasApi.listarClero).mockResolvedValue([
+      { id: 'c1', nome: 'Pe. Pedro da Silva', funcao: 'Pároco', paroco: true },
+      { id: 'c2', nome: 'Pe. João Vigário', funcao: 'Vigário paroquial', paroco: false },
+    ]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião do CPP' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+
+    expect(await within(dialogo).findByDisplayValue('Pe. Pedro da Silva')).toBeDisabled();
+    expect(within(dialogo).getByDisplayValue('Presidente')).toBeDisabled();
+    expect(within(dialogo).getByRole('button', { name: 'Remover pessoa' })).toBeDisabled();
+
+    await user.click(within(dialogo).getByRole('button', { name: /Adicionar pessoa/i }));
+    await user.click(within(dialogo).getAllByRole('combobox', { name: /Pessoa/i })[1]);
+    expect(await screen.findByRole('option', { name: 'Pe. João Vigário' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Pe. Pedro da Silva' })).not.toBeInTheDocument();
   });
 });

@@ -7,8 +7,14 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import br.com.nsfatima.gestao.clero.api.v1.dto.ClerigoInstitucionalResponse;
+import br.com.nsfatima.gestao.clero.application.usecase.GerenciarClerigoUseCase;
+import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.clero.domain.model.GrauOrdem;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -60,6 +66,8 @@ class AtaReuniaoControllerIntegrationTest {
     private JdbcTemplate jdbc;
     @Autowired
     private EntityManager entityManager;
+    @MockitoBean
+    private GerenciarClerigoUseCase clero;
 
     private UUID cppA;
     private UUID cppB;
@@ -260,6 +268,46 @@ class AtaReuniaoControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("o Pároco, que preside por direito próprio, entra na presença e conta no quórum")
+    void parocoPresideEContaNoQuorum() throws Exception {
+        UUID paroco = UUID.randomUUID();
+        Mockito.when(clero.diretorio()).thenReturn(List.of(new ClerigoInstitucionalResponse(paroco, "Pe. Pedro",
+                GrauOrdem.PADRE_DIOCESANO, FuncaoEclesiastica.PAROCO, "NS Fátima")));
+        mockMvc.perform(get(BASE + "/clero").with(secretario(cppA)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nome").value("Pe. Pedro"))
+                .andExpect(jsonPath("$[0].funcao").value("Pároco"))
+                .andExpect(jsonPath("$[0].paroco").value(true));
+        mockMvc.perform(get(BASE + "/clero").with(paroco())).andExpect(jsonPath("$.length()").value(0));
+        mockMvc.perform(get(BASE + "/tipos-reuniao").with(secretario(cppA)))
+                .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CPP')].presidenciaNata")
+                        .value(org.hamcrest.Matchers.contains(true)))
+                .andExpect(jsonPath("$[?(@.codigo=='ASSEMBLEIA_PAROQUIAL')].presidenciaNata")
+                        .value(org.hamcrest.Matchers.contains(false)));
+
+        String semPresidente = corpoCpp(cppA, 3);
+        String presidente = "{\"fielId\":\"" + paroco + "\",\"clerigo\":true,\"funcao\":\"Presidente\","
+                + "\"situacao\":\"PRESENTE\"},";
+        String com = semPresidente.replace("\"nominal\":[", "\"nominal\":[" + presidente);
+
+        for (String corpo : List.of(semPresidente, com)) {
+            String criada = mockMvc.perform(post(ATAS).with(secretario(cppA))
+                            .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                    .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+            String id = objectMapper.readTree(criada).get("id").asString();
+            mockMvc.perform(post(ATAS + "/" + id + "/submissao").with(secretario(cppA)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.quorum.membrosConvocados").value(6))
+                    .andExpect(jsonPath("$.quorum.presentes").value(corpo == com ? 4 : 3))
+                    .andExpect(jsonPath("$.quorum.atingido").value(corpo == com));
+        }
+        mockMvc.perform(post(ATAS).with(secretario(cppA)).contentType(MediaType.APPLICATION_JSON)
+                        .content(com.replace(paroco.toString(), UUID.randomUUID().toString())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("clérigo")));
+    }
+
+    @Test
     @DisplayName("Pároco não redige: só homologa e veta")
     void parocoNaoRedige() throws Exception {
         mockMvc.perform(post(ATAS).with(paroco()).contentType(MediaType.APPLICATION_JSON)
@@ -310,9 +358,9 @@ class AtaReuniaoControllerIntegrationTest {
     void parocoHomologa() throws Exception {
         JsonNode pendente = criarPendente();
         String id = pendente.get("id").asString();
-        assertThat(pendente.get("quorum").get("minimoNecessario").asInt()).isEqualTo(3);
+        assertThat(pendente.get("quorum").get("minimoNecessario").asInt()).as("5 membros e o Pároco").isEqualTo(4);
         assertThat(pendente.get("quorum").get("presentes").asInt()).isEqualTo(3);
-        assertThat(pendente.get("quorum").get("atingido").asBoolean()).isTrue();
+        assertThat(pendente.get("quorum").get("atingido").asBoolean()).isFalse();
 
         mockMvc.perform(post(ATAS + "/" + id + "/homologacao").with(secretario(cppA)))
                 .andExpect(status().isForbidden());

@@ -67,7 +67,17 @@ public record PresencaReuniao(List<Presenca> nominal, Integer total) {
         return (int) nominal.stream().filter(Presenca::presente).count();
     }
 
-    /** Identificadores dos fiéis que estiveram presentes (vazio na presença quantitativa). */
+    /**
+     * Presentes que contam para o quórum: os membros do colegiado e o presidente. O clero presente que não
+     * preside (vigário, diácono) assiste à reunião, mas não é membro, então não entra na conta.
+     */
+    public int presentesNoQuorum() {
+        String presidente = FuncaoPresenca.PRESIDENTE.getRotulo();
+        return (int) nominal.stream()
+                .filter(p -> p.presente() && (!p.clerigo() || presidente.equals(p.funcao()))).count();
+    }
+
+    /** Identificadores das pessoas que estiveram presentes (vazio na presença quantitativa). */
     public Set<UUID> fieisPresentes() {
         Set<UUID> ids = new HashSet<>();
         for (Presenca presenca : nominal) {

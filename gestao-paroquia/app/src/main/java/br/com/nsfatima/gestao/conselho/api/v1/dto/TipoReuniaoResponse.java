@@ -21,5 +21,6 @@ public record TipoReuniaoResponse(
         Set<TipoOrganizacao> tiposConvocantes,
         Set<SubtipoConselho> subtiposConselho,
         Set<PapelOrganizacional> papeisRedatores,
-        Set<UUID> organizacoesRedacao) {
+        Set<UUID> organizacoesRedacao,
+        boolean presidenciaNata) {
 }

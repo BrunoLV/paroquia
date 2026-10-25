@@ -1,6 +1,10 @@
 package br.com.nsfatima.gestao.conselho.infrastructure.acl;
 
+import br.com.nsfatima.gestao.clero.application.usecase.GerenciarClerigoUseCase;
+import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.conselho.application.dto.ClerigoAtivo;
 import br.com.nsfatima.gestao.conselho.application.port.out.PessoasPort;
+import br.com.nsfatima.gestao.conselho.domain.model.FuncaoPresenca;
 import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ObterUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -26,12 +31,14 @@ public class PessoasAdapter implements PessoasPort {
     private final ListarOrganizacaoMembrosUseCase membros;
     private final ObterFielUseCase fieis;
     private final ObterUsuarioUseCase usuarios;
+    private final GerenciarClerigoUseCase clero;
 
     public PessoasAdapter(ListarOrganizacaoMembrosUseCase membros, ObterFielUseCase fieis,
-                          ObterUsuarioUseCase usuarios) {
+                          ObterUsuarioUseCase usuarios, GerenciarClerigoUseCase clero) {
         this.membros = membros;
         this.fieis = fieis;
         this.usuarios = usuarios;
+        this.clero = clero;
     }
 
     @Override
@@ -55,15 +62,44 @@ public class PessoasAdapter implements PessoasPort {
     }
 
     @Override
-    public Map<UUID, String> nomes(Collection<UUID> fielIds) {
+    public List<ClerigoAtivo> clerigosAtivos() {
+        return clero.diretorio().stream().map(c -> new ClerigoAtivo(c.clerigoId(), c.nomeEclesiastico(),
+                funcaoNaReuniao(c.funcaoAtual()), ehParoco(c.funcaoAtual()))).toList();
+    }
+
+    @Override
+    public Map<UUID, String> nomes(Collection<UUID> ids) {
         Map<UUID, String> nomes = new HashMap<>();
-        for (UUID id : fielIds) {
+        Map<UUID, String> clerigos = null;
+        for (UUID id : ids) {
             try {
                 nomes.put(id, fieis.executeContato(id).nome());
-            } catch (IllegalArgumentException naoEncontrado) {
-                continue;
+            } catch (IllegalArgumentException naoEhFiel) {
+                if (clerigos == null) {
+                    clerigos = clerigosAtivos().stream()
+                            .collect(Collectors.toMap(ClerigoAtivo::id, ClerigoAtivo::nome));
+                }
+                if (clerigos.containsKey(id)) {
+                    nomes.put(id, clerigos.get(id));
+                }
             }
         }
         return nomes;
+    }
+
+    private static boolean ehParoco(FuncaoEclesiastica funcao) {
+        return funcao == FuncaoEclesiastica.PAROCO || funcao == FuncaoEclesiastica.ADMINISTRADOR_PAROQUIAL;
+    }
+
+    private static String funcaoNaReuniao(FuncaoEclesiastica funcao) {
+        if (funcao == null) {
+            return null;
+        }
+        return switch (funcao) {
+            case PAROCO, ADMINISTRADOR_PAROQUIAL -> FuncaoPresenca.PAROCO.getRotulo();
+            case VIGARIO_PAROQUIAL -> FuncaoPresenca.VIGARIO_PAROQUIAL.getRotulo();
+            case DIACONO_AUXILIAR -> FuncaoPresenca.DIACONO.getRotulo();
+            case BISPO_DIOCESANO, EMERITO -> null;
+        };
     }
 }

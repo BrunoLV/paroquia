@@ -308,6 +308,11 @@ public class SeedDataSqlIntegrityTest {
             assertThat(atas).filteredOn(a -> a.getStatus().selada()).allMatch(a -> a.identificacao().isPresent());
             assertThat(ata("91000000-0000-0000-0000-000000000001").identificacao()).contains("001/2026");
             assertThat(ata("91000000-0000-0000-0000-000000000003").getMotivoVeto()).isNotBlank();
+            assertThat(ata("91000000-0000-0000-0000-000000000004").getConteudo().presenca().nominal())
+                    .as("O Pároco preside o CPP").anyMatch(p -> p.clerigo() && "Presidente".equals(p.funcao()));
+            assertThat(ata("91000000-0000-0000-0000-000000000017").quorum())
+                    .as("A reunião do CAEP sem o Pároco não atinge o quórum")
+                    .hasValueSatisfying(q -> assertThat(q.atingido()).isFalse());
         });
     }
 

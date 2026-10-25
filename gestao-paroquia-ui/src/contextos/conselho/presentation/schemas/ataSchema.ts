@@ -39,6 +39,7 @@ const itemSchema = z.object({
 
 const presencaSchema = z.object({
   fielId: z.string().min(1, 'Selecione a pessoa.'),
+  clerigo: z.boolean(),
   funcao: z.string().max(80, 'Máximo de 80 caracteres.'),
   situacao: z.enum(SITUACOES),
 });
@@ -101,6 +102,7 @@ export type DeliberacaoFormInput = ItemFormInput['deliberacoes'][number];
 
 export const presencaVazia = (): AtaFormInput['presencas'][number] => ({
   fielId: '',
+  clerigo: false,
   funcao: '',
   situacao: 'PRESENTE',
 });
@@ -145,7 +147,9 @@ export const ataParaFormulario = (ata: Ata): AtaFormInput => ({
   local: ata.conteudo.local,
   carater: ata.conteudo.carater,
   modalidade: ata.conteudo.modalidade,
-  presencas: ata.conteudo.presencas.map((p) => ({ fielId: p.fielId, funcao: p.funcao ?? '', situacao: p.situacao })),
+  presencas: ata.conteudo.presencas.map((p) => ({
+    fielId: p.fielId, clerigo: p.clerigo, funcao: p.funcao ?? '', situacao: p.situacao,
+  })),
   totalParticipantes: ata.conteudo.totalParticipantes,
   ataAnteriorId: ata.conteudo.ataAnteriorId ?? '',
   aprovacaoAtaAnterior: ata.conteudo.aprovacaoAtaAnterior,
@@ -181,7 +185,9 @@ export const paraConteudoPayload = (dados: AtaFormInput, regras: TipoReuniaoInfo
     regras.modoPresenca === 'QUANTITATIVA'
       ? { total: dados.totalParticipantes ?? undefined }
       : {
-          nominal: dados.presencas.map((p) => ({ fielId: p.fielId, funcao: opcional(p.funcao), situacao: p.situacao })),
+          nominal: dados.presencas.map((p) => ({
+            fielId: p.fielId, clerigo: p.clerigo || undefined, funcao: opcional(p.funcao), situacao: p.situacao,
+          })),
         },
   ataAnterior: dados.ataAnteriorId
     ? {

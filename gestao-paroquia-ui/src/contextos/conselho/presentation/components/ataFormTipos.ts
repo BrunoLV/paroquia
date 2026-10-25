@@ -1,10 +1,15 @@
 import { Organizacao } from '@/shared/domain/types/types';
 import { TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 
-/** Pessoa que pode constar na presença ou declarar conflito: membro ativo do órgão convocante ou associado. */
+/**
+ * Pessoa que pode constar na presença ou declarar conflito: membro ativo do órgão convocante ou associado, ou
+ * clérigo. O Pároco (`paroco`) preside por direito próprio os conselhos.
+ */
 export interface Candidato {
   id: string;
   nome: string;
+  clerigo?: boolean;
+  paroco?: boolean;
 }
 
 /** Órgãos que o tipo aceita como convocante e pelos quais o usuário pode redigir, conforme o servidor. */

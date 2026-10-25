@@ -67,10 +67,11 @@ export const FUNCOES_PRESENCA: readonly { rotulo: string; unica: boolean }[] = [
   { rotulo: 'Vigário paroquial', unica: true },
   { rotulo: 'Diácono', unica: false },
   { rotulo: 'Presidente', unica: true },
-  { rotulo: 'Vice-presidente', unica: true },
+  { rotulo: 'Coordenador(a) do conselho', unica: true },
+  { rotulo: 'Vice-coordenador(a) do conselho', unica: true },
   { rotulo: 'Secretário(a)', unica: true },
   { rotulo: 'Tesoureiro(a)', unica: true },
-  { rotulo: 'Coordenador(a)', unica: false },
+  { rotulo: 'Coordenador(a) de pastoral ou organismo', unica: false },
   { rotulo: 'Representante de pastoral ou movimento', unica: false },
   { rotulo: 'Membro', unica: false },
   { rotulo: 'Convidado(a)', unica: false },
@@ -123,6 +124,16 @@ export interface TipoReuniaoInfo {
   papeisRedatores: string[];
   /** Órgãos pelos quais o usuário autenticado pode redigir este tipo (regra do servidor). */
   organizacoesRedacao: string[];
+  /** O Pároco preside por direito próprio: entra na presença como Presidente e conta no quórum. */
+  presidenciaNata: boolean;
+}
+
+/** Clérigo que pode constar na presença, com a função que o encargo sugere. */
+export interface ClerigoOpcao {
+  id: string;
+  nome: string;
+  funcao: string | null;
+  paroco: boolean;
 }
 
 export interface Votacao {
@@ -152,8 +163,10 @@ export interface ItemPauta {
   deliberacoes: Deliberacao[];
 }
 
+/** `fielId` identifica a pessoa: um fiel ou, quando `clerigo`, um clérigo (o clero não é cadastrado como fiel). */
 export interface Presenca {
   fielId: string;
+  clerigo: boolean;
   nome: string;
   funcao: string | null;
   situacao: SituacaoPresenca;
@@ -256,7 +269,7 @@ export interface ConteudoAtaPayload {
   carater: CaraterReuniao;
   modalidade: ModalidadeReuniao;
   presenca: {
-    nominal?: { fielId: string; funcao?: string; situacao: SituacaoPresenca }[];
+    nominal?: { fielId: string; clerigo?: boolean; funcao?: string; situacao: SituacaoPresenca }[];
     total?: number;
   };
   ataAnterior: { ataId?: string; aprovacao: AprovacaoAtaAnterior; ressalvas?: string };

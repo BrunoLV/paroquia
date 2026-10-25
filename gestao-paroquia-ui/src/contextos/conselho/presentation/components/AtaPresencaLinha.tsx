@@ -13,6 +13,8 @@ interface AtaPresencaLinhaProps {
   candidatos: Candidato[];
   /** Linha do redator: fixa, não se edita nem se remove. */
   fixa: boolean;
+  /** Linha do Pároco, que preside por direito próprio: a pessoa e a função são fixas e ela não se remove. */
+  paroco: boolean;
   onRemover: () => void;
 }
 
@@ -26,7 +28,7 @@ const opcoesDeFuncao = (atual: string): string[] => {
  * Uma pessoa da lista de presença. As opções já impedem os conflitos: quem consta em outra linha não aparece em
  * "Pessoa", função única usada em outra linha fica desabilitada e quem não esteve presente não tem função.
  */
-export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, candidatos, fixa, onRemover }) => {
+export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, candidatos, fixa, paroco, onRemover }) => {
   const { control, setValue, formState: { errors } } = useFormContext<AtaFormInput>();
   const presencas = useWatch({ control, name: 'presencas' });
   const outras = presencas.filter((_, j) => j !== indice);
@@ -40,8 +42,12 @@ export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, cand
       <Grid size={{ xs: 12, sm: 5 }}>
         <Controller name={`presencas.${indice}.fielId`} control={control} render={({ field }) => (
           <FormControl fullWidth size="small">
-            <SearchableSelect {...field} labelId={`presenca-${indice}`} label="Pessoa" required disabled={fixa}
-              error={Boolean(erro?.fielId)} helperText={erro?.fielId?.message}>
+            <SearchableSelect {...field} labelId={`presenca-${indice}`} label="Pessoa" required disabled={fixa || paroco}
+              error={Boolean(erro?.fielId)} helperText={erro?.fielId?.message}
+              onChange={(e) => {
+                field.onChange(e);
+                setValue(`presencas.${indice}.clerigo`, candidatos.find((c) => c.id === e.target.value)?.clerigo ?? false);
+              }}>
               {candidatos.filter((c) => c.id === field.value || !pessoasUsadas.has(c.id))
                 .map((c) => <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>)}
             </SearchableSelect>
@@ -51,7 +57,7 @@ export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, cand
       <Grid size={{ xs: 12, sm: 3 }}>
         <Controller name={`presencas.${indice}.funcao`} control={control} render={({ field }) => (
           <FormControl fullWidth size="small">
-            <SearchableSelect {...field} labelId={`funcao-${indice}`} label="Função" disabled={fixa || ausente}
+            <SearchableSelect {...field} labelId={`funcao-${indice}`} label="Função" disabled={fixa || paroco || ausente}
               error={Boolean(erro?.funcao)} helperText={erro?.funcao?.message}>
               {opcoesDeFuncao(field.value).map((f) => (
                 <MenuItem key={f} value={f} disabled={f !== field.value && funcaoEhUnica(f) && funcoesUsadas.has(f)}>
@@ -76,7 +82,8 @@ export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, cand
         )} />
       </Grid>
       <Grid size={{ xs: 3, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <IconActionButton title="Remover pessoa" icon={<DeleteIcon />} color="error" disabled={fixa} onClick={onRemover} />
+        <IconActionButton title="Remover pessoa" icon={<DeleteIcon />} color="error" disabled={fixa || paroco}
+          onClick={onRemover} />
       </Grid>
     </Grid>
   );

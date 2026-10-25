@@ -9,18 +9,21 @@ import java.util.Set;
 
 /**
  * Funções que uma pessoa exerce na reunião, em lista fechada para que a ata e os documentos usem sempre o
- * mesmo vocabulário. As funções {@code unica} (presidência, secretaria e afins) só podem ser exercidas por uma
- * pessoa por reunião; as demais podem se repetir.
+ * mesmo vocabulário. Nos conselhos o Pároco preside ({@link #PRESIDENTE}) e o conselho tem o seu próprio
+ * coordenador e vice-coordenador, distintos dos coordenadores de pastoral. As funções {@code unica} (presidência,
+ * coordenação do conselho, secretaria e afins) só podem ser exercidas por uma pessoa por reunião; as demais
+ * podem se repetir.
  */
 public enum FuncaoPresenca {
     PAROCO("Pároco", true),
     VIGARIO_PAROQUIAL("Vigário paroquial", true),
     DIACONO("Diácono", false),
     PRESIDENTE("Presidente", true),
-    VICE_PRESIDENTE("Vice-presidente", true),
+    COORDENADOR_CONSELHO("Coordenador(a) do conselho", true),
+    VICE_COORDENADOR_CONSELHO("Vice-coordenador(a) do conselho", true),
     SECRETARIO("Secretário(a)", true),
     TESOUREIRO("Tesoureiro(a)", true),
-    COORDENADOR("Coordenador(a)", false),
+    COORDENADOR("Coordenador(a) de pastoral ou organismo", false),
     REPRESENTANTE("Representante de pastoral ou movimento", false),
     MEMBRO("Membro", false),
     CONVIDADO("Convidado(a)", false);
@@ -54,7 +57,7 @@ public enum FuncaoPresenca {
 
     /**
      * Função que o redator exerce na reunião que redige: quem é secretário (do conselho ou do grupo) consta como
-     * Secretário(a); o coordenador, como Coordenador(a).
+     * Secretário(a); o coordenador, como Coordenador(a) de pastoral ou organismo.
      *
      * @param papeisDoRedator papéis do redator no órgão convocante
      * @param papeisRedatores papéis que o tipo de reunião admite como redatores

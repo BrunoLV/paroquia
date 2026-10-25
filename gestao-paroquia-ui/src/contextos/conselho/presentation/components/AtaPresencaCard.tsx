@@ -33,10 +33,22 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
     if (!redator) return;
     const atuais = getValues('presencas');
     const i = atuais.findIndex((p) => p.fielId === redator.fielId);
-    const linha = { fielId: redator.fielId, funcao: redator.funcao, situacao: 'PRESENTE' as const };
+    const linha = { fielId: redator.fielId, clerigo: false, funcao: redator.funcao, situacao: 'PRESENTE' as const };
     if (i === -1) insert(0, linha);
     else if (atuais[i].funcao !== linha.funcao || atuais[i].situacao !== linha.situacao) setValue(`presencas.${i}`, linha);
   }, [redator, presencas, getValues, insert, setValue]);
+
+  // Nos conselhos o Pároco preside por direito próprio: já consta, como Presidente se presente (a situação é editável).
+  const paroco = regras?.presidenciaNata ? candidatos.find((c) => c.paroco) : undefined;
+  useEffect(() => {
+    if (!paroco) return;
+    const atuais = getValues('presencas');
+    const i = atuais.findIndex((p) => p.fielId === paroco.id);
+    if (i === -1) insert(0, { fielId: paroco.id, clerigo: true, funcao: 'Presidente', situacao: 'PRESENTE' });
+    else if (atuais[i].situacao === 'PRESENTE' && atuais[i].funcao !== 'Presidente') {
+      setValue(`presencas.${i}.funcao`, 'Presidente');
+    }
+  }, [paroco, presencas, getValues, insert, setValue]);
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -54,7 +66,8 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
           <Stack spacing={2}>
             {fields.map((campo, i) => (
               <AtaPresencaLinha key={campo.id} indice={i} candidatos={candidatos} onRemover={() => remove(i)}
-                fixa={redator !== null && presencas?.[i]?.fielId === redator.fielId} />
+                fixa={redator !== null && presencas?.[i]?.fielId === redator.fielId}
+                paroco={paroco !== undefined && presencas?.[i]?.fielId === paroco.id} />
             ))}
             <Stack direction="row" spacing={1}>
               <ActionButton title="Adicionar pessoa" icon={<AddIcon />} variant="outlined" onClick={() => append(presencaVazia())} />
@@ -62,7 +75,7 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
                 disabled={candidatos.length === 0}
                 onClick={() => {
                   const ja = new Set(getValues('presencas').map((p) => p.fielId));
-                  candidatos.filter((c) => !ja.has(c.id)).forEach((c) => append({ ...presencaVazia(), fielId: c.id }));
+                  candidatos.filter((c) => !c.clerigo && !ja.has(c.id)).forEach((c) => append({ ...presencaVazia(), fielId: c.id }));
                 }} />
             </Stack>
           </Stack>

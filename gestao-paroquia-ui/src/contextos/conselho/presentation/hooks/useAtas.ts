@@ -5,6 +5,7 @@ import {
   baixarCompilacao,
   homologarAta,
   listarAtas,
+  listarClero,
   listarTiposReuniao,
   obterPresencaRedator,
   obterAta,
@@ -35,6 +36,7 @@ export const atasKeys = {
   detalhe: (id: string) => ['atas', 'detalhe', id] as const,
   trilha: (id: string) => ['atas', 'trilha', id] as const,
   tipos: ['atas', 'tipos'] as const,
+  clero: ['atas', 'clero'] as const,
   redator: (tipo: string, organizacaoId: string) => ['atas', 'redator', tipo, organizacaoId] as const,
   membros: (organizacaoId: string) => ['atas', 'membros', organizacaoId] as const,
 };
@@ -128,7 +130,7 @@ export const useExportarCompilacao = () =>
 
 /**
  * Pessoas que podem constar na presença ou declarar conflito: membros ativos do órgão convocante e, na reunião
- * conjunta, do associado. Sem duplicatas, ordenadas por nome.
+ * conjunta, do associado, e o clero. Sem duplicatas; membros e clero, cada grupo em ordem de nome.
  */
 export const useCandidatosPresenca = (organizacaoIds: string[]): Candidato[] => {
   const ids = organizacaoIds.filter(Boolean);
@@ -139,7 +141,10 @@ export const useCandidatosPresenca = (organizacaoIds: string[]): Candidato[] => 
   resultados.forEach((r) => (r.data ?? []).forEach((m) => {
     if (m.fielId && m.ativo) porId.set(m.fielId, m.fielNome ?? m.nomeCompleto ?? 'Pessoa sem nome');
   }));
-  return Array.from(porId, ([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const clero = useQuery({ queryKey: atasKeys.clero, queryFn: listarClero, staleTime: Infinity }).data ?? [];
+  const ordenar = (a: Candidato, b: Candidato) => a.nome.localeCompare(b.nome, 'pt-BR');
+  const membros = Array.from(porId, ([id, nome]) => ({ id, nome })).sort(ordenar);
+  return [...membros, ...clero.map((c) => ({ id: c.id, nome: c.nome, clerigo: true, paroco: c.paroco })).sort(ordenar)];
 };
 
 /** Nomes dos locais ativos cadastrados, em ordem alfabética, para escolher onde a reunião aconteceu. */

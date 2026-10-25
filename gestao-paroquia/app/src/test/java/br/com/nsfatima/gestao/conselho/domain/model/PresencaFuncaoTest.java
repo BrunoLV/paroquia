@@ -58,4 +58,19 @@ class PresencaFuncaoTest {
                 PapelOrganizacional.SECRETARIO_GRUPO), redatores)).contains(FuncaoPresenca.SECRETARIO);
         assertThat(FuncaoPresenca.doRedator(Set.of(PapelOrganizacional.MEMBRO_ATIVO), redatores)).isEmpty();
     }
+
+    @Test
+    @DisplayName("no quórum contam os membros e o presidente; o outro clero presente apenas assiste")
+    void quorumContaMembrosEPresidente() {
+        UUID paroco = UUID.randomUUID();
+        UUID vigario = UUID.randomUUID();
+        PresencaReuniao presenca = PresencaReuniao.nominal(List.of(
+                presente("Membro"),
+                new Presenca(UUID.randomUUID(), null, SituacaoPresenca.AUSENTE),
+                new Presenca(paroco, true, "Presidente", SituacaoPresenca.PRESENTE),
+                new Presenca(vigario, true, "Vigário paroquial", SituacaoPresenca.PRESENTE)));
+
+        assertThat(presenca.presentes()).isEqualTo(3);
+        assertThat(presenca.presentesNoQuorum()).isEqualTo(2);
+    }
 }

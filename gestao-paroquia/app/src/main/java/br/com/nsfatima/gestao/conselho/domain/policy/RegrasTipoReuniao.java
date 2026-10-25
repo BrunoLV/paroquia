@@ -32,6 +32,14 @@ public record RegrasTipoReuniao(
         papeisRedatores = Set.copyOf(papeisRedatores);
     }
 
+    /**
+     * Indica se o Pároco preside a reunião por direito próprio (cân. 536 e 537): as reuniões nominais convocadas
+     * por conselho. Ele conta como membro convocado e, estando presente, no quórum.
+     */
+    public boolean presidenciaNata() {
+        return tiposConvocantes.equals(Set.of(TipoOrganizacao.CONSELHO)) && modoPresenca != ModoPresenca.QUANTITATIVA;
+    }
+
     /** Indica se a organização pode convocar uma reunião deste tipo. */
     public boolean aceitaConvocante(ReferenciaOrganizacao organizacao) {
         if (!tiposConvocantes.contains(organizacao.tipo())) {

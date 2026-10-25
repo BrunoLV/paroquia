@@ -47,6 +47,19 @@ class RegrasTipoReuniaoPolicyTest {
         assertThat(RegrasTipoReuniaoPolicy.para(tipo).exigeHomologacao()).isFalse();
     }
 
+    @ParameterizedTest
+    @EnumSource(TipoReuniao.class)
+    @DisplayName("o Pároco preside por direito próprio as reuniões nominais de conselho")
+    void presidenciaNata(TipoReuniao tipo) {
+        boolean esperado = switch (tipo) {
+            case REUNIAO_CPP, REUNIAO_CPC, REUNIAO_CAEP, REUNIAO_CONJUNTA_CPP_CAEP, REUNIAO_PASTORAL,
+                 REUNIAO_COORDENADORES, REUNIAO_ANIMADORES, PLANEJAMENTO_PASTORAL -> true;
+            case ASSEMBLEIA_PAROQUIAL, ASSEMBLEIA_COMUNITARIA, REUNIAO_ORGANISMO, COMISSAO_ESPECIAL -> false;
+        };
+
+        assertThat(RegrasTipoReuniaoPolicy.para(tipo).presidenciaNata()).isEqualTo(esperado);
+    }
+
     @Test
     @DisplayName("só os colegiados aplicam quórum e votam")
     void quorumEVotacao() {

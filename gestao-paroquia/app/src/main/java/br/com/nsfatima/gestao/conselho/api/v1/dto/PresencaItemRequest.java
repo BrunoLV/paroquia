@@ -6,9 +6,13 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
-/** Presença de uma pessoa na reunião; só o identificador do fiel, o nome é resolvido pelo servidor. */
+/**
+ * Presença de uma pessoa na reunião; só o identificador, o nome é resolvido pelo servidor. {@code clerigo}
+ * indica que o identificador é de um clérigo, e não de um fiel.
+ */
 public record PresencaItemRequest(
         @NotNull UUID fielId,
+        Boolean clerigo,
         @Size(max = 80) String funcao,
         @NotNull SituacaoPresenca situacao) {
 }

@@ -30,7 +30,7 @@ const valida = (): AtaFormInput => ({
   organizacaoConvocanteId: 'org-1',
   titulo: ' Reunião de junho ',
   local: 'Salão paroquial',
-  presencas: [{ fielId: 'f1', funcao: 'Coordenador(a)', situacao: 'PRESENTE' }],
+  presencas: [{ fielId: 'f1', clerigo: false, funcao: 'Coordenador(a) de pastoral ou organismo', situacao: 'PRESENTE' }],
   itens: [
     {
       ...itemVazio(),
@@ -69,12 +69,12 @@ describe('ataSchema', () => {
 
   it('barra pessoa repetida, função única repetida e função de quem não esteve presente', () => {
     const presencas = [
-      { fielId: 'f1', funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
-      { fielId: 'f2', funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
-      { fielId: 'f1', funcao: '', situacao: 'PRESENTE' as const },
-      { fielId: 'f3', funcao: 'Membro', situacao: 'AUSENTE' as const },
-      { fielId: 'f4', funcao: 'Membro', situacao: 'PRESENTE' as const },
-      { fielId: 'f5', funcao: 'Membro', situacao: 'PRESENTE' as const },
+      { fielId: 'f1', clerigo: false, funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
+      { fielId: 'f2', clerigo: false, funcao: 'Secretário(a)', situacao: 'PRESENTE' as const },
+      { fielId: 'f1', clerigo: false, funcao: '', situacao: 'PRESENTE' as const },
+      { fielId: 'f3', clerigo: false, funcao: 'Membro', situacao: 'AUSENTE' as const },
+      { fielId: 'f4', clerigo: false, funcao: 'Membro', situacao: 'PRESENTE' as const },
+      { fielId: 'f5', clerigo: false, funcao: 'Membro', situacao: 'PRESENTE' as const },
     ];
 
     const resultado = ataSchema.safeParse({ ...valida(), presencas });
@@ -104,7 +104,12 @@ describe('paraConteudoPayload', () => {
     const payload = paraConteudoPayload(valida(), regras());
 
     expect(payload.titulo).toBe('Reunião de junho');
-    expect(payload.presenca.nominal).toEqual([{ fielId: 'f1', funcao: 'Coordenador(a)', situacao: 'PRESENTE' }]);
+    expect(payload.presenca.nominal).toEqual([{ fielId: 'f1', funcao: 'Coordenador(a) de pastoral ou organismo', situacao: 'PRESENTE' }]);
+    const comClero = paraConteudoPayload({
+      ...valida(),
+      presencas: [{ fielId: 'c1', clerigo: true, funcao: 'Presidente', situacao: 'PRESENTE' }],
+    }, regras());
+    expect(comClero.presenca.nominal).toEqual([{ fielId: 'c1', clerigo: true, funcao: 'Presidente', situacao: 'PRESENTE' }]);
     expect(payload.itens[0].relato).toBeUndefined();
     expect(payload.itens[0].deliberacoes[0]).toMatchObject({ texto: 'Aprovar', votacao: { favor: 2, contra: 0, abstencoes: 0 } });
     expect(payload.itens[0].deliberacoes[1].votacao).toBeUndefined();

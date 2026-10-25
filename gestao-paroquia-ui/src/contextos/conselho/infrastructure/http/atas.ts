@@ -2,6 +2,7 @@ import apiClient from '@/shared/infrastructure/http/client';
 import { baixarBlob, nomeDoArquivo } from '@/shared/utils/downloadBlob';
 import {
   Ata,
+  ClerigoOpcao,
   ConteudoAtaPayload,
   FiltroAtas,
   OpcoesExportacao,
@@ -18,6 +19,9 @@ const BASE = '/conselhos';
 /** Tipos de reunião com as regras de cada um (homologação, quórum, presença, votação). */
 export const listarTiposReuniao = async (): Promise<TipoReuniaoInfo[]> =>
   (await apiClient.get<TipoReuniaoInfo[]>(`${BASE}/tipos-reuniao`)).data;
+
+/** Clérigos ativos que o redator pode incluir na presença; vazio para quem não redige nenhum órgão. */
+export const listarClero = async (): Promise<ClerigoOpcao[]> => (await apiClient.get<ClerigoOpcao[]>(`${BASE}/clero`)).data;
 
 /** Presença do próprio redator na ata nova; `null` se ele não redige o tipo no órgão ou não tem cadastro de fiel. */
 export const obterPresencaRedator = async (tipo: TipoReuniao, organizacaoId: string): Promise<PresencaRedator | null> => {

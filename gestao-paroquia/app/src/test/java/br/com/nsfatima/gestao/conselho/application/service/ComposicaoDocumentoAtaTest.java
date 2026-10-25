@@ -91,7 +91,7 @@ class ComposicaoDocumentoAtaTest {
 
         assertThat(texto).contains("Salão paroquial").contains("Maria da Silva | — | Presente")
                 .contains("Ana Souza | — | Ausência justificada")
-                .contains("Quórum: 2 de 5 membros convocados presentes (mínimo de 3): quórum não atingido.")
+                .contains("Quórum: 2 de 6 membros convocados presentes (mínimo de 4): quórum não atingido.")
                 .contains("1. Reforma do telhado")
                 .contains("Deliberação 1.1: Aprovar o orçamento da reforma do telhado — Parecer favorável")
                 .contains("Conflito de interesses declarado por João Pereira: Irmão do fornecedor");
