@@ -33,11 +33,11 @@ Este diretório centraliza a documentação viva (*Living Documentation*) das re
 | **Aprovação** | [`aprovacao.md`](./aprovacao.md) | Esteira de aprovação de eventos, alterações e cancelamentos com alçadas e prioridades. |
 | **Calendário** | [`calendario.md`](./calendario.md) | Agendamento paroquial, integração litúrgica (Meeus/Jones/Butcher), choque de horários e recorrência. |
 | **Clero** | [`clero.md`](./clero.md) | Governança eclesiástica, provisões canônicas, pároco, vigários, bispo e paridade LGPD. |
-| **Conselho** | [`conselho.md`](./conselho.md) | Gestão de CPC e CAEP, mandatos, atas de reunião, deliberações e homologação canônica. |
+| **Conselho** | [`conselho.md`](./conselho.md) | Atas de reunião por tipo (CPP, CPC, CAEP, assembleias e demais), deliberações, quórum, homologação do Pároco, ata retificadora, exportação em Word e PDF e trilha de auditoria. |
 | **Fiel** | [`fiel.md`](./fiel.md) | Cadastro civil, vida sacramental, vocacional, consentimento LGPD e blindagem de dados sensíveis. |
 | **Governança** | [`governanca.md`](./governanca.md) | Auditoria automática de entidades (`BaseAuditableEntity`), trilhas de auditoria e conformidade. |
 | **IAM (Segurança)** | [`iam.md`](./iam.md) | Autenticação JWT, usuários, papéis (RBAC), credenciais e políticas de acesso. |
-| **Importação & Exportação** | [`importacao.md`](./importacao.md) | Carga em lote de fiéis e clero via planilha, exportação de atas, relatórios e apresentações litúrgicas. |
+| **Importação & Exportação** | [`importacao.md`](./importacao.md) | Carga em lote de fiéis e clero via planilha, relatórios e apresentações litúrgicas (a exportação de atas é do módulo Conselho). |
 | **LGPD & Privacidade** | [`lgpd.md`](./lgpd.md) | Diretrizes transversais da LGPD, direitos dos titulares, portabilidade, canal do DPO e gestão de incidentes. |
 | **Local** | [`local.md`](./local.md) | Espaços físicos da matriz e comunidades, capacidade, recursos fixos e controle de ocupação. |
 | **Membro** | [`membro.md`](./membro.md) | Vínculo de fiéis com pastorais, movimentos e serviços, histórico de atuação e lideranças. |

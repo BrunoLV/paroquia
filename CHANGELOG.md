@@ -8,6 +8,25 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Adicionado
+- **Conselhos e Atas como espinha dorsal das reuniões da paróquia (módulo `conselho`):**
+  - **Agregado `AtaReuniao`** com itens de pauta, deliberações (parecer, votação consultiva e declaração de conflito de interesses), presença nominal ou por total de participantes, leitura e aprovação da ata anterior, quórum por maioria absoluta e numeração sequencial (`003/2026`) por órgão e ano atribuída ao selar.
+  - **12 tipos de reunião** com regras próprias (convocante, homologação, quórum, presença, votação e redator): CPP, CPC, CAEP, reunião conjunta CPP e CAEP, reunião de pastoral, de coordenadores, assembleias paroquial e comunitária, organismo, planejamento pastoral, comissão especial e animadores. Base: Cân. 536 e 537 e Documento 100 da CNBB (nn. 291-294).
+  - **Fluxo e papéis:** o redator conduz a ata até a submissão; a homologação e o veto (com motivo) são privativos do Pároco; os tipos sem homologação terminam em `REGISTRADA`. Ata selada é imutável (também por trigger no banco) e é corrigida por **ata retificadora**.
+  - **Exportação em Word (.docx) e PDF**, nos layouts estruturado e narrativo (texto de Livro de Atas), da ata completa ou só do quadro de decisões, e **compilação do livro de atas** por órgão e período. Ata não selada sai como minuta com marca d'água.
+  - **Auditoria:** trilha append-only por ata (autor, perfil, IP, estado antes e depois) que registra também cada exportação, replicada no log global de auditoria.
+  - **Escopo de leitura** aplicado na consulta: clero e secretaria paroquial veem todas as atas; os demais, só as dos órgãos a que estão vinculados. `ADMIN` não acessa o conteúdo.
+  - **Migração Flyway `V033`** (`ata_reuniao`, `ata_historico`, triggers de imutabilidade) e API em `/api/v1/conselhos/atas` com `ConselhoExceptionHandler` (404, 409 e 422 em vez de 500).
+  - **Frontend:** nova tela "Atas e decisões dos conselhos" com filtros, paginação no servidor, redação do rascunho por tipo, detalhe com trilha, veto, retificação e menu de exportação; ações exibidas conforme `ata.acoes`, calculadas pelo servidor.
+  - Documentação em [`docs/business-rules/conselho.md`](docs/business-rules/conselho.md).
+
+### Alterado
+- `Content-Disposition` passa a ser exposto no CORS para o download usar o nome sugerido pelo servidor.
+- O download de arquivos no frontend passa a usar o utilitário `shared/utils/downloadBlob` (libera a URL temporária).
+
+### Removido
+- Registro simples de decisões de conselho (`CpcDecisao`, `/api/v1/conselhos/decisoes` e a tabela `calendario.cpc_decisoes`), substituído pelas atas. A tabela continha apenas dados de teste.
+
 ## [0.11.0] - 2026-10-24
 
 ### Adicionado

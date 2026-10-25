@@ -12,7 +12,7 @@ Possibilitar a migração segura de dados prévios (planilhas de fiéis, histór
 ## 2. Agregados, Entidades e Value Objects Principais
 - **`LoteImportacao` (Raiz de Agregado):** Identificado por `LoteImportacaoId`. Contém arquivo de origem, tipo de carga, total de linhas, linhas processadas com sucesso, linhas com erro, status do processamento e log de inconsistências.
 - **`StatusLote` (Enum):** `AGUARDANDO_PROCESSAMENTO`, `PROCESSANDO`, `CONCLUIDO`, `CONCLUIDO_COM_FALHAS`, `FALHA_CRITICA`.
-- **`TipoExportacao` (Enum):** `ATA_DOCX`, `AGENDA_MENSAL_PPTX`, `RELATORIO_PATRIMONIAL_PDF`, `LIVRO_TOMBO_PDF`, `CERTIDAO_BATISMO_PDF`.
+- **`TipoExportacao` (Enum):** `AGENDA_MENSAL_PPTX`, `RELATORIO_PATRIMONIAL_PDF`, `LIVRO_TOMBO_PDF`, `CERTIDAO_BATISMO_PDF`.
 
 ---
 
@@ -32,7 +32,7 @@ Possibilitar a migração segura de dados prévios (planilhas de fiéis, histór
 ## 4. Fluxos Operacionais e Casos de Uso
 1. **Importação de Fiéis:** Upload de planilha Excel -> Pré-visualização -> Validação -> Carga atômica.
 2. **Exportação de Apresentação Litúrgica:** Seleção do mês no calendário -> Geração de slides PPTX formatados para telões da igreja.
-3. **Exportação de Atas:** Geração de arquivo DOCX pré-formatado com deliberações e pauta da reunião de conselho.
+3. **Exportação de Atas:** pertence ao módulo Conselho (ver `conselho.md`, RN-CON-08): Word e PDF, em layout estruturado ou narrativo, com o cabeçalho canônico da Paróquia.
 
 ---
 
