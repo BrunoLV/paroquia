@@ -69,7 +69,7 @@ export const DeliberacaoFields: React.FC<DeliberacaoFieldsProps> = ({ item, indi
                   <SearchableSelect {...field} labelId={`conflito-${item}-${indice}-${k}`} label="Quem declara" required
                     error={Boolean(erros?.conflitos?.[k]?.declaranteFielId)}
                     helperText={erros?.conflitos?.[k]?.declaranteFielId?.message}>
-                    {candidatos.map((p) => <MenuItem key={p.id} value={p.id}>{p.nome}</MenuItem>)}
+                    {candidatos.map((p) => <MenuItem key={p.id} value={p.id}>{p.organismo ? `${p.nome} (${p.organismo})` : p.nome}</MenuItem>)}
                   </SearchableSelect>
                 </FormControl>
               )} />

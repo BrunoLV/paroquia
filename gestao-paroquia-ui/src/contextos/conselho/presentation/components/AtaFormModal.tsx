@@ -11,6 +11,7 @@ import { Organizacao } from '@/shared/domain/types/types';
 import { Ata, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
 import { useAtas, useCandidatosPresenca } from '@/contextos/conselho/presentation/hooks/useAtas';
 import { AtaFormInput, ataParaFormulario, ataSchema, ataVazia } from '@/contextos/conselho/presentation/schemas/ataSchema';
+import { organismosDoConvocante } from '@/contextos/conselho/presentation/components/ataFormTipos';
 import AtaAnteriorCard from '@/contextos/conselho/presentation/components/AtaAnteriorCard';
 import AtaDadosCard from '@/contextos/conselho/presentation/components/AtaDadosCard';
 import AtaItensCard from '@/contextos/conselho/presentation/components/AtaItensCard';
@@ -47,6 +48,7 @@ export const AtaFormModal: React.FC<AtaFormModalProps> = ({ open, edicao, tipos,
   const regras = tipos.find((t) => t.codigo === tipo);
   const candidatos = useCandidatosPresenca(
     regras?.exigeOrganizacaoAssociada ? [convocante, associada] : [convocante], organizacoes,
+    organismosDoConvocante(organizacoes, regras, convocante),
   );
   const { data: vizinhas } = useAtas({ organizacaoId: convocante || undefined, tamanho: 100 });
 

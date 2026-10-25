@@ -72,12 +72,12 @@ export const AtaPresencaCard: React.FC<AtaPresencaCardProps> = ({ regras, candid
             <Stack direction="row" spacing={1}>
               <ActionButton title="Adicionar pessoa" icon={<AddIcon />} variant="outlined" onClick={() => append(presencaVazia())} />
               <ActionButton title="Incluir todos os membros" icon={<GroupsIcon />} variant="outlined"
-                disabled={candidatos.length === 0}
+                disabled={candidatos.every((c) => c.clerigo || c.organismo)}
                 onClick={() => {
                   const atuais = getValues('presencas');
                   const ja = new Set(atuais.map((p) => p.fielId));
                   const funcoes = new Set(atuais.map((p) => p.funcao).filter(Boolean));
-                  candidatos.filter((c) => !c.clerigo && !ja.has(c.id)).forEach((c) => {
+                  candidatos.filter((c) => !c.clerigo && !c.organismo && !ja.has(c.id)).forEach((c) => {
                     const sugerida = c.funcaoSugerida && !(funcaoEhUnica(c.funcaoSugerida) && funcoes.has(c.funcaoSugerida))
                       ? c.funcaoSugerida : '';
                     if (sugerida) funcoes.add(sugerida);

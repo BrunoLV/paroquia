@@ -54,7 +54,7 @@ export const AtaPresencaLinha: React.FC<AtaPresencaLinhaProps> = ({ indice, cand
                 }
               }}>
               {candidatos.filter((c) => c.id === field.value || !pessoasUsadas.has(c.id))
-                .map((c) => <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>)}
+                .map((c) => <MenuItem key={c.id} value={c.id}>{c.organismo ? `${c.nome} (${c.organismo})` : c.nome}</MenuItem>)}
             </SearchableSelect>
           </FormControl>
         )} />

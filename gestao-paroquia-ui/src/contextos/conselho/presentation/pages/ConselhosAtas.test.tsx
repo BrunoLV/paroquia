@@ -343,4 +343,35 @@ describe('ConselhosAtas', () => {
     expect(within(dialogo).getByDisplayValue('Secretário(a)')).toBeInTheDocument();
     expect(within(dialogo).getByDisplayValue('Carlos Membro')).toBeInTheDocument();
   });
+  it('na reunião de presença livre, oferece também os membros das pastorais do conselho, e "incluir todos" os deixa de fora', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([
+      { ...tipoCpp, codigo: 'REUNIAO_PASTORAL', rotulo: 'Reunião de Pastoral', modoPresenca: 'NOMINAL_LIVRE' },
+    ]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+      { id: 'cat-1', nome: 'Catequese', tipo: 'PASTORAL', parentId: 'cpp-1', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    vi.mocked(getOrganizacaoMembros).mockImplementation(async (id: string) => (id === 'cpp-1'
+      ? [{ fielId: 'f1', fielNome: 'Carlos Conselheiro', papel: 'MEMBRO_CONSELHO_PASTORAL', ativo: true }]
+      : [{ fielId: 'f2', fielNome: 'Paula Coordenadora', papel: 'COORDENADOR', ativo: true }]
+    ) as Awaited<ReturnType<typeof getOrganizacaoMembros>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    await user.click(await screen.findByRole('option', { name: 'Reunião de Pastoral' }));
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    await user.click(await screen.findByRole('option', { name: 'CPP Matriz' }));
+    await user.click(within(dialogo).getByRole('button', { name: /Incluir todos os membros/i }));
+    expect(await within(dialogo).findByDisplayValue('Carlos Conselheiro')).toBeInTheDocument();
+    expect(within(dialogo).queryByDisplayValue(/Paula Coordenadora/)).not.toBeInTheDocument();
+
+    await user.click(within(dialogo).getByRole('button', { name: /Adicionar pessoa/i }));
+    const pessoas = within(dialogo).getAllByRole('combobox', { name: /Pessoa/i });
+    await user.click(pessoas[pessoas.length - 1]);
+    await user.click(await screen.findByRole('option', { name: 'Paula Coordenadora (Catequese)' }));
+    expect(await within(dialogo).findByDisplayValue('Coordenador(a) de pastoral ou organismo')).toBeInTheDocument();
+  });
 });
