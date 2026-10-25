@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
 import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniaoId;
 import br.com.nsfatima.gestao.conselho.domain.model.StatusAta;
+import br.com.nsfatima.gestao.conselho.domain.model.TipoReuniao;
 import br.com.nsfatima.gestao.conselho.domain.repository.AtaRepository;
 import br.com.nsfatima.gestao.sacramento.application.service.RequisitosAssentoRegistry;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
@@ -25,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -289,22 +291,23 @@ public class SeedDataSqlIntegrityTest {
     }
 
     @Test
-    void seedDeAtasDeveCarregarPeloAgregadoComSeladaNumeradaPendenteEVetada() throws Exception {
+    void seedDeAtasDeveCarregarPeloAgregadoCobrindoTodosOsTiposESituacoes() throws Exception {
         var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
         try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
         }
 
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
-            AtaReuniao homologada = ata("91000000-0000-0000-0000-000000000001");
-            AtaReuniao pendente = ata("91000000-0000-0000-0000-000000000002");
-            AtaReuniao vetada = ata("91000000-0000-0000-0000-000000000003");
-            assertThat(homologada.getStatus()).isEqualTo(StatusAta.HOMOLOGADA);
-            assertThat(homologada.identificacao()).contains("001/2026");
-            assertThat(pendente.getStatus()).isEqualTo(StatusAta.PENDENTE_HOMOLOGACAO);
-            assertThat(vetada.getStatus()).isEqualTo(StatusAta.VETADA);
-            assertThat(vetada.getMotivoVeto()).isNotBlank();
-            assertThat(homologada.getConteudo().itens()).hasSize(1);
+            List<UUID> ids = jdbcTemplate.queryForList("SELECT id FROM calendario.ata_reuniao", UUID.class);
+            List<AtaReuniao> atas = ids.stream().map(id -> ata(id.toString())).toList();
+
+            assertThat(atas).hasSizeGreaterThanOrEqualTo(24);
+            assertThat(atas).extracting(AtaReuniao::getTipo).containsAll(Arrays.asList(TipoReuniao.values()));
+            assertThat(atas).extracting(AtaReuniao::getStatus).containsAll(Arrays.asList(StatusAta.values()));
+            assertThat(atas).filteredOn(a -> a.getAtaRetificadaId() != null).isNotEmpty();
+            assertThat(atas).filteredOn(a -> a.getStatus().selada()).allMatch(a -> a.identificacao().isPresent());
+            assertThat(ata("91000000-0000-0000-0000-000000000001").identificacao()).contains("001/2026");
+            assertThat(ata("91000000-0000-0000-0000-000000000003").getMotivoVeto()).isNotBlank();
         });
     }
 
