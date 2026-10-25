@@ -7,8 +7,9 @@ import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
 
 import java.util.Set;
+import java.util.UUID;
 
-/** Tipo de reunião e as regras que o formulário da ata precisa conhecer. */
+/** Tipo de reunião, as regras que o formulário da ata precisa conhecer e os órgãos em que o usuário pode redigi-lo. */
 public record TipoReuniaoResponse(
         TipoReuniao codigo,
         String rotulo,
@@ -19,5 +20,6 @@ public record TipoReuniaoResponse(
         boolean exigeOrganizacaoAssociada,
         Set<TipoOrganizacao> tiposConvocantes,
         Set<SubtipoConselho> subtiposConselho,
-        Set<PapelOrganizacional> papeisRedatores) {
+        Set<PapelOrganizacional> papeisRedatores,
+        Set<UUID> organizacoesRedacao) {
 }

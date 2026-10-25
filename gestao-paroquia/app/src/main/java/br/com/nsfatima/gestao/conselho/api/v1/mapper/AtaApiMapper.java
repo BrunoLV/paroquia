@@ -152,7 +152,7 @@ public class AtaApiMapper {
         RegrasTipoReuniao r = info.regras();
         return new TipoReuniaoResponse(info.tipo(), info.tipo().getRotulo(), r.exigeHomologacao(), r.aplicaQuorum(),
                 r.modoPresenca(), r.permiteVotacao(), r.exigeOrganizacaoAssociada(), r.tiposConvocantes(),
-                r.subtiposConselho(), r.papeisRedatores());
+                r.subtiposConselho(), r.papeisRedatores(), info.organizacoesRedacao());
     }
 
     /** Entrada da trilha, sem IP nem estados serializados. */

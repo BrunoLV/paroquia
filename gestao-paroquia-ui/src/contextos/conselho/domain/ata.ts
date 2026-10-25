@@ -109,6 +109,8 @@ export interface TipoReuniaoInfo {
   tiposConvocantes: string[];
   subtiposConselho: string[];
   papeisRedatores: string[];
+  /** Órgãos pelos quais o usuário autenticado pode redigir este tipo (regra do servidor). */
+  organizacoesRedacao: string[];
 }
 
 export interface Votacao {

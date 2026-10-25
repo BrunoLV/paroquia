@@ -7,7 +7,8 @@ import ConselhosAtas from './ConselhosAtas';
 import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 import { NotificationProvider } from '@/shared/presentation/context/NotificationContext';
 import * as atasApi from '@/contextos/conselho/infrastructure/http/atas';
-import { Ata, AtaResumo } from '@/contextos/conselho/domain/ata';
+import { Ata, AtaResumo, TipoReuniaoInfo } from '@/contextos/conselho/domain/ata';
+import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 
 const usuario = vi.hoisted(() => ({ roles: ['PAROCO'] as string[] }));
 
@@ -30,6 +31,14 @@ vi.mock('@/contextos/local/infrastructure/http/locais', () => ({
     { id: 'l3', nome: 'Sala interditada', tipo: 'SALA', capacidadeMaxima: 10, ativo: false },
   ]),
 }));
+
+const tipoRegra = (codigo: TipoReuniaoInfo['codigo'], rotulo: string, subtipo: string, orgaos: string[]): TipoReuniaoInfo => ({
+  codigo, rotulo, exigeHomologacao: true, aplicaQuorum: true, modoPresenca: 'NOMINAL_MEMBROS', permiteVotacao: true,
+  exigeOrganizacaoAssociada: false, tiposConvocantes: ['CONSELHO'], subtiposConselho: [subtipo],
+  papeisRedatores: ['SECRETARIO_CONSELHO'], organizacoesRedacao: orgaos,
+});
+const tipoCpp = tipoRegra('REUNIAO_CPP', 'Reunião do CPP', 'CPP', ['cpp-1']);
+const tipoCaep = tipoRegra('REUNIAO_CAEP', 'Reunião do CAEP', 'CAEP', []);
 
 const pendente: AtaResumo = {
   id: 'ata-1', tipo: 'REUNIAO_CPP', tipoRotulo: 'Reunião do Conselho Pastoral Paroquial (CPP)',
@@ -103,8 +112,8 @@ describe('ConselhosAtas', () => {
     expect(screen.queryByRole('button', { name: /Nova ata/i })).not.toBeInTheDocument();
   });
 
-  it('secretário vê "Nova ata"', async () => {
-    usuario.roles = ['SECRETARIO_CONSELHO'];
+  it('"Nova ata" só é oferecido a quem redige algum tipo, segundo o servidor', async () => {
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp, tipoCaep]);
     renderizar();
 
     expect(await screen.findByRole('button', { name: /Nova ata/i })).toBeInTheDocument();
@@ -174,7 +183,7 @@ describe('ConselhosAtas', () => {
 
   it('local e função são escolhidos de listas, não digitados', async () => {
     const user = userEvent.setup();
-    usuario.roles = ['SECRETARIO_CONSELHO'];
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp]);
     renderizar();
 
     await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
@@ -190,5 +199,28 @@ describe('ConselhosAtas', () => {
     await user.click(within(dialogo).getByRole('combobox', { name: /Função/i }));
     expect(await screen.findByRole('option', { name: 'Pároco' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Secretário(a)' })).toBeInTheDocument();
+  });
+
+  it('o formulário só oferece tipos e órgãos em que o usuário redige', async () => {
+    const user = userEvent.setup();
+    vi.mocked(atasApi.listarTiposReuniao).mockResolvedValue([tipoCpp, tipoCaep]);
+    vi.mocked(getOrganizacoes).mockResolvedValue([
+      { id: 'cpp-1', nome: 'CPP Matriz', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+      { id: 'cpp-2', nome: 'CPP Outra Comunidade', tipo: 'CONSELHO', subtipoConselho: 'CPP', ativo: true },
+      { id: 'caep-1', nome: 'Conselho Econômico', tipo: 'CONSELHO', subtipoConselho: 'CAEP', ativo: true },
+    ] as Awaited<ReturnType<typeof getOrganizacoes>>);
+    renderizar();
+
+    await user.click(await screen.findByRole('button', { name: /Nova ata/i }));
+    const dialogo = await screen.findByRole('dialog');
+
+    await user.click(within(dialogo).getByRole('combobox', { name: /Tipo de reunião/i }));
+    expect(await screen.findByRole('option', { name: 'Reunião do CPP' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Reunião do CAEP' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('option', { name: 'Reunião do CPP' }));
+
+    await user.click(within(dialogo).getByRole('combobox', { name: /Órgão convocante/i }));
+    expect(await screen.findByRole('option', { name: 'CPP Matriz' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'CPP Outra Comunidade' })).not.toBeInTheDocument();
   });
 });

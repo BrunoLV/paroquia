@@ -63,6 +63,7 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 - A redação da ata, o registro das deliberações e a submissão competem ao **redator do tipo de reunião**, no órgão convocante. O Pároco não redige.
 - A homologação e o veto são **ato privativo e indelegável do Pároco** (ou do Bispo Diocesano). O papel `ADMIN` não homologa, não veta e não lê o conteúdo das atas.
 - Um redator de outro órgão não pode redigir nem submeter atas deste órgão.
+- O papel de redator vale **por órgão**, pelo vínculo da pessoa com ele, e não pelo perfil global do login: quem é secretário do CPP não redige atas do CAEP. O sistema informa a cada usuário os órgãos pelos quais ele pode redigir cada tipo, e o formulário só oferece esses tipos e órgãos; a recusa informa o papel exigido.
 
 ### RN-CON-03: Selagem, Imutabilidade e Ata Retificadora
 - Uma ata nasce em `RASCUNHO` e só é editável nesse estado. A submissão leva à homologação do Pároco nos tipos que a exigem; nos demais, a ata é **registrada** e selada de imediato.

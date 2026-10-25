@@ -1,7 +1,6 @@
 import {
     canAddObservation,
     canApprove,
-    canRedigirAta,
     canManageAnoParoquial,
     canManageEvento,
     canManageCadastroFieis,
@@ -232,7 +231,7 @@ describe('canManageEvento', () => {
   });
 });
 
-// ─── canApprove & canRedigirAta ──────────────────────────────────────────────
+// ─── canApprove ──────────────────────────────────────────────
 
 describe('canApprove', () => {
   it('returns false if user is null', () => {
@@ -249,18 +248,6 @@ describe('canApprove', () => {
     expect(canApprove({ id: '2', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CONSELHO_PASTORAL'] })).toBe(false);
     expect(canApprove({ id: '3', username: 'sec', name: 'Sec', roles: ['SECRETARIO_CONSELHO'] })).toBe(false);
     expect(canApprove({ id: '4', username: 'c', name: 'Coord', roles: ['COORDENADOR'] })).toBe(false);
-  });
-});
-
-describe('canRedigirAta', () => {
-  it('é dica para secretários e coordenadores, não para Pároco, ADMIN, membros ou usuário nulo', () => {
-    expect(canRedigirAta(null)).toBe(false);
-    expect(canRedigirAta({ id: '1', username: 's', name: 'Sec', roles: ['SECRETARIO_CONSELHO'] })).toBe(true);
-    expect(canRedigirAta({ id: '2', username: 'g', name: 'Grupo', roles: ['SECRETARIO_GRUPO'] })).toBe(true);
-    expect(canRedigirAta({ id: '3', username: 'c', name: 'Coord', roles: ['COORDENADOR'] })).toBe(true);
-    expect(canRedigirAta({ id: '4', username: 'p', name: 'Paroco', roles: ['PAROCO'] })).toBe(false);
-    expect(canRedigirAta({ id: '5', username: 'a', name: 'Admin', roles: ['ADMIN'] })).toBe(false);
-    expect(canRedigirAta({ id: '6', username: 'm', name: 'Membro', roles: ['MEMBRO_CONSELHO_PASTORAL'] })).toBe(false);
   });
 });
 

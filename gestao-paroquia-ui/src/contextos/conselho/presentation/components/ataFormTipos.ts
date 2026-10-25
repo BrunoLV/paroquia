@@ -7,12 +7,13 @@ export interface Candidato {
   nome: string;
 }
 
-/** Órgãos que o tipo de reunião aceita como convocante, conforme as regras vindas do servidor. */
+/** Órgãos que o tipo aceita como convocante e pelos quais o usuário pode redigir, conforme o servidor. */
 export const convocantesDoTipo = (organizacoes: Organizacao[], regras: TipoReuniaoInfo | undefined): Organizacao[] => {
   if (!regras) return [];
   return organizacoes.filter(
     (o) =>
       o.ativo &&
+      regras.organizacoesRedacao.includes(o.id) &&
       regras.tiposConvocantes.includes(o.tipo) &&
       (o.tipo !== 'CONSELHO' ||
         regras.subtiposConselho.length === 0 ||

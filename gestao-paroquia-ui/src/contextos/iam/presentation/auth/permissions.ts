@@ -181,13 +181,6 @@ export const canApprove = (user: User | null): boolean => {
 };
 
 /**
- * Dica de interface: quem pode ter papel de redator de ata em algum órgão (secretário de conselho ou de grupo,
- * coordenador). A autorização real é do servidor, por órgão e tipo de reunião; aqui só se decide se vale a pena
- * oferecer o botão "Nova ata". A homologação e o veto são ações calculadas pelo servidor em `ata.acoes`.
- */
-export const canRedigirAta = (user: User | null): boolean => isSecretario(user) || isCoordenador(user);
-
-/**
  * Trava, abertura e conclusão do Ano Paroquial:
  * exclusivamente Pároco (ou Bispo Diocesano). ADMIN, conselhos e coordenadores são impedidos.
  */

@@ -15,11 +15,13 @@ import br.com.nsfatima.gestao.conselho.domain.policy.AtorOrganizacao;
 import br.com.nsfatima.gestao.conselho.domain.policy.AutorizacaoAtaPolicy;
 import br.com.nsfatima.gestao.conselho.domain.policy.RegrasTipoReuniaoPolicy;
 import br.com.nsfatima.gestao.conselho.domain.repository.AtaRepository;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Ponto único de autorização das atas: monta o retrato do ator para a organização da ata e consulta a
@@ -91,11 +93,21 @@ public class ConselhoAuthorizationService {
      * @throws OperacaoProibidaException se o ator não é redator do tipo nessa organização
      */
     public void exigirRedacao(AtorAutenticado ator, TipoReuniao tipo, UUID convocanteId, UUID associadaId) {
-        Set<AcaoAta> acoes = AutorizacaoAtaPolicy.acoesPermitidas(atorDa(ator, convocanteId, associadaId),
-                RegrasTipoReuniaoPolicy.para(tipo), StatusAta.RASCUNHO);
-        if (!acoes.contains(AcaoAta.REDIGIR)) {
-            throw new OperacaoProibidaException("O seu perfil não permite redigir ata deste tipo nesta organização.");
+        if (!podeRedigir(ator, tipo, convocanteId)) {
+            String papeis = RegrasTipoReuniaoPolicy.para(tipo).papeisRedatores().stream()
+                    .map(PapelOrganizacional::getDescricao).sorted().collect(Collectors.joining(" ou "));
+            throw new OperacaoProibidaException("Você não pode redigir ata de \"" + tipo.getRotulo()
+                    + "\" por este órgão: só quem tem o papel de " + papeis + " nele redige.");
         }
+    }
+
+    /**
+     * Indica se o ator pode abrir uma ata do tipo pelo órgão convocante. É a mesma regra que
+     * {@link #exigirRedacao} aplica, exposta para que a interface só ofereça os órgãos permitidos.
+     */
+    public boolean podeRedigir(AtorAutenticado ator, TipoReuniao tipo, UUID convocanteId) {
+        return AutorizacaoAtaPolicy.acoesPermitidas(atorDa(ator, convocanteId, null),
+                RegrasTipoReuniaoPolicy.para(tipo), StatusAta.RASCUNHO).contains(AcaoAta.REDIGIR);
     }
 
     private static AtorOrganizacao atorDa(AtorAutenticado ator, UUID convocanteId, UUID associadaId) {

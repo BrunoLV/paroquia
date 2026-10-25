@@ -164,7 +164,27 @@ class AtaReuniaoControllerIntegrationTest {
     void outroOrgaoNaoAbre() throws Exception {
         mockMvc.perform(post(ATAS).with(secretario(cppB)).contentType(MediaType.APPLICATION_JSON)
                         .content(corpoCpp(cppA, 3)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value(
+                        org.hamcrest.Matchers.containsString("Secretário de Conselho")));
+    }
+
+    @Test
+    @DisplayName("catálogo de tipos lista só os órgãos em que o usuário redige, pela mesma regra da criação")
+    void tiposListamOrgaosDeRedacaoDoUsuario() throws Exception {
+        UUID caep = novoConselho("CAEP");
+        mockMvc.perform(get(BASE + "/tipos-reuniao").with(secretario(cppA)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CPP')].organizacoesRedacao[0]")
+                        .value(org.hamcrest.Matchers.contains(cppA.toString())))
+                .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CAEP')].organizacoesRedacao[0]")
+                        .value(org.hamcrest.Matchers.empty()));
+        mockMvc.perform(get(BASE + "/tipos-reuniao").with(paroco()))
+                .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CPP')].organizacoesRedacao[0]")
+                        .value(org.hamcrest.Matchers.empty()));
+        mockMvc.perform(get(BASE + "/tipos-reuniao").with(secretario(caep)))
+                .andExpect(jsonPath("$[?(@.codigo=='REUNIAO_CAEP')].organizacoesRedacao[0]")
+                        .value(org.hamcrest.Matchers.contains(caep.toString())));
     }
 
     @Test

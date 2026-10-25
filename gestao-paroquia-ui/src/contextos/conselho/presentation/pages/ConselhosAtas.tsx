@@ -11,8 +11,6 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import SendIcon from '@mui/icons-material/Send';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canRedigirAta } from '@/contextos/iam/presentation/auth/permissions';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import { obterAta } from '@/contextos/conselho/infrastructure/http/atas';
 import { Ata, AtaResumo, FiltroAtas, OpcoesExportacao, STATUS_ATA_LABEL, StatusAta, TipoReuniao } from '@/contextos/conselho/domain/ata';
@@ -44,7 +42,6 @@ const FILTRO_VAZIO = { organizacaoId: '', tipo: '', status: '', de: '', ate: '' 
  */
 export const ConselhosAtas: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
   const { showError } = useNotification();
 
   const [filtro, setFiltro] = useState(FILTRO_VAZIO);
@@ -64,6 +61,7 @@ export const ConselhosAtas: React.FC = () => {
   };
   const { data: pagina, isLoading } = useAtas({ ...consulta, pagina: page, tamanho: rowsPerPage });
   const { data: tipos = [] } = useTiposReuniao();
+  const tiposRedacao = tipos.filter((t) => t.organizacoesRedacao.length > 0);
   const { data: organizacoes = [] } = useQuery({ queryKey: ['organizacoes'], queryFn: getOrganizacoes });
 
   const rascunhar = useRascunharAta();
@@ -130,7 +128,7 @@ export const ConselhosAtas: React.FC = () => {
               disabled={exportarCompilacao.isPending}
               onExportar={(opcoes) => exportarCompilacao.mutate({ filtro: consulta, opcoes })}
             />
-            {canRedigirAta(user) && (
+            {tiposRedacao.length > 0 && (
               <ActionButton title="Nova ata" icon={<PostAddIcon />} color="primary" onClick={() => setForm({ aberto: true, edicao: null })} />
             )}
           </Stack>
@@ -198,7 +196,7 @@ export const ConselhosAtas: React.FC = () => {
       <AtaFormModal
         open={form.aberto}
         edicao={form.edicao}
-        tipos={tipos}
+        tipos={tiposRedacao}
         organizacoes={organizacoes}
         isPending={rascunhar.isPending || atualizar.isPending}
         onClose={() => setForm({ aberto: false, edicao: null })}
