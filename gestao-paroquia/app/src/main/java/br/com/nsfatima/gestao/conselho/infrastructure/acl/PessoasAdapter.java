@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
 import br.com.nsfatima.gestao.conselho.application.dto.ClerigoAtivo;
 import br.com.nsfatima.gestao.conselho.application.port.out.PessoasPort;
 import br.com.nsfatima.gestao.conselho.domain.model.FuncaoPresenca;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
 import br.com.nsfatima.gestao.fiel.application.usecase.ObterFielUseCase;
 import br.com.nsfatima.gestao.iam.application.usecase.ObterUsuarioUseCase;
 import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException;
@@ -72,16 +73,17 @@ public class PessoasAdapter implements PessoasPort {
         Map<UUID, String> nomes = new HashMap<>();
         Map<UUID, String> clerigos = null;
         for (UUID id : ids) {
-            try {
-                nomes.put(id, fieis.executeContato(id).nome());
-            } catch (IllegalArgumentException naoEhFiel) {
-                if (clerigos == null) {
-                    clerigos = clerigosAtivos().stream()
-                            .collect(Collectors.toMap(ClerigoAtivo::id, ClerigoAtivo::nome));
-                }
-                if (clerigos.containsKey(id)) {
-                    nomes.put(id, clerigos.get(id));
-                }
+            Optional<FielContatoResponse> fiel = fieis.buscarContato(id);
+            if (fiel.isPresent()) {
+                nomes.put(id, fiel.get().nome());
+                continue;
+            }
+            if (clerigos == null) {
+                clerigos = clerigosAtivos().stream()
+                        .collect(Collectors.toMap(ClerigoAtivo::id, ClerigoAtivo::nome));
+            }
+            if (clerigos.containsKey(id)) {
+                nomes.put(id, clerigos.get(id));
             }
         }
         return nomes;

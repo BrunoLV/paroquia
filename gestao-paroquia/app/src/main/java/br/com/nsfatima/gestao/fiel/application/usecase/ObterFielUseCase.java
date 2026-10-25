@@ -7,6 +7,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -32,6 +33,19 @@ public class ObterFielUseCase {
         return fielRepository.findById(id)
                 .map(fielMapper::toResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
+    }
+
+    /**
+     * Busca os dados de contato sem lançar exceção quando o fiel não existe. Quem consulta por um id que pode
+     * não ser de fiel (o clero, por exemplo) deve usar este método: uma exceção que atravessa um método
+     * transacional marca a transação do chamador como "rollback-only" mesmo que ele a capture.
+     *
+     * @param id identificador do fiel
+     * @return os dados de contato, ou vazio se não houver fiel com o id
+     */
+    @Transactional(readOnly = true)
+    public Optional<FielContatoResponse> buscarContato(UUID id) {
+        return fielRepository.findById(id).map(fielMapper::toContatoResponse);
     }
 
     @Transactional(readOnly = true)
