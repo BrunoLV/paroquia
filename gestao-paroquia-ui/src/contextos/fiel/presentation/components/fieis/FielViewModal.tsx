@@ -5,6 +5,8 @@ import {
   Box,
   Card,
   CardContent,
+  Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,8 +14,18 @@ import {
   Grid,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
+import HistoryIcon from '@mui/icons-material/History';
+import { useQuery } from '@tanstack/react-query';
+import { listarHistoricoConsentimento } from '@/contextos/governanca/infrastructure/http/consentimentoPublico';
 import BadgeIcon from '@mui/icons-material/Badge';
 import BlockIcon from '@mui/icons-material/Block';
 import CakeIcon from '@mui/icons-material/Cake';
@@ -29,6 +41,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import PhoneIcon from '@mui/icons-material/Phone';
 import PublicIcon from '@mui/icons-material/Public';
+import SecurityIcon from '@mui/icons-material/Security';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import WcIcon from '@mui/icons-material/Wc';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
@@ -87,6 +100,13 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
 
   const dados = detalheFiel ?? fiel;
   const isAtivo = Boolean(dados.isAtivo ?? dados.ativo);
+  const fielId = fiel?.fielId ?? fiel?.id;
+
+  const { data: historicoConsentimentos, isLoading: loadingHistorico } = useQuery({
+    queryKey: ['historico-consentimento', 'FIEL', fielId],
+    queryFn: () => listarHistoricoConsentimento('FIEL', fielId!),
+    enabled: Boolean(open && fielId),
+  });
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -351,6 +371,153 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
                   ))}
                 </Grid>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Privacidade e Consentimento LGPD */}
+          <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <SecurityIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    Privacidade e consentimento (LGPD)
+                  </Typography>
+                </Stack>
+                {historicoConsentimentos && historicoConsentimentos.length > 0 && (
+                  <Chip
+                    size="small"
+                    color={
+                      historicoConsentimentos[0].tipoEvento === 'REVOGACAO' || !historicoConsentimentos[0].termoAceito
+                        ? 'error'
+                        : 'success'
+                    }
+                    label={
+                      historicoConsentimentos[0].tipoEvento === 'REVOGACAO' || !historicoConsentimentos[0].termoAceito
+                        ? `Revogado via ${historicoConsentimentos[0].canal === 'PORTAL' ? 'Portal (OTP)' : 'Secretaria'}`
+                        : `Ativo via ${historicoConsentimentos[0].canal === 'PORTAL' ? 'Portal (OTP)' : 'Secretaria'}`
+                    }
+                  />
+                )}
+              </Stack>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <InfoField
+                    label="Termo de Privacidade"
+                    icon={<SecurityIcon fontSize="inherit" />}
+                    value={
+                      (fiel?.consentimento?.termoConsentimentoAceito ?? fiel?.consentimentoLgpd?.termoConsentimentoAceito)
+                        ? `Aceito (${fiel?.consentimento?.versaoTermoConsentimento || fiel?.consentimentoLgpd?.versaoTermoConsentimento || 'v1.0'}${fiel?.consentimento?.dataHoraConsentimentoUtc ? ` em ${formatDateBr(fiel.consentimento.dataHoraConsentimentoUtc)}` : ''})`
+                        : 'Pendente / Não registrado'
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <InfoField
+                    label="Uso de Imagem e Voz"
+                    value={
+                      (fiel?.consentimento?.usoImagemAutorizado ?? fiel?.consentimentoLgpd?.usoImagemAutorizado)
+                        ? 'Autorizado'
+                        : 'Não autorizado'
+                    }
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <InfoField
+                    label="Divulgação de Aniversário"
+                    value={
+                      fiel?.permitirDivulgacaoAniversario
+                        ? 'Autorizada'
+                        : 'Não autorizada'
+                    }
+                  />
+                </Grid>
+                {(fiel?.consentimento?.responsavelMenorNome ||
+                  fiel?.consentimentoLgpd?.responsavelMenorNome ||
+                  fiel?.responsavelMenorNome) && (
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <InfoField
+                      label="Salvaguarda de Menor (Responsável Legal)"
+                      value={`${
+                        fiel.consentimento?.responsavelMenorNome ??
+                        fiel.consentimentoLgpd?.responsavelMenorNome ??
+                        fiel.responsavelMenorNome
+                      } (${formatCpf(
+                        fiel.consentimento?.responsavelMenorCpf ??
+                          fiel.consentimentoLgpd?.responsavelMenorCpf ??
+                          fiel.responsavelMenorCpf,
+                      )})`}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+
+              {/* Trilha de Auditoria Forense Imutável */}
+              <Box sx={{ mt: 2.5 }}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
+                  <HistoryIcon fontSize="small" color="action" />
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase' }}
+                  >
+                    Trilha de auditoria de consentimento
+                  </Typography>
+                </Stack>
+                {loadingHistorico ? (
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center', py: 1 }}>
+                    <CircularProgress size={16} />
+                    <Typography variant="caption" color="text.secondary">
+                      Carregando histórico...
+                    </Typography>
+                  </Stack>
+                ) : !historicoConsentimentos || historicoConsentimentos.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.8125rem' }}>
+                    Nenhuma manifestação digital auditada registrada.
+                  </Typography>
+                ) : (
+                  <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 1.5 }}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: 'action.hover' }}>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Data/Hora</TableCell>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Operação</TableCell>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Canal</TableCell>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Autenticação</TableCell>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>Hash do Termo</TableCell>
+                          <TableCell sx={{ fontWeight: 700, fontSize: '0.75rem' }}>IP / Origem</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {historicoConsentimentos.map((h) => (
+                          <TableRow key={h.id}>
+                            <TableCell sx={{ fontSize: '0.75rem' }}>{formatDateBr(h.criadoEmUtc)}</TableCell>
+                            <TableCell sx={{ fontSize: '0.75rem' }}>
+                              <Chip
+                                size="small"
+                                color={h.tipoEvento === 'REVOGACAO' || !h.termoAceito ? 'error' : 'success'}
+                                label={h.tipoEvento === 'REVOGACAO' ? 'Revogação' : 'Concessão'}
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            </TableCell>
+                            <TableCell sx={{ fontSize: '0.75rem' }}>
+                              {h.canal === 'PORTAL' ? 'Portal Autoatendimento' : 'Secretaria'}
+                            </TableCell>
+                            <TableCell sx={{ fontSize: '0.75rem' }}>
+                              {h.metodoAutenticacao === 'OTP_EMAIL' ? 'OTP E-mail' : h.metodoAutenticacao}
+                            </TableCell>
+                            <TableCell sx={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                              <Tooltip title={h.termoHash} arrow>
+                                <span>{h.termoHash.substring(0, 10)}...</span>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell sx={{ fontSize: '0.75rem' }}>{h.ipOrigem || '-'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </Box>
             </CardContent>
           </Card>
 

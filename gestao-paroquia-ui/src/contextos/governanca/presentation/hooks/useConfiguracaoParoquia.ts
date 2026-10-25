@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  atualizarDpo,
   atualizarIdentidadeVisual,
   atualizarLogoParoquia,
   obterConfiguracaoParoquia,
+  type AtualizarDpoPayload,
   type AtualizarIdentidadeVisualPayload,
   type ParoquiaConfiguracao,
 } from '@/contextos/governanca/infrastructure/http/configuracaoParoquia';
@@ -33,6 +35,13 @@ export const useConfiguracaoParoquia = () => {
     },
   });
 
+  const mutacaoDpo = useMutation({
+    mutationFn: (payload: AtualizarDpoPayload) => atualizarDpo(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CONFIGURACAO_PAROQUIA_QUERY_KEY });
+    },
+  });
+
   return {
     configuracao: query.data,
     isLoading: query.isLoading,
@@ -41,5 +50,6 @@ export const useConfiguracaoParoquia = () => {
     refetch: query.refetch,
     atualizarCores,
     atualizarLogo,
+    atualizarDpo: mutacaoDpo,
   };
 };

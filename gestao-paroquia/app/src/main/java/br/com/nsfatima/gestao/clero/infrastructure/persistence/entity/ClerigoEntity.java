@@ -102,6 +102,30 @@ public class ClerigoEntity extends BaseAuditableEntity {
 
     private Instant deletedAt;
 
+    @Column(name = "termo_consentimento_aceito", nullable = false)
+    private boolean termoConsentimentoAceito;
+
+    @Column(name = "data_hora_consentimento_utc")
+    private Instant dataHoraConsentimentoUtc;
+
+    @Column(name = "ip_consentimento")
+    private String ipConsentimento;
+
+    @Column(name = "versao_termo_consentimento", length = 20)
+    private String versaoTermoConsentimento = "v1.0";
+
+    @Column(name = "canal_consentimento", length = 30)
+    private String canalConsentimento = "PORTAL_AUTOATENDIMENTO";
+
+    @Column(name = "hash_termo_consentimento", length = 64)
+    private String hashTermoConsentimento;
+
+    @Column(name = "uso_imagem_autorizado", nullable = false)
+    private boolean usoImagemAutorizado;
+
+    @Column(name = "permitir_divulgacao_aniversario", nullable = false)
+    private boolean permitirDivulgacaoAniversario;
+
     public UUID getId() {
         return id;
     }
@@ -316,6 +340,70 @@ public class ClerigoEntity extends BaseAuditableEntity {
 
     public void setDeletedAt(Instant valor) {
         deletedAt = valor;
+    }
+
+    public boolean isTermoConsentimentoAceito() {
+        return termoConsentimentoAceito;
+    }
+
+    public void setTermoConsentimentoAceito(boolean valor) {
+        termoConsentimentoAceito = valor;
+    }
+
+    public Instant getDataHoraConsentimentoUtc() {
+        return dataHoraConsentimentoUtc;
+    }
+
+    public void setDataHoraConsentimentoUtc(Instant valor) {
+        dataHoraConsentimentoUtc = valor;
+    }
+
+    public String getIpConsentimento() {
+        return ipConsentimento;
+    }
+
+    public void setIpConsentimento(String valor) {
+        ipConsentimento = valor;
+    }
+
+    public String getVersaoTermoConsentimento() {
+        return versaoTermoConsentimento;
+    }
+
+    public void setVersaoTermoConsentimento(String valor) {
+        versaoTermoConsentimento = valor;
+    }
+
+    public String getCanalConsentimento() {
+        return canalConsentimento;
+    }
+
+    public void setCanalConsentimento(String valor) {
+        canalConsentimento = valor;
+    }
+
+    public String getHashTermoConsentimento() {
+        return hashTermoConsentimento;
+    }
+
+    public void setHashTermoConsentimento(String valor) {
+        hashTermoConsentimento = valor;
+    }
+
+    public boolean isUsoImagemAutorizado() {
+        return usoImagemAutorizado;
+    }
+
+    public void setUsoImagemAutorizado(boolean valor) {
+        usoImagemAutorizado = valor;
+    }
+
+    public boolean isPermitirDivulgacaoAniversario() {
+        return permitirDivulgacaoAniversario;
+    }
+
+    public void setPermitirDivulgacaoAniversario(boolean valor) {
+        permitirDivulgacaoAniversario = valor;
     }
 
     private String digitos(String valor) {

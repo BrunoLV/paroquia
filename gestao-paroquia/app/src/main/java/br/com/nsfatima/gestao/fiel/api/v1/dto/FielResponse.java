@@ -8,7 +8,17 @@ import java.util.UUID;
 public record FielResponse(UUID fielId, String nome, Sexo sexo, LocalDate dataNascimento,
         IdentificacaoDto dadosIdentificacao, ContatoDto contato, EnderecoDto endereco,
         IgrejaFrequentaDto igrejaFrequenta, boolean isDizimista,
-        boolean permitirDivulgacaoAniversario, boolean isAtivo) implements FielConsultaResponse {
+        boolean permitirDivulgacaoAniversario, boolean isAtivo,
+        ConsentimentoLgpdDto consentimento) implements FielConsultaResponse {
+
+    public FielResponse(UUID fielId, String nome, Sexo sexo, LocalDate dataNascimento,
+            IdentificacaoDto dadosIdentificacao, ContatoDto contato, EnderecoDto endereco,
+            IgrejaFrequentaDto igrejaFrequenta, boolean isDizimista,
+            boolean permitirDivulgacaoAniversario, boolean isAtivo) {
+        this(fielId, nome, sexo, dataNascimento, dadosIdentificacao, contato, endereco,
+                igrejaFrequenta, isDizimista, permitirDivulgacaoAniversario, isAtivo, null);
+    }
+
     public UUID id() {
         return fielId;
     }

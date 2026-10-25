@@ -19,6 +19,10 @@ export const vazio = (): CreateFielPayload => ({
   unidadeTerritorialId: '',
   isDizimista: false,
   permitirDivulgacaoAniversario: false,
+  termoConsentimentoAceito: false,
+  usoImagemAutorizado: false,
+  responsavelMenorNome: '',
+  responsavelMenorCpf: '',
 });
 
 export const PAISES_ORIGEM = [
@@ -93,6 +97,10 @@ export const cadastroVazio = (): UpdateFielPayload => ({
   unidadeTerritorialId: '',
   isDizimista: false,
   permitirDivulgacaoAniversario: false,
+  termoConsentimentoAceito: false,
+  usoImagemAutorizado: false,
+  responsavelMenorNome: '',
+  responsavelMenorCpf: '',
 });
 
 export const paraCadastro = (fiel: Fiel): UpdateFielPayload => ({
@@ -131,6 +139,10 @@ export const paraCadastro = (fiel: Fiel): UpdateFielPayload => ({
   unidadeTerritorialId: fiel.igrejaFrequenta?.id ?? '',
   isDizimista: fiel.isDizimista ?? false,
   permitirDivulgacaoAniversario: fiel.permitirDivulgacaoAniversario ?? false,
+  termoConsentimentoAceito: fiel.consentimento?.termoConsentimentoAceito ?? fiel.consentimentoLgpd?.termoConsentimentoAceito ?? false,
+  usoImagemAutorizado: fiel.consentimento?.usoImagemAutorizado ?? fiel.consentimentoLgpd?.usoImagemAutorizado ?? false,
+  responsavelMenorNome: fiel.consentimento?.responsavelMenorNome ?? fiel.consentimentoLgpd?.responsavelMenorNome ?? fiel.responsavelMenorNome ?? '',
+  responsavelMenorCpf: formatCpf(fiel.consentimento?.responsavelMenorCpf ?? fiel.consentimentoLgpd?.responsavelMenorCpf ?? fiel.responsavelMenorCpf ?? ''),
 });
 
 export const InfoField = ({

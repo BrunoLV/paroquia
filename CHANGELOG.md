@@ -8,6 +8,32 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-24
+
+### Adicionado
+- **Readequação Integral da LGPD & Governança de Privacidade (Lei 13.709/2018):**
+  - **Skill e Living Documentation:** Readequação da skill [`.agents/skills/lgpd-privacy-by-design/SKILL.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/.agents/skills/lgpd-privacy-by-design/SKILL.md) incorporando os 10 princípios fundamentais (Art. 6º), 5 fases do ciclo de vida dos dados pessoais, 20 ações de tratamento e salvaguarda canônica (Art. 16, I). Criação de [`docs/business-rules/lgpd.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/docs/business-rules/lgpd.md) e catalogação em [`docs/business-rules/README.md`](file:///home/bruno-luiz-viana/DEV/WORKSPACE/JAVA/paroquia/docs/business-rules/README.md).
+  - **Migração Flyway `V031`:** Criação da tabela `calendario.incidentes_seguranca` e adição dos canais de contato do Encarregado de Dados (DPO) em `calendario.paroquia_configuracao` com comentários DDL completos e constraints.
+  - **Backend Governança & DPO:** Endpoint `PUT /api/v1/configuracao-paroquia/dpo` e use case `AtualizarDpoUseCase` para manutenção dos dados institucionais do Encarregado pelo tratamento de dados pessoais (Art. 41).
+  - **Gestão de Incidentes de Segurança (Art. 48):** Endpoints `POST`, `GET` e `PATCH` em `IncidenteSegurancaController` com `GerenciarIncidenteSegurancaUseCase`, persistência `IncidenteSegurancaJpaRepository` e rastreamento de notificação à ANPD em até 3 dias úteis.
+  - **Direitos do Titular (Portabilidade e Consentimento):**
+    - Mapeamento explícito de consentimento LGPD nos endpoints de fiéis (`CriarFielUseCase`, `AtualizarFielUseCase`, `FielResponse`, `FielMapper`).
+    - Endpoints de autoatendimento `GET /api/v1/meu-perfil/portabilidade` (download JSON legível por máquina, Art. 18, V) e `PATCH /api/v1/meu-perfil/preferencias-privacidade` (gestão e revogação de consentimento de imagem e aniversários, Art. 8º, § 5º).
+  - **Frontend UI / Design System:**
+    - Aba "Privacidade e DPO" em Configurações com formulário do DPO, tabela paginada com `SearchableTablePagination` (colSpan=6) e modais com `SearchableSelect`.
+    - Diálogo público do DPO (`DpoPublicoDialog`) e rodapé institucional persistente no layout responsivo.
+    - Modal de perfil e privacidade (`MeuPerfilPrivacidadeModal`) com ação de download de dados em arquivo JSON e switches de consentimento pastoral.
+  - **Canal Portal de Autoatendimento sem Usuário & Auditoria Forense de Consentimento (Art. 8º, 9º, 14, 16):**
+    - **Migração Flyway `V032`:** Paridade total com inclusão de colunas de consentimento em `calendario.clerigos`, salvaguarda de menor em `calendario.fieis`, e criação das tabelas `calendario.historico_consentimentos`, `calendario.desafios_consentimento` e `calendario.solicitacoes_dpo` com 100% de `COMMENT ON` DDL para auditoria e conformidade.
+    - **Portal de Consentimento Passwordless (`/portal/consentimento`):** Concessão e revogação em 4 etapas seguras sem necessidade de criação de usuário/senha, validado por OTP de 6 dígitos numéricos via e-mail previamente cadastrado na secretaria, com rate limiting, hash SHA-256 e emissão de Comprovante Digital de Manifestação.
+    - **Diálogo Canônico de Revogação:** Transparência ativa na revogação esclarecendo que a eliminação atinge comunicações, imagem e murais, preservando os assentos nos Livros Sacramentais paroquiais (Art. 16, I da LGPD e Cân. 535 do Código de Direito Canônico).
+    - **Salvaguarda de Menores (Art. 14, § 1º):** Detecção automática de menores de 18 anos exigindo obrigatoriamente nome e CPF do responsável legal no cadastro (`FielCreateModal`, `FielEditModal`) e no portal.
+    - **Trilha de Auditoria Forense Imutável:** Visualização tabular do histórico completo de manifestações com IP, canal, data/hora e hash do termo em `FielViewModal` e `ClerigoViewModal`.
+    - **Registro de Operações de Tratamento - ROPA (Art. 37):** Inventário formal de 5 operações de tratamento canônico no painel administrativo com exportação em formato JSON interoperável e impressão.
+    - **Canal de Atendimento ao DPO / DSAR (Arts. 18 e 19):** Protocolo público de requisições de titulares com prazo legal de resposta de até 15 dias, acompanhamento por protocolo e painel de moderação de solicitações pelo DPO.
+    - **Página Pública de Política de Privacidade (`/politica-privacidade`):** Publicidade irrestrita das regras de privacidade, canais do DPO, finalidades, uso compartilhado diocesano e vedação comercial expressa (Art. 11, § 4º).
+
+
 ## [0.10.0] - 2026-10-07
 
 ### Adicionado

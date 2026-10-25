@@ -38,6 +38,7 @@ Este diretório centraliza a documentação viva (*Living Documentation*) das re
 | **Governança** | [`governanca.md`](./governanca.md) | Auditoria automática de entidades (`BaseAuditableEntity`), trilhas de auditoria e conformidade. |
 | **IAM (Segurança)** | [`iam.md`](./iam.md) | Autenticação JWT, usuários, papéis (RBAC), credenciais e políticas de acesso. |
 | **Importação & Exportação** | [`importacao.md`](./importacao.md) | Carga em lote de fiéis e clero via planilha, exportação de atas, relatórios e apresentações litúrgicas. |
+| **LGPD & Privacidade** | [`lgpd.md`](./lgpd.md) | Diretrizes transversais da LGPD, direitos dos titulares, portabilidade, canal do DPO e gestão de incidentes. |
 | **Local** | [`local.md`](./local.md) | Espaços físicos da matriz e comunidades, capacidade, recursos fixos e controle de ocupação. |
 | **Membro** | [`membro.md`](./membro.md) | Vínculo de fiéis com pastorais, movimentos e serviços, histórico de atuação e lideranças. |
 | **Organização** | [`organizacao.md`](./organizacao.md) | Estrutura pastoral, setores, pastorais, movimentos, comunidades e territórios eclesiásticos. |

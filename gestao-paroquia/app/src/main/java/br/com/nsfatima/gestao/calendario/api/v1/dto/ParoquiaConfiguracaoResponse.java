@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
 /**
- * Resposta agregada consolidando dados civis (Matriz), dados canônicos (Governo/Diocese) e
- * a identidade visual da aplicação (cores e logotipos) a partir das fontes únicas da verdade.
+ * Resposta agregada consolidando dados civis (Matriz), dados canônicos (Governo/Diocese),
+ * a identidade visual da aplicação (cores e logotipos) e o canal do Encarregado de Dados (DPO).
  */
 @Schema(description = "Configuração e identidade institucional consolidada da paróquia")
 public record ParoquiaConfiguracaoResponse(
@@ -47,6 +47,34 @@ public record ParoquiaConfiguracaoResponse(
         String urlLogoFundoClaro,
 
         @Schema(description = "URL relativa para download do logotipo para fundo escuro", example = "/api/v1/configuracao-paroquia/logo/escuro")
-        String urlLogoFundoEscuro
+        String urlLogoFundoEscuro,
+
+        @Schema(description = "Nome formal do Encarregado de Proteção de Dados (DPO)", example = "Dr. Carlos Eduardo")
+        String dpoNome,
+
+        @Schema(description = "E-mail institucional oficial do DPO para contato", example = "dpo@nsfatima.com.br")
+        String dpoEmail,
+
+        @Schema(description = "Telefone institucional de contato do DPO", example = "(11) 2031-0001")
+        String dpoTelefone
 ) {
+    public ParoquiaConfiguracaoResponse(
+            UUID id,
+            String nome,
+            String diocese,
+            String endereco,
+            String cnpj,
+            String telefone,
+            String email,
+            String corPrimariaHex,
+            String corSecundariaHex,
+            boolean possuiLogoFundoClaro,
+            boolean possuiLogoFundoEscuro,
+            String urlLogoFundoClaro,
+            String urlLogoFundoEscuro
+    ) {
+        this(id, nome, diocese, endereco, cnpj, telefone, email, corPrimariaHex, corSecundariaHex,
+                possuiLogoFundoClaro, possuiLogoFundoEscuro, urlLogoFundoClaro, urlLogoFundoEscuro,
+                null, null, null);
+    }
 }

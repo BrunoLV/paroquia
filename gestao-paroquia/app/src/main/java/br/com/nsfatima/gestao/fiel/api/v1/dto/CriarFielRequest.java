@@ -24,7 +24,47 @@ public record CriarFielRequest(
         @NotNull EnderecoDto endereco,
         @NotNull UUID unidadeTerritorialId,
         boolean isDizimista,
-        boolean permitirDivulgacaoAniversario) {
+        boolean permitirDivulgacaoAniversario,
+        boolean termoConsentimentoAceito,
+        boolean usoImagemAutorizado) {
+
+    public CriarFielRequest(
+            String nome,
+            Sexo sexo,
+            LocalDate dataNascimento,
+            String paisOrigem,
+            String cpf,
+            String rg,
+            String tipoDocumentoEstrangeiro,
+            String numeroDocumentoEstrangeiro,
+            String email,
+            String celular,
+            boolean isWhatsapp,
+            String telefoneFixo,
+            EnderecoDto endereco,
+            UUID unidadeTerritorialId,
+            boolean isDizimista,
+            boolean permitirDivulgacaoAniversario) {
+        this(
+                nome,
+                sexo,
+                dataNascimento,
+                paisOrigem,
+                cpf,
+                rg,
+                tipoDocumentoEstrangeiro,
+                numeroDocumentoEstrangeiro,
+                email,
+                celular,
+                isWhatsapp,
+                telefoneFixo,
+                endereco,
+                unidadeTerritorialId,
+                isDizimista,
+                permitirDivulgacaoAniversario,
+                false,
+                false);
+    }
 
     public CriarFielRequest(
             String nome,

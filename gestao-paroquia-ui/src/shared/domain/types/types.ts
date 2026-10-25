@@ -90,6 +90,8 @@ export interface ConsentimentoLgpd {
   versaoTermoConsentimento?: string | null;
   usoImagemAutorizado?: boolean;
   permitirDivulgacaoAniversario?: boolean;
+  responsavelMenorNome?: string | null;
+  responsavelMenorCpf?: string | null;
 }
 
 export interface Fiel {
@@ -119,6 +121,7 @@ export interface Fiel {
   dependentes?: Dependente[];
   habilidadesVoluntariado?: string | null;
   consentimentoLgpd?: ConsentimentoLgpd | null;
+  consentimento?: ConsentimentoLgpd | null;
   dadosIdentificacao?: {
     cpfFormatado?: string | null;
     rg?: string | null;
@@ -135,6 +138,10 @@ export interface Fiel {
   igrejaFrequenta?: { id: string; nome: string; tipo: string } | null;
   isDizimista?: boolean;
   permitirDivulgacaoAniversario?: boolean;
+  termoConsentimentoAceito?: boolean;
+  usoImagemAutorizado?: boolean;
+  responsavelMenorNome?: string;
+  responsavelMenorCpf?: string;
   isAtivo?: boolean;
 }
 
@@ -154,6 +161,10 @@ export interface CreateFielPayload {
   unidadeTerritorialId: string;
   isDizimista: boolean;
   permitirDivulgacaoAniversario: boolean;
+  termoConsentimentoAceito?: boolean;
+  usoImagemAutorizado?: boolean;
+  responsavelMenorNome?: string;
+  responsavelMenorCpf?: string;
   telefone?: string;
   telefoneFixo?: string;
   celularWhatsapp?: string;
@@ -188,6 +199,10 @@ export interface UpdateFielPayload {
   unidadeTerritorialId?: string;
   isDizimista?: boolean;
   permitirDivulgacaoAniversario?: boolean;
+  termoConsentimentoAceito?: boolean;
+  usoImagemAutorizado?: boolean;
+  responsavelMenorNome?: string;
+  responsavelMenorCpf?: string;
   telefone?: string;
   telefoneFixo?: string;
   celularWhatsapp?: string;
@@ -1083,7 +1098,7 @@ export interface MetricasOciosidade {
 export type GrauOrdem = 'DIACONO_TRANSITORIO' | 'DIACONO_PERMANENTE' | 'PADRE_DIOCESANO' | 'PADRE_RELIGIOSO' | 'BISPO';
 export type FuncaoEclesiastica = 'BISPO_DIOCESANO' | 'PAROCO' | 'ADMINISTRADOR_PAROQUIAL' | 'VIGARIO_PAROQUIAL' | 'DIACONO_AUXILIAR' | 'EMERITO';
 export interface ClerigoInstitucional { clerigoId: string; nomeEclesiastico: string; grauOrdem: GrauOrdem; funcaoAtual: FuncaoEclesiastica | null; paroquia: string; }
-export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: Endereco | string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; }
+export interface Clerigo extends ClerigoInstitucional { nomeCivil: string; dataNascimento: string; paisOrigem: string; cpfFormatado: string | null; rg: string | null; documentoEstrangeiro: string | null; email: string; celularFormatado: string; isWhatsapp: boolean; telefoneFixoFormatado: string | null; endereco: Endereco | string | null; dioceseIncardinacao: string; dataOrdenacaoDiaconal: string | null; dataOrdenacaoPresbiteral: string | null; dataOrdenacaoEpiscopal: string | null; isAtivo: boolean; termoConsentimentoAceito?: boolean; versaoTermoConsentimento?: string; dataHoraConsentimentoUtc?: string; usoImagemAutorizado?: boolean; }
 export type ClerigoPayload = Omit<Clerigo, 'clerigoId' | 'cpfFormatado' | 'celularFormatado' | 'telefoneFixoFormatado' | 'paroquia' | 'isAtivo' | 'endereco'> & { cpf?: string; celular: string; telefoneFixo?: string; endereco?: Endereco | null; };
 
 export type TipoItemReserva = 'LOCAL' | 'ATIVO';

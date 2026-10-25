@@ -107,6 +107,35 @@ public class FielEntity extends BaseAuditableEntity {
     @Column(name = "is_dizimista", nullable = false)
     private boolean dizimista;
 
+    @Column(name = "termo_consentimento_aceito", nullable = false)
+    private boolean termoConsentimentoAceito;
+
+    @Column(name = "data_hora_consentimento_utc")
+    private Instant dataHoraConsentimentoUtc;
+
+    @Column(name = "ip_consentimento")
+    private String ipConsentimento;
+
+    @Column(name = "versao_termo_consentimento", length = 20)
+    private String versaoTermoConsentimento = "v1.0";
+
+    @Column(name = "canal_consentimento", length = 30)
+    private String canalConsentimento = "PORTAL_AUTOATENDIMENTO";
+
+    @Column(name = "hash_termo_consentimento", length = 64)
+    private String hashTermoConsentimento;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "responsavel_menor_nome")
+    private String responsavelMenorNome;
+
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "responsavel_menor_cpf", length = 14)
+    private String responsavelMenorCpf;
+
+    @Column(name = "uso_imagem_autorizado", nullable = false)
+    private boolean usoImagemAutorizado;
+
     @Column(name = "permitir_divulgacao_aniversario", nullable = false)
     private boolean permitirDivulgacaoAniversario;
 
@@ -333,6 +362,78 @@ public class FielEntity extends BaseAuditableEntity {
         dizimista = value;
     }
 
+    public boolean isTermoConsentimentoAceito() {
+        return termoConsentimentoAceito;
+    }
+
+    public void setTermoConsentimentoAceito(boolean value) {
+        termoConsentimentoAceito = value;
+    }
+
+    public Instant getDataHoraConsentimentoUtc() {
+        return dataHoraConsentimentoUtc;
+    }
+
+    public void setDataHoraConsentimentoUtc(Instant value) {
+        dataHoraConsentimentoUtc = value;
+    }
+
+    public String getIpConsentimento() {
+        return ipConsentimento;
+    }
+
+    public void setIpConsentimento(String value) {
+        ipConsentimento = value;
+    }
+
+    public String getVersaoTermoConsentimento() {
+        return versaoTermoConsentimento;
+    }
+
+    public void setVersaoTermoConsentimento(String value) {
+        versaoTermoConsentimento = value;
+    }
+
+    public String getCanalConsentimento() {
+        return canalConsentimento;
+    }
+
+    public void setCanalConsentimento(String value) {
+        canalConsentimento = value;
+    }
+
+    public String getHashTermoConsentimento() {
+        return hashTermoConsentimento;
+    }
+
+    public void setHashTermoConsentimento(String value) {
+        hashTermoConsentimento = value;
+    }
+
+    public String getResponsavelMenorNome() {
+        return responsavelMenorNome;
+    }
+
+    public void setResponsavelMenorNome(String value) {
+        responsavelMenorNome = value;
+    }
+
+    public String getResponsavelMenorCpf() {
+        return responsavelMenorCpf;
+    }
+
+    public void setResponsavelMenorCpf(String value) {
+        responsavelMenorCpf = digitos(value);
+    }
+
+    public boolean isUsoImagemAutorizado() {
+        return usoImagemAutorizado;
+    }
+
+    public void setUsoImagemAutorizado(boolean value) {
+        usoImagemAutorizado = value;
+    }
+
     public boolean isPermitirDivulgacaoAniversario() {
         return permitirDivulgacaoAniversario;
     }
@@ -400,6 +501,12 @@ public class FielEntity extends BaseAuditableEntity {
         setEnderecoCep(null);
         setEnderecoCidade(null);
         setEnderecoEstado(null);
+        setResponsavelMenorNome(null);
+        setResponsavelMenorCpf(null);
+        this.termoConsentimentoAceito = false;
+        this.ipConsentimento = null;
+        this.usoImagemAutorizado = false;
+        this.permitirDivulgacaoAniversario = false;
         this.dadosCadastraisEliminados = true;
     }
 

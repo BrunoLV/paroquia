@@ -9,6 +9,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoUnidadeTerritorial;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,12 @@ public class CriarFielUseCase {
         fiel.setUnidadeTerritorialId(r.unidadeTerritorialId());
         fiel.setDizimista(r.isDizimista());
         fiel.setPermitirDivulgacaoAniversario(r.permitirDivulgacaoAniversario());
+        fiel.setTermoConsentimentoAceito(r.termoConsentimentoAceito());
+        if (r.termoConsentimentoAceito()) {
+            fiel.setDataHoraConsentimentoUtc(Instant.now());
+            fiel.setVersaoTermoConsentimento("v1.0");
+        }
+        fiel.setUsoImagemAutorizado(r.usoImagemAutorizado());
 
         if (r.endereco() != null) {
             fiel.setEnderecoLogradouro(r.endereco().logradouro());

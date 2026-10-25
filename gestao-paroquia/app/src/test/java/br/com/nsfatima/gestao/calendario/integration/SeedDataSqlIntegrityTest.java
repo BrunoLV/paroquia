@@ -76,7 +76,7 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(30, flyway.info().applied().length,
+        assertEquals(32, flyway.info().applied().length,
                 "O baseline deve manter uma migração Flyway por contexto com persistência");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");

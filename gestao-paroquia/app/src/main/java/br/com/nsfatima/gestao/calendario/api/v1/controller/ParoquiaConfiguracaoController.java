@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.calendario.api.v1.controller;
 
+import br.com.nsfatima.gestao.calendario.api.v1.dto.AtualizarDpoRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.AtualizarIdentidadeVisualRequest;
 import br.com.nsfatima.gestao.calendario.api.v1.dto.ParoquiaConfiguracaoResponse;
+import br.com.nsfatima.gestao.calendario.application.usecase.configuracao.AtualizarDpoUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.configuracao.AtualizarIdentidadeVisualUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.configuracao.AtualizarLogoParoquiaUseCase;
 import br.com.nsfatima.gestao.calendario.application.usecase.configuracao.ObterConfiguracaoParoquiaUseCase;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,16 +48,29 @@ public class ParoquiaConfiguracaoController {
     private final AtualizarIdentidadeVisualUseCase atualizarIdentidadeVisualUseCase;
     private final AtualizarLogoParoquiaUseCase atualizarLogoParoquiaUseCase;
     private final ObterLogoParoquiaUseCase obterLogoParoquiaUseCase;
+    private final AtualizarDpoUseCase atualizarDpoUseCase;
+
+    @Autowired
+    public ParoquiaConfiguracaoController(
+            ObterConfiguracaoParoquiaUseCase obterConfiguracaoParoquiaUseCase,
+            AtualizarIdentidadeVisualUseCase atualizarIdentidadeVisualUseCase,
+            AtualizarLogoParoquiaUseCase atualizarLogoParoquiaUseCase,
+            ObterLogoParoquiaUseCase obterLogoParoquiaUseCase,
+            AtualizarDpoUseCase atualizarDpoUseCase) {
+        this.obterConfiguracaoParoquiaUseCase = obterConfiguracaoParoquiaUseCase;
+        this.atualizarIdentidadeVisualUseCase = atualizarIdentidadeVisualUseCase;
+        this.atualizarLogoParoquiaUseCase = atualizarLogoParoquiaUseCase;
+        this.obterLogoParoquiaUseCase = obterLogoParoquiaUseCase;
+        this.atualizarDpoUseCase = atualizarDpoUseCase;
+    }
 
     public ParoquiaConfiguracaoController(
             ObterConfiguracaoParoquiaUseCase obterConfiguracaoParoquiaUseCase,
             AtualizarIdentidadeVisualUseCase atualizarIdentidadeVisualUseCase,
             AtualizarLogoParoquiaUseCase atualizarLogoParoquiaUseCase,
             ObterLogoParoquiaUseCase obterLogoParoquiaUseCase) {
-        this.obterConfiguracaoParoquiaUseCase = obterConfiguracaoParoquiaUseCase;
-        this.atualizarIdentidadeVisualUseCase = atualizarIdentidadeVisualUseCase;
-        this.atualizarLogoParoquiaUseCase = atualizarLogoParoquiaUseCase;
-        this.obterLogoParoquiaUseCase = obterLogoParoquiaUseCase;
+        this(obterConfiguracaoParoquiaUseCase, atualizarIdentidadeVisualUseCase,
+                atualizarLogoParoquiaUseCase, obterLogoParoquiaUseCase, null);
     }
 
     @GetMapping
@@ -80,6 +96,24 @@ public class ParoquiaConfiguracaoController {
     public ResponseEntity<ParoquiaConfiguracaoResponse> atualizarIdentidadeVisual(
             @Valid @RequestBody AtualizarIdentidadeVisualRequest request) {
         ParoquiaConfiguracaoResponse response = atualizarIdentidadeVisualUseCase.execute(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/dpo")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO')")
+    @Operation(summary = "Atualiza os dados do Encarregado de Proteção de Dados (DPO) (Art. 41 LGPD)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Dados do DPO atualizados com sucesso",
+                    content = @Content(schema = @Schema(implementation = ParoquiaConfiguracaoResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado para o usuário autenticado")
+    })
+    public ResponseEntity<ParoquiaConfiguracaoResponse> atualizarDpo(
+            @Valid @RequestBody AtualizarDpoRequest request) {
+        if (atualizarDpoUseCase == null) {
+            return ResponseEntity.ok(obterConfiguracaoParoquiaUseCase.execute());
+        }
+        ParoquiaConfiguracaoResponse response = atualizarDpoUseCase.execute(request);
         return ResponseEntity.ok(response);
     }
 

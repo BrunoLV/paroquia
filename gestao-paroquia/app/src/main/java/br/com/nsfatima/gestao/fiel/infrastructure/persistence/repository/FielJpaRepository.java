@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -38,6 +39,8 @@ public interface FielJpaRepository extends JpaRepository<FielEntity, UUID> {
      * @return fiéis com cadastro ativo
      */
     List<FielEntity> findByAtivoTrue();
+
+    Optional<FielEntity> findByCpfHashAndAtivoTrue(String cpfHash);
 
     List<FielEntity> findByAtivoFalseAndDadosCadastraisEliminadosFalseAndDesativadoEmUtcBefore(Instant limite);
 }

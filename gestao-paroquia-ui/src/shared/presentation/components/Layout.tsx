@@ -3,6 +3,7 @@ import {
   AppBar,
   Avatar,
   Box,
+  ButtonBase,
   Container,
   Divider,
   Drawer,
@@ -16,6 +17,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import ShieldIcon from '@mui/icons-material/Shield';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { isUnlinkedUser } from '@/contextos/iam/presentation/auth/permissions';
@@ -24,6 +26,8 @@ import { useThemeMode } from '@/shared/presentation/context/ThemeModeContext';
 import { useConfiguracaoParoquia } from '@/contextos/governanca/presentation/hooks/useConfiguracaoParoquia';
 import ActionButton from '@/shared/presentation/components/ActionButton';
 import IconActionButton from './IconActionButton';
+import DpoPublicoDialog from '@/shared/presentation/components/DpoPublicoDialog';
+import MeuPerfilPrivacidadeModal from '@/contextos/iam/presentation/components/MeuPerfilPrivacidadeModal';
 
 /** Shell responsivo; agrupamento e visibilidade dos links pertencem à navegação compartilhada. */
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -36,6 +40,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(true);
+  const [dpoOpen, setDpoOpen] = React.useState(false);
+  const [perfilOpen, setPerfilOpen] = React.useState(false);
 
   const isDark = mode === 'dark';
   const logoSrc = isDark
@@ -212,12 +218,27 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
             {user && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'primary.main', fontSize: '0.8rem', fontWeight: 700 }}>
-                  {user.name.slice(0, 1).toLocaleUpperCase('pt-BR')}
-                </Avatar>
-                <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
-                  Olá, {user.name}
-                </Typography>
+                <ButtonBase
+                  onClick={() => setPerfilOpen(true)}
+                  aria-label="Meu perfil e privacidade"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    p: 0.5,
+                    px: 1,
+                    borderRadius: 2,
+                    color: 'inherit',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' },
+                  }}
+                >
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'primary.main', fontSize: '0.8rem', fontWeight: 700 }}>
+                    {user.name.slice(0, 1).toLocaleUpperCase('pt-BR')}
+                  </Avatar>
+                  <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500 }}>
+                    Olá, {user.name}
+                  </Typography>
+                </ButtonBase>
                 <ActionButton
                   label="Sair"
                   title="Sair do sistema"
@@ -255,6 +276,52 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             children
           )}
         </Container>
+
+        {/* Rodapé Institucional e Transparência LGPD */}
+        <Box
+          component="footer"
+          sx={{
+            py: 2,
+            px: { xs: 2, sm: 3, lg: 4 },
+            mt: 'auto',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <Typography variant="caption" color="text.secondary">
+            {paroquiaNome} — Privacidade e Proteção de Dados (LGPD - Lei nº 13.709/2018).
+          </Typography>
+          <ActionButton
+            title="Visualizar informações do Encarregado de Dados (DPO) e direitos do titular"
+            label="Privacidade & Encarregado (DPO)"
+            icon={<ShieldIcon fontSize="small" />}
+            onClick={() => setDpoOpen(true)}
+            variant="text"
+            size="small"
+            sx={{ fontSize: '0.75rem', textTransform: 'none' }}
+          />
+        </Box>
+
+        {dpoOpen && (
+          <DpoPublicoDialog
+            open={dpoOpen}
+            onClose={() => setDpoOpen(false)}
+            configuracao={configuracao}
+          />
+        )}
+
+        {perfilOpen && (
+          <MeuPerfilPrivacidadeModal
+            open={perfilOpen}
+            onClose={() => setPerfilOpen(false)}
+          />
+        )}
       </Box>
     </Box>
   );
