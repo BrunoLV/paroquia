@@ -40,6 +40,18 @@ public class ValidacaoDocumentoCivil {
         }
     }
 
+    /**
+     * Verifica o CPF (11 dígitos e dígitos verificadores) de uma pessoa que não é cadastrada como fiel, como
+     * o responsável legal de um menor, sem a tolerância a CPF fictício de desenvolvimento.
+     *
+     * @param cpf CPF com ou sem máscara
+     * @return {@code true} se o CPF é bem formado e tem dígitos verificadores corretos
+     */
+    public boolean cpfEstritamenteValido(String cpf) {
+        String limpo = cpf == null ? "" : cpf.replaceAll("\\D", "");
+        return limpo.length() == 11 && cpfValido(limpo);
+    }
+
     private static boolean isCpfDevDummy(String cpf) {
         return cpf != null && cpf.startsWith("000000000");
     }

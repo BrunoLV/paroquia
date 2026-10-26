@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.clero.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.clero.domain.model.GrauOrdem;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.CpfBlindIndex;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
@@ -37,6 +38,12 @@ public class ClerigoEntity extends BaseAuditableEntity {
 
     @Convert(converter = EncryptedStringConverter.class)
     private String cpf;
+
+    @Column(name = "cpf_hash", length = 64)
+    private String cpfHash;
+
+    @Column(name = "dados_cadastrais_eliminados", nullable = false)
+    private boolean dadosCadastraisEliminados;
 
     @Convert(converter = EncryptedStringConverter.class)
     private String rg;
@@ -172,6 +179,48 @@ public class ClerigoEntity extends BaseAuditableEntity {
 
     public void setCpf(String valor) {
         cpf = digitos(valor);
+        cpfHash = CpfBlindIndex.hash(cpf);
+    }
+
+    public String getCpfHash() {
+        return cpfHash;
+    }
+
+    public boolean isDadosCadastraisEliminados() {
+        return dadosCadastraisEliminados;
+    }
+
+    /**
+     * Anonimização definitiva (LGPD), em paridade com o cadastro de fiéis: elimina dados civis
+     * identificadores, o blind index do CPF e o rastro de consentimento. O nome eclesiástico, o grau da
+     * ordem e as datas de ordenação são dados institucionais/canônicos (fé pública, Art. 16, I) e
+     * permanecem. A conta de acesso e a trilha de consentimento são tratadas pelo caso de uso.
+     */
+    public void anonimizar() {
+        this.nomeCivil = null;
+        this.dataNascimento = null;
+        this.cpf = null;
+        this.cpfHash = null;
+        this.rg = null;
+        this.documentoEstrangeiro = null;
+        this.email = null;
+        this.celular = null;
+        this.telefoneFixo = null;
+        this.endereco = null;
+        this.enderecoCep = null;
+        this.enderecoLogradouro = null;
+        this.enderecoNumero = null;
+        this.enderecoComplemento = null;
+        this.enderecoBairro = null;
+        this.enderecoCidade = null;
+        this.enderecoUf = null;
+        this.termoConsentimentoAceito = false;
+        this.dataHoraConsentimentoUtc = null;
+        this.ipConsentimento = null;
+        this.usoImagemAutorizado = false;
+        this.permitirDivulgacaoAniversario = false;
+        this.ativo = false;
+        this.dadosCadastraisEliminados = true;
     }
 
     public String getRg() {

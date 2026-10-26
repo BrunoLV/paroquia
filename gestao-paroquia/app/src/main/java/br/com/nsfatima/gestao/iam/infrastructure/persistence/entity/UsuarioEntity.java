@@ -125,6 +125,17 @@ public class UsuarioEntity extends BaseAuditableEntity {
     }
 
     /**
+     * Eliminação LGPD da conta de um titular anonimizado: desabilita o login, troca o nome de usuário (que
+     * pode ser identificador pessoal) por um marcador opaco e inutiliza a senha com um valor que nenhum
+     * encoder reconhece como hash válido.
+     */
+    public void anonimizarConta() {
+        this.enabled = false;
+        this.username = "anonimizado-" + id;
+        this.passwordHash = "!conta-anonimizada";
+    }
+
+    /**
      * Aprova um usuário pendente: habilita o login, garante o papel padrão {@code ROLE_USER} (sem
      * duplicar) e registra o ator. A ativação dos vínculos organizacionais é orquestrada à parte.
      */

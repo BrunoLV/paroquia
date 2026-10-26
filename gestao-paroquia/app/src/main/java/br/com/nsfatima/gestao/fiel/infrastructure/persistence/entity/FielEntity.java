@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.fiel.domain.model.Sexo;
 import br.com.nsfatima.gestao.fiel.domain.model.Vocacao;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.CpfBlindIndex;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedLocalDateConverter;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
@@ -13,12 +14,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HexFormat;
 import java.util.UUID;
 
 /** Persistência do cadastro civil e comunitário, sem informações sacramentais. */
@@ -173,7 +170,7 @@ public class FielEntity extends BaseAuditableEntity {
 
     public void setCpf(String value) {
         cpf = digitos(value);
-        cpfHash = cpf == null ? null : hash(cpf);
+        cpfHash = CpfBlindIndex.hash(cpf);
     }
 
     public String getCpfHash() {
@@ -484,7 +481,9 @@ public class FielEntity extends BaseAuditableEntity {
     /**
      * Anonimização definitiva (LGPD): elimina, num único ponto, todos os dados pessoais identificáveis
      * do cadastro. Antes esta lista vivia como sequência de {@code setX(null)} em
-     * {@code GerenciarCicloVidaFielUseCase}.
+     * {@code GerenciarCicloVidaFielUseCase}. Zera também o blind index do CPF, nascimento, sexo e o carimbo
+     * de consentimento; dependentes, relações familiares, trilha de consentimento e conta de acesso são
+     * eliminados pelo caso de uso (outros agregados/tabelas).
      */
     public void anonimizar(Instant agora, String actor) {
         setNome(null);
@@ -503,7 +502,11 @@ public class FielEntity extends BaseAuditableEntity {
         setEnderecoEstado(null);
         setResponsavelMenorNome(null);
         setResponsavelMenorCpf(null);
+        this.cpfHash = null;
+        this.dataNascimento = null;
+        this.sexo = null;
         this.termoConsentimentoAceito = false;
+        this.dataHoraConsentimentoUtc = null;
         this.ipConsentimento = null;
         this.usoImagemAutorizado = false;
         this.permitirDivulgacaoAniversario = false;
@@ -515,14 +518,5 @@ public class FielEntity extends BaseAuditableEntity {
             return null;
         }
         return value.replaceAll("\\D", "");
-    }
-
-    private String hash(String value) {
-        try {
-            return HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("SHA-256 indisponível", exception);
-        }
     }
 }

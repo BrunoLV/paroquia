@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.governanca.api.v1.dto;
 
 import br.com.nsfatima.gestao.governanca.domain.model.GravidadeIncidente;
+import br.com.nsfatima.gestao.governanca.domain.model.IncidenteSeguranca;
 import br.com.nsfatima.gestao.governanca.domain.model.StatusIncidente;
-import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.IncidenteSegurancaEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
@@ -56,25 +56,31 @@ public record IncidenteSegurancaResponse(
         StatusIncidente status,
 
         @Schema(description = "Data de registro em UTC")
-        Instant criadoEmUtc
+        Instant criadoEmUtc,
+        @Schema(description = "Prazo de comunicação à ANPD e aos titulares: 3 dias úteis após a detecção")
+        Instant prazoComunicacaoUtc,
+        @Schema(description = "Verdadeiro se o prazo de comunicação venceu sem notificação à ANPD nem encerramento")
+        boolean prazoVencido
 ) {
-    public static IncidenteSegurancaResponse de(IncidenteSegurancaEntity entity) {
+    public static IncidenteSegurancaResponse de(IncidenteSeguranca incidente, Instant criadoEmUtc, Instant agora) {
         return new IncidenteSegurancaResponse(
-                entity.getId(),
-                entity.getTitulo(),
-                entity.getDescricao(),
-                entity.getTipoDadoAfetado(),
-                entity.getCategoriaGravidade(),
-                entity.getDataOcorrencia(),
-                entity.getDataDeteccao(),
-                entity.getMedidasMitigacao(),
-                entity.isNotificadoAnpd(),
-                entity.getDataNotificacaoAnpd(),
-                entity.getProtocoloAnpd(),
-                entity.isNotificadoTitulares(),
-                entity.getDataNotificacaoTitulares(),
-                entity.getStatus(),
-                entity.getCriadoEmUtc()
+                incidente.id(),
+                incidente.titulo(),
+                incidente.descricao(),
+                incidente.tipoDadoAfetado(),
+                incidente.categoriaGravidade(),
+                incidente.dataOcorrencia(),
+                incidente.dataDeteccao(),
+                incidente.medidasMitigacao(),
+                incidente.notificadoAnpd(),
+                incidente.dataNotificacaoAnpd(),
+                incidente.protocoloAnpd(),
+                incidente.notificadoTitulares(),
+                incidente.dataNotificacaoTitulares(),
+                incidente.status(),
+                criadoEmUtc,
+                incidente.prazoComunicacao(),
+                incidente.prazoVencido(agora)
         );
     }
 }

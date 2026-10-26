@@ -1,8 +1,10 @@
 package br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.governanca.domain.model.StatusSolicitacaoDpo;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,13 +27,16 @@ public class SolicitacaoDpoEntity extends BaseAuditableEntity {
     @Column(nullable = false, unique = true, length = 36)
     private String protocolo;
 
-    @Column(name = "titular_nome", nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "titular_nome", nullable = false, length = 1024)
     private String titularNome;
 
-    @Column(name = "titular_email", nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "titular_email", nullable = false, length = 1024)
     private String titularEmail;
 
-    @Column(name = "titular_cpf", length = 14)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "titular_cpf", length = 512)
     private String titularCpf;
 
     @Column(name = "tipo_solicitacao", nullable = false, length = 50)

@@ -19,6 +19,8 @@ logging:
     org.springframework.security: DEBUG
 
 app:
+  security:
+    cpf-pepper: pepper-somente-para-testes-automatizados
   paroquia:
     nome: "Paróquia Nossa Senhora de Fátima"
     diocese: "Diocese de São Miguel Paulista"

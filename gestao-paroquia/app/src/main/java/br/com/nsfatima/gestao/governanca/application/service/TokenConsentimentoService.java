@@ -13,7 +13,9 @@ import java.util.Base64;
 import java.util.UUID;
 
 /**
- * Emissor e validador de tokens efêmeros de sessão de consentimento (HMAC-SHA256).
+ * Emissor e validador de tokens efêmeros de sessão de consentimento (HMAC-SHA256). O token carrega o
+ * identificador do desafio OTP validado ({@code jti}); o caso de uso o consome uma única vez, de modo que um
+ * token interceptado ou reenviado não possa registrar uma segunda manifestação.
  */
 @Service
 public class TokenConsentimentoService {
@@ -24,16 +26,16 @@ public class TokenConsentimentoService {
 
     private final byte[] secretKey;
 
-    public record TokenPayload(TipoTitularConsentimento titularTipo, UUID titularId) {}
+    public record TokenPayload(TipoTitularConsentimento titularTipo, UUID titularId, UUID jti) {}
 
     public TokenConsentimentoService(
             @Value("${app.security.consent-secret:paroquia-consent-jwt-secret-key-lgpd-2026}") String secret) {
         this.secretKey = secret.getBytes(StandardCharsets.UTF_8);
     }
 
-    public String gerarToken(TipoTitularConsentimento titularTipo, UUID titularId) {
+    public String gerarToken(TipoTitularConsentimento titularTipo, UUID titularId, UUID jti) {
         long expiraEm = Instant.now().plusSeconds(DURACAO_MINUTOS * 60).toEpochMilli();
-        String dados = titularTipo.name() + SEPARADOR + titularId + SEPARADOR + expiraEm;
+        String dados = titularTipo.name() + SEPARADOR + titularId + SEPARADOR + expiraEm + SEPARADOR + jti;
         String assinatura = assinar(dados);
         String payloadBase64 = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(dados.getBytes(StandardCharsets.UTF_8));
@@ -61,7 +63,7 @@ public class TokenConsentimentoService {
             throw new IllegalArgumentException("Assinatura do token de consentimento inválida.");
         }
         String[] campos = dados.split(SEPARADOR);
-        if (campos.length != 3) {
+        if (campos.length != 4) {
             throw new IllegalArgumentException("Campos do token corrompidos.");
         }
         long expiraEm = Long.parseLong(campos[2]);
@@ -70,7 +72,7 @@ public class TokenConsentimentoService {
         }
         TipoTitularConsentimento tipo = TipoTitularConsentimento.valueOf(campos[0]);
         UUID titularId = UUID.fromString(campos[1]);
-        return new TokenPayload(tipo, titularId);
+        return new TokenPayload(tipo, titularId, UUID.fromString(campos[3]));
     }
 
     private String assinar(String dados) {

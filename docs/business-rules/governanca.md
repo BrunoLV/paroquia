@@ -18,9 +18,9 @@ Assegurar que toda operação de criação, edição ou remoção de dados no ec
 - **`RegistroAuditoria`:** Log estruturado imutável de eventos de mutação e acessos administrativos.
 - **`ParoquiaConfiguracao`:** Configuração institucional da paróquia contendo parâmetros de identidade visual (cores primária/secundária e logotipos binarizados para fundo claro e escuro) e os canais públicos do Encarregado de Proteção de Dados / DPO (`dpoNome`, `dpoEmail`, `dpoTelefone`).
 - **Agregados de Privacidade e LGPD (detalhados em [`lgpd.md`](./lgpd.md)):**
-  - `IncidenteSeguranca`: Registro de incidentes de segurança de dados pessoais e notificações à ANPD/titulares (`EM_ANALISE`, `CONTIDO`, `NOTIFICADO`, `ENCERRADO`).
-  - `SolicitacaoDpo`: Requisições de titulares (DSAR - Arts. 18 e 19) com protocolo rastreável (`DPO-YYYYMMDD-XXXX`) e controle de prazo legal de 15 dias (`ABERTA`, `EM_ATENDIMENTO`, `CONCLUIDA`).
-  - `DesafioConsentimento`: Desafios OTP temporários de 6 dígitos (hash SHA-256) para autoatendimento sem senha no Portal de Consentimento.
+  - `IncidenteSeguranca`: Registro de incidentes de segurança de dados pessoais e notificações à ANPD/titulares (`EM_ANALISE` → `CONTIDO` → `NOTIFICADO` → `ENCERRADO`, só avança; `ENCERRADO` é final). `NOTIFICADO` exige a ANPD notificada, a detecção não antecede a ocorrência e o prazo de comunicação é de 3 dias úteis após a detecção.
+  - `SolicitacaoDpo`: Requisições de titulares (DSAR - Arts. 18 e 19) com protocolo rastreável (`DPO-AAAAMMDD-` + 12 caracteres aleatórios) e controle de prazo legal de 15 dias. Status: `RECEBIDA` → `EM_ANALISE` → (`ATENDIDA` ou `REJEITADA`); concluída nunca reabre. Nome, e-mail e CPF do solicitante ficam cifrados em repouso.
+  - `DesafioConsentimento`: Desafios OTP temporários de 6 dígitos (hash SHA-256) para autoatendimento sem senha no Portal de Consentimento; o desafio validado é a identidade do token de consentimento, que é de uso único.
   - `HistoricoConsentimento`: Trilha forense imutável (`calendario.historico_consentimentos`) de concessões, atualizações e revogações de consentimento de fiéis e clérigos.
 
 ---

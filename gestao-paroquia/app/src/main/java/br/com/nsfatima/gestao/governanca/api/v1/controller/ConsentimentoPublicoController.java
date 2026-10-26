@@ -182,11 +182,13 @@ public class ConsentimentoPublicoController {
         return dpoUseCase.responder(id, request);
     }
 
+    /**
+     * IP de origem para a trilha de consentimento. Usa somente o endereço da conexão: o cabeçalho
+     * {@code X-Forwarded-For} é forjável por qualquer cliente e só é confiável quando um proxy conhecido o
+     * sobrescreve — caso em que {@code server.forward-headers-strategy=native} faz o contêiner devolver o
+     * IP real em {@code getRemoteAddr()}.
+     */
     private String extrairIp(HttpServletRequest request) {
-        String xf = request.getHeader("X-Forwarded-For");
-        if (xf != null && !xf.isBlank()) {
-            return xf.split(",")[0].trim();
-        }
         return request.getRemoteAddr();
     }
 }
