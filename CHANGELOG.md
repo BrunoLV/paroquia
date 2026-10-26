@@ -8,6 +8,24 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Adicionado
+- **Qualidade do Frontend:** ESLint (flat config com `typescript-eslint`, `react-hooks`, `jsx-a11y`) e Prettier, scripts `lint`, `format:check` e `typecheck:tests`; regra `no-restricted-imports` impedindo React/MUI/TanStack/Zod/Axios em `contextos/*/domain` e `application` e Axios fora de `infrastructure`. Regras legadas ruidosas (`no-explicit-any`, `no-unused-vars`, `no-autofocus`, `no-useless-catch`) ficam como `warn` documentado em `eslint.config.js`.
+- **Testes:** cobertura mínima para `membro`, `projeto`, `patrimonio` e `importacao`; piso de cobertura no Vitest (statements/lines 70%, branches 66%, functions 45%).
+- **CI:** lint e Prettier do frontend, type-check informativo dos testes, `npm audit` e dependency review informativos, job de build das imagens Docker (sem push) e `.github/dependabot.yml` (gradle, npm, github-actions, docker, docker-compose).
+- **Gradle:** `distributionSha256Sum` no wrapper; `spring-boot-starter-quartz` no `libs.versions.toml`.
+
+### Modificado
+- **TypeScript:** `target` ES2022; `tsconfig.test.json` checa os arquivos de teste; shim de tipos do Vitest substituído por tipos reais.
+- **SpotBugs bloqueante:** `ignoreFailures=false`, com baseline por classe/padrão em `config/spotbugs/spotbugs-filter.xml` (débitos reais sinalizados: `GerenciarRelacionamentoFamiliarUseCase` e `CorrelationIdFilter`).
+- **Node 22** alinhado entre CI, READMEs, `engines` e `Dockerfile.ui`; `AGENTS.md` raiz ajustado: Convention Plugins em `build-logic` só ao surgir o segundo módulo Gradle.
+- `Projetos.tsx` passa a usar adapter e hooks do contexto `projeto`; detecção de erro HTTP em `errorUtils`/`useEventoCrud` sem importar Axios.
+
+### Corrigido
+- `FielViewModal` e `ClerigoViewModal`: `useQuery` chamado após retorno antecipado (violação de rules-of-hooks).
+
+### Segurança
+- `AuthContext` não persiste mais o `user` (PII) em `localStorage`; o cache legado é purgado no carregamento.
+
 ---
 
 ## [0.12.1] - 2026-10-25

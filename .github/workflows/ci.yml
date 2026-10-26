@@ -62,23 +62,38 @@ jobs:
 
   # ─── Frontend (React/Vite/Vitest) ─────────────────────────────────────────
   frontend-ci:
-    name: Frontend CI (Node 24 / Vitest)
+    name: Frontend CI (Node 22 / Lint / Vitest)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node 24
+      # Node 22 = mesma versão do Dockerfile.ui e do README (engines >=22).
+      - name: Set up Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "22"
           cache: npm
           cache-dependency-path: gestao-paroquia-ui/package-lock.json
 
       - name: Install dependencies
         run: npm ci --ignore-scripts
         working-directory: gestao-paroquia-ui
+
+      - name: ESLint (fronteiras DDD, react-hooks, jsx-a11y)
+        run: npm run lint
+        working-directory: gestao-paroquia-ui
+
+      - name: Prettier (escopo adotado)
+        run: npm run format:check
+        working-directory: gestao-paroquia-ui
+
+      # Backlog conhecido de tipagem de fixtures de teste; informativo até zerar, depois remover o continue-on-error.
+      - name: Type-check dos arquivos de teste (informativo)
+        run: npm run typecheck:tests
+        working-directory: gestao-paroquia-ui
+        continue-on-error: true
 
       - name: Run Vitest (all tests, single-run)
         run: npm test
@@ -91,3 +106,60 @@ jobs:
         working-directory: gestao-paroquia-ui
         env:
           CI: "true"
+
+      - name: npm audit (informativo)
+        run: npm audit --audit-level=high
+        working-directory: gestao-paroquia-ui
+        continue-on-error: true
+
+  # ─── Imagens Docker (somente build, sem push) ─────────────────────────────
+  docker-build:
+    name: Docker build (${{ matrix.imagem }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - imagem: api
+            context: .
+            dockerfile: Dockerfile.api
+          - imagem: ui
+            context: gestao-paroquia-ui
+            dockerfile: Dockerfile.ui
+          - imagem: builder
+            context: gestao-paroquia
+            dockerfile: Dockerfile.builder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.imagem }} (sem push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          cache-from: type=gha,scope=${{ matrix.imagem }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.imagem }}
+
+  # ─── Dependências vulneráveis em PRs (informativo, não bloqueante) ────────
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # continue-on-error: exige Dependency Graph habilitado no repositório; não deve travar o PR por configuração.
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+        continue-on-error: true

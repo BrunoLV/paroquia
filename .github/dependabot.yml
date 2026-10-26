@@ -1,0 +1,36 @@
+# Atualizações semanais agrupadas para limitar o ruído de PRs; majors de Spring Boot/React/MUI
+# continuam chegando como PRs separados porque exigem migração deliberada.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /gestao-paroquia
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      gradle-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /gestao-paroquia-ui
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly

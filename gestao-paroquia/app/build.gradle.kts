@@ -28,7 +28,7 @@ pmd {
 }
 
 spotbugs {
-    ignoreFailures.set(true)
+    ignoreFailures.set(false)
     excludeFilter.set(file("${rootDir}/config/spotbugs/spotbugs-filter.xml"))
 }
 
@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.micrometer.registry.prometheus)
     implementation(libs.springdoc.openapi)
     implementation(libs.spring.boot.starter.flyway)
-    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    implementation(libs.spring.boot.starter.quartz)
     implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql)
     implementation(libs.apache.poi)
