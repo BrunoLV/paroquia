@@ -30,6 +30,9 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 - Toda recusa ou rejeição de solicitação **DEVE conter parecer textual fundamentado**, indicando os motivos pastorais, litúrgicos ou de planejamento; reprovação sem parecer é recusada e a solicitação permanece pendente.
 - **Falha fechada:** se o payload da solicitação não puder ser interpretado, ou se a verificação de conflito de espaço e ativos não puder ser concluída, a **aprovação é bloqueada** (nada é executado). A reprovação, que não executa ação alguma, segue possível.
 
+### Visibilidade da Fila
+- O Pároco e o Bispo Diocesano (quem decide) veem toda a fila de aprovações, inclusive o diagnóstico técnico das falhas de execução. Os demais perfis, inclusive o Admin, veem **somente as solicitações que eles mesmos abriram**, sem o detalhamento técnico de falha; as ocorrências de uma série recorrente só podem ser consultadas por quem decide ou pelo autor da série.
+
 ### RN-APR-03: Fila de Urgência Baseada em Proximidade
 - Solicitações cuja data de início do evento esteja a menos de 48 horas recebem classificação `URGENTE`, com destaque visual no topo das esteiras.
 

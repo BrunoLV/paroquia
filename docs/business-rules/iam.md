@@ -65,6 +65,8 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 - **Alçada no Vínculo Administrativo:** em `POST /api/v1/usuarios/{id}/membros`, atribuir `COORDENADOR` é privativo do Pároco (ou Bispo) e vincular membros a conselhos cabe ao Pároco ou Admin; ter qualquer papel global (como Secretaria Paroquial) não basta.
 - **Interoperabilidade de Vínculos:** O endpoint de vinculação a grupos (`POST /api/v1/usuarios/{id}/membros`) aceita `organizacaoId` via DTO `AdicionarVinculoRequest`, prevenindo erros de validação Jackson de campo desconhecido.
 
+- **Sem papel, sem acesso:** um usuário autenticado cujo papel não possa ser reconhecido é negado; nunca é tratado por omissão como coordenador ou qualquer outro perfil com privilégio.
+
 ### RN-IAM-06: Pureza do Bounded Context IAM e Segregação de Dados Pastorais
 - As APIs e telas do módulo IAM (`/api/v1/usuarios`, `Configuracoes.tsx`) lidam estritamente com **dados de conta e autenticação** (username, status ativo/inativo, roles, id da conta e vínculo de entidade).
 - **Expurgo de Dados Pastorais e Sacramentais:** Com exceção do `nome` da pessoa física vinculada (usado exclusivamente como rótulo legível de identificação), é **estritamente vedado** expor ou trafegar dados pessoais, civis, de contato ou sacramentais do fiel/clérigo (como telefone, data de nascimento, comunidade/igreja, batismo, primeira comunhão, crisma ou matrimônio) na API de usuários ou na tela de gerenciamento de usuários. Tais atributos pertencem aos Bounded Contexts de `fiel`, `clero` ou `sacramento`.

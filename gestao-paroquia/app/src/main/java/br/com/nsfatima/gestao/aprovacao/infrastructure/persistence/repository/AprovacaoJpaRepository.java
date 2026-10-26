@@ -107,6 +107,27 @@ public interface AprovacaoJpaRepository extends JpaRepository<AprovacaoEntity, U
             Pageable pageable);
 
     /**
+     * Mesma listagem de {@link #findByFilter}, restringível ao solicitante: com {@code solicitanteId} informado
+     * só devolve as solicitações abertas por ele (visão de quem propõe, mas não decide).
+     *
+     * @param eventoId identificador do evento a filtrar; {@code null} não filtra
+     * @param status status a filtrar; {@code null} não filtra
+     * @param solicitanteId identificador do solicitante; {@code null} não restringe
+     * @param pageable parâmetros de paginação/ordenação
+     * @return página de aprovações que satisfazem os filtros
+     */
+    @Query("SELECT a FROM AprovacaoEntity a WHERE " +
+            "a.aprovacaoPaiId IS NULL AND " +
+            "(:eventoId IS NULL OR a.eventoId = :eventoId) AND " +
+            "(:status IS NULL OR a.status = :status) AND " +
+            "(:solicitanteId IS NULL OR a.solicitanteId = :solicitanteId)")
+    Page<AprovacaoEntity> findByFilterDoSolicitante(
+            @Param("eventoId") UUID eventoId,
+            @Param("status") AprovacaoStatus status,
+            @Param("solicitanteId") String solicitanteId,
+            Pageable pageable);
+
+    /**
      * Conta as aprovações de evento em um status, agrupadas por tipo de solicitação — o
      * detalhamento de pendências de homologação do dashboard. Cada linha é
      * {@code [tipoSolicitacao (String), quantidade (long)]}.
