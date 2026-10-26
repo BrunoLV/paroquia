@@ -199,6 +199,7 @@ class PainelConsultaJpaRepositoryTest {
     void fieisComEscopoEEngajamentoExigemFielAtivo() {
         UUID pastoral = pastoral("Pastoral");
         UUID outra = pastoral("Outra");
+        long engajadosAntes = membroRepository.contarFieisDistintosEngajados(ENGAJAMENTO);
         UUID ativo = fiel(true);
         UUID inativo = fiel(false);
         vinculo(ativo, pastoral, TipoOrganizacao.PASTORAL);
@@ -211,8 +212,7 @@ class PainelConsultaJpaRepositoryTest {
                 .isEqualTo(1L);
         assertThat(painel.contarFieisNovosDaOrganizacao(pastoral, Instant.parse("2999-01-01T00:00:00Z")))
                 .isZero();
-        long engajadosGlobal = membroRepository.contarFieisDistintosEngajados(ENGAJAMENTO);
-        assertThat(engajadosGlobal).isEqualTo(1L);
+        assertThat(membroRepository.contarFieisDistintosEngajados(ENGAJAMENTO)).isEqualTo(engajadosAntes + 1);
     }
 
     private void reserva(String tipo, UUID item, UUID org, String status, Instant inicio, Instant fim) {
