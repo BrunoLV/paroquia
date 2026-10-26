@@ -3,8 +3,6 @@ package br.com.nsfatima.gestao.membro.application.usecase;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorResponse;
@@ -25,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -40,7 +39,6 @@ public class PromoverACoordenadorUseCase {
     private final OrganizacaoJpaRepository organizacaoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final CriarUsuarioUseCase createUsuarioUseCase;
-    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private final MembroGrupoMapper membroGrupoMapper;
 
     public PromoverACoordenadorUseCase(
@@ -49,14 +47,12 @@ public class PromoverACoordenadorUseCase {
             OrganizacaoJpaRepository organizacaoRepository,
             UsuarioJpaRepository usuarioRepository,
             CriarUsuarioUseCase createUsuarioUseCase,
-            PapelGlobalAuthorizationService papelGlobalAuthorizationService,
             MembroGrupoMapper membroGrupoMapper) {
         this.membroRepository = membroRepository;
         this.fielRepository = fielRepository;
         this.organizacaoRepository = organizacaoRepository;
         this.usuarioRepository = usuarioRepository;
         this.createUsuarioUseCase = createUsuarioUseCase;
-        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
         this.membroGrupoMapper = membroGrupoMapper;
     }
 
@@ -93,6 +89,10 @@ public class PromoverACoordenadorUseCase {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Fiel não é membro ativo desta organização: " + request.fielId()));
 
+        if (papel.isCoordenacao()) {
+            exigirSemOutroCoordenadorAtivo(request.organizacaoId(), membro);
+        }
+
         MembroGrupo membroAgregado = membroGrupoMapper.toDomain(membro);
         List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(papel.isCoordenacao(),
                 organizacao.getSetorPastoral(), membroAgregado.getIdoneidade(), LocalDate.now());
@@ -115,6 +115,21 @@ public class PromoverACoordenadorUseCase {
     }
 
     /**
+     * Limite de coordenação: a organização (e a igreja de contexto do vínculo) tem um único coordenador ativo;
+     * trocá-lo passa pelo mandato de coordenação ou pelo vínculo administrativo, que rebaixa o anterior.
+     */
+    private void exigirSemOutroCoordenadorAtivo(UUID organizacaoId, MembroGrupoEntity membro) {
+        boolean jaExiste = membroRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId).stream()
+                .filter(m -> !m.getId().equals(membro.getId()))
+                .filter(m -> Objects.equals(m.getIgrejaVinculoId(), membro.getIgrejaVinculoId()))
+                .anyMatch(m -> PapelOrganizacional.fromStoredValue(m.getPapel()) == PapelOrganizacional.COORDENADOR);
+        if (jaExiste) {
+            throw new IllegalArgumentException("A organização já possui coordenador ativo; "
+                    + "encerre ou substitua a coordenação atual antes de promover outro Fiel.");
+        }
+    }
+
+    /**
      * Restringe a promoção/nomeação de coordenador à provisão canônica do Pároco.
      */
     private void requireGlobalOuMesaCpp() {
@@ -130,16 +145,7 @@ public class PromoverACoordenadorUseCase {
                         || "PAROCO".equals(a.getAuthority())
                         || "ROLE_BISPO_DIOCESANO".equals(a.getAuthority())
                         || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority()));
-        if (autorizado) {
-            return;
-        }
-
-        boolean isAdminOnly = auth.getAuthorities().stream()
-                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority())
-                        || "ROLE_GLOBAL_ADMIN".equals(a.getAuthority())
-                        || "ADMIN".equals(a.getAuthority()));
-        UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
-        if (isAdminOnly || actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)) {
+        if (!autorizado) {
             throw new AccessDeniedException(
                     "Apenas o Pároco possui provisão canônica para promover um Fiel a coordenador");
         }
