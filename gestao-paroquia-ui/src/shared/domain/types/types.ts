@@ -1123,7 +1123,6 @@ export interface CriarReservaPayload {
   bufferMinutos?: number;
   descricao: string;
   pastoralMovimentoId: string;
-  eventoId?: string | null;
 }
 
 export interface CriarReservaRecorrentePayload {
@@ -1134,7 +1133,6 @@ export interface CriarReservaRecorrentePayload {
   bufferMinutos?: number;
   descricao: string;
   pastoralMovimentoId: string;
-  eventoId?: string | null;
   tipoRecorrencia: 'SEMANAL' | 'QUINZENAL' | 'MENSAL';
   quantidadeOcorrencias: number;
 }

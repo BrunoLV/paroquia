@@ -7,6 +7,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import OutboxIcon from '@mui/icons-material/Outbox';
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 import BlockIcon from '@mui/icons-material/Block';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import BuildIcon from '@mui/icons-material/Build';
@@ -41,6 +42,9 @@ const identificarTurno = (inicioIso?: string, fimIso?: string, descricao?: strin
   }
 };
 
+/** O servidor só aceita finalizar o uso de local depois de iniciado (RN-RES-06). */
+const usoJaIniciado = (reserva: ReservaDetalhe): boolean => new Date(reserva.dataHoraInicio).getTime() <= Date.now();
+
 interface ReservasTableProps {
   reservas: ReservaDetalhe[];
   podeAprovar: boolean;
@@ -50,6 +54,7 @@ interface ReservasTableProps {
   onCancelar: (reserva: ReservaDetalhe) => void;
   onRetirar: (reserva: ReservaDetalhe) => void;
   onDevolver: (reserva: ReservaDetalhe) => void;
+  onFinalizarUso: (reserva: ReservaDetalhe) => void;
   page: number;
   rowsPerPage: number;
   onPageChange: (newPage: number) => void;
@@ -65,6 +70,7 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
   onCancelar,
   onRetirar,
   onDevolver,
+  onFinalizarUso,
   page,
   rowsPerPage,
   onPageChange,
@@ -82,6 +88,9 @@ export const ReservasTable: React.FC<ReservasTableProps> = ({
     ] : []),
     ...(reserva.status === 'RETIRADO' && reserva.tipoItem === 'ATIVO' ? [
       { label: 'Registrar Devolução', icon: <AssignmentReturnIcon fontSize="small" color="primary" />, onClick: () => onDevolver(reserva) },
+    ] : []),
+    ...(reserva.status === 'CONFIRMADA' && reserva.tipoItem === 'LOCAL' && usoJaIniciado(reserva) ? [
+      { label: 'Finalizar Uso', icon: <TaskAltIcon fontSize="small" color="success" />, onClick: () => onFinalizarUso(reserva) },
     ] : []),
     ...(['PENDENTE', 'CONFIRMADA'].includes(reserva.status) ? [
       { label: 'Cancelar Reserva', icon: <BlockIcon fontSize="small" color="error" />, onClick: () => onCancelar(reserva) },
