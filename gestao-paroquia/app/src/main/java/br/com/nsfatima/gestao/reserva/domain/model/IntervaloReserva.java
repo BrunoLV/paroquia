@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * Value Object representativo da janela temporal de uma reserva e sua respectiva margem logística (buffer).
- * Invariante: término deve ser estritamente posterior ao início e buffer não negativo.
+ * Invariante: término estritamente posterior ao início e buffer entre 0 e {@link #BUFFER_MAXIMO_MINUTOS}.
  */
 public record IntervaloReserva(
         Instant dataHoraInicio,
@@ -16,6 +16,12 @@ public record IntervaloReserva(
 ) implements Serializable {
 
     public static final int BUFFER_PADRAO_MINUTOS = 30;
+
+    /**
+     * Teto da margem logística. Limita o alcance de uma reserva existente sobre a agenda vizinha e é o que
+     * permite à consulta de conflitos usar uma janela fixa de busca sem perder colisões.
+     */
+    public static final int BUFFER_MAXIMO_MINUTOS = 240;
 
     public IntervaloReserva {
         Objects.requireNonNull(dataHoraInicio, "Data/hora de início da reserva é obrigatória.");
@@ -26,6 +32,10 @@ public record IntervaloReserva(
         }
         if (bufferMinutos < 0) {
             throw new IllegalArgumentException("O buffer de minutos não pode ser negativo.");
+        }
+        if (bufferMinutos > BUFFER_MAXIMO_MINUTOS) {
+            throw new IllegalArgumentException(
+                    "O buffer de minutos não pode exceder " + BUFFER_MAXIMO_MINUTOS + " minutos.");
         }
     }
 
