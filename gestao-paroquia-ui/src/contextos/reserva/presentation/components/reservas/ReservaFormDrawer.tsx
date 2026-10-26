@@ -18,7 +18,6 @@ interface ReservaFormDrawerProps {
   locais: Array<{ id: string; nome: string; bufferPadraoMinutos?: number }>;
   ativos: Array<{ id: string; nome: string; codigoTombamento?: string }>;
   pastorais: Array<{ id: string; nome: string }>;
-  eventos?: Array<{ id: string; titulo: string }>;
   preselectedTipo?: TipoItemReserva;
   preselectedItemId?: string;
 }
@@ -31,7 +30,6 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
   locais,
   ativos,
   pastorais,
-  eventos = [],
   preselectedTipo,
   preselectedItemId,
 }) => {
@@ -52,7 +50,6 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
       bufferMinutos: 0,
       descricao: '',
       pastoralMovimentoId: '',
-      eventoId: null,
       isRecorrente: false,
       tipoRecorrencia: 'SEMANAL',
       quantidadeOcorrencias: 4,
@@ -264,29 +261,6 @@ export const ReservaFormDrawer: React.FC<ReservaFormDrawerProps> = ({
                     {errors.pastoralMovimentoId && (
                       <FormHelperText>{errors.pastoralMovimentoId.message}</FormHelperText>
                     )}
-                  </FormControl>
-                )}
-              />
-
-              <Controller
-                name="eventoId"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth size="small">
-
-                    <SearchableSelect
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value || null)}
-                      label="Vincular a Evento do Calendário (Opcional)"
-                    >
-                      <MenuItem value="">Nenhum (Reserva Avulsa)</MenuItem>
-                      {eventos.map((ev) => (
-                        <MenuItem key={ev.id} value={ev.id}>
-                          {ev.titulo}
-                        </MenuItem>
-                      ))}
-                    </SearchableSelect>
                   </FormControl>
                 )}
               />

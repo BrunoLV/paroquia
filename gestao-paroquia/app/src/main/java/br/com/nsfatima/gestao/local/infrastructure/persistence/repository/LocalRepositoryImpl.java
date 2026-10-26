@@ -9,6 +9,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Orga
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import br.com.nsfatima.gestao.reserva.infrastructure.persistence.repository.ReservaJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Adapta a porta de domínio {@link LocalRepository} para a infraestrutura JPA, convertendo entre o
  * agregado de domínio {@link Local} e a entidade {@link LocalEntity}, e resolvendo dependências
- * cruzadas de outros contextos (Evento, Organização) apenas através de seus repositórios JPA — nunca
+ * cruzadas de outros contextos (Evento, Reserva, Organização) apenas através de seus repositórios JPA — nunca
  * expondo as entidades desses contextos ao domínio de {@code local}.
  */
 @Repository
@@ -28,6 +29,7 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     private final LocalJpaRepository localJpaRepository;
     private final EventoJpaRepository eventoJpaRepository;
+    private final ReservaJpaRepository reservaJpaRepository;
     private final OrganizacaoJpaRepository organizacaoJpaRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository;
 
@@ -37,15 +39,18 @@ public class LocalRepositoryImpl implements LocalRepository {
      *
      * @param localJpaRepository            repositório JPA de Locais
      * @param eventoJpaRepository           repositório JPA de Eventos, usado para checar uso de um local
+     * @param reservaJpaRepository          repositório JPA de Reservas, usado para checar reservas futuras
      * @param organizacaoJpaRepository   repositório JPA de Grupos/Pastorais
      * @param unidadeTerritorialJpaRepository repositório JPA de Matriz/Comunidades vinculadas
      */
     public LocalRepositoryImpl(LocalJpaRepository localJpaRepository,
                                 EventoJpaRepository eventoJpaRepository,
+                                ReservaJpaRepository reservaJpaRepository,
                                 OrganizacaoJpaRepository organizacaoJpaRepository,
                                 UnidadeTerritorialJpaRepository unidadeTerritorialJpaRepository) {
         this.localJpaRepository = localJpaRepository;
         this.eventoJpaRepository = eventoJpaRepository;
+        this.reservaJpaRepository = reservaJpaRepository;
         this.organizacaoJpaRepository = organizacaoJpaRepository;
         this.unidadeTerritorialJpaRepository = unidadeTerritorialJpaRepository;
     }
@@ -86,8 +91,8 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public void delete(UUID id) {
-        localJpaRepository.deleteById(id);
+    public boolean hasFutureReservas(UUID id) {
+        return reservaJpaRepository.existeReservaAtivaDeLocalAte(id, Instant.now());
     }
 
     private LocalEntity toEntity(Local domain) {

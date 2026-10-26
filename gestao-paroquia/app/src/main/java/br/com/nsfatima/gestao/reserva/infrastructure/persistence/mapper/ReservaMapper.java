@@ -8,6 +8,11 @@ import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.reserva.infrastructure.persistence.entity.ReservaEntity;
 import org.springframework.stereotype.Component;
 
+/**
+ * Tradutor entre a entidade JPA e o agregado Reserva. Na leitura, a margem logística de reservas legadas, gravadas
+ * antes do teto de {@link IntervaloReserva#BUFFER_MAXIMO_MINUTOS}, é limitada a esse teto em vez de impedir o
+ * carregamento da reserva.
+ */
 @Component
 public class ReservaMapper {
 
@@ -19,7 +24,7 @@ public class ReservaMapper {
         IntervaloReserva intervalo = new IntervaloReserva(
                 entity.getDataHoraInicio(),
                 entity.getDataHoraFim(),
-                entity.getBufferMinutos()
+                Math.min(entity.getBufferMinutos(), IntervaloReserva.BUFFER_MAXIMO_MINUTOS)
         );
 
         return new Reserva(

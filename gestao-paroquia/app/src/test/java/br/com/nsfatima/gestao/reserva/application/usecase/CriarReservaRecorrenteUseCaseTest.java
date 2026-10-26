@@ -1,55 +1,62 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService;
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService.PedidoReserva;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.ComandoCriarRecorrente;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.OcorrenciaHorario;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.ResultadoRecorrencia;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException.ConflitoDetalhe;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
-import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
-import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
-import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService.UsuarioActor;
-import br.com.nsfatima.gestao.reserva.domain.service.ReservaConflitoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CriarReservaRecorrenteUseCaseTest {
 
-    @Mock private ReservaRepository reservaRepository;
-    @Mock private ReservaConflitoService conflitoService;
+    @Mock private ReservaCriacaoService criacaoService;
     @Mock private ReservaAuthorizationService authorizationService;
 
     private CriarReservaRecorrenteUseCase useCase() {
-        return new CriarReservaRecorrenteUseCase(reservaRepository, conflitoService, authorizationService);
+        return new CriarReservaRecorrenteUseCase(criacaoService, authorizationService);
     }
 
     private UsuarioActor membroDaOrg(UUID orgId) {
         return new UsuarioActor(UUID.randomUUID(), "solicitante", List.of("ROLE_FIEL"), List.of(), List.of(orgId));
     }
 
-    private OcorrenciaHorario ocorrencia() {
-        Instant inicio = Instant.now().plus(1, ChronoUnit.DAYS);
+    private OcorrenciaHorario ocorrencia(int diasAFrente) {
+        Instant inicio = Instant.now().plus(diasAFrente, ChronoUnit.DAYS);
         return new OcorrenciaHorario(inicio, inicio.plus(1, ChronoUnit.HOURS));
+    }
+
+    private ConflitoDetalhe conflito(UUID itemId) {
+        return new ConflitoDetalhe(itemId, "Local", TipoItemReserva.LOCAL, Instant.now(), Instant.now(),
+                UUID.randomUUID(), "Responsável", "outra");
     }
 
     @Test
@@ -60,7 +67,7 @@ class CriarReservaRecorrenteUseCaseTest {
                 UUID.randomUUID(), "x", List.of("ROLE_FIEL"), List.of(), List.of());
         ComandoCriarRecorrente comando = new ComandoCriarRecorrente(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Local", 15, "desc", orgId,
-                List.of(ocorrencia()), false);
+                List.of(ocorrencia(1)), false);
 
         assertThatThrownBy(() -> useCase().executar(comando, solicitante))
                 .isInstanceOf(ReservaNaoAutorizadaException.class);
@@ -78,23 +85,30 @@ class CriarReservaRecorrenteUseCaseTest {
     }
 
     @Test
-    @DisplayName("Deve criar todas as reservas quando não há conflitos")
+    @DisplayName("Deve registrar todas as ocorrências, no mesmo grupo e com o status da alçada, quando não há conflitos")
     void deveCriarReservasSemConflitos() {
         UUID orgId = UUID.randomUUID();
         UsuarioActor solicitante = membroDaOrg(orgId);
         ComandoCriarRecorrente comando = new ComandoCriarRecorrente(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Local", null, "desc", orgId,
-                List.of(ocorrencia(), ocorrencia()), false);
+                List.of(ocorrencia(1), ocorrencia(8)), false);
 
-        when(conflitoService.buscarColisoesComLock(any(), any(), any(), any())).thenReturn(List.of());
+        when(criacaoService.conflitosDeAgenda(any())).thenReturn(List.of());
+        when(criacaoService.janelaDeManutencao(any())).thenReturn(Optional.empty());
         when(authorizationService.determinarStatusInicial(solicitante, orgId)).thenReturn(StatusReserva.PENDENTE);
-        when(reservaRepository.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(criacaoService.registrar(any())).thenReturn(mock(Reserva.class));
 
         ResultadoRecorrencia resultado = useCase().executar(comando, solicitante);
 
         assertThat(resultado.reservasCriadas()).hasSize(2);
         assertThat(resultado.conflitosIdentificados()).isEmpty();
-        assertThat(resultado.grupoRecorrenciaId()).isNotNull();
+        ArgumentCaptor<PedidoReserva> pedidos = ArgumentCaptor.forClass(PedidoReserva.class);
+        verify(criacaoService, times(2)).registrar(pedidos.capture());
+        assertThat(pedidos.getAllValues()).allSatisfy(p -> {
+            assertThat(p.grupoRecorrenciaId()).isEqualTo(resultado.grupoRecorrenciaId());
+            assertThat(p.statusInicial()).isEqualTo(StatusReserva.PENDENTE);
+            assertThat(p.eventoId()).isNull();
+        });
     }
 
     @Test
@@ -104,20 +118,34 @@ class CriarReservaRecorrenteUseCaseTest {
         UsuarioActor solicitante = membroDaOrg(orgId);
         ComandoCriarRecorrente comando = new ComandoCriarRecorrente(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Local", 15, "desc", orgId,
-                List.of(ocorrencia()), false);
+                List.of(ocorrencia(1)), false);
 
-        Instant inicioChoque = Instant.now().plus(1, ChronoUnit.DAYS);
-        IntervaloReserva intervaloChoque =
-                new IntervaloReserva(inicioChoque, inicioChoque.plus(1, ChronoUnit.HOURS), 0);
-        Reserva choque = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, comando.itemId(), intervaloChoque,
-                "outra", UUID.randomUUID(), orgId, null, null, StatusReserva.CONFIRMADA, Instant.now());
-
-        when(conflitoService.buscarColisoesComLock(any(), any(), any(), any())).thenReturn(List.of(choque));
+        when(criacaoService.conflitosDeAgenda(any())).thenReturn(List.of(conflito(comando.itemId())));
+        when(criacaoService.janelaDeManutencao(any())).thenReturn(Optional.empty());
         when(authorizationService.determinarStatusInicial(solicitante, orgId)).thenReturn(StatusReserva.PENDENTE);
 
         assertThatThrownBy(() -> useCase().executar(comando, solicitante))
                 .isInstanceOf(ReservaConflitoException.class);
-        verify(reservaRepository, never()).saveAll(any());
+        verify(criacaoService, never()).registrar(any());
+    }
+
+    @Test
+    @DisplayName("Ocorrência em período de manutenção do ativo conta como impedimento da série")
+    void manutencaoImpedeOcorrencia() {
+        UUID orgId = UUID.randomUUID();
+        UsuarioActor solicitante = membroDaOrg(orgId);
+        ComandoCriarRecorrente comando = new ComandoCriarRecorrente(
+                TipoItemReserva.ATIVO, UUID.randomUUID(), "Projetor", 15, "desc", orgId,
+                List.of(ocorrencia(1)), true);
+
+        when(criacaoService.conflitosDeAgenda(any())).thenReturn(List.of());
+        when(criacaoService.janelaDeManutencao(any())).thenReturn(Optional.of(conflito(comando.itemId())));
+        when(authorizationService.determinarStatusInicial(solicitante, orgId)).thenReturn(StatusReserva.CONFIRMADA);
+
+        ResultadoRecorrencia resultado = useCase().executar(comando, solicitante);
+
+        assertThat(resultado.reservasCriadas()).isEmpty();
+        assertThat(resultado.conflitosIdentificados()).hasSize(1);
     }
 
     @Test
@@ -128,19 +156,14 @@ class CriarReservaRecorrenteUseCaseTest {
         UUID itemId = UUID.randomUUID();
         ComandoCriarRecorrente comando = new ComandoCriarRecorrente(
                 TipoItemReserva.LOCAL, itemId, null, 15, "desc", orgId,
-                List.of(ocorrencia(), ocorrencia()), true);
+                List.of(ocorrencia(1), ocorrencia(8)), true);
 
-        Instant inicioChoque = Instant.now().plus(1, ChronoUnit.DAYS);
-        IntervaloReserva intervaloChoque =
-                new IntervaloReserva(inicioChoque, inicioChoque.plus(1, ChronoUnit.HOURS), 0);
-        Reserva choque = Reserva.criar(ReservaId.gerar(), TipoItemReserva.LOCAL, itemId, intervaloChoque,
-                "outra", UUID.randomUUID(), orgId, null, null, StatusReserva.CONFIRMADA, Instant.now());
-
-        when(conflitoService.buscarColisoesComLock(any(), any(), any(), any()))
-                .thenReturn(List.of(choque))
+        when(criacaoService.conflitosDeAgenda(any()))
+                .thenReturn(List.of(conflito(itemId)))
                 .thenReturn(List.of());
+        when(criacaoService.janelaDeManutencao(any())).thenReturn(Optional.empty());
         when(authorizationService.determinarStatusInicial(solicitante, orgId)).thenReturn(StatusReserva.CONFIRMADA);
-        when(reservaRepository.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(criacaoService.registrar(any())).thenReturn(mock(Reserva.class));
 
         ResultadoRecorrencia resultado = useCase().executar(comando, solicitante);
 

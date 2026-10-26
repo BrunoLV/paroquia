@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaTransicaoInvalidaException;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
@@ -96,6 +97,20 @@ public class ReservaExceptionHandler extends BaseExceptionHandler {
                 ex.getMessage(),
                 List.of(new ValidationErrorItem(
                         ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "operacao", ex.getMessage(), null))
+        );
+    }
+
+    /**
+     * Trata transições de estado ilegais (cancelar bem retirado, finalizar reserva não confirmada etc.).
+     */
+    @ExceptionHandler(ReservaTransicaoInvalidaException.class)
+    public ResponseEntity<ValidationErrorResponse> handleTransicaoInvalida(ReservaTransicaoInvalidaException ex) {
+        return buildValidation(
+                HttpStatus.BAD_REQUEST,
+                ErrorCodes.DOMAIN_RULE_VIOLATION,
+                ex.getMessage(),
+                List.of(new ValidationErrorItem(
+                        ErrorCodes.DOMAIN_RULE_VIOLATION.name(), "status", ex.getMessage(), null))
         );
     }
 }

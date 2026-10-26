@@ -113,10 +113,33 @@ class LocalServiceTest {
         assertTrue(ex.getMessage().contains("eventos futuros"));
     }
 
+    @Test
+    void naoDevePermitirExcluirLocalComReservasFuturas() {
+        UUID id = UUID.randomUUID();
+        localRepository.save(new Local(id, "Salão", "SALAO", EnderecoLocal.vazio(), 150, "Som", true, null));
+        localRepository.setFutureReservas(id, true);
+
+        LocalNegocioException ex = assertThrows(LocalNegocioException.class, () -> localService.excluir(id));
+        assertTrue(ex.getMessage().contains("reservas"));
+        assertTrue(localRepository.findById(id).orElseThrow().getDeletedAt() == null);
+    }
+
+    @Test
+    void naoDevePermitirInativarLocalComReservasFuturas() {
+        UUID id = UUID.randomUUID();
+        localRepository.save(new Local(id, "Salão", "SALAO", EnderecoLocal.vazio(), 150, "Som", true, null));
+        localRepository.setFutureReservas(id, true);
+
+        LocalNegocioException ex = assertThrows(LocalNegocioException.class,
+                () -> localService.atualizar(id, "Salão", "SALAO", EnderecoLocal.vazio(), 150, "Som", false, null));
+        assertTrue(ex.getMessage().contains("reservas"));
+    }
+
     private static class FakeLocalRepository implements LocalRepository {
         private final List<Local> storage = new ArrayList<>();
         private final List<UUID> inUseIds = new ArrayList<>();
         private final List<UUID> futureEventsIds = new ArrayList<>();
+        private final List<UUID> futureReservasIds = new ArrayList<>();
 
         @Override
         public void save(Local local) {
@@ -152,8 +175,16 @@ class LocalServiceTest {
         }
 
         @Override
-        public void delete(UUID id) {
-            storage.removeIf(l -> l.getId().equals(id));
+        public boolean hasFutureReservas(UUID id) {
+            return futureReservasIds.contains(id);
+        }
+
+        public void setFutureReservas(UUID id, boolean hasFutureReservas) {
+            if (hasFutureReservas) {
+                futureReservasIds.add(id);
+            } else {
+                futureReservasIds.remove(id);
+            }
         }
 
         public void setFutureEvents(UUID id, boolean hasFutureEvents) {

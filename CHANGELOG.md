@@ -8,6 +8,9 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Adicionado
+- `PATCH /api/v1/reservas/{id}/finalizar` e ação "Finalizar Uso" na tela de reservas (RN-RES-06).
+
 ### Segurança / LGPD
 - **Segredos obrigatórios:** `APP_CRYPTO_KEY` e `APP_CONSENT_SECRET` (>= 32 caracteres) deixam de ter valor padrão; a API aborta o boot sem eles. Perfil `dev` (`application-dev.yml`, ativado por `./manage.sh dev`) traz valores explícitos de desenvolvimento.
 - **Login e reset de senha:** limite de tentativas por IP + usuário (5 falhas/15 min no login; 3 pedidos/15 min no reset) com resposta 429 e `Retry-After`.
@@ -25,6 +28,10 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **DSAR e incidentes:** máquinas de estado, protocolo `DPO-AAAAMMDD-XXXXXXXXXXXX`, prazos de 15 dias e de 3 dias úteis sinalizados; `IncidenteSeguranca` de domínio em uso.
 - **Pedidos de OTP atômicos** (advisory lock por titular), **recifragem CBC→GCM** na subida (fiéis, dependentes, clérigos e DPO), **feriados nacionais** no prazo de 3 dias úteis do incidente e portal de consentimento sem revelar o e-mail mascarado (anti-enumeração).
 - **Migrações:** V040 (expansão), V041 (migração Java de dados: cifra e rehash, idempotente) e V042 (gatilho append-only).
+- **Reserva e Local:** retirada e devolução de ativo restritas a solicitante, coordenador e administração; `ReservaSecurityAdapter` nega acesso (fail-closed) sem usuário autenticado em vez de assumir ADMIN; buffer legado acima de 240 min é limitado na leitura.
+
+### Modificado
+- **Docker:** compose sem credenciais padrão (`.env` obrigatório, `${VAR:?}`), portas de infraestrutura em `127.0.0.1`, `db-seeder` e `ui-dev` apenas no perfil `dev`; `Dockerfile.ui` agora gera build estático servido por nginx sem privilégios (alvo `dev` separado); Loki com retenção de 7 dias; Prometheus autenticado por token; comentário "Spring Boot 3" corrigido. `DOCKER.md` e `docs/guide/docker.md` atualizados.
 
 ### Corrigido
 - **Autorização e escalonamento de privilégios (backend):**
@@ -37,9 +44,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - `membro`/`organizacao`: vice-coordenação (secretário de grupo) passa a exigir idoneidade (RN-MEM-04) na promoção e no vínculo administrativo e deixa de ser atribuível em `/membros`; homologar, vetar e encerrar mandato de coordenação é só do Pároco (RN-ORG-05), o Bispo apenas propõe.
   - `fiel`: auditoria de relacionamento familiar não falha mais quando a origem não tem unidade territorial (NPE apontado pelo SpotBugs).
   - `fiel`: consulta por papel (completa, contato do grupo ou somente id e nome) e papéis globais não são mais limitados pela organização do vínculo.
-
-### Modificado
-- **Docker:** compose sem credenciais padrão (`.env` obrigatório, `${VAR:?}`), portas de infraestrutura em `127.0.0.1`, `db-seeder` e `ui-dev` apenas no perfil `dev`; `Dockerfile.ui` agora gera build estático servido por nginx sem privilégios (alvo `dev` separado); Loki com retenção de 7 dias; Prometheus autenticado por token; comentário "Spring Boot 3" corrigido. `DOCKER.md` e `docs/guide/docker.md` atualizados.
+- **Reserva e Local (consistência):**
+  - `POST /api/v1/reservas` não aceita mais `eventoId` nem `grupoRecorrenciaId`: qualquer solicitante se autoconfirmava informando um evento. Esses vínculos só nascem pela integração com eventos e pela série recorrente.
+  - Dupla reserva: a criação passa a bloquear a linha do local/ativo antes de consultar conflitos (teste de concorrência com Testcontainers). A janela de busca deriva do buffer máximo (240 min, agora imposto pelo `IntervaloReserva`) em vez de ±4h fixas.
+  - `ReservaCriacaoService` único para pedido avulso, série recorrente e eventos: valida existência/atividade/`reservavel` do item, conflito, janela de manutenção do ativo e publica `RESERVADO`. A integração com eventos deixou de gerar `UUID` aleatório para solicitante, operador e pastoral (falha de imediato) e a cascata não tenta mais cancelar reservas retiradas ou finalizadas.
+  - Reserva `RETIRADO` não pode ser cancelada; transições de estado ilegais respondem 400 (antes 500).
+  - Expiração de pendentes: uma transação por reserva, sem `catch (Exception ignored)`, e pedido feito com menos de 48 h de antecedência só expira no início.
+  - Corrida manutenção × reserva: `EnviarAtivoParaManutencao` bloqueia a linha do ativo, a mesma tomada na criação de reservas.
+  - Local: inativação/exclusão consideram reservas em aberto; removida a remoção física (`LocalRepository.delete`).
 
 ---
 

@@ -7,13 +7,15 @@ export const reservaBaseSchema = z.object({
   itemId: z.string().uuid('Selecione um item válido.'),
   dataHoraInicio: z.string().min(1, 'Data e hora de início são obrigatórias.'),
   dataHoraFim: z.string().min(1, 'Data e hora de término são obrigatórias.'),
-  bufferMinutos: z.number().min(0, 'Margem de carência não pode ser negativa.'),
+  bufferMinutos: z
+    .number()
+    .min(0, 'Margem de carência não pode ser negativa.')
+    .max(240, 'Margem de carência não pode exceder 240 minutos.'),
   descricao: z
     .string()
     .trim()
     .min(3, 'Finalidade da reserva deve conter pelo menos 3 caracteres.'),
   pastoralMovimentoId: z.string().uuid('Selecione a Pastoral ou Movimento solicitante.'),
-  eventoId: z.string().uuid().nullable().optional(),
   isRecorrente: z.boolean(),
   tipoRecorrencia: z.enum(['SEMANAL', 'QUINZENAL', 'MENSAL']).optional(),
   quantidadeOcorrencias: z.number().min(2).max(52).optional(),

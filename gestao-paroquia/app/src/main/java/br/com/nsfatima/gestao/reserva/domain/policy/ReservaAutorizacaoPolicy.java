@@ -26,4 +26,16 @@ public interface ReservaAutorizacaoPolicy {
      * Valida se o operador pode cancelar a reserva conforme a alçada de cada perfil.
      */
     void assertAutorizacaoCancelamento(UsuarioActor operador, Reserva reserva, Instant agora);
+
+    /**
+     * Valida se o operador pode encerrar o uso de um local reservado: quem tem alçada administrativa, o
+     * coordenador da pastoral ou movimento e o próprio solicitante.
+     */
+    void assertAutorizacaoFinalizacao(UsuarioActor operador, Reserva reserva);
+
+    /**
+     * Valida se o operador pode registrar a retirada ou a devolução de um ativo: quem tem alçada administrativa,
+     * o coordenador da pastoral ou movimento e o próprio solicitante.
+     */
+    void assertAutorizacaoCustodia(UsuarioActor operador, Reserva reserva);
 }

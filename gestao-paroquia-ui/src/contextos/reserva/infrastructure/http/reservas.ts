@@ -67,6 +67,11 @@ export async function registrarDevolucaoAtivo(id: string, payload: DevolverAtivo
   return data;
 }
 
+export async function finalizarUsoLocal(id: string): Promise<ReservaDetalhe> {
+  const { data } = await apiClient.patch<ReservaDetalhe>(`/reservas/${id}/finalizar`);
+  return data;
+}
+
 export async function obterMetricasReservas(): Promise<ReservaMetricas> {
   const { data } = await apiClient.get<ReservaMetricas>('/reservas/metricas');
   return data;

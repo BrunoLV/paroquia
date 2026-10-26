@@ -113,4 +113,18 @@ public interface ReservaJpaRepository
           AND r.dataHoraInicio > :agora
     """)
     boolean existeReservaFuturaImpeditiva(@Param("ativoId") UUID ativoId, @Param("agora") Instant agora);
+
+    /**
+     * Existe reserva pendente ou confirmada do local que ainda não terminou? Impede a inativação e a exclusão
+     * lógica do local.
+     */
+    @Query("""
+        SELECT (COUNT(r) > 0) FROM ReservaEntity r
+        WHERE r.tipoItem = 'LOCAL'
+          AND r.itemId = :localId
+          AND r.deletedAt IS NULL
+          AND r.status IN ('PENDENTE', 'CONFIRMADA')
+          AND r.dataHoraFim > :agora
+    """)
+    boolean existeReservaAtivaDeLocalAte(@Param("localId") UUID localId, @Param("agora") Instant agora);
 }

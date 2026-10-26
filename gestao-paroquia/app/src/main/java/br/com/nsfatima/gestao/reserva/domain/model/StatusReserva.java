@@ -33,6 +33,11 @@ public enum StatusReserva {
         return this != CANCELADA && this != EXPIRADA;
     }
 
+    /** Só reservas ainda não iniciadas fisicamente (pendente ou confirmada) podem ser canceladas. */
+    public boolean admiteCancelamento() {
+        return this == PENDENTE || this == CONFIRMADA;
+    }
+
     public static StatusReserva fromString(String raw) {
         if (raw == null || raw.isBlank()) {
             throw new IllegalArgumentException("O status da reserva não pode ser nulo ou vazio.");

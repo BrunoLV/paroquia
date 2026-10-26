@@ -248,7 +248,7 @@ class ReservaTest {
     void deveFinalizarUsoLocal() {
         Reserva reserva = reservaPendente(TipoItemReserva.LOCAL);
         reserva.aprovar(UUID.randomUUID(), Instant.now());
-        reserva.finalizarUsoLocal(Instant.now());
+        reserva.finalizarUsoLocal(Instant.now().plus(5, ChronoUnit.HOURS));
         assertThat(reserva.getStatus()).isEqualTo(StatusReserva.FINALIZADA);
     }
 

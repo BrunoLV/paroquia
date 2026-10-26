@@ -20,6 +20,13 @@ public interface AtivoPatrimonialRepository {
 
     Optional<AtivoPatrimonial> findById(AtivoPatrimonialId id);
 
+    /**
+     * Como {@link #findById}, mas bloqueia a linha do bem até o fim da transação (exige transação ativa).
+     * Reservas e envio para manutenção disputam este bloqueio, de modo que uma reserva não é criada sobre um
+     * período em que a manutenção está sendo registrada, e vice-versa.
+     */
+    Optional<AtivoPatrimonial> findByIdComBloqueio(AtivoPatrimonialId id);
+
     List<AtivoPatrimonial> findByOrganizacao(UUID organizacaoId);
 
     List<AtivoPatrimonial> findTodos();
