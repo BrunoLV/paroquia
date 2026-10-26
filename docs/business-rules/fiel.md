@@ -35,7 +35,7 @@ Manter o livro de registro pastoral, sacramental e cadastral dos membros da comu
 - Clérigos (padres, diáconos, bispos) e leigos recebem **exatamente o mesmo nível de proteção de privacidade**. Dados civis de clérigos não podem ser expostos publicamente em listagens de pastoral ou governo, ficando restritos a modais de governança/RH autorizados.
 
 ### RN-FIE-03: Unicidade Cadastral e Documento Civil
-- Não existe mais de um fiel com o mesmo CPF: a unicidade é garantida no banco pelo hash do CPF, sem decifrar a base.
+- Não existe mais de um fiel com o mesmo CPF: a unicidade é garantida no banco pelo blind index do CPF (HMAC-SHA256 com chave própria), sem decifrar a base.
 - O brasileiro tem **CPF obrigatório e válido** (dígito verificador); o estrangeiro informa RNE/RNM ou passaporte. O país de origem segue a norma ISO-3166 (três letras).
 
 ### RN-FIE-04: Relacionamentos Familiares
@@ -48,7 +48,7 @@ Manter o livro de registro pastoral, sacramental e cadastral dos membros da comu
 1. **Cadastro Pastoral de Fiel:** registro civil, sacramental e termo de consentimento.
 2. **Relacionamentos Familiares:** vínculo entre fiéis (filiação, tutela e cônjuge).
 3. **Ajuste Cadastral:** o fiel solicita a correção de seus dados por meio de uma solicitação, analisada e aplicada se aceita; uma solicitação já analisada não se analisa de novo.
-4. **Ciclo de Vida:** desativação, reativação e anonimização do cadastro (LGPD), que limpa os dados pessoais em um único ponto.
+4. **Ciclo de Vida:** desativação, reativação e anonimização do cadastro (LGPD), que limpa os dados pessoais em um único ponto: dados civis, blind index do CPF, nascimento, sexo e consentimento, além de eliminar dependentes e vínculos familiares, anonimizar IP e responsável legal na trilha de consentimento e desativar a conta de acesso (ver `lgpd.md`, RN-LGP-06).
 
 ---
 

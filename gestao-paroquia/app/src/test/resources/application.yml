@@ -1,39 +1,32 @@
 spring:
-  datasource:
-    url: jdbc:tc:postgresql:16-alpine:///calendario?TC_DAEMON=true
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      idle-timeout: 10000
-      max-lifetime: 30000
+  main:
+    banner-mode: "off"
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: calendario
+        jdbc:
+          time_zone: UTC
   flyway:
     enabled: true
+    schemas: calendario
+    default-schema: calendario
+    locations: classpath:db/migration
 
 logging:
   level:
-    br.com.nsfatima.calendario.infrastructure.observability: DEBUG
-    org.springframework.security: DEBUG
+    root: WARN
+    br.com.nsfatima.gestao: INFO
 
 app:
   security:
     crypto-key: chave-de-criptografia-exclusiva-para-testes-automatizados
     consent-secret: segredo-de-consentimento-exclusivo-para-testes-automatizados
     metrics-scrape-token: token-de-scrape-exclusivo-para-testes
+    cpf-pepper: pepper-somente-para-testes-automatizados
   paroquia:
     nome: "Paróquia Nossa Senhora de Fátima"
     diocese: "Diocese de São Miguel Paulista"
-    endereco: "Rua Gijoca, 7 - Vila Curuçá Velha - São Paulo/SP"
-    cor-primaria-hex: "#1A237E"
-    cor-secundaria-hex: "#808080"
-    logo-path: "/logo-paroquia.png"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus,metrics
-

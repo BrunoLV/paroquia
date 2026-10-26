@@ -38,8 +38,10 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 ## 3. Regras de Negócio Invariantes
 
 ### RN-LGP-01: Criptografia em Repouso e Blind Indexing (Art. 46)
-- Todos os atributos com dados pessoais civis identificadores (nome civil, CPF, RG, telefones, e-mail, data de nascimento e endereço completo de fiéis e clérigos) são obrigatoriamente cifrados no banco de dados via algoritmo simétrico AES-256 (CBC com PKCS5Padding e IV pseudoaleatório de 16 bytes prefixado).
-- Para permitir validação de unicidade cadastral e consultas exatas sem decifrar a base em lote, o CPF gera um hash irreversível SHA-256 (`cpf_hash`).
+- Todos os atributos com dados pessoais civis identificadores (nome civil, CPF, RG, telefones, e-mail, data de nascimento e endereço completo de fiéis e clérigos), bem como o nome, e-mail e CPF do solicitante de uma requisição ao DPO e o IP e os dados do responsável legal da trilha de consentimento, são obrigatoriamente cifrados no banco de dados via AES-256/GCM (cifra autenticada, IV de 12 bytes aleatório por valor).
+- O valor cifrado é gravado com prefixo de versão de chave (`v1:`), permitindo rotação futura. Registros no formato legado AES-CBC (sem prefixo) continuam legíveis e são regravados em GCM na subida da aplicação por rotina idempotente; uma falha de decifragem (chave divergente, dado adulterado) é erro explícito e nunca devolve o ciphertext como se fosse o valor.
+- Para permitir validação de unicidade cadastral e consultas exatas sem decifrar a base em lote, o CPF gera um blind index `cpf_hash` por HMAC-SHA256 com chave própria (*pepper*, propriedade `app.security.cpf-pepper`, obrigatória e sem valor padrão), distinta da chave de cifragem. Fiéis e clérigos possuem o mesmo índice; a busca pública por CPF jamais decifra a base de clérigos.
+- Migração dos dados existentes (expand & contract): a V040 alarga as colunas, a V041 (Java, idempotente) cifra os dados do DPO/trilha que estavam em claro e recalcula o `cpf_hash` de fiéis (SHA-256 puro para HMAC) e clérigos, e a V042 torna a trilha de consentimento *append-only*.
 
 ### RN-LGP-02: Minimização e Segregação de DTOs (Art. 6º, III)
 - Endpoints de listagem pública ou com escopo de liderança pastoral não expõem documentos civis, filiação ou endereço completo.
@@ -58,12 +60,14 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 ### RN-LGP-06: Fé Pública Canônica e Exceção de Guarda (Art. 16, I)
 - Os assentos dos Livros Paroquiais (Batismo, Crisma, Matrimônio e Ordem) são dotados de fé pública eclesiástica perpétua e constituem patrimônio histórico e canônico da Igreja Católica.
 - A exclusão ou expurgo de cadastro civil de fiel anonimiza seus dados cadastrais pastorais, mas **não acarreta a exclusão física do livro de assento sacramental**. Eventuais correções de dados sacramentais ocorrem exclusivamente através de Averbações Formais lavradas no livro.
+- **Anonimização completa e em paridade (fiel e clérigo):** cinco anos após a inativação, o cadastro é anonimizado: zera nome/nome civil, CPF e seu blind index, RG, documentos, contatos, endereço, data de nascimento, sexo (fiel), carimbo e IP de consentimento e autorizações; elimina os dependentes e desativa os vínculos familiares; anonimiza IP, user-agent e dados do responsável legal na trilha de consentimento (o evento permanece como prova); e desativa a conta de usuário, trocando o nome de usuário por marcador opaco e inutilizando a senha. Para o clérigo permanecem apenas os dados institucionais e canônicos (nome eclesiástico, grau da ordem, ordenações e encargos).
 
 ### RN-LGP-07: Publicidade dos Canais do Encarregado de Dados / DPO (Art. 41)
 - A identidade e os canais de contato oficiais (e-mail institucional e telefone) do Encarregado de Proteção de Dados (DPO) são públicos e acessíveis a todos os titulares de dados, sem exigência de autenticação prévia, visíveis no rodapé e na página institucional do sistema.
 
 ### RN-LGP-08: Notificação Tempestiva de Incidentes de Segurança (Art. 48)
-- Qualquer evento de segurança que comprometa dados pessoais deve ser registrado formalmente pelo DPO ou pela administração paroquial. Incidentes que acarretem risco relevante aos titulares devem ser comunicados à ANPD e aos titulares afetados no prazo de até 3 (três) dias úteis.
+- Qualquer evento de segurança que comprometa dados pessoais deve ser registrado formalmente pelo DPO ou pela administração paroquial. Incidentes que acarretem risco relevante aos titulares devem ser comunicados à ANPD e aos titulares afetados no prazo de até 3 (três) dias úteis, contados da detecção (sábados, domingos e feriados nacionais não contam, incluindo a Sexta-feira da Paixão; feriados estaduais e municipais não são considerados). O registro expõe o prazo e sinaliza vencimento enquanto a ANPD não foi notificada e o incidente não foi encerrado.
+- A data de detecção não pode anteceder a de ocorrência. O status só avança (`EM_ANALISE` → `CONTIDO` → `NOTIFICADO` → `ENCERRADO`, podendo pular etapas inaplicáveis), `NOTIFICADO` exige a notificação à ANPD registrada e `ENCERRADO` é final.
 
 ### RN-LGP-09: PII Zero em Logs
 - É terminantemente proibido imprimir nomes civis, CPFs, e-mails, telefones ou objetos completos de entidades em logs de aplicação (`INFO`, `DEBUG`, `WARN`, `ERROR`). Toda telemetria utiliza identificadores opacos (`UUID`).
@@ -72,11 +76,14 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 - O sistema disponibiliza o Canal Portal de Autoatendimento (`/portal/consentimento`), permitindo que titulares (fiéis ou clérigos cadastrados pela secretaria) concedam ou revoguem seus consentimentos sem a necessidade de criação de usuário/senha ou login formal.
 - A validação de identidade ocorre através de desafio OTP (*One-Time Password*) de 6 dígitos numéricos gerado de forma criptograficamente segura (`SecureRandom`) e enviado exclusivamente ao endereço de e-mail previamente cadastrado na secretaria.
 - Medidas de segurança antiabuso:
-  - Rate limiting estrito: máximo de 3 requisições de código a cada 15 minutos por CPF;
-  - Bloqueio por tentativas inválidas: máximo de 5 tentativas de validação de código;
+  - Rate limiting estrito: máximo de 3 pedidos de código a cada 15 minutos por titular; pedidos excedentes são descartados sem envio; a contagem é atômica (lock por titular no banco), mesmo sob pedidos simultâneos;
+  - Bloqueio por tentativas inválidas: máximo de 3 tentativas por código (o contador é persistido a cada erro); esgotadas, até o código correto é recusado e é preciso pedir novo código;
+  - Anti-enumeração: a resposta ao pedido de código é idêntica para CPF inexistente, titular sem e-mail cadastrado, limite excedido e envio efetuado (inclusive a mensagem exibida na tela, que não mostra o e-mail mascarado), e todos os erros de validação usam a mesma mensagem; o e-mail é enviado de forma assíncrona após o commit;
   - Armazenamento em repouso do código apenas sob hash irreversível SHA-256 (`codigo_hash`);
-  - Tempo de expiração de 10 minutos para o código e token temporário efêmero HMAC-SHA256 válido por 15 minutos após validação.
-- Toda manifestação gera registro na trilha forense imutável `calendario.historico_consentimentos` com IP, User-Agent, canal (`PORTAL`), método de autenticação (`OTP_EMAIL`), versão e hash SHA-256 do termo legal.
+  - Tempo de expiração de 10 minutos para o código e token temporário efêmero HMAC-SHA256 válido por 15 minutos após validação, **de uso único**: o token carrega o identificador do desafio validado, consumido atomicamente na primeira manifestação ou revogação.
+- O envio do código e do comprovante usa a porta `EnviadorEmailConsentimento`: com `app.mail.enabled=true` o adaptador SMTP (`spring.mail.*` e `app.mail.remetente`) envia de fato; por padrão (desenvolvimento/testes) o adaptador não envia. Nem o código nem o endereço de e-mail são registrados em log.
+- Nas manifestações, `termoAceito=false` (revogação) força `usoImagemAutorizado` e `permitirDivulgacaoAniversario` a `false`; o CPF do responsável legal é validado (dígitos verificadores). O IP de origem é o endereço da conexão: `X-Forwarded-For` só é considerado quando o contêiner é configurado atrás de proxy confiável (`server.forward-headers-strategy=native`).
+- Toda manifestação gera registro na trilha forense imutável (*append-only* no banco: DELETE e UPDATE bloqueados por gatilho, salvo a anonimização de PII) `calendario.historico_consentimentos` com IP, User-Agent, canal (`PORTAL`), método de autenticação (`OTP_EMAIL`), versão e hash SHA-256 do termo legal.
 
 ### RN-LGP-11: Salvaguarda Legal e Canônica de Menores (Art. 14, § 1º)
 - Para titulares menores de 18 anos, o tratamento de dados pessoais requer consentimento específico e em destaque fornecido por pelo menos um dos pais ou responsável legal.
@@ -91,8 +98,10 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 - O inventário é disponibilizado para visualização tabular, impressão oficial e exportação eletrônica em JSON interoperável.
 
 ### RN-LGP-14: Canal de Atendimento a Requisições de Titulares / DSAR (Arts. 18 e 19)
-- Disponibilização de canal público para encaminhamento de requisições e dúvidas diretamente ao DPO (`POST /api/v1/publico/dpo/solicitar`), com geração de protocolo público auditável (`DPO-YYYYMMDD-XXXX`).
-- O DPO dispõe de painel para moderação e resposta formal no prazo legal improrrogável de 15 (quinze) dias estabelecido pelo Art. 19, II da LGPD.
+- Disponibilização de canal público para encaminhamento de requisições e dúvidas diretamente ao DPO (`POST /api/v1/publico/dpo/solicitar`), com geração de protocolo público auditável (`DPO-AAAAMMDD-` seguido de 12 caracteres aleatórios; o sufixo longo evita enumeração, pois a consulta por protocolo é pública).
+- A consulta pública por protocolo (`GET /api/v1/publico/dpo/solicitacao/{protocolo}`) e o eco da abertura devolvem nome, e-mail e CPF mascarados; o painel do DPO vê os dados completos.
+- O DPO dispõe de painel para moderação e resposta formal no prazo legal improrrogável de 15 (quinze) dias estabelecido pelo Art. 19, II da LGPD; a solicitação expõe `prazoRespostaUtc`, `prazoVencido` e `diasRestantesPrazo`.
+- Status: `RECEBIDA` → `EM_ANALISE` → (`ATENDIDA` ou `REJEITADA`). A resposta pode levar direto a um estado final; `RECEBIDA` nunca é destino e solicitação concluída não é reaberta nem respondida de novo (novo pedido, novo protocolo). A data de resposta só é gravada na conclusão.
 
 ### RN-LGP-15: Transparência Pública da Política de Privacidade (Art. 9º)
 - A Política de Privacidade e Proteção de Dados é pública em `/politica-privacidade`, contendo identificação e contatos do Controlador e do DPO, rol de finalidades, hipóteses de uso compartilhado estritamente eclesial (Mitra Diocesana e Tribunais Eclesiásticos) e vedação absoluta e expressa de comercialização de dados para fins mercadológicos (Art. 11, § 4º).

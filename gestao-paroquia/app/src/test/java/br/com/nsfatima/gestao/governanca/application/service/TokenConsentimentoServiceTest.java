@@ -33,11 +33,14 @@ class TokenConsentimentoServiceTest {
     @DisplayName("Deve rejeitar token assinado com outro segredo e aceitar o assinado com o segredo configurado")
     void deveRejeitarTokenForjadoComOutroSegredo() {
         UUID titular = UUID.randomUUID();
+        UUID jti = UUID.randomUUID();
         TipoTitularConsentimento tipo = TipoTitularConsentimento.values()[0];
-        String forjado = new TokenConsentimentoService(OUTRO_SEGREDO).gerarToken(tipo, titular);
+        String forjado = new TokenConsentimentoService(OUTRO_SEGREDO).gerarToken(tipo, titular, jti);
         TokenConsentimentoService servico = new TokenConsentimentoService(SEGREDO);
 
         assertThatThrownBy(() -> servico.validarToken(forjado)).isInstanceOf(IllegalArgumentException.class);
-        assertThat(servico.validarToken(servico.gerarToken(tipo, titular)).titularId()).isEqualTo(titular);
+        TokenConsentimentoService.TokenPayload payload = servico.validarToken(servico.gerarToken(tipo, titular, jti));
+        assertThat(payload.titularId()).isEqualTo(titular);
+        assertThat(payload.jti()).isEqualTo(jti);
     }
 }

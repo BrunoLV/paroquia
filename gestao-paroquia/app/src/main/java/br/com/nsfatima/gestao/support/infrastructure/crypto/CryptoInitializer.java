@@ -5,16 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Componente Spring responsável por injetar a chave de criptografia configurada externamente
- * (propriedade {@code app.security.crypto-key}) em {@link CryptoUtils} na inicialização do
- * contexto. Existe porque {@link CryptoUtils} é uma classe utilitária estática (sem estado gerido
- * pelo Spring) e por isso não pode receber a chave via injeção de dependência direta — este
- * componente é a ponte entre a configuração do Spring e o estado estático da classe utilitária.
+ * Componente Spring responsável por inicializar de forma segura a chave mestra de criptografia
+ * simétrica estática em {@link CryptoUtils}.
  *
- * <p>A chave é obrigatória e não tem valor padrão: um fallback público no código-fonte tornaria os
- * dados pessoais cifrados em repouso decifráveis por qualquer pessoa com acesso ao repositório.
- * Ausência ou chave curta derrubam o boot (fail-fast). O perfil {@code dev} e os testes declaram
- * valores explícitos próprios.
+ * <p>A inicialização desacopla a injeção de dependências do Spring da utilização estática do utilitário
+ * criptográfico em JPA Attribute Converters, garantindo que o segredo configurado em propriedades
+ * de ambiente (ex: application.yml ou variáveis de ambiente) esteja devidamente carregado antes de
+ * qualquer operação de persistência ou leitura no banco de dados.
  */
 @Component
 public class CryptoInitializer {
@@ -22,6 +19,9 @@ public class CryptoInitializer {
     static final int TAMANHO_MINIMO_CHAVE = 32;
 
     private final String cryptoKey;
+
+    @Value("${app.security.cpf-pepper}")
+    private String cpfPepper;
 
     public CryptoInitializer(@Value("${app.security.crypto-key:}") String cryptoKey) {
         if (cryptoKey == null || cryptoKey.isBlank() || cryptoKey.length() < TAMANHO_MINIMO_CHAVE) {
@@ -34,10 +34,12 @@ public class CryptoInitializer {
 
     /**
      * Propaga a chave de criptografia configurada para {@link CryptoUtils} logo após a construção
-     * do bean, antes de qualquer operação de cifragem/decifragem.
+     * do bean, antes de qualquer operação de cifragem/decifragem. Também configura o pepper do blind index
+     * de CPF ({@link CpfBlindIndex}), obrigatório e sem valor padrão: sem ele o contexto não sobe.
      */
     @PostConstruct
     public void init() {
         CryptoUtils.setSecretKey(cryptoKey);
+        CpfBlindIndex.setPepper(cpfPepper);
     }
 }

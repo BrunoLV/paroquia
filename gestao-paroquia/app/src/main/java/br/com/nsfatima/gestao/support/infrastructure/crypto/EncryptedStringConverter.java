@@ -12,7 +12,7 @@ import jakarta.persistence.Converter;
 @Converter
 public class EncryptedStringConverter implements AttributeConverter<String, String> {
     /**
-     * Cifra o valor antes de persistir.
+     * Cifra o valor antes de persistir (sempre no formato GCM versionado corrente).
      *
      * @param attribute valor em texto claro a ser cifrado; {@code null} é persistido como {@code null}
      * @return valor cifrado, ou {@code null} se o atributo for nulo
@@ -23,23 +23,21 @@ public class EncryptedStringConverter implements AttributeConverter<String, Stri
     }
 
     /**
-     * Decifra o valor lido do banco. Caso a decifragem falhe, retorna o dado bruto inalterado —
-     * isso garante compatibilidade com registros gravados antes da adoção da cifragem (migração
-     * gradual), tratando-os como texto já em claro.
+     * Decifra o valor lido do banco. Valores com forma de ciphertext ({@link CryptoUtils#pareceCifrado})
+     * são decifrados e, se a decifragem falhar (chave divergente, dado adulterado), a exceção propaga: o
+     * ciphertext jamais é devolvido como se fosse o valor. Valores sem forma de ciphertext são registros
+     * em claro anteriores à adoção da cifragem (fase de expansão da migração) e são lidos como texto; a
+     * migração de dados e a próxima gravação os cifram.
      *
      * @param dbData valor bruto lido da coluna do banco
-     * @return valor decifrado, o próprio dado bruto (fallback de compatibilidade) se em branco ou
-     *         se a decifragem falhar
+     * @return valor decifrado ou, para registro legado em claro, o próprio texto
+     * @throws IllegalStateException se o valor tem forma de ciphertext e não pode ser decifrado
      */
     @Override
     public String convertToEntityAttribute(String dbData) {
-        if (dbData == null || dbData.isBlank()) {
+        if (dbData == null || dbData.isBlank() || !CryptoUtils.pareceCifrado(dbData)) {
             return dbData;
         }
-        try {
-            return CryptoUtils.decrypt(dbData);
-        } catch (Exception e) {
-            return dbData;
-        }
+        return CryptoUtils.decrypt(dbData);
     }
 }

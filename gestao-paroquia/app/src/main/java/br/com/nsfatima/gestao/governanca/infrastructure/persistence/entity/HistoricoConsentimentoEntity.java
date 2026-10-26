@@ -2,8 +2,10 @@ package br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity;
 
 import br.com.nsfatima.gestao.governanca.domain.model.TipoEventoConsentimento;
 import br.com.nsfatima.gestao.governanca.domain.model.TipoTitularConsentimento;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.EncryptedStringConverter;
 import br.com.nsfatima.gestao.support.infrastructure.persistence.entity.BaseAuditableEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,7 +15,9 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 /**
- * Registro indelével e imutável de auditoria de consentimento sob a LGPD (Arts. 8º § 2º e 6º X).
+ * Registro indelével e imutável de auditoria de consentimento sob a LGPD (Arts. 8º § 2º e 6º X). IP e dados
+ * do responsável legal são PII e ficam cifrados em repouso; o banco (trigger V042) só admite anonimizar
+ * essas colunas, nunca alterar ou apagar o evento — portanto esta entidade jamais deve ser re-salva.
  */
 @Entity
 @Table(name = "historico_consentimentos", schema = "calendario")
@@ -57,16 +61,19 @@ public class HistoricoConsentimentoEntity extends BaseAuditableEntity {
     @Column(name = "permitir_divulgacao_aniversario", nullable = false)
     private boolean permitirDivulgacaoAniversario;
 
-    @Column(name = "ip_origem", length = 45)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "ip_origem", length = 512)
     private String ipOrigem;
 
     @Column(name = "user_agent", length = 500)
     private String userAgent;
 
-    @Column(name = "responsavel_menor_nome")
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "responsavel_menor_nome", length = 1024)
     private String responsavelMenorNome;
 
-    @Column(name = "responsavel_menor_cpf", length = 14)
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(name = "responsavel_menor_cpf", length = 512)
     private String responsavelMenorCpf;
 
     public UUID getId() {

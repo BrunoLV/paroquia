@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.governanca.api.v1.dto.RegistrarIncidenteRequest;
 import br.com.nsfatima.gestao.governanca.domain.model.GravidadeIncidente;
 import br.com.nsfatima.gestao.governanca.domain.model.StatusIncidente;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.IncidenteSegurancaEntity;
+import br.com.nsfatima.gestao.governanca.infrastructure.persistence.mapper.IncidenteSegurancaMapper;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.IncidenteSegurancaJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +41,7 @@ class GerenciarIncidenteSegurancaUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new GerenciarIncidenteSegurancaUseCase(repository);
+        useCase = new GerenciarIncidenteSegurancaUseCase(repository, new IncidenteSegurancaMapper());
     }
 
     @Test
@@ -147,5 +150,73 @@ class GerenciarIncidenteSegurancaUseCaseTest {
 
         assertThat(lista).hasSize(1);
         assertThat(lista.getFirst().titulo()).isEqualTo("Incidente 1");
+    }
+
+    private IncidenteSegurancaEntity incidenteEm(StatusIncidente status) {
+        IncidenteSegurancaEntity entity = new IncidenteSegurancaEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setTitulo("Incidente");
+        entity.setDescricao("Desc");
+        entity.setTipoDadoAfetado("Dados");
+        entity.setCategoriaGravidade(GravidadeIncidente.ALTA);
+        entity.setStatus(status);
+        entity.setDataOcorrencia(Instant.now().minusSeconds(7200));
+        entity.setDataDeteccao(Instant.now().minusSeconds(3600));
+        return entity;
+    }
+
+    private AtualizarStatusIncidenteRequest apenasStatus(StatusIncidente status) {
+        return new AtualizarStatusIncidenteRequest(status, null, null, null, null, null, null);
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar incidente cuja deteccao anteceda a ocorrencia")
+    void deveRejeitarDeteccaoAnteriorAOcorrencia() {
+        RegistrarIncidenteRequest request = new RegistrarIncidenteRequest(
+                "Titulo", "Descricao", "Dados", GravidadeIncidente.BAIXA,
+                Instant.now(), Instant.now().minusSeconds(60), null);
+
+        assertThatThrownBy(() -> useCase.registrar(request)).isInstanceOf(IllegalArgumentException.class);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Status NOTIFICADO exige notificacao a ANPD registrada")
+    void notificadoExigeAnpd() {
+        IncidenteSegurancaEntity entity = incidenteEm(StatusIncidente.CONTIDO);
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+
+        assertThatThrownBy(() -> useCase.atualizarStatus(entity.getId(), apenasStatus(StatusIncidente.NOTIFICADO)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("ANPD");
+    }
+
+    @Test
+    @DisplayName("Incidente nao retrocede de estado e encerrado e final")
+    void estadosNaoRetrocedem() {
+        IncidenteSegurancaEntity contido = incidenteEm(StatusIncidente.CONTIDO);
+        IncidenteSegurancaEntity encerrado = incidenteEm(StatusIncidente.ENCERRADO);
+        when(repository.findById(contido.getId())).thenReturn(Optional.of(contido));
+        when(repository.findById(encerrado.getId())).thenReturn(Optional.of(encerrado));
+
+        assertThatThrownBy(() -> useCase.atualizarStatus(contido.getId(), apenasStatus(StatusIncidente.EM_ANALISE)))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> useCase.atualizarStatus(encerrado.getId(), apenasStatus(StatusIncidente.ENCERRADO)))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("Resposta expoe o prazo de 3 dias uteis e sinaliza vencimento sem notificacao")
+    void respostaExpoePrazoDeComunicacao() {
+        IncidenteSegurancaEntity vencido = incidenteEm(StatusIncidente.EM_ANALISE);
+        vencido.setDataDeteccao(Instant.now().minus(30, ChronoUnit.DAYS));
+        IncidenteSegurancaEntity recente = incidenteEm(StatusIncidente.EM_ANALISE);
+        when(repository.findAllByOrderByDataDeteccaoDesc()).thenReturn(List.of(vencido, recente));
+
+        List<IncidenteSegurancaResponse> lista = useCase.listarTodos();
+
+        assertThat(lista.get(0).prazoVencido()).isTrue();
+        assertThat(lista.get(1).prazoVencido()).isFalse();
+        assertThat(lista.get(1).prazoComunicacaoUtc()).isAfter(recente.getDataDeteccao());
     }
 }
