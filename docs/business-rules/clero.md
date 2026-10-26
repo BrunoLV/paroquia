@@ -10,7 +10,7 @@ Assegurar o registro formal do clero paroquial e diocesano, mantendo o históric
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Clerigo` (Raiz de Agregado):** identificado por UUID. Cadastro pessoal e canônico próprio, **não é um fiel**: nome civil e eclesiástico, data de nascimento, país de origem, documentos (CPF, RG ou documento estrangeiro), contatos, endereço, `GrauOrdem`, diocese de incardinação, as datas de ordenação diaconal, presbiteral e episcopal, e os atributos de consentimento LGPD (`termoConsentimentoAceito`, `dataHoraConsentimentoUtc`, `ipConsentimento`, `versaoTermoConsentimento`, `canalConsentimento`, `hashTermoConsentimento`, `usoImagemAutorizado`, `permitirDivulgacaoAniversario`). Inativar o clérigo é uma transição explícita (exclusão lógica).
+- **`Clerigo` (Raiz de Agregado):** identificado por UUID. Cadastro pessoal e canônico próprio, **não é um fiel**: nome civil e eclesiástico, data de nascimento, país de origem, documentos (CPF, RG ou documento estrangeiro), contatos, endereço, `GrauOrdem`, diocese de incardinação, as datas de ordenação diaconal, presbiteral e episcopal, e os atributos de consentimento LGPD (`termoConsentimentoAceito`, `dataHoraConsentimentoUtc`, `ipConsentimento`, `versaoTermoConsentimento`, `canalConsentimento`, `hashTermoConsentimento`, `usoImagemAutorizado`, `permitirDivulgacaoAniversario`). Inativar o clérigo é uma transição explícita (exclusão lógica). O CPF possui blind index (HMAC-SHA256 com chave própria) para busca exata sem decifrar a base.
 - **`GrauOrdem` (Enum):** `DIACONO_TRANSITORIO`, `DIACONO_PERMANENTE`, `PADRE_DIOCESANO`, `PADRE_RELIGIOSO` e `BISPO`.
 - **`FuncaoEclesiastica` (Enum):** `BISPO_DIOCESANO`, `PAROCO`, `ADMINISTRADOR_PAROQUIAL`, `VIGARIO_PAROQUIAL`, `DIACONO_AUXILIAR` e `EMERITO`.
 - **Encargo clerical:** a função que o clérigo exerce numa unidade territorial (a Matriz), com a indicação de ser a **atual** e a data de encerramento. O histórico de encargos de cada clérigo é preservado.
@@ -44,6 +44,7 @@ Assegurar o registro formal do clero paroquial e diocesano, mantendo o históric
 2. **Governo da Paróquia:** registro da diocese e do governo eclesiástico, com o Pároco e a data de posse.
 3. **Diretório do Clero:** lista dos clérigos ativos, com função atual, para uso em outros módulos (por exemplo, a presença nas atas do conselho).
 4. **Ajuste Cadastral:** o clérigo solicita a correção de seus contatos; a secretaria ou o Pároco analisa.
+5. **Anonimização (paridade com o fiel):** cinco anos após a inativação, o cadastro é anonimizado: dados civis, blind index do CPF, nascimento, contatos, endereço e rastro de consentimento são eliminados, a trilha de consentimento tem IP/responsável anonimizados e a conta de acesso é desativada. Nome eclesiástico, grau da ordem, ordenações e encargos permanecem por serem dados canônicos de fé pública (ver `lgpd.md`, RN-LGP-06).
 
 ---
 

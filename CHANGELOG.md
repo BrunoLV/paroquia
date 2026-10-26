@@ -8,6 +8,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Segurança / LGPD
+- **Cifra e blind index:** `EncryptedStringConverter`/`CryptoUtils` passam a AES-256/GCM com prefixo de versão de chave (`v1:`), leem o formato CBC legado e lançam erro (em vez de devolver o ciphertext) quando a decifragem falha. O `cpf_hash` troca SHA-256 puro por HMAC-SHA256 com pepper (`app.security.cpf-pepper`, **obrigatória e sem valor padrão**); clérigos ganham o mesmo blind index e a busca pública por CPF deixa de decifrar todos os clérigos.
+- **PII do DPO e da trilha de consentimento cifrada** (`solicitacoes_dpo`, `historico_consentimentos`); a consulta pública do protocolo devolve nome/e-mail/CPF mascarados. Corrigida a coluna `fieis.responsavel_menor_cpf`, que era cifrada em `VARCHAR(14)`.
+- **Portal de consentimento:** máximo de 3 pedidos de código por 15 minutos, resposta anti-enumeração idêntica, contador de tentativas efetivamente persistido (antes revertia junto com a exceção), token de consentimento de uso único, revogação força autorizações a `false`, CPF do responsável do menor validado e IP de origem sem confiar em `X-Forwarded-For`.
+- **E-mail real** do código OTP e do comprovante via `spring-boot-starter-mail` (`app.mail.enabled`, `app.mail.remetente`, `spring.mail.*`); por padrão nada é enviado.
+- **Anonimização completa** do fiel (CPF hash, nascimento, sexo, dependentes, relações, trilha, conta) e nova anonimização do clérigo com job diário; trilha de consentimento *append-only* por gatilho.
+- **DSAR e incidentes:** máquinas de estado, protocolo `DPO-AAAAMMDD-XXXXXXXXXXXX`, prazos de 15 dias e de 3 dias úteis sinalizados; `IncidenteSeguranca` de domínio em uso.
+- **Migrações:** V040 (expansão), V041 (migração Java de dados: cifra e rehash, idempotente) e V042 (gatilho append-only).
+
 ---
 
 ## [0.12.1] - 2026-10-25
