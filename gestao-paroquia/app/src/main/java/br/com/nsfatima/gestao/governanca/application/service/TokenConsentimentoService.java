@@ -21,13 +21,22 @@ public class TokenConsentimentoService {
     private static final String HMAC_ALGO = "HmacSHA256";
     private static final long DURACAO_MINUTOS = 15;
     private static final String SEPARADOR = ":";
+    private static final int TAMANHO_MINIMO_SEGREDO = 32;
 
     private final byte[] secretKey;
 
     public record TokenPayload(TipoTitularConsentimento titularTipo, UUID titularId) {}
 
-    public TokenConsentimentoService(
-            @Value("${app.security.consent-secret:paroquia-consent-jwt-secret-key-lgpd-2026}") String secret) {
+    /**
+     * O segredo é obrigatório e sem valor padrão: um default público no código permitiria forjar
+     * tokens HMAC de consentimento. Ausência ou segredo curto derrubam o boot.
+     */
+    public TokenConsentimentoService(@Value("${app.security.consent-secret:}") String secret) {
+        if (secret == null || secret.isBlank() || secret.length() < TAMANHO_MINIMO_SEGREDO) {
+            throw new IllegalStateException(
+                    "APP_CONSENT_SECRET (app.security.consent-secret) é obrigatório e deve ter ao menos "
+                            + TAMANHO_MINIMO_SEGREDO + " caracteres.");
+        }
         this.secretKey = secret.getBytes(StandardCharsets.UTF_8);
     }
 

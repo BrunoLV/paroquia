@@ -1,8 +1,8 @@
 package br.com.nsfatima.gestao.iam.api.v1.dto;
 
+import br.com.nsfatima.gestao.iam.api.v1.validation.SenhaValida;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 /**
  * Payload para solicitação de alteração da própria senha por usuário autenticado.
@@ -14,7 +14,6 @@ public record AlterarMinhaSenhaRequest(
         String senhaAtual,
 
         @Schema(description = "Nova senha desejada", example = "NovaSenha@2026")
-        @NotBlank(message = "A nova senha é obrigatória")
-        @Size(min = 6, max = 100, message = "A nova senha deve possuir entre 6 e 100 caracteres")
+        @SenhaValida(message = "A nova senha deve possuir no mínimo 8 caracteres e no máximo 72 bytes")
         String novaSenha
 ) {}

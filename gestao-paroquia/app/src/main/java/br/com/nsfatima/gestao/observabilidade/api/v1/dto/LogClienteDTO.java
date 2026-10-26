@@ -62,27 +62,49 @@ public record LogClienteDTO(
             nivel = "INFO";
         }
 
-        mensagem = sanitizarPii(mensagem != null ? mensagem.trim() : "");
+        mensagem = sanitizarPii(neutralizarControles(mensagem != null ? mensagem.trim() : ""));
         if (mensagem.length() > 1000) {
             mensagem = mensagem.substring(0, 1000);
         }
 
-        rota = rota != null ? rota.trim() : "/";
+        rota = rota != null ? neutralizarControles(rota.trim()) : "/";
         if (rota.length() > 255) {
             rota = rota.substring(0, 255);
         }
 
-        componente = componente != null ? componente.trim() : "App";
+        componente = componente != null ? neutralizarControles(componente.trim()) : "App";
         if (componente.length() > 255) {
             componente = componente.substring(0, 255);
         }
 
-        detalhes = detalhes != null ? sanitizarPii(detalhes.trim()) : null;
+        detalhes = detalhes != null ? sanitizarPii(neutralizarControles(detalhes.trim())) : null;
         if (detalhes != null && detalhes.length() > 2000) {
             detalhes = detalhes.substring(0, 2000);
         }
 
         timestamp = timestamp != null ? timestamp : Instant.now();
+    }
+
+    /**
+     * Impede forja de entradas de log (log forging): quebras de linha viram marcadores literais
+     * ({@code \\n}, {@code \\r}) preservando a legibilidade de stack traces, e demais caracteres de
+     * controle (inclusive sequências ANSI) viram espaço. O corpo é controlado pelo cliente e é emitido
+     * em formato de linha única consumido pelo Loki, portanto jamais pode introduzir novas linhas.
+     */
+    private static String neutralizarControles(String texto) {
+        StringBuilder limpo = new StringBuilder(texto.length());
+        texto.chars().forEach(c -> {
+            if (c == '\n') {
+                limpo.append("\\n");
+            } else if (c == '\r') {
+                limpo.append("\\r");
+            } else if (Character.isISOControl(c)) {
+                limpo.append(' ');
+            } else {
+                limpo.append((char) c);
+            }
+        });
+        return limpo.toString();
     }
 
     /**

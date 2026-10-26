@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
+import br.com.nsfatima.gestao.iam.infrastructure.security.LimitadorTentativas;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
@@ -18,8 +19,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
@@ -52,16 +57,19 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AlterarSenhaUseCase alterarSenhaUseCase;
     private final AuditoriaPersistenceService auditLogService;
+    private final LimitadorTentativas limitadorResetSenha;
 
     public AuthController(
             UsuarioJpaRepository usuarioRepository,
             PasswordEncoder passwordEncoder,
             AlterarSenhaUseCase alterarSenhaUseCase,
-            AuditoriaPersistenceService auditLogService) {
+            AuditoriaPersistenceService auditLogService,
+            @Qualifier("limitadorResetSenha") LimitadorTentativas limitadorResetSenha) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.alterarSenhaUseCase = alterarSenhaUseCase;
         this.auditLogService = auditLogService;
+        this.limitadorResetSenha = limitadorResetSenha;
     }
 
     /**
@@ -131,23 +139,36 @@ public class AuthController {
     /**
      * Registra solicitação pública de redefinição de senha para conta ativa.
      * Resposta genérica 204 para prevenir enumeração de contas por agentes maliciosos externos.
+     * Cada pedido consome a cota do par IP + username (existente ou não, para não revelar a conta);
+     * excedida a cota, responde 429 com {@code Retry-After}.
      *
      * @param request payload com o username a ser resetado
+     * @param http requisição HTTP, usada para identificar o IP de origem
      */
     @PostMapping("/solicitar-reset-senha")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("permitAll()")
     @Operation(summary = "Solicita a redefinição de acesso/senha")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Solicitação recebida com sucesso")
+            @ApiResponse(responseCode = "204", description = "Solicitação recebida com sucesso"),
+            @ApiResponse(responseCode = "429", description = "Limite de pedidos excedido")
     })
-    public void solicitarResetSenha(@RequestBody @Valid SolicitarResetSenhaRequest request) {
+    public ResponseEntity<Void> solicitarResetSenha(
+            @RequestBody @Valid SolicitarResetSenhaRequest request,
+            HttpServletRequest http) {
+        String chave = LimitadorTentativas.chave(http.getRemoteAddr(), request.username());
+        if (limitadorResetSenha.bloqueado(chave)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .header(HttpHeaders.RETRY_AFTER, String.valueOf(limitadorResetSenha.janela().toSeconds()))
+                    .build();
+        }
+        limitadorResetSenha.registrarTentativa(chave);
         usuarioRepository.findByUsernameIgnoreCase(request.username())
                 .filter(UsuarioEntity::isEnabled)
                 .ifPresent(u -> auditLogService.log("anonimo", "solicitar-reset-senha", TARGET_USUARIO, SUCESSO, Map.of(
                         "usuarioId", u.getId(),
                         "action", "SOLICITAR_RESET_SENHA"
                 )));
+        return ResponseEntity.noContent().build();
     }
 
     private OrganizacaoResponse mapToOrganizacaoResponse(LeitorVinculoExterno.Vinculo vinculo) {

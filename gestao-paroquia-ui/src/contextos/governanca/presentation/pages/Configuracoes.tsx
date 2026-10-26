@@ -78,6 +78,10 @@ interface TabPanelProps {
   currentValue: string;
 }
 
+// Espelha a política única de senha do backend (@SenhaValida): mínimo 8 caracteres, máximo 72 bytes (limite do BCrypt).
+const SENHA_MIN_CARACTERES = 8;
+const SENHA_MAX_BYTES = 72;
+
 const CustomTabPanel = ({ children, value, currentValue }: TabPanelProps) => {
   if (value !== currentValue) return null;
   return (
@@ -306,8 +310,12 @@ export const Configuracoes = () => {
       showError('Informe a senha atual.');
       return;
     }
-    if (!novaSenha || novaSenha.length < 6) {
-      showError('A nova senha deve ter no mínimo 6 caracteres.');
+    if (!novaSenha || novaSenha.length < SENHA_MIN_CARACTERES) {
+      showError(`A nova senha deve ter no mínimo ${SENHA_MIN_CARACTERES} caracteres.`);
+      return;
+    }
+    if (new TextEncoder().encode(novaSenha).length > SENHA_MAX_BYTES) {
+      showError(`A nova senha deve ter no máximo ${SENHA_MAX_BYTES} bytes.`);
       return;
     }
     if (novaSenha !== confirmacaoNovaSenha) {
