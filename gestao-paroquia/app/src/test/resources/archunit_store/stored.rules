@@ -1,0 +1,8 @@
+#
+#Mon Oct 26 07:25:06 GMT-03:00 2026
+api\ nao\ deve\ acessar\ repositorios\ jpa\ diretamente=6caa6255-f09b-4687-8f02-6282654c1e17
+application\ nao\ deve\ depender\ de\ api\ nem\ de\ persistencia\ concreta=75106a87-5dce-4cbe-b680-8941252b295e
+contexto\ nao\ deve\ acessar\ application\ ou\ infrastructure\ de\ outro\ contexto=ea6d3ee8-78c6-401e-89cf-4e489d697e2a
+contextos\ nao\ devem\ depender\ mutuamente\ uns\ dos\ outros=e8896aec-7584-4454-a0a7-341da3949d1f
+controllers\ nao\ devem\ depender\ de\ entidades\ jpa\ diretamente=22ab06b1-2146-43ed-9800-29d161a60430
+domain\ nao\ deve\ depender\ de\ camadas\ externas=28519856-9afe-4e47-b7b6-fee684fc2ef1

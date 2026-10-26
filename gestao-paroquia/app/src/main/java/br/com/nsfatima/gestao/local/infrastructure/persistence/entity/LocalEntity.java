@@ -265,6 +265,19 @@ public class LocalEntity extends BaseAuditableEntity {
         this.ativo = ativo;
     }
 
+    /**
+     * Reidrata os instantes de auditoria já persistidos ao remontar a entidade a partir do domínio, para que
+     * o {@code merge} não anule em memória o instante de criação. O listener de auditoria continua sendo a
+     * fonte dos valores gravados no banco.
+     *
+     * @param criadoEm instante de criação já persistido
+     * @param atualizadoEm instante da última atualização já persistido
+     */
+    public void restaurarAuditoria(Instant criadoEm, Instant atualizadoEm) {
+        setCriadoEmUtc(criadoEm);
+        setAtualizadoEmUtc(atualizadoEm);
+    }
+
     public UUID getOrganizacaoId() {
         return organizacaoId;
     }

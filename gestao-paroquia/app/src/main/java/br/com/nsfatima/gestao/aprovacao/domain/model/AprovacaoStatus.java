@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.aprovacao.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Estados do ciclo de vida de uma solicitação de aprovação. Toda solicitação nasce PENDENTE (criada por
@@ -32,7 +31,6 @@ public enum AprovacaoStatus {
      * @param rawValue valor bruto recebido na requisição
      * @return status normalizado
      */
-    @JsonCreator
     public static AprovacaoStatus fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, AprovacaoStatus.class);
     }

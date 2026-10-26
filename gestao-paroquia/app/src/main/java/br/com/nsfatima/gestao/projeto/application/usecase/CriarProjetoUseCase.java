@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -115,7 +114,6 @@ public class CriarProjetoUseCase {
                 throw new RuntimeException("Error serializing project request", e);
             }
             aprovacao.setCancelarEventosVinculados(false);
-            aprovacao.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
             auditPublisher.publish(actorContext.actor(),

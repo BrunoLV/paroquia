@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Status de um evento de calendário conforme recebido em requisições da API. Um
@@ -28,7 +27,6 @@ public enum EventoStatusInput {
      * @param rawValue valor textual recebido na requisição
      * @return constante de status normalizada
      */
-    @JsonCreator
     public static EventoStatusInput fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, EventoStatusInput.class);
     }

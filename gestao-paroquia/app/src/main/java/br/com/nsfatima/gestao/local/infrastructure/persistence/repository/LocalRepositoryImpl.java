@@ -107,8 +107,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         entity.setAtivo(domain.isAtivo());
         entity.setOrganizacaoId(domain.getIgrejaId());
         entity.setDeletedAt(domain.getDeletedAt());
-        entity.setCreatedAt(domain.getCreatedAt());
-        entity.setUpdatedAt(domain.getUpdatedAt());
+        entity.restaurarAuditoria(domain.getCreatedAt(), domain.getUpdatedAt());
 
         EnderecoLocal el = domain.getEndereco();
         if (el != null) {

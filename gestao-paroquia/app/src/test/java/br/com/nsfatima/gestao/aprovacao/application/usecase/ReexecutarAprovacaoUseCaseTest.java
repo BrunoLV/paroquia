@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -96,7 +95,6 @@ class ReexecutarAprovacaoUseCaseTest {
         entity.setTipoSolicitacao(TipoSolicitacaoInput.CRIACAO_EVENTO.name());
         entity.setAprovadorPapel("PAROCO");
         entity.setSolicitanteId("coordenador-1");
-        entity.setCriadoEmUtc(Instant.now());
 
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("paroco-1", "paroco-1", "PAROCO", null, null, null));

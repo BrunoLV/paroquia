@@ -198,7 +198,6 @@ public class TransicionarProjetoUseCase {
             aprovacao.setSolicitantePapel(actorContext.role());
             aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));
             aprovacao.setCancelarEventosVinculados(cancelarEventosVinculados);
-            aprovacao.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
             return new ResultadoCriacaoProjeto(null, mapper.toAprovacaoResponse(savedAprovacao));

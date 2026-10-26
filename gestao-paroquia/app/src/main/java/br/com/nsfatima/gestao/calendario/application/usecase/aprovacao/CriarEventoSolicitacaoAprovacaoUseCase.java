@@ -83,7 +83,6 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
-        entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(request.inicio());
         entity.setJustificativa(justificativa != null ? justificativa : request.adicionadoExtraJustificativa());
 
@@ -145,7 +144,6 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
             filha.setSolicitantePapel(context.role());
             filha.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
             filha.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
-            filha.setCriadoEmUtc(Instant.now());
             filha.setDataOcorrenciaUtc(occStart);
             filha.setJustificativa(mestre.getJustificativa());
 

@@ -2,7 +2,6 @@ package br.com.nsfatima.gestao.fiel.support;
 
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -26,10 +25,6 @@ public final class FielTestFixtures {
         fiel.setEmail("teste-" + id + "@example.com");
         fiel.setCelular("11999999999");
         fiel.setAtivo(true);
-        fiel.setCriadoEmUtc(Instant.now());
-        fiel.setAtualizadoEmUtc(Instant.now());
-        fiel.setCriadoPor("teste");
-        fiel.setAtualizadoPor("teste");
         return repository.save(fiel).getId();
     }
 }

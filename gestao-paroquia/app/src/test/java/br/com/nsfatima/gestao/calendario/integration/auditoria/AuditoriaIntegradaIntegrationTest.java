@@ -120,7 +120,6 @@ class AuditoriaIntegradaIntegrationTest {
         aprovacao.setTipoSolicitacao("ALTERACAO_HORARIO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setCorrelationId("decide-audit-test");
         aprovacaoRepository.save(aprovacao);
 

@@ -25,7 +25,7 @@ import java.util.List;
  * bloqueada por reservas conflitantes (409, com a lista das reservas) e exclusão bloqueada (409).
  */
 @RestControllerAdvice
-@Order(3)
+@Order(2)
 public class PatrimonioExceptionHandler extends BaseExceptionHandler {
 
     public PatrimonioExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {

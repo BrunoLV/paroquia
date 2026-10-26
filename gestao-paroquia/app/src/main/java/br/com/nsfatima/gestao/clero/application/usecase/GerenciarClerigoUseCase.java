@@ -224,7 +224,6 @@ public class GerenciarClerigoUseCase {
         encargo.setUnidadeTerritorialId(unidadeSede);
         encargo.setFuncao(funcao);
         encargo.setAtual(true);
-        encargo.setCriadoEmUtc(agora);
         encargos.save(encargo);
     }
 

@@ -1,4 +1,4 @@
-package br.com.nsfatima.gestao.calendario.api.v1.dto.support;
+package br.com.nsfatima.gestao.support.domain;
 
 /**
  * Normaliza valores textuais recebidos em parâmetros de requisição (query params, path variables)
