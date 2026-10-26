@@ -44,8 +44,6 @@ export const organizacaoSchema = z
     tipo: z.enum(['PASTORAL', 'MOVIMENTO', 'SERVICO_PAROQUIAL', 'CONSELHO']),
     email: z.string().trim().email('E-mail inválido').or(z.literal('')).optional(),
     telefone: z.string().trim().max(32, 'Telefone muito longo').optional(),
-    coordenador: z.string().optional(),
-    viceCoordenador: z.string().optional(),
     parentId: z.string().optional(),
     pastoralOficialId: z.string().optional(),
     setorPastoral: z.enum(['SANTIFICACAO_LITURGIA', 'FORMACAO_ENSINAR', 'SOCIAL_CARIDADE', '']).optional(),

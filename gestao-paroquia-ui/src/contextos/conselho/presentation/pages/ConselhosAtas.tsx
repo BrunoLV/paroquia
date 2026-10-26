@@ -1,313 +1,235 @@
-import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
-import SearchableTablePagination from '@/shared/presentation/components/SearchableTablePagination';
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Stack, useTheme } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { Card, Container, FormControl, MenuItem, Stack, TextField, useTheme } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
-import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import ReplayIcon from '@mui/icons-material/Replay';
+import SendIcon from '@mui/icons-material/Send';
 import VerifiedIcon from '@mui/icons-material/Verified';
-import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
-import { canHomologarDecisao } from '@/contextos/iam/presentation/auth/permissions';
-import { useNotification } from '@/shared/presentation/context/NotificationContext';
-import { getCpcDecisoes, createCpcDecisao, homologarCpcDecisao } from '@/contextos/conselho/infrastructure/http/conselhos';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
-import { CpcDecisao, StatusHomologacao } from '@/shared/domain/types/types';
-import { CpcDecisaoModal } from '@/contextos/conselho/presentation/components/CpcDecisaoModal';
+import { obterAta } from '@/contextos/conselho/infrastructure/http/atas';
+import { Ata, AtaResumo, FiltroAtas, OpcoesExportacao, STATUS_ATA_LABEL, StatusAta, TipoReuniao } from '@/contextos/conselho/domain/ata';
+import {
+  useAtas, useAtualizarAta, useExportarAta, useExportarCompilacao, useHomologarAta, useRascunharAta,
+  useReabrirAta, useRetificarAta, useSubmeterAta, useTiposReuniao, useVetarAta,
+} from '@/contextos/conselho/presentation/hooks/useAtas';
+import { AtaFormInput, paraConteudoPayload, paraRascunhoPayload } from '@/contextos/conselho/presentation/schemas/ataSchema';
+import AtaExportMenu from '@/contextos/conselho/presentation/components/AtaExportMenu';
+import AtaFormModal from '@/contextos/conselho/presentation/components/AtaFormModal';
+import AtasTable from '@/contextos/conselho/presentation/components/AtasTable';
+import AtaViewModal from '@/contextos/conselho/presentation/components/AtaViewModal';
+import JustificativaDialog from '@/contextos/conselho/presentation/components/JustificativaDialog';
 import ActionButton from '@/shared/presentation/components/ActionButton';
-import { DIALOG_CONTENT_SCROLL_SX } from '@/shared/presentation/theme/dialogStyles';
-import TableActionMenu from '@/shared/presentation/components/TableActionMenu';
-import StatusIcon from '@/shared/presentation/components/StatusIcon';
-import { getHomologacaoStatusMeta } from '@/shared/utils/statusMeta/homologacaoStatus';
 import PageHeader from '@/shared/presentation/components/PageHeader';
-import { formatDateBr } from '@/shared/utils/masks';
+import SearchableSelect from '@/shared/presentation/components/SearchableSelect';
+import { TableAction } from '@/shared/presentation/components/TableActionMenu';
+import { useNotification } from '@/shared/presentation/context/NotificationContext';
+import { extractErrorMessage } from '@/shared/utils/errorUtils';
 
+type Alvo = { id: string; titulo: string } | null;
+
+const FILTRO_VAZIO = { organizacaoId: '', tipo: '', status: '', de: '', ate: '' };
+
+/**
+ * Atas das reuniões da paróquia e das comunidades. O servidor decide o escopo de leitura e as ações permitidas em
+ * cada ata (`acoes`); esta tela apenas oferece o que ele autorizou. Atas seladas são imutáveis e corrigidas por ata
+ * retificadora; toda exportação, em Word ou PDF, fica registrada na trilha de auditoria.
+ */
 export const ConselhosAtas: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
-  const { showSuccess, showError } = useNotification();
-  const queryClient = useQueryClient();
+  const { showError } = useNotification();
 
-  const [selectedComunidade, setSelectedComunidade] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const [filtro, setFiltro] = useState(FILTRO_VAZIO);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [visualizarId, setVisualizarId] = useState<string | null>(null);
+  const [form, setForm] = useState<{ aberto: boolean; edicao: Ata | null }>({ aberto: false, edicao: null });
+  const [vetar, setVetar] = useState<Alvo>(null);
+  const [retificar, setRetificar] = useState<Alvo>(null);
 
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const consulta: FiltroAtas = {
+    organizacaoId: filtro.organizacaoId || undefined,
+    tipo: (filtro.tipo as TipoReuniao) || undefined,
+    status: (filtro.status as StatusAta) || undefined,
+    de: filtro.de || undefined,
+    ate: filtro.ate || undefined,
+  };
+  const { data: pagina, isLoading } = useAtas({ ...consulta, pagina: page, tamanho: rowsPerPage });
+  const { data: tipos = [] } = useTiposReuniao();
+  const tiposRedacao = tipos.filter((t) => t.organizacoesRedacao.length > 0);
+  const { data: organizacoes = [] } = useQuery({ queryKey: ['organizacoes'], queryFn: getOrganizacoes });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const rascunhar = useRascunharAta();
+  const atualizar = useAtualizarAta();
+  const submeter = useSubmeterAta();
+  const homologar = useHomologarAta();
+  const vetarAta = useVetarAta();
+  const reabrir = useReabrirAta();
+  const retificarAta = useRetificarAta();
+  const exportar = useExportarAta();
+  const exportarCompilacao = useExportarCompilacao();
 
-  const [vetoDialogItem, setVetoDialogItem] = useState<CpcDecisao | null>(null);
-  const [motivoVeto, setMotivoVeto] = useState('');
+  const orgaosParaFiltro = organizacoes.filter((o) => o.ativo && o.tipo === 'CONSELHO');
+  const temFiltro = Object.values(filtro).some(Boolean);
 
-  const canHomologate = canHomologarDecisao(user);
-
-  const { data: decisoes = [], isLoading } = useQuery({
-    queryKey: ['cpcDecisoes', selectedComunidade, selectedStatus],
-    queryFn: () =>
-      getCpcDecisoes({
-        comunidadeId: selectedComunidade || undefined,
-        status: (selectedStatus as StatusHomologacao) || undefined,
-      }),
-  });
-
-  const { data: organizacoes = [] } = useQuery({
-    queryKey: ['organizacoes'],
-    queryFn: getOrganizacoes,
-  });
-
-  const communities = organizacoes.filter((o) => o.tipo === 'MATRIZ' || o.tipo === 'COMUNIDADE');
-
-  const createMutation = useMutation({
-    mutationFn: createCpcDecisao,
-    onSuccess: () => {
-      showSuccess('Ata/Decisão submetida com sucesso para homologação!');
-      setIsModalOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['cpcDecisoes'] });
-    },
-    onError: () => showError('Erro ao submeter ata de conselho.'),
-  });
-
-  const homologarMutation = useMutation({
-    mutationFn: (params: { id: string; status: StatusHomologacao; motivoVeto?: string }) =>
-      homologarCpcDecisao(params.id, { status: params.status, motivoVeto: params.motivoVeto }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cpcDecisoes'] }),
-  });
-
-  const handleHomologar = (id: string) => {
-    homologarMutation.mutate(
-      { id, status: 'HOMOLOGADO' },
-      {
-        onSuccess: () => showSuccess('Ata/Decisão homologada com sucesso pelo Pároco!'),
-        onError: () => showError('Erro ao homologar ata.'),
-      }
-    );
+  const alterarFiltro = (campo: keyof typeof FILTRO_VAZIO, valor: string) => {
+    setFiltro((atual) => ({ ...atual, [campo]: valor }));
+    setPage(0);
   };
 
-  const handleConfirmVeto = () => {
-    if (!vetoDialogItem) return;
-    if (!motivoVeto.trim()) {
-      showError('O motivo do veto é obrigatório.');
-      return;
+  const abrirEdicao = async (id: string) => {
+    try {
+      setForm({ aberto: true, edicao: await obterAta(id) });
+    } catch (e) {
+      showError(extractErrorMessage(e, 'Erro ao carregar o rascunho.'));
     }
-    homologarMutation.mutate(
-      { id: vetoDialogItem.id, status: 'VETADO', motivoVeto: motivoVeto.trim() },
-      {
-        onSuccess: () => {
-          showSuccess('Ata/Decisão vetada com sucesso.');
-          setVetoDialogItem(null);
-          setMotivoVeto('');
-        },
-        onError: () => showError('Erro ao vetar ata.'),
-      }
-    );
   };
 
-  const handleClearFilters = () => {
-    setSelectedComunidade('');
-    setSelectedStatus('');
+  const salvar = (dados: AtaFormInput, regras: Parameters<typeof paraRascunhoPayload>[1]) => {
+    const fechar = { onSuccess: () => setForm({ aberto: false, edicao: null }) };
+    if (form.edicao) {
+      atualizar.mutate({ id: form.edicao.id, conteudo: paraConteudoPayload(dados, regras) }, fechar);
+    } else {
+      rascunhar.mutate(paraRascunhoPayload(dados, regras), fechar);
+    }
   };
 
-  const getCommunityName = (id: string) => {
-    return communities.find((c) => c.id === id)?.nome || 'Comunidade';
+  const exportarAta = (id: string, opcoes: OpcoesExportacao) => exportar.mutate({ id, opcoes });
+
+  const acoesDaLinha = (a: AtaResumo): TableAction[] => {
+    const tem = (acao: AtaResumo['acoes'][number]) => a.acoes.includes(acao);
+    const linhas: TableAction[] = [
+      { label: 'Visualizar', icon: <VisibilityIcon fontSize="small" color="primary" />, onClick: () => setVisualizarId(a.id) },
+    ];
+    if (tem('REDIGIR')) linhas.push({ label: 'Editar rascunho', icon: <EditIcon fontSize="small" color="primary" />, onClick: () => void abrirEdicao(a.id) });
+    if (tem('SUBMETER')) linhas.push({ label: 'Submeter', icon: <SendIcon fontSize="small" color="primary" />, onClick: () => submeter.mutate(a.id) });
+    if (tem('HOMOLOGAR')) linhas.push({ label: 'Homologar', icon: <VerifiedIcon fontSize="small" color="success" />, onClick: () => homologar.mutate(a.id) });
+    if (tem('VETAR')) linhas.push({ label: 'Vetar', icon: <BlockIcon fontSize="small" color="error" />, onClick: () => setVetar({ id: a.id, titulo: a.titulo }) });
+    if (tem('REABRIR')) linhas.push({ label: 'Reabrir para correção', icon: <ReplayIcon fontSize="small" color="primary" />, onClick: () => reabrir.mutate(a.id) });
+    if (tem('RETIFICAR')) linhas.push({ label: 'Retificar', icon: <EditNoteIcon fontSize="small" color="primary" />, onClick: () => setRetificar({ id: a.id, titulo: a.titulo }) });
+    return linhas;
   };
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <PageHeader
         icon={<HistoryEduIcon sx={{ fontSize: 32, color: 'primary.main' }} />}
-        title="Governança dos Conselhos (CPP & CPC)"
-        subtitle="Gerencie o registro de atas das reuniões dos conselhos pastorais de comunidade (CPC) e do conselho pastoral paroquial (CPP), acompanhando a chancela e homologação."
-        actions={
-          <ActionButton
-            title="Nova Ata / Decisão"
-            icon={<PostAddIcon />}
-            color="primary"
-            onClick={() => setIsModalOpen(true)}
-          />
-        }
+        title="Atas e decisões dos conselhos"
+        subtitle="Registre as atas das reuniões da paróquia e das comunidades, acompanhe a homologação do Pároco e exporte em Word ou PDF."
+        actions={(
+          <Stack direction="row" spacing={1}>
+            <AtaExportMenu
+              rotulo="Exportar livro de atas"
+              disabled={exportarCompilacao.isPending}
+              onExportar={(opcoes) => exportarCompilacao.mutate({ filtro: consulta, opcoes })}
+            />
+            {tiposRedacao.length > 0 && (
+              <ActionButton title="Nova ata" icon={<PostAddIcon />} color="primary" onClick={() => setForm({ aberto: true, edicao: null })} />
+            )}
+          </Stack>
+        )}
       />
 
-      <Card
-        elevation={0}
-        sx={{
-          p: 2,
-          mb: 3,
-
-          border: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: theme.custom?.subtlePanelBg ?? '#F8F9FA',
-        }}
-      >
+      <Card elevation={0} sx={{ p: 2, mb: 3, border: '1px solid', borderColor: 'divider', backgroundColor: theme.custom?.subtlePanelBg ?? '#F8F9FA' }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          <FormControl size="small" sx={{ minWidth: 240, flex: { xs: 1, sm: 'initial' } }}>
-
-            <SearchableSelect
-              labelId="filter-comunidade-label"
-              value={selectedComunidade}
-              label="Comunidade de Origem"
-              onChange={(e) => setSelectedComunidade(e.target.value)}
-
-            >
-              <MenuItem value="">Todas as Comunidades</MenuItem>
-              {communities.map((c) => (
-                <MenuItem key={c.id} value={c.id}>
-                  {c.nome}
-                </MenuItem>
-              ))}
+          <FormControl size="small" sx={{ minWidth: 240 }}>
+            <SearchableSelect labelId="filtro-orgao" label="Órgão" value={filtro.organizacaoId}
+              onChange={(e) => alterarFiltro('organizacaoId', e.target.value)}>
+              <MenuItem value="">Todos os órgãos</MenuItem>
+              {orgaosParaFiltro.map((o) => <MenuItem key={o.id} value={o.id}>{o.nome}</MenuItem>)}
             </SearchableSelect>
           </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 220, flex: { xs: 1, sm: 'initial' } }}>
-
-            <SearchableSelect
-              labelId="filter-status-label"
-              value={selectedStatus}
-              label="Status de Homologação"
-              onChange={(e) => setSelectedStatus(e.target.value)}
-
-            >
-              <MenuItem value="">Todos os Status</MenuItem>
-              <MenuItem value="PENDENTE_HOMOLOGACAO">Pendente de Homologação</MenuItem>
-              <MenuItem value="HOMOLOGADO">Homologado</MenuItem>
-              <MenuItem value="VETADO">Vetado</MenuItem>
+          <FormControl size="small" sx={{ minWidth: 260 }}>
+            <SearchableSelect labelId="filtro-tipo" label="Tipo de reunião" value={filtro.tipo}
+              onChange={(e) => alterarFiltro('tipo', e.target.value)}>
+              <MenuItem value="">Todos os tipos</MenuItem>
+              {tipos.map((t) => <MenuItem key={t.codigo} value={t.codigo}>{t.rotulo}</MenuItem>)}
             </SearchableSelect>
           </FormControl>
-
-          {(selectedComunidade || selectedStatus) && (
-            <ActionButton
-              title="Limpar Filtros"
-              icon={<FilterAltOffIcon fontSize="small" />}
-              size="small"
-              onClick={handleClearFilters}
-              color="secondary"
-            />
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <SearchableSelect labelId="filtro-status" label="Situação" value={filtro.status}
+              onChange={(e) => alterarFiltro('status', e.target.value)}>
+              <MenuItem value="">Todas as situações</MenuItem>
+              {Object.entries(STATUS_ATA_LABEL).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+            </SearchableSelect>
+          </FormControl>
+          <TextField label="De" type="date" size="small" value={filtro.de} slotProps={{ inputLabel: { shrink: true } }}
+            onChange={(e) => alterarFiltro('de', e.target.value)} />
+          <TextField label="Até" type="date" size="small" value={filtro.ate} slotProps={{ inputLabel: { shrink: true } }}
+            onChange={(e) => alterarFiltro('ate', e.target.value)} />
+          {temFiltro && (
+            <ActionButton title="Limpar filtros" icon={<FilterAltOffIcon fontSize="small" />} color="secondary"
+              onClick={() => { setFiltro(FILTRO_VAZIO); setPage(0); }} />
           )}
         </Stack>
       </Card>
 
-      {isLoading ? (
-        <Stack spacing={1}>
-          <Skeleton variant="rectangular" height={48} />
-          <Skeleton variant="rectangular" height={72} />
-          <Skeleton variant="rectangular" height={72} />
-          <Skeleton variant="rectangular" height={72} />
-        </Stack>
-      ) : (
-        <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
-          <Table>
-            <TableHead sx={{ backgroundColor: 'action.hover' }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600 }}>Título / Pauta</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Comunidade</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Data da Reunião</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status Homologação</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
-                  Ações de Homologação
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {decisoes.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                    <Typography variant="body1" color="text.secondary">
-                      Nenhuma ata ou decisão registrada para os filtros selecionados.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                decisoes
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((item) => (
-                    <TableRow key={item.id} hover>
-                      <TableCell sx={{ maxW: 400 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                          {item.titulo}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
-                          {item.pautaDescricao}
-                        </Typography>
-                        {item.motivoVeto && (
-                          <Typography variant="caption" sx={{ display: 'block', color: 'error.main', mt: 0.5, fontWeight: 500 }}>
-                            Motivo do Veto: {item.motivoVeto}
-                          </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell>{getCommunityName(item.comunidadeId)}</TableCell>
-                      <TableCell>{formatDateBr(item.dataReuniao)}</TableCell>
-                      <TableCell><StatusIcon {...getHomologacaoStatusMeta(item.statusHomologacao)} sx={{ fontWeight: 600 }} /></TableCell>
-                      <TableCell align="center">
-                        {canHomologate && item.statusHomologacao === 'PENDENTE_HOMOLOGACAO' ? (
-                          <TableActionMenu
-                            actions={[
-                              { label: 'Homologar ata', icon: <VerifiedIcon fontSize="small" color="success" />, onClick: () => handleHomologar(item.id) },
-                              { label: 'Vetar ata', icon: <BlockIcon fontSize="small" color="error" />, onClick: () => setVetoDialogItem(item) },
-                            ]}
-                          />
-                        ) : (
-                          <Typography variant="caption" color="text.secondary">
-                            —
-                          </Typography>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
-              )}
-            </TableBody>
-            <SearchableTablePagination colSpan={5}
-              rowsPerPageOptions={[5, 10, 25]}
-              count={decisoes.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(_, newPage) => setPage(newPage)}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10));
-                setPage(0);
-              }}
-              labelRowsPerPage="Linhas por página:"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`
-              }
-            />
-          </Table>
-        </TableContainer>
-      )}
-
-      <CpcDecisaoModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={(data) => createMutation.mutate(data)}
-        isSubmitting={createMutation.isPending}
-        communities={communities}
+      <AtasTable
+        atas={pagina?.itens ?? []}
+        total={pagina?.total ?? 0}
+        isLoading={isLoading}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={(linhas) => { setRowsPerPage(linhas); setPage(0); }}
+        onAbrir={(a) => setVisualizarId(a.id)}
+        rowActions={acoesDaLinha}
       />
 
-      <Dialog open={!!vetoDialogItem} onClose={() => setVetoDialogItem(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>Vetar Ata / Decisão de Conselho</DialogTitle>
-        <DialogContent dividers sx={DIALOG_CONTENT_SCROLL_SX}>
-          <Stack spacing={2.5} sx={{ mt: 1 }}>
-            <Typography variant="body2" color="textSecondary">
-              Informe o motivo do veto para a ata "{vetoDialogItem?.titulo}". Esta justificativa será gravada de forma auditável.
-            </Typography>
-            <TextField
-              label="Motivo do Veto"
-              fullWidth
-              multiline
-              rows={3}
-              size="small"
-              value={motivoVeto}
-              onChange={(e) => setMotivoVeto(e.target.value)}
-              required
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <ActionButton title="Cancelar veto" icon={<CloseIcon />} onClick={() => setVetoDialogItem(null)} color="secondary" />
-          <ActionButton title="Confirmar veto da ata / decisão" icon={<BlockIcon />} onClick={handleConfirmVeto} color="error" />
-        </DialogActions>
-      </Dialog>
+      <AtaViewModal
+        ataId={visualizarId}
+        onClose={() => setVisualizarId(null)}
+        onEditar={(a) => { setVisualizarId(null); setForm({ aberto: true, edicao: a }); }}
+        onSubmeter={(a) => submeter.mutate(a.id)}
+        onHomologar={(a) => homologar.mutate(a.id)}
+        onVetar={(a) => setVetar({ id: a.id, titulo: a.conteudo.titulo })}
+        onReabrir={(a) => reabrir.mutate(a.id)}
+        onRetificar={(a) => setRetificar({ id: a.id, titulo: a.conteudo.titulo })}
+        onExportar={(a, opcoes) => exportarAta(a.id, opcoes)}
+      />
+
+      <AtaFormModal
+        open={form.aberto}
+        edicao={form.edicao}
+        tipos={tiposRedacao}
+        organizacoes={organizacoes}
+        isPending={rascunhar.isPending || atualizar.isPending}
+        onClose={() => setForm({ aberto: false, edicao: null })}
+        onSubmit={salvar}
+      />
+
+      <JustificativaDialog
+        open={vetar !== null}
+        isPending={vetarAta.isPending}
+        titulo="Vetar ata"
+        rotulo="Motivo do veto"
+        ajuda={`O motivo fica na trilha e volta ao redator${vetar ? ` da ata “${vetar.titulo}”` : ''}.`}
+        icone={<BlockIcon />}
+        cor="error"
+        onClose={() => setVetar(null)}
+        onConfirm={(motivo) => vetar && vetarAta.mutate({ id: vetar.id, motivo }, { onSuccess: () => setVetar(null) })}
+      />
+
+      <JustificativaDialog
+        open={retificar !== null}
+        isPending={retificarAta.isPending}
+        titulo="Abrir ata retificadora"
+        rotulo="Justificativa da retificação"
+        ajuda={`A ata original${retificar ? ` “${retificar.titulo}”` : ''} permanece intacta; a retificadora nasce em rascunho.`}
+        icone={<EditNoteIcon />}
+        cor="primary"
+        onClose={() => setRetificar(null)}
+        onConfirm={(justificativa) => retificar && retificarAta.mutate({ id: retificar.id, justificativa }, {
+          onSuccess: (nova) => { setRetificar(null); setVisualizarId(nova.id); },
+        })}
+      />
     </Container>
   );
 };
+
 export default ConselhosAtas;

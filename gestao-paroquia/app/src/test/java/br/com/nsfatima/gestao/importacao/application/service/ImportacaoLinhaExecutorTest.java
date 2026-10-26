@@ -294,7 +294,7 @@ class ImportacaoLinhaExecutorTest {
                     Map.of("nome", "Ministerio de Musica", "tipo", "SERVICO_PAROQUIAL"), "actor");
 
             verify(organizacaoService).criar("Ministerio de Musica", TipoOrganizacao.SERVICO_PAROQUIAL,
-                    null, null, null, null, null, null, null);
+                    null, null, null, null, null);
         }
 
         @Test
@@ -449,7 +449,7 @@ class ImportacaoLinhaExecutorTest {
                     Map.of("nome", "Conselho Central", "tipo", "CONSELHO"), "actor");
 
             verify(organizacaoService).criar("Conselho Central", TipoOrganizacao.CONSELHO,
-                    null, null, null, matrizId, null, null, null);
+                    null, matrizId, null, null, null);
         }
 
         @Test
@@ -466,7 +466,7 @@ class ImportacaoLinhaExecutorTest {
                     Map.of("nome", "Pastoral da Familia", "tipo", "PASTORAL"), "actor");
 
             verify(organizacaoService).criar("Pastoral da Familia", TipoOrganizacao.PASTORAL,
-                    null, null, null, conselhoId, null, null, null);
+                    null, conselhoId, null, null, null);
         }
 
         @Test
@@ -478,7 +478,7 @@ class ImportacaoLinhaExecutorTest {
                     Map.of("nome", "Movimento X", "tipo", "TIPO_INVALIDO"), "actor");
 
             verify(organizacaoService).criar("Movimento X", TipoOrganizacao.PASTORAL,
-                    null, null, null, null, null, null, null);
+                    null, null, null, null, null);
         }
 
         @Test
@@ -495,7 +495,7 @@ class ImportacaoLinhaExecutorTest {
                     Map.of("nome", "Pastoral da Familia", "tipo", "PASTORAL"), "actor");
 
             verify(organizacaoService).criar("Pastoral da Familia", TipoOrganizacao.PASTORAL,
-                    null, null, null, null, oficialId, null, null);
+                    null, null, oficialId, null, null);
         }
     }
 

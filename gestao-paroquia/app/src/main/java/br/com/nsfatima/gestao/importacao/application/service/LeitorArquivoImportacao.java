@@ -107,7 +107,7 @@ public class LeitorArquivoImportacao {
     private String getHeadersParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
-            case ORGANIZACAO -> "nome,tipo,contato,coordenador,viceCoordenador,parentId,pastoralOficialId";
+            case ORGANIZACAO -> "nome,tipo,contato,parentId,pastoralOficialId";
             case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
         };
     }
@@ -120,8 +120,8 @@ public class LeitorArquivoImportacao {
                     "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
             );
             case ORGANIZACAO -> List.of(
-                    "Pastoral da Música,PASTORAL,musica@paroquia.org,Carlos Silva,Fernanda Lima,,",
-                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,Lucas Mendes,Patricia Rocha,,"
+                    "Pastoral da Música,PASTORAL,musica@paroquia.org,,",
+                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,,"
             );
             case EVENTO -> List.of(
                     "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,,,",

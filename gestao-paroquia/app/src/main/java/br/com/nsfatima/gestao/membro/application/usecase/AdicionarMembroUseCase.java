@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -11,6 +10,7 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGru
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class AdicionarMembroUseCase {
      */
     @Transactional
     public MembroResponse execute(MembroRequest request, String actor) {
-        FielEntity fiel = fielRepository.findById(request.fielId())
+        fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
 
         OrganizacaoEntity organizacao = organizacaoRepository.findById(request.organizacaoId())
@@ -75,6 +75,7 @@ public class AdicionarMembroUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(m -> {
@@ -95,7 +96,6 @@ public class AdicionarMembroUseCase {
 
         MembroGrupoEntity saved = repository.save(membroGrupoMapper.toEntity(membro));
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
 
         auditPublisher.publish(actor, "criar", saved.getId().toString(), "sucesso");
 

@@ -194,7 +194,7 @@ class ImportacaoServiceTest {
         int countOrg = importacaoService.confirmarImportacao("ORGANIZACAO", List.of(orgMap), "admin");
         assertEquals(1, countOrg);
         verify(organizacaoService).criar(eq("Pastoral da Música"),
-                any(), any(), any(), any(), any(), any(), any(), any());
+                any(), any(), any(), any(), any(), any());
 
 
         Map<String, String> eventoMap = Map.of(

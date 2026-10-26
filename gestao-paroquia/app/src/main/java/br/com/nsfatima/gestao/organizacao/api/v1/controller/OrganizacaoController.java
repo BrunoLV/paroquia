@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Expõe a API REST de gestão de organizações da paróquia (Matriz, Comunidades, Pastorais, Movimentos,
  * Conselhos, Clero), incluindo consulta do organograma e dos membros de cada organização. A coordenação não é
  * definida aqui: é um encargo temporário proposto e homologado pelo Pároco, ver {@code MandatoCoordenacaoController};
- * {@code coordenador}/{@code viceCoordenador} são apenas o espelho de leitura do mandato vigente.
+ * {@code coordenador}/{@code viceCoordenador} da resposta são derivados dos vínculos de membro.
  */
 @RestController
 @RequestMapping("/api/v1/organizacoes")
@@ -80,8 +80,6 @@ public class OrganizacaoController {
                 request.nome(),
                 request.tipo(),
                 request.contato(),
-                request.coordenador(),
-                request.viceCoordenador(),
                 request.parentId(),
                 request.pastoralOficialId(),
                 request.setorPastoral(),
@@ -93,7 +91,7 @@ public class OrganizacaoController {
     }
 
     /**
-     * Atualiza uma organização existente preservando o espelho de coordenação, que só muda por mandato.
+     * Atualiza os dados cadastrais de uma organização; a coordenação só muda por mandato.
      *
      * @param id identificador da organização a atualizar
      * @param request novos dados da organização
@@ -119,8 +117,6 @@ public class OrganizacaoController {
                 request.nome(),
                 request.tipo(),
                 request.contato(),
-                request.coordenador(),
-                request.viceCoordenador(),
                 request.ativo(),
                 request.parentId(),
                 request.pastoralOficialId(),

@@ -1,7 +1,6 @@
 import {
     canAddObservation,
     canApprove,
-    canHomologarDecisao,
     canManageAnoParoquial,
     canManageEvento,
     canManageCadastroFieis,
@@ -232,18 +231,16 @@ describe('canManageEvento', () => {
   });
 });
 
-// ─── canApprove & canHomologarDecisao ────────────────────────────────────────
+// ─── canApprove ──────────────────────────────────────────────
 
-describe('canApprove & canHomologarDecisao', () => {
+describe('canApprove', () => {
   it('returns false if user is null', () => {
     expect(canApprove(null)).toBe(false);
-    expect(canHomologarDecisao(null)).toBe(false);
   });
 
   it('allows PAROCO and BISPO_DIOCESANO exclusively', () => {
     expect(canApprove({ id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] })).toBe(true);
     expect(canApprove({ id: '2', username: 'b', name: 'Bispo', roles: ['BISPO_DIOCESANO'] })).toBe(true);
-    expect(canHomologarDecisao({ id: '1', username: 'p', name: 'Paroco', roles: ['PAROCO'] })).toBe(true);
   });
 
   it('denies ADMIN, conselhos, and coordenadores', () => {
@@ -251,7 +248,6 @@ describe('canApprove & canHomologarDecisao', () => {
     expect(canApprove({ id: '2', username: 'cpp', name: 'CPP', roles: ['MEMBRO_CONSELHO_PASTORAL'] })).toBe(false);
     expect(canApprove({ id: '3', username: 'sec', name: 'Sec', roles: ['SECRETARIO_CONSELHO'] })).toBe(false);
     expect(canApprove({ id: '4', username: 'c', name: 'Coord', roles: ['COORDENADOR'] })).toBe(false);
-    expect(canHomologarDecisao({ id: '1', username: 'admin', name: 'Admin', roles: ['ADMIN'] })).toBe(false);
   });
 });
 

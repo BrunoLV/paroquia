@@ -984,31 +984,6 @@ export interface OrganogramaNode {
   orgChildren?: OrganogramaNode[];
 }
 
-export type StatusHomologacao =
-  "PENDENTE_HOMOLOGACAO" | "HOMOLOGADO" | "VETADO";
-
-/**
- * Decisão de um Conselho Pastoral Comunitário (CPC) registrada em ata, sujeita a
- * homologação (ou veto) por um papel superior antes de produzir efeito.
- */
-export interface CpcDecisao {
-  id: string;
-  titulo: string;
-  pautaDescricao: string;
-  dataReuniao: string;
-  comunidadeId: string;
-  conselhoTipo: string;
-  statusHomologacao: StatusHomologacao;
-  solicitanteId: string;
-  solicitanteNome?: string | null;
-  /** ID de quem homologou ou vetou a decisão; ausente enquanto `statusHomologacao` é `PENDENTE_HOMOLOGACAO`. */
-  homologadorId?: string | null;
-  /** Justificativa do veto; preenchido apenas quando `statusHomologacao` é `VETADO`. */
-  motivoVeto?: string | null;
-  criadoEmUtc: string;
-  decididoEmUtc?: string | null;
-}
-
 export type AtivoCategoria =
   "ELETRONICO" | "MOBILIARIO" | "PARAMENTO" | "INFRAESTRUTURA";
 

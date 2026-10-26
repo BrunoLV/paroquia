@@ -10,6 +10,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniao;
+import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
+import br.com.nsfatima.gestao.conselho.domain.model.AtaReuniaoId;
+import br.com.nsfatima.gestao.conselho.domain.model.StatusAta;
+import br.com.nsfatima.gestao.conselho.domain.model.TipoReuniao;
+import br.com.nsfatima.gestao.conselho.domain.repository.AtaRepository;
 import br.com.nsfatima.gestao.sacramento.application.service.RequisitosAssentoRegistry;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramental;
 import br.com.nsfatima.gestao.sacramento.domain.model.AssentoSacramentalId;
@@ -21,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -49,6 +58,9 @@ public class SeedDataSqlIntegrityTest {
     @Autowired
     private RequisitosAssentoRegistry requisitosAssento;
 
+    @Autowired
+    private AtaRepository ataRepository;
+
     @BeforeEach
     @AfterEach
     void cleanTables() {
@@ -76,8 +88,8 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(32, flyway.info().applied().length,
-                "O baseline deve manter uma migração Flyway por contexto com persistência");
+        assertEquals(36, flyway.info().applied().length,
+                "O esquema deve conter as 36 migrações Flyway versionadas");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
         assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");
@@ -279,6 +291,99 @@ public class SeedDataSqlIntegrityTest {
                     .as("Livro reservado não aparece na listagem da Secretaria")
                     .noneMatch(a -> a.getVisibilidade() == Visibilidade.RESERVADO);
         });
+    }
+
+    @Test
+    void seedDeAtasDeveCarregarPeloAgregadoCobrindoTodosOsTiposESituacoes() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+            List<UUID> ids = jdbcTemplate.queryForList("SELECT id FROM calendario.ata_reuniao", UUID.class);
+            List<AtaReuniao> atas = ids.stream().map(id -> ata(id.toString())).toList();
+
+            assertThat(atas).hasSizeGreaterThanOrEqualTo(24);
+            assertThat(atas).extracting(AtaReuniao::getTipo).containsAll(Arrays.asList(TipoReuniao.values()));
+            assertThat(atas).extracting(AtaReuniao::getStatus).containsAll(Arrays.asList(StatusAta.values()));
+            assertThat(atas).filteredOn(a -> a.getAtaRetificadaId() != null).isNotEmpty();
+            assertThat(atas).filteredOn(a -> a.getStatus().selada()).allMatch(a -> a.identificacao().isPresent());
+            assertThat(ata("91000000-0000-0000-0000-000000000001").identificacao()).contains("001/2026");
+            assertThat(ata("91000000-0000-0000-0000-000000000003").getMotivoVeto()).isNotBlank();
+            assertThat(ata("91000000-0000-0000-0000-000000000004").getConteudo().presenca().nominal())
+                    .as("O Pároco preside o CPP").anyMatch(p -> p.clerigo() && "Presidente".equals(p.funcao()));
+            assertThat(ata("91000000-0000-0000-0000-000000000017").quorum())
+                    .as("A reunião do CAEP sem o Pároco não atinge o quórum")
+                    .hasValueSatisfying(q -> assertThat(q.atingido()).isFalse());
+        });
+    }
+
+    @Test
+    void cenarioDeAtasDeveTerRedatorComLoginEVinculoDeRedacaoEPorocoParaHomologar() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        assertThat(jdbcTemplate.queryForList("""
+                SELECT a.id::text || ' ' || a.redator_id
+                FROM calendario.ata_reuniao a
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM calendario.usuarios u
+                    JOIN calendario.membro_grupo m ON m.fiel_id = u.fiel_id
+                    WHERE u.username = a.redator_id AND u.enabled AND m.ativo
+                      AND m.organizacao_id = a.organizacao_convocante_id
+                      AND m.papel IN ('secretario-conselho', 'secretario-grupo', 'coordenador'))
+                """, String.class))
+                .as("Todo redator da massa precisa ter login e papel de redação no órgão convocante")
+                .isEmpty();
+        assertThat(jdbcTemplate.queryForList("""
+                SELECT a.conteudo::jsonb ->> 'local'
+                FROM calendario.ata_reuniao a
+                WHERE NOT EXISTS (SELECT 1 FROM calendario.locais l WHERE l.nome = a.conteudo::jsonb ->> 'local')
+                """, String.class))
+                .as("O local de cada ata precisa ser um local cadastrado").isEmpty();
+        assertThat(contar("SELECT COUNT(*) FROM calendario.usuarios WHERE username = 'padre.pedro' "
+                + "AND roles = 'PAROCO'")).isEqualTo(1);
+        assertThat(contar("SELECT COUNT(*) FROM calendario.ata_reuniao WHERE status = 'PENDENTE_HOMOLOGACAO'"))
+                .as("O Pároco precisa ter atas para homologar").isPositive();
+    }
+
+    @Test
+    void todoConselhoDeveTerCoordenadorComoMembro() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        assertThat(jdbcTemplate.queryForList("""
+                SELECT o.nome FROM calendario.organizacao o
+                WHERE o.tipo = 'CONSELHO' AND NOT EXISTS (
+                    SELECT 1 FROM calendario.membro_grupo m
+                    WHERE m.organizacao_id = o.id AND m.ativo AND m.papel = 'coordenador')
+                """, String.class)).as("Todo conselho tem um coordenador que é membro, com esse papel").isEmpty();
+    }
+
+    @Test
+    void todoVinculoDaMassaDeveTerPapelValidoParaOTipoDaOrganizacao() throws Exception {
+        var dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute(Files.readString(Path.of("../docker/seed-data.sql")));
+        }
+
+        List<String> invalidos = jdbcTemplate.query("""
+                SELECT o.nome || ': ' || m.papel, o.tipo, m.papel
+                FROM calendario.membro_grupo m JOIN calendario.organizacao o ON o.id = m.organizacao_id
+                """, (rs, i) -> PapeisPorTipoOrganizacao.aceita(TipoOrganizacao.valueOf(rs.getString(2)),
+                        PapelOrganizacional.fromStoredValue(rs.getString(3))) ? null : rs.getString(1))
+                .stream().filter(Objects::nonNull).toList();
+
+        assertThat(invalidos).as("Vínculos com papel que o tipo de organização não admite").isEmpty();
+    }
+
+    private AtaReuniao ata(String id) {
+        return ataRepository.buscarPorId(AtaReuniaoId.fromString(id)).orElseThrow();
     }
 
     private int contar(String sql) {

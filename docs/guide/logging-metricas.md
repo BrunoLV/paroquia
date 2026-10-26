@@ -30,7 +30,7 @@ O backend adota o **Apache Log4j2** configurado exclusivamente em modo assíncro
 
 ## 2. Rastreabilidade com MDC (Mapped Diagnostic Context)
 
-Toda requisição HTTP que ingressa no backend passa por um filtro de observabilidade (`MdcFilter`) que injeta metadados contextuais padronizados no contexto de log:
+Toda requisição HTTP que ingressa no backend passa por um filtro de observabilidade (`CorrelationIdFilter` e `AcaoRastreamentoFilter`) que injeta metadados contextuais padronizados no contexto de log:
 
 ```json
 {
@@ -59,7 +59,7 @@ Toda requisição HTTP que ingressa no backend passa por um filtro de observabil
 
 ## 3. Conformidade LGPD & Política PII Zero em Logs
 
-Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`lgpd-privacy-by-design`](.agents/skills/lgpd-privacy-by-design/SKILL.md), é **expressamente proibido** imprimir Informações Pessoais Identificáveis (PII) em texto claro nos logs da aplicação.
+Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`lgpd-privacy-by-design`](../../.agents/skills/lgpd-privacy-by-design/SKILL.md), é **expressamente proibido** imprimir Informações Pessoais Identificáveis (PII) em texto claro nos logs da aplicação.
 
 ### 3.1. Dados com Proibição Absoluta de Log
 - CPFs, RGs ou números de documentos civis.
@@ -69,7 +69,7 @@ Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`l
 - Dados de saúde, donativos financeiros nominais ou anotações de aconselhamento espiritual.
 
 ### 3.2. Mascaramento Automático (*Sanitization Pattern*)
-Sempre que for estritamente necessário registrar a ocorrência de um evento associado a um fiel, utilize identificadores sintéticos (`FielId`) ou padrões de mascaramento (*masking*):
+Sempre que for estritamente necessário registrar a ocorrência de um evento associado a um fiel, utilize identificadores sintéticos (o UUID do fiel) ou padrões de mascaramento (*masking*):
 
 | Dado | Formato de Mascaramento | Exemplo |
 | :--- | :--- | :--- |

@@ -8,6 +8,35 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+---
+
+## [0.12.0] - 2026-10-25
+
+### Adicionado
+- **Conselhos e Atas como espinha dorsal das reuniões da paróquia (módulo `conselho`):**
+  - **Agregado `AtaReuniao`** com itens de pauta, deliberações (parecer, votação consultiva e declaração de conflito de interesses), presença nominal ou por total de participantes, leitura e aprovação da ata anterior, quórum por maioria absoluta e numeração sequencial (`003/2026`) por órgão e ano atribuída ao selar.
+  - **12 tipos de reunião** com regras próprias (convocante, homologação, quórum, presença, votação e redator): CPP, CPC, CAEP, reunião conjunta CPP e CAEP, reunião de pastoral, de coordenadores, assembleias paroquial e comunitária, organismo, planejamento pastoral, comissão especial e animadores. Base: Cân. 536 e 537 e Documento 100 da CNBB (nn. 291-294).
+  - **Fluxo e papéis:** o redator conduz a ata até a submissão; a homologação e o veto (com motivo) são privativos do Pároco; os tipos sem homologação terminam em `REGISTRADA`. Ata selada é imutável (também por trigger no banco) e é corrigida por **ata retificadora**.
+  - **Exportação em Word (.docx) e PDF**, nos layouts estruturado e narrativo (texto de Livro de Atas), da ata completa ou só do quadro de decisões, e **compilação do livro de atas** por órgão e período. Ata não selada sai como minuta com marca d'água.
+  - **Auditoria:** trilha append-only por ata (autor, perfil, IP, estado antes e depois) que registra também cada exportação, replicada no log global de auditoria.
+  - **Escopo de leitura** aplicado na consulta: clero e secretaria paroquial veem todas as atas; os demais, só as dos órgãos a que estão vinculados. `ADMIN` não acessa o conteúdo.
+  - **Clero e presidência nata:** o clero (cadastrado como clérigo, não como fiel) pode constar na presença e declarar conflito de interesses; nos conselhos o Pároco já vem incluído como Presidente e conta como membro convocado e, presente, no quórum.
+  - **Coordenador e vice-coordenador do conselho são membros:** o formulário da ata sugere a função (Coordenador(a) ou Vice-coordenador(a) do conselho) a partir do papel do vínculo.
+  - **Reuniões de presença livre incluem as pastorais:** na reunião de pastoral, de coordenadores, de animadores, no planejamento pastoral e na comissão especial, a lista de presença e de conflitos oferece também os membros das pastorais, movimentos e serviços do conselho, com o nome do organismo e a função sugerida (coordenador ou representante).
+  - **Busca de fiéis na presença livre:** nessas reuniões o redator também busca qualquer fiel ativo pelo nome (mínimo de 3 letras, resultado só com nome, restrita a quem redige o tipo no órgão); a presença passa a exigir fiel ativo.
+  - **Papéis de vínculo por tipo de organização numa tabela única:** cadastro de membros, promoção, vínculo por usuário e mandato de coordenação recusam o papel que o tipo não admite; o calendário consulta a mesma tabela; ao encerrar o mandato o vínculo volta ao papel de membro do tipo (no conselho, conforme o subtipo); e o seletor de papéis da interface mostra só os válidos. O banco repete a regra (V036) e os vínculos antigos com papel inválido foram trocados pelo de membro comum, com registro do papel anterior.
+  - **Consistência entre tipo de reunião e órgão:** a reunião conjunta exige o CAEP da mesma unidade do CPP; a compatibilidade é reconferida ao editar, submeter e homologar; e a **migração `V034`** traz um gatilho que impede gravar ata de tipo incompatível com o órgão.
+  - **Migração Flyway `V033`** (`ata_reuniao`, `ata_historico`, triggers de imutabilidade) e API em `/api/v1/conselhos/atas` com `ConselhoExceptionHandler` (404, 409 e 422 em vez de 500).
+  - **Frontend:** nova tela "Atas e decisões dos conselhos" com filtros, paginação no servidor, redação do rascunho por tipo, detalhe com trilha, veto, retificação e menu de exportação; ações exibidas conforme `ata.acoes`, calculadas pelo servidor.
+  - Documentação em [`docs/business-rules/conselho.md`](docs/business-rules/conselho.md).
+
+### Alterado
+- `Content-Disposition` passa a ser exposto no CORS para o download usar o nome sugerido pelo servidor.
+- O download de arquivos no frontend passa a usar o utilitário `shared/utils/downloadBlob` (libera a URL temporária).
+
+### Removido
+- Registro simples de decisões de conselho (`CpcDecisao`, `/api/v1/conselhos/decisoes` e a tabela `calendario.cpc_decisoes`), substituído pelas atas. A tabela continha apenas dados de teste.
+
 ## [0.11.0] - 2026-10-24
 
 ### Adicionado
@@ -50,7 +79,7 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### Modificado
 - **Renomeação `GrupoParoquial` para `Organizacao`** em código, banco (`grupo_paroquial`, `grupo_paroquial_id`, `tipo_grupo`) e contrato REST (`grupoParoquialId` vira `organizacaoId`; `grupoParoquialResponsavelId` vira `organizacaoResponsavelId`).
-- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida.
+- `coordenador` e `viceCoordenador` deixam de ser editáveis no cadastro de organização (espelho do mandato vigente); a sincronização de vínculos por texto livre foi removida. A API e o modelo de importação de organizações não aceitam mais esses campos em texto: a coordenação é escolhida entre os membros pelo mandato. As colunas `coordenador` e `vice_coordenador` deixam de existir (V035): a resposta os deriva dos vínculos de membro, e a lista de membros do órgão não completa mais a liderança a partir de nomes em texto.
 - A tela de Pastorais e Movimentos lista somente organismos eclesiais; Matriz e Comunidade ficam em Governo & Território.
 - Mensagens de validação e descrições OpenAPI do módulo `organizacao` passam para português.
 - Documentação `docs/business-rules/organizacao.md` reescrita; `membro.md` e `conselho.md` atualizados.

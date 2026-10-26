@@ -21,10 +21,8 @@ import java.util.UUID;
 
 /**
  * Lista os membros efetivos de uma organização, combinando os vínculos formais ({@code MembroGrupoEntity})
- * diretos da organização com os vínculos de pastorais/movimentos que a têm como igreja de contexto, e
- * completando a lista com o coordenador/vice-coordenador definidos como texto livre na organização quando
- * ainda não existir um vínculo formal correspondente — garantindo que o organograma sempre exiba a liderança
- * mesmo antes de ela ser formalmente vinculada.
+ * diretos da organização com os vínculos de pastorais/movimentos que a têm como igreja de contexto. A
+ * liderança é um papel do vínculo, portanto aparece na lista sem tratamento à parte.
  */
 @Service
 public class ListarOrganizacaoMembrosUseCase {
@@ -44,9 +42,7 @@ public class ListarOrganizacaoMembrosUseCase {
 
     /**
      * Lista os membros efetivos da organização informada: vínculos formais diretos, vínculos de
-     * pastorais/movimentos que usam esta organização como igreja de contexto, e, como fallback, o
-     * coordenador/vice-coordenador registrados como texto livre quando ainda não houver vínculo formal com o
-     * mesmo nome.
+     * pastorais/movimentos que usam esta organização como igreja de contexto.
      *
      * @param organizacaoId identificador da organização
      * @return lista de membros efetivos da organização
@@ -66,16 +62,7 @@ public class ListarOrganizacaoMembrosUseCase {
                 .map(m -> toResponse(m, setorDa(m.getOrganizacaoId())))
                 .toList();
 
-        List<OrganizacaoMembroResponse> membros = new ArrayList<>(membrosBanco);
-
-        var orgOpt = organizacaoRepository.findById(organizacaoId);
-        if (orgOpt.isPresent()) {
-            var org = orgOpt.get();
-            addDynamicMemberIfMissing(membros, org.getCoordenador(), "COORDENADOR");
-            addDynamicMemberIfMissing(membros, org.getViceCoordenador(), "SECRETARIO_GRUPO");
-        }
-
-        return membros;
+        return membrosBanco;
     }
 
     private OrganizacaoMembroResponse toResponse(MembroGrupoEntity m, SetorPastoral setor) {
@@ -98,28 +85,5 @@ public class ListarOrganizacaoMembrosUseCase {
         return fielRepository.findById(fielId)
                 .map(FielEntity::getNome)
                 .orElse("Fiel Desconhecido");
-    }
-
-    private void addDynamicMemberIfMissing(List<OrganizacaoMembroResponse> list, String name, String papel) {
-        if (name == null || name.trim().isEmpty()) {
-            return;
-        }
-        boolean exists = list.stream().anyMatch(m -> name.equalsIgnoreCase(m.fielNome()));
-        if (exists) {
-            return;
-        }
-
-        fielRepository.findAll().stream()
-                .filter(f -> name.equalsIgnoreCase(f.getNome()))
-                .map(FielEntity::getId)
-                .findFirst().ifPresent(fielId -> list.add(new OrganizacaoMembroResponse(
-                        UUID.randomUUID(), // dummy vinculo ID
-                        fielId,
-                        name,
-                        papel,
-                        true,
-                        null,
-                        null
-                )));
     }
 }

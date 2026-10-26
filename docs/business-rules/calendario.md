@@ -10,24 +10,30 @@ Permitir o planejamento, agendamento e execução de todas as atividades celebra
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Evento` (Raiz de Agregado):** Entidade principal identificada por `EventoId`. Contém título, descrição, período (`DataHoraInicio`, `DataHoraFim`), local (`LocalId`), organização promotora (`OrganizacaoId`), status (`StatusEvento`), tipo litúrgico/pastoral e dados de recorrência.
-- **`TipoEvento` (Enum):** `LITURGICO` (Missas, Celebrações, Sacramentos), `PASTORAL` (Encontros, Reuniões de Pastoral, Formações), `SOCIAL` (Festas, Quermesses, Almoços comunitários) e `ADMINISTRATIVO` (Reuniões de Conselho, Expediente).
-- **`StatusEvento` (Enum):** `RASCUNHO`, `PENDENTE_APROVACAO`, `CONFIRMADO`, `CANCELADO`, `REJEITADO`.
-- **`Recorrencia` (Value Object):** Periodicidade (`DIARIA`, `SEMANAL`, `MENSAL`), dias da semana, data de término ou contagem de ocorrências.
-- **`CorLiturgica` (Enum):** `BRANCO`, `VERMELHO`, `VERDE`, `ROXO`, `ROSA`, `PRETO`.
+- **Evento (`EventoEntity`):** entidade principal do contexto (concentra a maior parte das regras), identificada por UUID. Contém título, descrição, período (início e fim, com o tipo de horário), local, organização responsável, categoria, formato, status, justificativa, projeto de origem, regra de recorrência e envolvidos.
+- **`CategoriaEvento` (Enum):** define a **prioridade** do evento na agenda: `SOLENIDADE` (nível 1); `LITURGICO` e `SACRAMENTAL` (nível 2); `PASTORAL`, `FORMATIVO`, `ADMINISTRATIVO`, `ASSISTENCIAL` e `SOCIAL` (nível 3); `MOVIMENTO` (nível 4).
+- **`EventoStatusInput` (Enum):** `RASCUNHO`, `CONFIRMADO`, `ADICIONADO_EXTRA` e `CANCELADO`. A aprovação pendente **não é um status**: é indicada por campos paralelos na resposta do evento (aprovação pendente e tipo de solicitação pendente), enquanto o status oficial permanece o anterior à mudança solicitada.
+- **`FormatoEvento` (Enum):** `PRESENCIAL`, `ONLINE` e `HIBRIDO`.
+- **`TipoHorarioEvento` (Enum):** `PERSONALIZADO`, `DIA_INTEIRO`, `MADRUGADA`, `MANHA`, `TARDE` e `NOITE`; os blocos predefinidos já embutem a janela, dispensando margem externa.
+- **`PapelEnvolvido` (Enum):** `RESPONSAVEL` e `APOIO`, o papel de cada envolvido no evento.
+- **`RegraRecorrencia` (Value Object):** frequência (`DIARIA`, `SEMANAL` ou `MENSAL`), intervalo, dias da semana, posição no mês, data limite ou número de ocorrências.
+- **`CorLiturgica` (Enum):** `BRANCO`, `VERMELHO`, `VERDE`, `ROXO`, `ROSA` e `PRETO`.
+- **Calendário litúrgico:** ano litúrgico e ciclo, solenidades e marcos litúrgicos, calculados pelo motor litúrgico.
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-CAL-01: Política de Choque de Horários (`ChoqueHorarioPolicy`)
-- Dois eventos não podem ocupar o mesmo espaço físico (`LocalId`) no mesmo intervalo de tempo.
-- Deve ser computada uma janela de preparação/desocupação configurável entre eventos sequenciais.
-- **Exceção / Bypass de Pároco:** Usuários autenticados com o papel `PAROCO` possuem autorização canônica para forçar a marcação ou sobreposição em situações extraordinárias, gerando registro auditado.
+### RN-CAL-01: Precedência da Agenda Eclesial (`HierarquiaPrioridadeAgendaPolicy`)
+- A agenda segue a precedência de quatro níveis da `CategoriaEvento`:
+  - Uma **solenidade** (nível 1) cancela os eventos de nível inferior que se sobrepõem a ela; não pode haver duas solenidades no mesmo período.
+  - Um evento **litúrgico ou sacramental** (nível 2) não pode se sobrepor a uma solenidade; não pode haver dois eventos litúrgicos no mesmo espaço; e cancela os eventos de nível inferior no mesmo espaço.
+  - Os eventos de nível 3 e 4 não se impõem a eventos de nível superior nem ocupam o mesmo espaço de outro evento: o conflito é recusado.
+- O espaço é o mesmo quando o local, ou a igreja, coincide.
+- A **sobreposição** de eventos no mesmo espaço e período é sinalizada no próprio evento (estado de conflito `PENDENTE`, com o motivo), e a resolução do conflito é tratada pelo fluxo de aprovação (ver `aprovacao.md`).
 
-### RN-CAL-02: Agendamento Extraordinário (`ADICIONADO_EXTRA`)
-- Eventos cadastrados fora do planejamento anual aprovado recebem a flag ou status `ADICIONADO_EXTRA`.
-- A criação de evento com essa característica exige **justificativa textual obrigatória** e é direcionada automaticamente para a esteira de aprovação.
+### RN-CAL-02: Evento Adicionado Fora do Planejamento (`ADICIONADO_EXTRA`)
+- O evento criado fora do provisionamento anual regular, com o ano litúrgico já fechado, recebe o status `ADICIONADO_EXTRA`, e a **justificativa é obrigatória**. Esse status admite apenas o cancelamento.
 
 ### RN-CAL-03: Cálculo e Sincronização do Calendário Litúrgico
 - As datas móveis do ano litúrgico (Páscoa, Cinzas, Pentecostes, Corpus Christi, etc.) são calculadas com exatidão matemática via algoritmo canônico de **Meeus/Jones/Butcher**.
@@ -35,39 +41,41 @@ Permitir o planejamento, agendamento e execução de todas as atividades celebra
 
 
 ### RN-CAL-04: Escopo de Edição em Séries Recorrentes
-- Ao editar ou cancelar um evento pertencente a uma série recorrente, o usuário deve escolher explicitamente entre dois escopos:
-  1. `APENAS_ESTE`: Aplica a alteração isoladamente à ocorrência selecionada, desvinculando-a da série ou criando uma exceção.
-  2. `TODOS_SEGUINTES`: Propaga a alteração para a ocorrência selecionada e todas as ocorrências cronologicamente posteriores.
+- Ao editar um evento pertencente a uma série recorrente, o usuário escolhe explicitamente o escopo (`EscopoEdicaoEvento`):
+  1. `SOMENTE_ESTE`: altera apenas a ocorrência selecionada.
+  2. `ESTE_E_PROXIMOS`: altera a ocorrência selecionada e todas as seguintes, dividindo a série.
+  3. `TODOS`: altera todas as ocorrências da série.
 
-### RN-CAL-05: Alocação de Recursos e Equipamentos
-- Caso o evento demande ativos patrimoniais (ex: sistema de som portátil, projetor, microfones sem fio), a disponibilidade do ativo no período exato deve ser validada junto ao módulo `patrimonio`.
+### RN-CAL-05: Recursos e Equipamentos
+- O evento que precisa de ativos patrimoniais (projetor, microfones, som) os ocupa por **reserva** (ver `reserva.md`), que respeita a disponibilidade do ativo e a manutenção em aberto.
 
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
 
+O ciclo de vida do status do evento é este; a aprovação pendente corre em paralelo, sem mudar o status oficial até a decisão:
+
 ```mermaid
 stateDiagram-v2
-    [*] --> Rascunho : Criar Evento
-    Rascunho --> PendenteAprovacao : Submeter Evento (Coordenador/Conselho)
-    PendenteAprovacao --> Confirmado : Aprovado (Exclusivo Pároco)
-    PendenteAprovacao --> Rejeitado : Recusado pelo Pároco (com justificativa)
-    Confirmado --> PendenteAprovacao : Solicitar Edição/Cancelamento (Coordenador)
-    Confirmado --> Cancelado : Cancelar Direto (Pároco)
-    Confirmado --> [*] : Evento Concluído
-    Rejeitado --> [*]
-    Cancelado --> [*]
+    [*] --> RASCUNHO : Criado em elaboração
+    [*] --> CONFIRMADO : Criado já confirmado
+    [*] --> ADICIONADO_EXTRA : Criado fora do provisionamento anual
+    RASCUNHO --> CONFIRMADO
+    RASCUNHO --> CANCELADO
+    CONFIRMADO --> CANCELADO
+    ADICIONADO_EXTRA --> CANCELADO
+    CANCELADO --> [*]
 ```
 
-1. **Submissão de Evento por Coordenador (`COORDENADOR`) ou Conselho:** A liderança submete evento ou alteração sensível -> Choque de horário é validado -> Solicitação entra em `PENDENTE_APROVACAO` sob alçada decisória exclusiva do `PAROCO` (`AprovadorPapel.PAROCO`).
-2. **Gestão do Catálogo Litúrgico e Solenidades:** Exclusiva do `PAROCO` (governo litúrgico paroquial).
-3. **Visualização:** Grade mensal com cores por categoria e alternância para lista corrida (agenda).
-4. **Exportação:** Exportação oficial de grade e celebrações em PowerPoint (PPTX), PDF e Word (DOCX).
+1. **Submissão de Evento:** o ator com alçada cria, altera ou cancela o evento diretamente; sem alçada suficiente, ou quando a mudança é sensível, a solicitação segue para a esteira de aprovação do Pároco (`AprovadorPapel.PAROCO`).
+2. **Gestão do Catálogo Litúrgico e Solenidades:** a cargo do Pároco, governo litúrgico paroquial.
+3. **Visualização:** grade mensal com cores por categoria e alternância para lista corrida (agenda).
+4. **Exportação:** exportação oficial da grade e das celebrações em PowerPoint (PPTX), PDF e Word (DOCX).
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`aprovacao`:** Envio de requisições de criação, alteração ou cancelamento para a esteira de deliberação.
+- **`aprovacao`:** envio de requisições de criação, alteração ou cancelamento para a esteira de deliberação, quando o ator não tem alçada suficiente ou a mudança é sensível.
 - **`local`:** Consulta de disponibilidade e capacidade máxima de fiéis do espaço.
-- **`patrimonio`:** Reserva e conferência de alocação de itens patrimoniais.
+- **`reserva` e `patrimonio`:** ocupação de locais e de ativos pelo evento, por reserva.
 - **`organizacao`:** Associação obrigatória à pastoral, movimento ou setor responsável.

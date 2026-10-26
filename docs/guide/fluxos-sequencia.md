@@ -109,45 +109,45 @@ sequenceDiagram
 
 ---
 
-## 3. Fluxo de Homologação de Ata do Conselho Pastoral Paroquial (CPC)
+## 3. Fluxo de Homologação de Ata de Reunião
 
-Fluxo demonstrando a governança eclesiástica de atas do conselho paroquial:
+Fluxo da governança eclesiástica de uma ata de tipo que exige homologação (por exemplo, a reunião do CPP). O redator é o secretário do conselho; a homologação é privativa do Pároco:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Secretario as "Secretário do CPC"
+    actor Secretario as "Secretário do Conselho"
     actor Paroco as "Pároco"
     participant UI as "Conselhos & Atas UI"
-    participant Controller as "AtaConselhoController"
+    participant Controller as "AtaReuniaoController"
     participant UseCase as "HomologarAtaUseCase"
-    participant AtaRepo as "AtaConselhoRepository"
-    participant Notifier as "NotificationService"
+    participant AtaRepo as "AtaRepository"
+    participant Auditoria as "AtaAuditoriaService"
 
-    Secretario->>UI: Submete minuta da ata concluída
-    UI->>Controller: POST /api/v1/conselhos/atas (CriarAtaRequest)
-    Controller->>AtaRepo: salvar(novaAta em status MINUTA)
+    Secretario->>UI: Redige a ata e a submete
+    UI->>Controller: POST /api/v1/conselhos/atas
+    Controller->>AtaRepo: salvar(ata em RASCUNHO)
+    UI->>Controller: POST /api/v1/conselhos/atas/{id}/submissao
+    Note over Controller: Congela o total de convocados do quórum e leva a ata a PENDENTE_HOMOLOGACAO
 
-    Paroco->>UI: Abre tela de deliberações pendentes
-    UI->>Controller: GET /api/v1/conselhos/atas?status=MINUTA
-    Controller-->>UI: Retorna atas aguardando homologação
+    Paroco->>UI: Abre as atas pendentes
+    UI->>Controller: GET /api/v1/conselhos/atas
+    Controller-->>UI: Atas visíveis ao Pároco, com as ações permitidas
 
-    Paroco->>UI: Lê documento e clica em "Homologar Ata"
-    UI->>Controller: POST /api/v1/conselhos/atas/{id}/homologar
-    Controller->>UseCase: homologar(ataId, parocoContext)
+    Paroco->>UI: Lê a ata e clica em "Homologar"
+    UI->>Controller: POST /api/v1/conselhos/atas/{id}/homologacao
+    Controller->>UseCase: execute(ataId)
 
     activate UseCase
-    UseCase->>AtaRepo: buscarPorId(ataId)
-    AtaRepo-->>UseCase: AtaConselho
-    
-    UseCase->>UseCase: ata.homologar(parocoContext)
-    Note over UseCase: Transiciona status para HOMOLOGADA e bloqueia edições
-
+    UseCase->>AtaRepo: buscar(ataId)
+    AtaRepo-->>UseCase: AtaReuniao
+    UseCase->>UseCase: ata.homologar(...)
+    Note over UseCase: Transiciona para HOMOLOGADA, atribui o número (003/2026) e sela a ata
     UseCase->>AtaRepo: salvar(ata)
-    UseCase->>Notifier: notificarMembrosConselho(ataId)
-    UseCase-->>Controller: AtaHomologadaDTO
+    UseCase->>Auditoria: registrar(ator, HOMOLOGAR, antes, depois)
+    UseCase-->>Controller: AtaVisao
     deactivate UseCase
 
     Controller-->>UI: 200 OK (Status: HOMOLOGADA)
-    UI-->>Paroco: Ata homologada com sucesso e arquivada
+    UI-->>Paroco: Ata homologada e numerada
 ```

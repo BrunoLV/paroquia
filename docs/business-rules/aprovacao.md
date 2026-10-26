@@ -10,9 +10,10 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`SolicitacaoAprovacao` (Raiz de Agregado):** Identificada por `SolicitacaoAprovacaoId`. Armazena o tipo de solicitação, o recurso alvo, solicitante (`UsuarioId`), justificativa formal e histórico de decisões.
-- **`TipoSolicitacao` (Enum):** `CRIACAO_EVENTO`, `EDICAO_EVENTO`, `CANCELAMENTO_EVENTO`, `CRIACAO_PROJETO`, `ALOCACAO_EXTRAORDINARIA`.
-- **`StatusAprovacao` (Enum):** `PENDENTE`, `APROVADO`, `REJEITADO`, `CANCELADO_PELO_SOLICITANTE`.
+- **`Aprovacao` (Raiz de Agregado):** identificada por UUID. Armazena o evento alvo, o tipo da solicitação, o solicitante, a justificativa, o papel do aprovador, o payload da ação a executar, o identificador de correlação, as datas de criação, decisão e execução, a observação da decisão, os conflitos de agenda apurados e, quando a ação falha, a mensagem e o tipo da falha. Pode ter uma aprovação-mãe: a decisão da mãe é propagada às filhas.
+- **`TipoSolicitacaoInput` (Enum):** `CRIACAO_EVENTO`, `EDICAO_EVENTO`, `ALTERACAO_HORARIO`, `CANCELAMENTO`, `RECLASSIFICACAO`, `ALOCACAO_ATIVO_EMPRESTIMO`, `OUTRO`.
+- **`AprovacaoStatus` (Enum):** `PENDENTE`, `APROVADA`, `REPROVADA`, `FALHA_EXECUCAO`. A máquina de estados é `PENDENTE → APROVADA | REPROVADA`; sobre `APROVADA` registra-se a execução, ou `FALHA_EXECUCAO`.
+- **`TipoFalhaAprovacao` (Enum):** `NEGOCIO_CADASTRAL` e `SISTEMICA_APLICACAO`. Só a falha sistêmica admite reexecução.
 - **`AprovadorPapel` (Enum):** `PAROCO` (única alçada ordinária canônica homologatória).
 
 ---

@@ -155,21 +155,16 @@ public class Organizacao {
      * @param nome novo nome da organização
      * @param tipo novo tipo organizacional
      * @param contato novo contato
-     * @param coordenador novo nome do coordenador
-     * @param viceCoordenador novo nome do vice-coordenador
      * @param ativo novo estado de atividade
      * @param parentId novo identificador da organização-mãe, ou {@code null} se não houver
      * @param pastoralOficialId novo vínculo com o catálogo oficial de Pastorais/Movimentos, quando aplicável
      */
-    public void alterarCadastro(String nome,
-                       TipoOrganizacao tipo, String contato, String coordenador, String viceCoordenador, boolean ativo,
+    public void alterarCadastro(String nome, TipoOrganizacao tipo, String contato, boolean ativo,
                        UUID parentId, UUID pastoralOficialId) {
 
         this.nome = nome;
         this.tipo = tipo;
         this.contato = contato;
-        this.coordenador = coordenador;
-        this.viceCoordenador = viceCoordenador;
         this.ativo = ativo;
         this.parentId = parentId;
         this.pastoralOficialId = pastoralOficialId;

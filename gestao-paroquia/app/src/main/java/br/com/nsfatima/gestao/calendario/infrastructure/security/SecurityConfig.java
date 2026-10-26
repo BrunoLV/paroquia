@@ -117,7 +117,7 @@ public class SecurityConfig {
                 "Access-Control-Request-Headers", "Idempotency-Key"));
 
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin",
-                "Access-Control-Allow-Credentials"));
+                "Access-Control-Allow-Credentials", "Content-Disposition"));
 
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

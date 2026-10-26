@@ -144,7 +144,7 @@ services:
         condition: service_healthy
     volumes:
       - ./gestao-paroquia/docker/seed-data.sql:/seed-data.sql:ro
-    command: psql -h db -U postgres -d calendario -f /seed-data.sql
+    command: psql -v ON_ERROR_STOP=1 -h db -U postgres -d calendario -f /seed-data.sql
     mem_limit: 128M
     cpus: 0.25
     deploy:

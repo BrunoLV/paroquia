@@ -12,7 +12,7 @@ Historicamente, administrações paroquiais dependem de planilhas dispersas, liv
 
 1. **Zelo Litúrgico e Pastoral:** Integrar o calendário paroquial civil ao **Calendário Litúrgico Romano**, considerando solenidades, festas, preceitos e tempos litúrgicos (Advento, Natal, Quaresma, Páscoa e Tempo Comum).
 2. **Harmonia Organizacional:** Modelar com fidelidade canônica a estrutura paroquial (Comunidades, Capelas, Pastorais, Movimentos, Setores e Serviços), com papéis claros para clérigos, coordenadores e agentes leigos.
-3. **Governança Participativa:** Suportar os processos decisórios do **Conselho Pastoral Paroquial (CPC)** e Conselho de Assuntos Econômicos (CAEP), viabilizando atas estruturadas, pautas, pareceres e homologações pelo pároco.
+3. **Governança Participativa:** Suportar os processos decisórios dos Conselhos Pastorais (CPP e CPC) e do Conselho de Assuntos Econômicos (CAEP), viabilizando atas estruturadas, pautas, pareceres e homologações pelo pároco.
 4. **Zelo pelo Patrimônio Eclesial:** Prover rastreabilidade rigorosa de ativos paroquiais (inventário, alocação para eventos, transferências entre comunidades e conservação).
 5. **Privacidade por Desenho (*Privacy by Design*):** Cumprir estritamente a **Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018)**, assegurando que dados de fiéis e clérigos tenham tratamento ético, seguro, com PII Zero em logs e segregação estrita de acesso.
 
@@ -39,7 +39,7 @@ O ecossistema é organizado em um **Monorepo com fronteiras estritamente isolada
 - **Framework Core:** Spring Boot 4.x com injeção de dependências estrita por construtor imutável.
 - **Servidor Web Embarcado:** Eclipse Jetty 12 configurado para alta concorrência de E/S.
 - **Logging Assíncrono:** Log4j2 com LMAX Disruptor (`AsyncLoggerContextSelector`) e formato JSON estruturado com mascaramento PII.
-- **Persistência Relacional:** PostgreSQL 16 com migrações versionadas via Flyway e H2 para testes automatizados.
+- **Persistência Relacional:** PostgreSQL 16 com migrações versionadas via Flyway e testes automatizados com Testcontainers (PostgreSQL real, sem banco em memória).
 - **Qualidade & Inspeção:** Checkstyle 13, PMD 7, SpotBugs, JaCoCo, JUnit 5, AssertJ e Mockito 5 (`STRICT_STUBS`).
 
 ### Frontend (`gestao-paroquia-ui/`)

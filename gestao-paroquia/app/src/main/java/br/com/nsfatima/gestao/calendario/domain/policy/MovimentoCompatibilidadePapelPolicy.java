@@ -1,20 +1,15 @@
 package br.com.nsfatima.gestao.calendario.domain.policy;
 
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 
-import java.util.Set;
-
-/** Mantém o catálogo de vínculos válidos para um movimento. */
+/** Papéis de vínculo válidos num movimento, conforme a tabela única de papéis por tipo. */
 public final class MovimentoCompatibilidadePapelPolicy implements CompatibilidadePapelOrganizacionalPolicy {
-
-    private static final Set<PapelOrganizacional> PAPEIS_PERMITIDOS = Set.of(
-            PapelOrganizacional.COORDENADOR,
-            PapelOrganizacional.SECRETARIO_GRUPO,
-            PapelOrganizacional.MEMBRO_ATIVO,
-            PapelOrganizacional.VOLUNTARIO);
 
     @Override
     public boolean aceita(String tipoOrganizacao, PapelOrganizacional papel) {
-        return "MOVIMENTO".equalsIgnoreCase(tipoOrganizacao) && PAPEIS_PERMITIDOS.contains(papel);
+        return "MOVIMENTO".equalsIgnoreCase(tipoOrganizacao)
+                && PapeisPorTipoOrganizacao.aceita(TipoOrganizacao.MOVIMENTO, papel);
     }
 }

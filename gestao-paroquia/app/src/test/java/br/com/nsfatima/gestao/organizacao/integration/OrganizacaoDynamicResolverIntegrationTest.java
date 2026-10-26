@@ -70,8 +70,6 @@ class OrganizacaoDynamicResolverIntegrationTest {
         org.setNome("Pastoral do Dynamic Test");
         org.setTipo(TipoOrganizacao.PASTORAL);
         org.setContato("test@test.com");
-        org.setCoordenador("Fallback Coord Text"); // should be ignored in favor of João
-        org.setViceCoordenador("Fallback Vice Text"); // should be ignored in favor of Maria
         org.setAtivo(true);
         organizacaoRepository.save(org);
 

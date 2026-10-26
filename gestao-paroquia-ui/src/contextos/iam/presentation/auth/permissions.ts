@@ -181,15 +181,6 @@ export const canApprove = (user: User | null): boolean => {
 };
 
 /**
- * Homologação ou veto de atas e decisões dos conselhos (CPP, CPC, CAE):
- * exclusivamente Pároco (ou Bispo Diocesano) conforme Cân. 536 §2.
- */
-export const canHomologarDecisao = (user: User | null): boolean => {
-  if (!user) return false;
-  return isParoco(user);
-};
-
-/**
  * Trava, abertura e conclusão do Ano Paroquial:
  * exclusivamente Pároco (ou Bispo Diocesano). ADMIN, conselhos e coordenadores são impedidos.
  */

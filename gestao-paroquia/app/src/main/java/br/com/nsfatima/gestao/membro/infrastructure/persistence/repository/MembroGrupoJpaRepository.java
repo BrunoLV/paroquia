@@ -80,4 +80,6 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
      * @return quantidade de vínculos ativos
      */
     long countByOrganizacaoIdAndAtivoTrue(UUID organizacaoId);
+
+    boolean existsByOrganizacaoIdAndPapelAndAtivoTrue(UUID organizacaoId, String papel);
 }

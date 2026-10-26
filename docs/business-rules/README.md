@@ -30,20 +30,20 @@ Este diretório centraliza a documentação viva (*Living Documentation*) das re
 
 | Módulo / Bounded Context | Arquivo de Regras | Responsabilidade Principal |
 | :--- | :--- | :--- |
-| **Aprovação** | [`aprovacao.md`](./aprovacao.md) | Esteira de aprovação de eventos, alterações e cancelamentos com alçadas e prioridades. |
-| **Calendário** | [`calendario.md`](./calendario.md) | Agendamento paroquial, integração litúrgica (Meeus/Jones/Butcher), choque de horários e recorrência. |
-| **Clero** | [`clero.md`](./clero.md) | Governança eclesiástica, provisões canônicas, pároco, vigários, bispo e paridade LGPD. |
-| **Conselho** | [`conselho.md`](./conselho.md) | Gestão de CPC e CAEP, mandatos, atas de reunião, deliberações e homologação canônica. |
+| **Aprovação** | [`aprovacao.md`](./aprovacao.md) | Esteira de aprovação de eventos, alterações e cancelamentos, decidida pelo Pároco, com execução e reexecução da ação aprovada. |
+| **Calendário** | [`calendario.md`](./calendario.md) | Agendamento paroquial, integração litúrgica (Meeus/Jones/Butcher), precedência e choque de agenda e recorrência. |
+| **Clero** | [`clero.md`](./clero.md) | Cadastro do clero, encargos, governo eclesiástico, diocese e paridade LGPD. |
+| **Conselho** | [`conselho.md`](./conselho.md) | Atas de reunião por tipo (CPP, CPC, CAEP, assembleias e demais), deliberações, quórum, homologação do Pároco, ata retificadora, exportação em Word e PDF e trilha de auditoria. |
 | **Fiel** | [`fiel.md`](./fiel.md) | Cadastro civil, vida sacramental, vocacional, consentimento LGPD e blindagem de dados sensíveis. |
 | **Governança** | [`governanca.md`](./governanca.md) | Auditoria automática de entidades (`BaseAuditableEntity`), trilhas de auditoria e conformidade. |
 | **IAM (Segurança)** | [`iam.md`](./iam.md) | Autenticação JWT, usuários, papéis (RBAC), credenciais e políticas de acesso. |
-| **Importação & Exportação** | [`importacao.md`](./importacao.md) | Carga em lote de fiéis e clero via planilha, exportação de atas, relatórios e apresentações litúrgicas. |
+| **Importação & Exportação** | [`importacao.md`](./importacao.md) | Carga em lote (CSV e XLSX) de membros, organizações e eventos; as exportações pertencem aos módulos de origem, como a de atas no Conselho. |
 | **LGPD & Privacidade** | [`lgpd.md`](./lgpd.md) | Diretrizes transversais da LGPD, direitos dos titulares, portabilidade, canal do DPO e gestão de incidentes. |
-| **Local** | [`local.md`](./local.md) | Espaços físicos da matriz e comunidades, capacidade, recursos fixos e controle de ocupação. |
+| **Local** | [`local.md`](./local.md) | Espaços físicos da matriz e comunidades, tipo, capacidade e integridade com eventos futuros. |
 | **Membro** | [`membro.md`](./membro.md) | Vínculo de fiéis com pastorais, movimentos e serviços, histórico de atuação e lideranças. |
 | **Organização** | [`organizacao.md`](./organizacao.md) | Estrutura pastoral, setores, pastorais, movimentos, comunidades e territórios eclesiásticos. |
 | **Painel (Dashboard)** | [`painel.md`](./painel.md) | Indicadores executivos, total de fiéis ativos, quadro descritivo de projetos em risco e timeline semanal. |
-| **Patrimônio** | [`patrimonio.md`](./patrimonio.md) | Tombamento de bens móveis e imóveis, conservação, alocação de ativos em eventos e responsabilidade. |
-| **Projeto** | [`projeto.md`](./projeto.md) | Gestão de projetos pastorais, metas, status, métricas de progresso e diagnósticos preditivos de risco. |
-| **Reserva** | [`reserva.md`](./reserva.md) | Bloqueios temporários e conciliação de espaços paroquiais para eventos externos e comunitários. |
+| **Patrimônio** | [`patrimonio.md`](./patrimonio.md) | Tombamento de bens móveis, manutenção, status por reserva, exclusão lógica e alçada de gestão. |
+| **Projeto** | [`projeto.md`](./projeto.md) | Projetos pastorais com período, ciclo de vida, vínculo de eventos e indicador de risco de atraso. |
+| **Reserva** | [`reserva.md`](./reserva.md) | Reserva de locais e de ativos por pastorais e movimentos, com aprovação, expiração, retirada e devolução. |
 | **Sacramento** | [`sacramento.md`](./sacramento.md) | Assentos de Batismo, Confirmação, Matrimônio e Ordem com fé pública, vínculo tardio a fiel/clérigo, averbações, retificação, certidões e livro reservado. |

@@ -10,13 +10,13 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`MembroGrupo` (Raiz de Agregado):** Identificado por `MembroGrupoId`. Faz o vínculo entre um `FielId` e uma `OrganizacaoId`, contendo status da participação, data de ingresso, data de desligamento e papel canônico.
+- **`MembroGrupo` (Raiz de Agregado):** identificado por UUID. Faz o vínculo entre um fiel e uma organização, contendo o tipo da organização, o papel canônico, a igreja de vínculo, a data de entrada, o estado ativo ou inativo e a idoneidade do agente. O vínculo nasce ativo e ativar ou desativar é explícito; o papel nunca é nulo nem é um papel global (`PAROCO`, `VIGARIO`, `ADMIN`), concedidos só pela atribuição de papel global.
 - **`PapelOrganizacional` (Camada C):**
   - `COORDENADOR` (`coordenador`): Gestão de agentes, escalas e proposição de projetos da pastoral ou movimento.
-  - `SECRETARIO_GRUPO` (`secretario-grupo`): Apoio operacional e registro interno de presenças.
+  - `SECRETARIO_GRUPO` (`secretario-grupo`): Apoio operacional e registro interno de presenças; é também o papel do vice-coordenador.
   - `MEMBRO_ATIVO` (`membro-ativo`): Participante regular de atividades e escalas do grupo.
   - `VOLUNTARIO` (`voluntario`): Apoio operacional pontual.
-- **`StatusMembro`:** `ATIVO`, `INATIVO`.
+  - Nos conselhos valem ainda `SECRETARIO_CONSELHO`, `MEMBRO_CONSELHO_PASTORAL` e `MEMBRO_CONSELHO_ECONOMICO`. Quais papéis cada tipo de organização admite está em `organizacao.md`, RN-ORG-07.
 - **`IdoneidadeAgente` (Value Object):** datas de formação doutrinária básica, vivência sacramental atestada pelo Pároco, termo de proteção de menores (assinatura e validade) e envio (missão), com o responsável pelo envio. Guarda somente datas, nunca o conteúdo dos documentos.
 
 ---

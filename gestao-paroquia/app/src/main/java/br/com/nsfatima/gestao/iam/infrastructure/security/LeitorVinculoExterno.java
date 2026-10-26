@@ -43,8 +43,16 @@ public class LeitorVinculoExterno {
                         SELECT m.organizacao_id as organizacao_id,
                                 m.tipo_organizacao as tipo_organizacaoParoquial, m.papel, m.igreja_vinculo_id,
                                 o.nome as organizacao_nome,
-                                o.contato as organizacao_contato, o.coordenador as organizacao_coordenador,
-                                o.vice_coordenador as organizacao_vice_coordenador, o.ativo as organizacao_ativo
+                                o.contato as organizacao_contato,
+                                (SELECT f.nome FROM calendario.membro_grupo c
+                                   JOIN calendario.fieis f ON f.id = c.fiel_id
+                                  WHERE c.organizacao_id = o.id AND c.ativo AND c.papel = 'coordenador'
+                                  LIMIT 1) as organizacao_coordenador,
+                                (SELECT f.nome FROM calendario.membro_grupo c
+                                   JOIN calendario.fieis f ON f.id = c.fiel_id
+                                  WHERE c.organizacao_id = o.id AND c.ativo AND c.papel = 'secretario-grupo'
+                                  LIMIT 1) as organizacao_vice_coordenador,
+                                o.ativo as organizacao_ativo
 
                         FROM calendario.membro_grupo m
                         JOIN calendario.organizacao o ON o.id = m.organizacao_id

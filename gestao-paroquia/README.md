@@ -15,21 +15,25 @@ O projeto adota estritamente os princípios de **Domain-Driven Design (DDD)** e 
 
 ### 🏛️ Bounded Contexts (Contextos Delimitados)
 
-A aplicação está dividida em 14 domínios explicados sob o pacote raiz `br.com.nsfatima.gestao`:
+A aplicação está dividida em 17 domínios (mais o módulo transversal `support`) sob o pacote raiz `br.com.nsfatima.gestao`:
 
-* **`calendario`**: Gestão do ciclo de vida de eventos paroquiais, solicitações de agendamento e regras de recorrência.
+* **`calendario`**: Ciclo de vida de eventos paroquiais, precedência da agenda, recorrência e calendário litúrgico.
 * **`aprovacao`**: Workflows de aprovação de eventos e solicitações com histórico e pareceres.
-* **`local`**: Cadastro e controle de espaços físicos (salas, auditórios, capacidade e atributos).
+* **`local`**: Cadastro e controle de espaços físicos (tipo, endereço e capacidade).
+* **`reserva`**: Reserva de locais e de ativos patrimoniais, com aprovação, retirada e devolução.
 * **`iam`**: Identidade e Gestão de Acesso (Usuários, Roles, Permissões, perfis e Autenticação JWT).
-* **`governanca`**: Registros de auditoria, políticas de segurança, controle de acesso e rastreabilidade.
-* **`organizacao`**: Hierarquia organizacional da paróquia (Pastorais, Movimentos, Setores, Conselho e Comunidades).
-* **`membro`**: Cadastro, fichas cadastrais e acompanhamento de fiéis e membros atuantes.
-* **`projeto`**: Vinculação de eventos a projetos paroquiais com consolidação de métricas e status.
-* **`conselho`**: Decisões e homologações do Conselho Paroquial para Assuntos Econômicos (CPC), com histórico de pareceres.
-* **`patrimonio`**: Cadastro de ativos patrimoniais, alocação/reserva por evento, transferência entre organizações, manutenção e métricas de ociosidade.
-* **`importacao`**: Processamento batch de importação e exportação de dados (relatórios em Excel via Apache POI e PDF via OpenPDF).
+* **`governanca`**: Ano paroquial, consentimentos, incidentes de segurança e encarregado de dados (DPO).
+* **`organizacao`**: Hierarquia organizacional da paróquia (Pastorais, Movimentos, Serviços, Conselhos e Comunidades) e mandatos de coordenação.
+* **`fiel`**: Cadastro base da pessoa fiel (identidade, contato, vocação e relacionamentos familiares).
+* **`clero`**: Cadastro de clérigos, encargos, governo eclesiástico e diocese.
+* **`sacramento`**: Assentos sacramentais com fé pública, averbações e histórico imutável.
+* **`membro`**: Vínculo do fiel a organizações, papéis e idoneidade dos agentes.
+* **`projeto`**: Projetos paroquiais com período, eventos vinculados e indicador de risco de atraso.
+* **`conselho`**: Atas de reunião por tipo (CPP, CPC, CAEP e demais), deliberações, homologação do Pároco, ata retificadora, exportação em Word e PDF e trilha de auditoria.
+* **`patrimonio`**: Cadastro de ativos patrimoniais, tombamento, manutenção, exclusão lógica e métricas de ociosidade.
+* **`importacao`**: Importação em lote (CSV e XLSX) de membros, organizações e eventos.
 * **`dashboard`**: Métricas executivas, estatísticas gerais e visão consolidada para a gestão paroquial.
-* **`observabilidade`**: Emissão de logs estruturados via Log4j2 com MDC, rastreio de ações HTTP, telemetria e healthchecks.
+* **`observabilidade`**: Emissão de logs estruturados via Log4j2 com MDC, rastreio de ações HTTP, auditoria, telemetria e healthchecks.
 * **`support`**: Utilitários transversais, tratamento global de exceções e abstrações de infraestrutura compartilhada.
 
 ---

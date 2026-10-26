@@ -68,7 +68,7 @@ public class ObterRetencaoPastoraisUseCase {
 
     private RetencaoPastoralDTO avaliar(OrganizacaoEntity grupo) {
         long total = membroRepository.countByOrganizacaoIdAndAtivoTrue(grupo.getId());
-        boolean temLideranca = grupo.getCoordenador() != null && !grupo.getCoordenador().isBlank();
+        boolean temLideranca = membroRepository.existsByOrganizacaoIdAndPapelAndAtivoTrue(grupo.getId(), "coordenador");
         List<String> motivos = new ArrayList<>();
         if (total < MINIMO_VOLUNTARIOS) {
             motivos.add("Menos de " + MINIMO_VOLUNTARIOS + " voluntários ativos");

@@ -14,6 +14,7 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGru
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -85,6 +86,7 @@ public class PromoverACoordenadorUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
 
         MembroGrupoEntity membro = membroRepository
                 .findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
@@ -101,7 +103,6 @@ public class PromoverACoordenadorUseCase {
         membroGrupoMapper.aplicar(membroAgregado, membro);
         membroRepository.save(membro);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
 
         var usuarioExistente = usuarioRepository.findByFielId(request.fielId());
         boolean usuarioCriado = usuarioExistente.isEmpty();

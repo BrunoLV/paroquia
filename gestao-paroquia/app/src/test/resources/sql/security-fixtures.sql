@@ -3,7 +3,8 @@ TRUNCATE TABLE calendario.auditoria_operacoes,
     calendario.ativo_manutencoes,
     calendario.ativos_patrimoniais,
     calendario.clerigos,
-    calendario.cpc_decisoes,
+    calendario.ata_historico,
+    calendario.ata_reuniao,
     calendario.encargos_clericais,
     calendario.evento_idempotency,
     calendario.eventos,
@@ -91,6 +92,8 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'joao.silva', '{noop}senha123', 
        ('00000000-0000-0000-0000-000000000007', 'sem.vinculo', '{noop}senha123', TRUE,
         'f0000000-0000-0000-0000-000000000007', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+-- 'clara.invalida' tem um papel que o tipo da organização não admite, como um vínculo anterior à regra do banco.
+ALTER TABLE calendario.membro_grupo DISABLE TRIGGER trg_membro_grupo_papel_valido;
 INSERT INTO calendario.membro_grupo (id, fiel_id, organizacao_id, tipo_organizacao, papel, ativo,
                                       criado_em_utc, atualizado_em_utc)
 VALUES ('10000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001',
@@ -116,3 +119,4 @@ VALUES ('10000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-0000000
        ('10000000-0000-0000-0000-000000000007', 'f0000000-0000-0000-0000-000000000007',
         '00000000-0000-0000-0000-0000000000aa', 'PASTORAL', 'voluntario', TRUE,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+ALTER TABLE calendario.membro_grupo ENABLE TRIGGER trg_membro_grupo_papel_valido;

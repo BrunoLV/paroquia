@@ -91,8 +91,6 @@ class OrganizacaoApiIntegrationTest {
                   "tipo": "PASTORAL",
                   "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "musica@nsfatima.com",
-                  "coordenador": "Pedro Coordenador",
-                  "viceCoordenador": "Ana Vice",
                   "parentId": "%s",
                   "pastoralOficialId": "%s",
                   "ativo": true
@@ -120,6 +118,27 @@ class OrganizacaoApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "PAROCO")
+    void deveRejeitarCoordenadorInformadoComoTexto() throws Exception {
+        String payload = String.format("""
+                {
+                  "nome": "Pastoral da Música",
+                  "tipo": "PASTORAL",
+                  "setorPastoral": "FORMACAO_ENSINAR",
+                  "coordenador": "Pedro Coordenador",
+                  "parentId": "%s",
+                  "pastoralOficialId": "%s",
+                  "ativo": true
+                }
+                """, conselhoId, pastoralOficialId);
+
+        mockMvc.perform(post("/api/v1/organizacoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @WithMockUser(roles = "ADMIN")
     void deveNegarCriarParaAdminTecnico() throws Exception {
         String payload = String.format("""
@@ -128,8 +147,6 @@ class OrganizacaoApiIntegrationTest {
                   "tipo": "PASTORAL",
                   "setorPastoral": "FORMACAO_ENSINAR",
                   "contato": "acolhida@nsfatima.com",
-                  "coordenador": "Carlos Coordenador",
-                  "viceCoordenador": "Lucas Vice",
                   "parentId": "%s",
                   "pastoralOficialId": "%s",
                   "ativo": true

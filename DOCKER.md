@@ -24,7 +24,7 @@ flowchart TD
 
         subgraph CoreApp["Aplicações Principais"]
             Builder["Builder Container\n(gestao-builder)"]
-            API["Backend REST API\nSpring Boot 3 / Java 25\n:8080\n(gestao-api)"]
+            API["Backend REST API\nSpring Boot 4 / Java 25\n:8080\n(gestao-api)"]
             UI["Frontend React + Vite\n:3000\n(gestao-ui)"]
         end
 

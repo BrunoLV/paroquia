@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.membro.application.usecase;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
@@ -11,6 +10,7 @@ import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGru
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class AtualizarMembroUseCase {
         MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
 
-        FielEntity fiel = fielRepository.findById(request.fielId())
+        fielRepository.findById(request.fielId())
                 .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + request.fielId()));
 
         OrganizacaoEntity organizacao = organizacaoRepository.findById(request.organizacaoId())
@@ -75,6 +75,7 @@ public class AtualizarMembroUseCase {
         if (papel == null) {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
+        PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(existing -> {
@@ -98,7 +99,6 @@ public class AtualizarMembroUseCase {
 
         MembroGrupoEntity saved = repository.save(entity);
 
-        LiderancaSyncSupport.sync(organizacaoRepository, papel, fiel.getNome(), organizacao);
 
         auditPublisher.publish(actor, "atualizar", saved.getId().toString(), "sucesso");
 

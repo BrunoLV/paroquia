@@ -197,8 +197,6 @@ public class ImportacaoLinhaExecutor {
                 data.get(KEY_NOME),
                 tipoOrg,
                 data.get("contato"),
-                data.get("coordenador"),
-                data.get("viceCoordenador"),
                 parentId,
                 pastoralOficialId,
                 parseSetorPastoral(data.get("setorPastoral")),

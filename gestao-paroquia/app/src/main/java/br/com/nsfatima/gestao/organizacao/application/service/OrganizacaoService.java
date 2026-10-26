@@ -65,19 +65,15 @@ public class OrganizacaoService {
      * @param nome nome da organização
      * @param tipo tipo organizacional
      * @param contato informação de contato
-     * @param coordenador ignorado: a coordenação só nasce de mandato homologado (mantido por compatibilidade)
-     * @param viceCoordenador ignorado, ver {@code coordenador}
      * @param parentId identificador da organização-mãe, exigido para todos os tipos exceto {@code CLERO}
      * @param pastoralOficialId vínculo com o catálogo oficial, obrigatório para {@code PASTORAL}/{@code MOVIMENTO}
      * @return a organização recém-criada
      * @throws OrganizacaoNegocioException se a hierarquia informada violar as regras de tipo/organização-mãe
      */
     @Transactional
-    public Organizacao criar(String nome,
-                                TipoOrganizacao tipo, String contato, String coordenador,
-                                String viceCoordenador, UUID parentId,
+    public Organizacao criar(String nome, TipoOrganizacao tipo, String contato, UUID parentId,
                                 UUID pastoralOficialId) {
-        return criar(nome, tipo, contato, coordenador, viceCoordenador, parentId, pastoralOficialId, null, null);
+        return criar(nome, tipo, contato, parentId, pastoralOficialId, null, null);
     }
 
     /**
@@ -90,13 +86,10 @@ public class OrganizacaoService {
      * @throws OrganizacaoNegocioException se a tipologia ou a hierarquia forem violadas
      */
     @Transactional
-    public Organizacao criar(String nome,
-                                TipoOrganizacao tipo, String contato, String coordenador,
-                                String viceCoordenador, UUID parentId,
+    public Organizacao criar(String nome, TipoOrganizacao tipo, String contato, UUID parentId,
                                 UUID pastoralOficialId, SetorPastoral setorPastoral,
                                 SubtipoConselho subtipoConselho) {
-        return criar(nome, tipo, contato, coordenador, viceCoordenador, parentId, pastoralOficialId,
-                setorPastoral, subtipoConselho, null, null);
+        return criar(nome, tipo, contato, parentId, pastoralOficialId, setorPastoral, subtipoConselho, null, null);
     }
 
     /**
@@ -108,14 +101,11 @@ public class OrganizacaoService {
      * @throws OrganizacaoNegocioException se a tipologia ou a hierarquia forem violadas
      */
     @Transactional
-    public Organizacao criar(String nome,
-                                TipoOrganizacao tipo, String contato, String coordenador,
-                                String viceCoordenador, UUID parentId,
+    public Organizacao criar(String nome, TipoOrganizacao tipo, String contato, UUID parentId,
                                 UUID pastoralOficialId, SetorPastoral setorPastoral,
                                 SubtipoConselho subtipoConselho, String email, String telefone) {
 
         hierarquiaPolicy.validar(null, tipo, parentId, pastoralOficialId, setorPastoral, subtipoConselho);
-        // coordenador/viceCoordenador do request são ignorados: a coordenação só nasce de mandato homologado
         Organizacao org = new Organizacao(UUID.randomUUID(),
                 nome, tipo, contato, null, null, true, parentId, pastoralOficialId,
                 setorPastoral, subtipoConselho);
@@ -142,8 +132,6 @@ public class OrganizacaoService {
      * @param nome novo nome
      * @param tipo novo tipo organizacional
      * @param contato novo contato
-     * @param coordenador ignorado: o espelho de coordenação só muda por mandato
-     * @param viceCoordenador ignorado, ver {@code coordenador}
      * @param ativo novo estado de atividade
      * @param parentId novo identificador da organização-mãe
      * @param pastoralOficialId novo vínculo com o catálogo oficial, quando aplicável
@@ -152,12 +140,11 @@ public class OrganizacaoService {
      */
     @Transactional
     public Organizacao atualizar(UUID id,
-                                   String nome, TipoOrganizacao tipo, String contato, String coordenador,
-                                   String viceCoordenador,
+                                   String nome, TipoOrganizacao tipo, String contato,
                                    boolean ativo, UUID parentId, UUID pastoralOficialId) {
         Organizacao atual = organizacaoRepository.findById(id)
                 .orElseThrow(() -> OrganizacaoNegocioException.notFound(id));
-        return atualizar(id, nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId,
+        return atualizar(id, nome, tipo, contato, ativo, parentId,
                 pastoralOficialId, atual.getSetorPastoral(), atual.getSubtipoConselho());
     }
 
@@ -172,11 +159,10 @@ public class OrganizacaoService {
      */
     @Transactional
     public Organizacao atualizar(UUID id,
-                                   String nome, TipoOrganizacao tipo, String contato, String coordenador,
-                                   String viceCoordenador,
+                                   String nome, TipoOrganizacao tipo, String contato,
                                    boolean ativo, UUID parentId, UUID pastoralOficialId,
                                    SetorPastoral setorPastoral, SubtipoConselho subtipoConselho) {
-        return atualizar(id, nome, tipo, contato, coordenador, viceCoordenador, ativo, parentId,
+        return atualizar(id, nome, tipo, contato, ativo, parentId,
                 pastoralOficialId, setorPastoral, subtipoConselho, null, null);
     }
 
@@ -190,8 +176,7 @@ public class OrganizacaoService {
      */
     @Transactional
     public Organizacao atualizar(UUID id,
-                                   String nome, TipoOrganizacao tipo, String contato, String coordenador,
-                                   String viceCoordenador,
+                                   String nome, TipoOrganizacao tipo, String contato,
                                    boolean ativo, UUID parentId, UUID pastoralOficialId,
                                    SetorPastoral setorPastoral, SubtipoConselho subtipoConselho,
                                    String email, String telefone) {
@@ -205,8 +190,7 @@ public class OrganizacaoService {
                     "Encerre os mandatos de coordenação vigentes antes de desativar a organização.");
         }
 
-        org.alterarCadastro(nome, tipo, contato, org.getCoordenador(), org.getViceCoordenador(), ativo, parentId,
-                pastoralOficialId);
+        org.alterarCadastro(nome, tipo, contato, ativo, parentId, pastoralOficialId);
         org.classificar(setorPastoral, subtipoConselho);
         aplicarContatos(org, contato, email, telefone);
         organizacaoRepository.save(org);

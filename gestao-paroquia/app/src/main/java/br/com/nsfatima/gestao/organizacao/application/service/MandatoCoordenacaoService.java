@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.organizacao.application.service;
 
-import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
 import br.com.nsfatima.gestao.membro.domain.policy.PoliticaIdoneidadeFuncao;
@@ -11,6 +10,7 @@ import br.com.nsfatima.gestao.organizacao.domain.exception.OrganizacaoNegocioExc
 import br.com.nsfatima.gestao.organizacao.domain.model.FuncaoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.MandatoCoordenacao;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.domain.repository.MandatoCoordenacaoRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
@@ -28,9 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Orquestra o ciclo de vida do mandato de coordenação: a coordenação de uma pastoral, movimento ou serviço é um
  * encargo eclesial temporário, proposto pelo grupo e só legítimo após a homologação do Pároco (Cân. 519 e 317).
  *
- * <p>Ao homologar, o vínculo do fiel na organização assume o papel da função e o nome é espelhado nos campos
- * legados {@code coordenador}/{@code viceCoordenador}; ao encerrar, o vínculo volta a membro ativo e o espelho é
- * limpo. O espelho é somente leitura: a fonte da verdade é o mandato.</p>
+ * <p>Ao homologar, o vínculo do fiel na organização assume o papel da função; ao encerrar, volta ao papel de
+ * membro comum do tipo. O coordenador exibido na organização é derivado desse vínculo, nunca copiado.</p>
  */
 @Service
 @Transactional
@@ -78,6 +77,10 @@ public class MandatoCoordenacaoService {
         }
         if (!fielRepository.existsById(fielId)) {
             throw new OrganizacaoNegocioException("Fiel não encontrado: " + fielId);
+        }
+        if (!PapeisPorTipoOrganizacao.aceita(organizacao.getTipo(), funcao.papelEquivalente())) {
+            throw new OrganizacaoNegocioException("Organização do tipo " + organizacao.getTipo()
+                    + " não admite a função " + funcao + ".");
         }
         if (membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId).isEmpty()) {
             throw new OrganizacaoNegocioException("O fiel precisa ser membro ativo da organização para coordená-la.");
@@ -206,12 +209,13 @@ public class MandatoCoordenacaoService {
 
     private void investir(MandatoCoordenacao mandato) {
         aplicarPapel(mandato, mandato.getFuncao().papelEquivalente());
-        espelhar(mandato, fielRepository.findById(mandato.getFielId()).map(FielEntity::getNome).orElse(null));
     }
 
     private void desinvestir(MandatoCoordenacao mandato) {
-        aplicarPapel(mandato, PapelOrganizacional.MEMBRO_ATIVO);
-        espelhar(mandato, null);
+        PapelOrganizacional membroComum = organizacaoRepository.findById(mandato.getOrganizacaoId())
+                .map(o -> PapeisPorTipoOrganizacao.papelDeMembro(o.getTipo(), o.getSubtipoConselho()))
+                .orElse(PapelOrganizacional.MEMBRO_ATIVO);
+        aplicarPapel(mandato, membroComum);
     }
 
     private void aplicarPapel(MandatoCoordenacao mandato, PapelOrganizacional papel) {
@@ -223,17 +227,6 @@ public class MandatoCoordenacaoService {
                     membroMapper.aplicar(membro, atualizado);
                     membroRepository.save(atualizado);
                 });
-    }
-
-    private void espelhar(MandatoCoordenacao mandato, String nome) {
-        organizacaoRepository.findById(mandato.getOrganizacaoId()).ifPresent(organizacao -> {
-            if (mandato.getFuncao() == FuncaoCoordenacao.COORDENADOR) {
-                organizacao.setCoordenador(nome);
-            } else {
-                organizacao.setViceCoordenador(nome);
-            }
-            organizacaoRepository.save(organizacao);
-        });
     }
 
     private String atorAtual() {
