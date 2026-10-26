@@ -4,96 +4,75 @@ Este documento mapeia os ciclos de vida das entidades centrais do **Projeto Par�
 
 ---
 
-## 1. Ciclo de Vida do Evento Paroquial (`Evento`)
+## 1. Ciclo de Vida do Evento Paroquial (`EventoEntity`)
 
-O agregado `Evento` gerencia seu status através de uma máquina de estados finitos que impede mutações inválidas ou inconsistências no calendário:
+O status do evento (`EventoStatusInput`) tem quatro valores. A **aprovação pendente não é um status**: quando a mudança é desviada para a aprovação, o evento mantém o status oficial anterior e a resposta traz campos paralelos (aprovação pendente e tipo de solicitação pendente) até a decisão:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> RASCUNHO: Criado pelo Coordenador
+    [*] --> RASCUNHO: Criado em elaboração
+    [*] --> CONFIRMADO: Criado já confirmado na agenda
+    [*] --> ADICIONADO_EXTRA: Criado fora do provisionamento anual (ano litúrgico fechado)
 
-    RASCUNHO --> PENDENTE_APROVACAO: Submeter para Análise
-    RASCUNHO --> CANCELADO: Descartar Rascunho
+    RASCUNHO --> CONFIRMADO
+    RASCUNHO --> CANCELADO
 
-    PENDENTE_APROVACAO --> CONFIRMADO: Aprovado pelo Pároco / Coord. Geral
-    PENDENTE_APROVACAO --> REJEITADO: Rejeitado com Justificativa Obrigatória
+    CONFIRMADO --> CANCELADO: Cancelamento com motivo
+    ADICIONADO_EXTRA --> CANCELADO
 
-    REJEITADO --> RASCUNHO: Devolver para Correção
-    REJEITADO --> CANCELADO: Cancelamento Definitivo
-
-    CONFIRMADO --> CONCLUIDO: Data Fim Ultrapassada (Automático)
-    CONFIRMADO --> CANCELADO: Cancelamento com Motivo Formal
-
-    CONCLUIDO --> [*]
     CANCELADO --> [*]
 
-    note right of PENDENTE_APROVACAO
-        Edições diretas ficam bloqueadas
-        enquanto houver solicitação pendente.
-    end note
-
     note right of CONFIRMADO
-        Horário e local estão reservados no calendário.
-        Recursos patrimoniais vinculados tornam-se alocados.
+        Horário e local ocupam a agenda.
+        Os ativos do evento ocupam o calendário por reserva.
     end note
 ```
 
 ---
 
-## 2. Ciclo de Vida da Solicitação de Aprovação (`SolicitacaoAprovacao`)
+## 2. Ciclo de Vida da Solicitação de Aprovação (`Aprovacao`)
 
-As solicitações tramitam de forma desacoplada do evento, gerando um histórico rastreável de pareceres:
+As solicitações tramitam de forma desacoplada do evento. Uma solicitação pendente é decidida pelo Pároco; depois de aprovada, a ação de negócio é executada e pode falhar:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> SUBMETIDA: Criação, Edição ou Cancelamento Solicitado
+    [*] --> PENDENTE: Criação, edição ou cancelamento solicitado
 
-    SUBMETIDA --> EM_ANALISE: Triagem pela Secretaria Geral
-    SUBMETIDA --> APROVADA: Decisão Direta do Pároco
-    SUBMETIDA --> REJEITADA: Rejeição com Motivo
+    PENDENTE --> APROVADA: Decisão favorável do Pároco
+    PENDENTE --> REPROVADA: Decisão desfavorável
 
-    EM_ANALISE --> APROVADA: Parecer Favorável Emitido
-    EM_ANALISE --> REJEITADA: Parecer Desfavorável com Justificativa
-    EM_ANALISE --> DEVOLVIDA: Solicitação de Esclarecimentos / Ajustes
+    APROVADA --> APROVADA: Execução da ação registrada com sucesso
+    APROVADA --> FALHA_EXECUCAO: A ação aprovada falhou ao ser aplicada
+    FALHA_EXECUCAO --> APROVADA: Reexecução (só falha sistêmica)
 
-    DEVOLVIDA --> SUBMETIDA: Reenvio pelo Autor com Correções
-
-    APROVADA --> [*]: Mutação aplicada no Agregado Evento
-    REJEITADA --> [*]: Notificação enviada ao Solicitante
+    REPROVADA --> [*]
 ```
+
+A falha de execução é classificada como `NEGOCIO_CADASTRAL` ou `SISTEMICA_APLICACAO`; só a sistêmica admite reexecução. A decisão da aprovação-mãe é propagada às filhas.
 
 ---
 
 ## 3. Ciclo de Vida do Ativo Patrimonial (`AtivoPatrimonial`)
 
-Controla a integridade física e o agendamento dos bens pertencentes à paróquia ou comunidades:
+O status (`AtivoStatus`) reflete reservas e manutenção; a exclusão é lógica e não é um status:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DISPONIVEL: Cadastro e Tombamento Inicial
+    [*] --> DISPONIVEL: Cadastro
 
-    DISPONIVEL --> ALOCADO: Início da Janela do Evento / Termo Assinado
-    ALOCADO --> DISPONIVEL: Devolução e Vistoria Concluída sem Danos
+    DISPONIVEL --> RESERVADO: Existe reserva ativa
+    RESERVADO --> DISPONIVEL: Sem reserva ativa
 
-    DISPONIVEL --> EM_MANUTENCAO: Avaria Detectada / Manutenção Preventiva
-    ALOCADO --> EM_MANUTENCAO: Devolução com Avaria / Laudo Emitido
-
-    EM_MANUTENCAO --> DISPONIVEL: Reparo Concluído com Sucesso
-    EM_MANUTENCAO --> BAIXADO: Laudo de Inviabilidade Técnica / Obsolescência
-
-    DISPONIVEL --> BAIXADO: Doação / Descarte Homologado pelo CAEP
-
-    BAIXADO --> [*]: Desincorporação Definitiva do Patrimônio
-
-    note right of ALOCADO
-        Ativo não pode ser vinculado a outro evento
-        cuja janela de tempo seja coincidente.
-    end note
+    DISPONIVEL --> EM_MANUTENCAO: Envio para manutenção (sem reservas conflitantes)
+    EM_MANUTENCAO --> DISPONIVEL: Manutenção concluída
 
     note right of EM_MANUTENCAO
-        Indisponível para qualquer nova alocação.
+        Tem precedência sobre RESERVADO e bloqueia
+        novas reservas no período da manutenção.
     end note
 ```
+
+A exclusão lógica é recusada com manutenção em aberto ou reservas futuras pendentes ou confirmadas.
 
 ---
 

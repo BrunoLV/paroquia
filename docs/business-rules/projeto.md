@@ -1,51 +1,62 @@
 # Regras de Negócio e Fluxos: Módulo Projetos Pastorais (`projeto`)
 
-O módulo de Projetos gerencia iniciativas paroquiais estruturadas (construções, reformas, missões populares, festas de padroeiro, campanhas sociais e catequéticas) com acompanhamento de metas, progresso e diagnósticos preditivos de risco.
+O módulo de Projetos gerencia iniciativas paroquiais com período definido (construções, reformas, missões, festas e campanhas), seu ciclo de vida e o vínculo de eventos do calendário ao cronograma do projeto, com indicador de risco de atraso.
 
 ---
 
 ## 1. Visão Geral e Propósito
-Possibilitar o planejamento e acompanhamento estratégico de projetos de médio e longo prazo, permitindo identificar descompassos de cronograma e projetos sob risco de forma antecipada.
+Possibilitar o planejamento e o acompanhamento de projetos de médio e longo prazo, agrupando os eventos que os executam e sinalizando de forma antecipada os projetos em descompasso com o cronograma.
 
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Projeto` (Raiz de Agregado):** Identificado por `ProjetoId`. Contém título, objetivo, justificativa, datas de início e término planejado, orçamento previsto/executado, status (`StatusProjeto`), percentual de progresso (0-100%), lista de metas/etapas e coordenador responsável (`FielId`).
-- **`StatusProjeto` (Enum):** `PLANEJAMENTO`, `EM_EXECUCAO`, `CONCLUIDO`, `CANCELADO`, `ATRASADO`.
-- **`MetaProjeto`:** Etapa mensurável do projeto com peso, prazo e indicador de conclusão.
-- **`DiagnosticoRisco` (Value Object):** Indicador booleano `emRisco`, severidade e justificativa contextual (ex.: tempo decorrido vs progresso executado, eventos travados aguardando aprovação ou prazo estourado).
+- **`Projeto` (Raiz de Agregado):** identificado por UUID. Contém nome, descrição, organização responsável, início e fim e o status. A organização responsável pode ser transferida e o período redefinido.
+- **`ProjetoStatus` (Enum):** `ABERTO`, `EM_ANDAMENTO`, `CONCLUIDO` e `CANCELADO`. `CONCLUIDO` e `CANCELADO` são estados terminais.
+- **`ProjetoVinculo` (projeção):** o que a política de vínculo precisa saber do projeto (status, nome e período) ao receber um evento.
+- **Saúde temporal:** o percentual de tempo decorrido do projeto e o indicador `emRisco`, calculados na leitura e apresentados no painel e na lista de projetos.
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-PROJ-01: Classificação e Diagnóstico Preditivo de Risco
-Um projeto é automaticamente classificado como **Em Risco** (`emRisco === true`) quando atender a pelo menos um dos seguintes critérios objetivos:
-1. **Prazo Expirado:** A data atual ultrapassou a data final planejada e o status ainda é `EM_EXECUCAO` ou `PLANEJAMENTO`.
-2. **Descompasso Crítico de Cronograma:** O tempo decorrido do projeto já atingiu mais de 75% do prazo total, mas o progresso executado reportado é inferior a 50%.
-3. **Bloqueio de Aprovação:** Há eventos ou etapas essenciais travados na esteira de aprovação com data iminente de execução.
+### RN-PROJ-01: Ciclo de Vida
+- A transição é `ABERTO → EM_ANDAMENTO → CONCLUIDO`. O cancelamento só ocorre a partir de `ABERTO` ou `EM_ANDAMENTO`. Projeto concluído ou cancelado não sofre nova transição.
+- Iniciar só vale para projeto `ABERTO`, e concluir só para `EM_ANDAMENTO`.
+- O início pode ser **automático**: uma rotina diária leva a `EM_ANDAMENTO` os projetos `ABERTO` cuja data de início chegou.
+- O nome é obrigatório e o fim do projeto não pode ser anterior ao início.
 
-### RN-PROJ-02: Ordenação Prioritária no Painel (Dashboard)
-- Na visualização do Painel executivo, todos os projetos em risco (`emRisco === true`) **devem obrigatoriamente ser ordenados no topo da lista**, acompanhados de badge de alerta visual, borda de destaque e box com o motivo explicativo do diagnóstico de risco.
+### RN-PROJ-02: Criação e Ano Paroquial
+- Se o ano de início do projeto pertence a um **ano paroquial fechado ou concluído**, a criação direta é bloqueada e gera uma **solicitação de aprovação** pendente (ver `aprovacao.md`). Com o ano aberto, o projeto é criado já como `ABERTO`.
 
-### RN-PROJ-03: Conclusão Condicionada a Metas
-- Um projeto só pode transitar para o status `CONCLUIDO` se todas as suas etapas e metas obrigatórias estiverem registradas como concluídas ou se houver justificativa formal de dispensa aprovada pelo Pároco.
+### RN-PROJ-03: Vínculo de Eventos
+- Um evento só se vincula a projeto que não seja terminal (`CONCLUIDO` ou `CANCELADO`) e cujo período contenha o do evento.
+- O evento recorrente vinculado a projeto precisa ter **limite** (data limite ou número de ocorrências), e todas as ocorrências ficam dentro do período do projeto.
 
-### RN-PROJ-04: Alçada de Autorização de Projetos (`PadraoAutorizacaoProjetoPolicy`)
-- **`PAROCO` e `VIGARIO`:** Possuem alçada global paroquial para criar, editar e transicionar o ciclo de vida de projetos de qualquer pastoral ou comunidade.
-- **`COORDENADOR` e `SECRETARIO_GRUPO`:** Podem propor e gerir projetos estritamente vinculados à sua própria organização (`organizacaoResponsavelId` idêntico ao vínculo ativo).
-- **`ADMIN`:** Isolado na infraestrutura técnica; não possui alçada sobre projetos pastorais.
+### RN-PROJ-04: Indicador de Risco
+- O projeto é calculado como **em risco** (`emRisco`) quando há ao menos um **evento pendente** (evento do projeto que ainda não terminou) e o **tempo decorrido ultrapassa 80%** do período planejado. Sem eventos pendentes, não há risco.
+- Para o painel, o projeto ativo também é contado como **atrasado** quando o fim planejado já passou.
+
+### RN-PROJ-05: Ordenação Prioritária no Painel
+- No painel, os projetos em risco são exibidos **no topo da lista**, com sinalização visual de alerta.
+
+### RN-PROJ-06: Alçada de Autorização de Projetos (`PadraoAutorizacaoProjetoPolicy`)
+- **`PAROCO` e `BISPO_DIOCESANO`:** alçada global; criam, editam, iniciam e concluem projetos de qualquer organização.
+- **`VIGARIO` e `SECRETARIA_PAROQUIAL`:** podem criar e editar projetos, mas não iniciar nem concluir; quando atuam por uma organização, só nos projetos dela.
+- **`COORDENADOR`:** cria e edita projetos da própria organização e também os inicia e conclui.
+- **`SECRETARIO_GRUPO` e `SECRETARIO_CONSELHO`:** criam e editam projetos da própria organização, sem iniciar nem concluir.
+- **`ADMIN`:** isolado na infraestrutura técnica; não tem alçada sobre projetos pastorais.
 
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
-1. **Elaboração e Submissão:** Proposição do plano do projeto pelo `COORDENADOR` com parecer consultivo do Conselho (`MEMBRO_CONSELHO_PASTORAL` / `MEMBRO_CONSELHO_ECONOMICO`) e homologação pelo `PAROCO`.
-2. **Acompanhamento de Progresso:** Atualização de percentuais de avanço pelas coordenações (`COORDENADOR`).
-3. **Visão de Risco e Alertas:** Exibição sintética de distribuição por status e alertas visuais no painel paroquial.
+1. **Criação:** o responsável cadastra o projeto com nome, descrição, organização e período; em ano fechado, a criação segue para aprovação.
+2. **Execução:** o projeto é iniciado (manual ou automaticamente), recebe eventos vinculados e é concluído ou cancelado.
+3. **Visão de Risco:** o painel mostra a distribuição por status, os projetos atrasados e os em risco.
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`aprovacao`:** Submissão de novos projetos à esteira de decisão.
-- **`calendario`:** Vinculação de eventos e mutirões ao cronograma do projeto.
-- **`painel`:** Alimentação dos cards `ProjetosPorStatusCard` e `ListaProgressoProjetosAtivos`.
+- **`aprovacao`:** solicitação de criação de projeto em ano paroquial fechado.
+- **`calendario`:** eventos vinculados ao projeto, que definem o que ainda está pendente.
+- **`governanca`:** o ano paroquial que condiciona a criação.
+- **`painel`:** métricas e indicadores de risco.

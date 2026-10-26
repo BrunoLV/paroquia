@@ -1,42 +1,46 @@
-# Regras de Negócio e Fluxos: Módulo Importação & Exportação (`importacao`)
+# Regras de Negócio e Fluxos: Módulo Importação (`importacao`)
 
-O módulo de Importação & Exportação viabiliza a ingestão massiva de dados paroquiais e a extração estruturada de documentos oficiais nos padrões da Igreja e da administração civil.
+O módulo de Importação viabiliza a carga em lote de dados paroquiais a partir de planilhas, em três passos, com isolamento dos erros por linha. As exportações de documentos pertencem aos módulos de cada assunto (seção 4).
 
 ---
 
 ## 1. Visão Geral e Propósito
-Possibilitar a migração segura de dados prévios (planilhas de fiéis, históricos de batismo, dízimo) e a geração profissional de relatórios em formatos abertos e interoperáveis (PDF, Word DOCX, PowerPoint PPTX).
+Possibilitar a carga segura de dados prévios (vínculos de membros, organizações e eventos) a partir de arquivos CSV ou XLSX, sem gravar nada antes de o usuário corrigir os erros apontados.
 
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`LoteImportacao` (Raiz de Agregado):** Identificado por `LoteImportacaoId`. Contém arquivo de origem, tipo de carga, total de linhas, linhas processadas com sucesso, linhas com erro, status do processamento e log de inconsistências.
-- **`StatusLote` (Enum):** `AGUARDANDO_PROCESSAMENTO`, `PROCESSANDO`, `CONCLUIDO`, `CONCLUIDO_COM_FALHAS`, `FALHA_CRITICA`.
-- **`TipoExportacao` (Enum):** `AGENDA_MENSAL_PPTX`, `RELATORIO_PATRIMONIAL_PDF`, `LIVRO_TOMBO_PDF`, `CERTIDAO_BATISMO_PDF`.
+O módulo não tem agregado próprio: é um fluxo de orquestração sobre os contextos de destino.
+- **`TipoEntidadeImportacao` (Enum):** `MEMBRO` (vínculo de um usuário já existente a uma organização, com papel organizacional), `ORGANIZACAO` (cadastro na hierarquia paroquial) e `EVENTO`. Cada tipo tem seu conjunto de colunas, suas regras de validação por linha e sua lógica de gravação.
+- **Resultado de validação e de item:** o sumário com os totais e o detalhe de cada linha (válida ou com o problema apontado).
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-IMP-01: Validação Transacional Atômica e Sanitização
-- Toda importação em lote deve realizar pré-validação sintática e semântica linha a linha antes da gravação definitiva. Linhas inconsistentes (CPF inválido, e-mail malformado) são isoladas em relatório de falha sem corromper a base de dados.
+### RN-IMP-01: Três Passos, Validação sem Gravação e Isolamento por Linha
+- A importação segue **modelo → validação → confirmação**. O modelo é um arquivo de exemplo, com cabeçalhos e linhas de amostra, para cada tipo. A **validação** (dry-run) lê o arquivo e valida cada linha isoladamente, **sem gravar nada**. A **confirmação** grava as linhas válidas.
+- O erro de uma linha (identificador inexistente, papel inválido, dado malformado) é isolado e relatado: **não aborta o lote** nem impede a gravação das demais.
+- Linhas em branco, inclusive as do fim de uma planilha, são ignoradas.
 
-### RN-IMP-02: Paridade e Consentimento de Fiéis Importados
-- Fiéis importados em lote devem receber a marcação de termo de consentimento inicial sob a base legal de execução de serviços pastorais/legítimo interesse, exigindo atualização no primeiro atendimento presencial.
+### RN-IMP-02: Regras do Domínio de Destino
+- Cada linha confirmada passa pelas regras do contexto de destino, como se fosse cadastrada pela tela: o vínculo de membro segue a tabela de papéis do tipo de organização (`organizacao.md`, RN-ORG-07) e a organização segue a tipologia e a hierarquia (RN-ORG-01 e RN-ORG-02). A organização importada **não traz coordenador nem vice**: a liderança só muda por mandato (RN-ORG-05).
 
-### RN-IMP-03: Exportações Fidedignas com Identidade Visual
-- Documentos oficiais gerados em Word e PDF devem estampar o cabeçalho canônico da Paróquia (Diocese, Paróquia, Pároco em exercício, data de emissão e assinatura). Apresentações litúrgicas em PowerPoint devem adotar as cores litúrgicas correspondentes ao tempo do ano.
+### RN-IMP-03: Acesso
+- Importam o administrador, o Pároco, o Bispo Diocesano, a secretaria paroquial e o secretário de conselho.
 
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
-1. **Importação de Fiéis:** Upload de planilha Excel -> Pré-visualização -> Validação -> Carga atômica.
-2. **Exportação de Apresentação Litúrgica:** Seleção do mês no calendário -> Geração de slides PPTX formatados para telões da igreja.
-3. **Exportação de Atas:** pertence ao módulo Conselho (ver `conselho.md`, RN-CON-08): Word e PDF, em layout estruturado ou narrativo, com o cabeçalho canônico da Paróquia.
+1. **Importação em Lote:** o usuário baixa o modelo do tipo, preenche, envia para validação, corrige os erros apontados e confirma.
+2. **Exportações (nos módulos de origem):**
+   - **Calendário:** exportação da grade e das celebrações em PowerPoint, PDF, Excel e CSV (`calendario.md`).
+   - **Atas:** Word e PDF, em layout estruturado ou narrativo, com o cabeçalho institucional da Paróquia (`conselho.md`, RN-CON-08).
+   - **Relatórios:** relatórios do painel gerados na interface em PDF e CSV (`painel.md`).
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`fiel` / `clero`:** Ingestão de cadastros.
-- **`calendario`:** Extração de programações e slides litúrgicos.
-- **`conselho`:** Geração de atas formais.
+- **`organizacao` e `membro`:** destino das cargas de organizações e de vínculos.
+- **`calendario`:** destino da carga de eventos.
+- **`iam`:** o vínculo de membro parte de um usuário já existente.

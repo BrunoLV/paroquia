@@ -28,10 +28,30 @@ O repositório é organizado em módulos independentes, cada um com suas própri
 
 ## 🧭 Domínios de Negócio
 
-O backend está organizado em 15 bounded contexts sob o pacote `br.com.nsfatima.gestao`. Resumo funcional (detalhes técnicos no [README do backend](./gestao-paroquia/README.md)):
+O backend está organizado em 17 bounded contexts (mais o módulo transversal `support`) sob o pacote `br.com.nsfatima.gestao`. Resumo funcional (detalhes técnicos no [README do backend](./gestao-paroquia/README.md)):
 
 | Domínio | Responsabilidade |
 | :--- | :--- |
+| `calendario` | Ciclo de vida de eventos paroquiais, precedência da agenda, recorrência e calendário litúrgico |
+| `aprovacao` | Workflows de aprovação de eventos e solicitações |
+| `local` | Cadastro e controle de espaços físicos |
+| `reserva` | Reserva de locais e de ativos, com retirada e devolução |
+| `iam` | Identidade, acesso, roles e autenticação JWT |
+| `governanca` | Ano paroquial, consentimentos, incidentes de segurança e encarregado de dados |
+| `organizacao` | Hierarquia organizacional (pastorais, movimentos, serviços, conselhos, comunidades) e mandatos de coordenação |
+| `fiel` | Cadastro base da pessoa fiel (identidade, contato, vocação) |
+| `clero` | Cadastro de clérigos, encargos, governo eclesiástico e diocese |
+| `sacramento` | Assentos sacramentais com fé pública e averbações |
+| `membro` | Vínculo do fiel a organizações, papéis e idoneidade dos agentes |
+| `projeto` | Projetos paroquiais com período, eventos vinculados e indicador de risco |
+| `conselho` | Atas de reunião por tipo (CPP, CPC, CAEP e demais), deliberações, homologação do Pároco e exportação |
+| `patrimonio` | Ativos patrimoniais, tombamento, manutenção e exclusão lógica |
+| `importacao` | Importação em lote (CSV e XLSX) de membros, organizações e eventos |
+| `dashboard` | Métricas executivas e visão consolidada |
+| `observabilidade` | Logs estruturados, telemetria, healthchecks e auditoria |
+| `support` | Utilitários transversais e tratamento global de exceções |
+
+--- | :--- |
 | `calendario` | Ciclo de vida de eventos paroquiais, agendamento e recorrência |
 | `aprovacao` | Workflows de aprovação de eventos e solicitações |
 | `local` | Cadastro e controle de espaços físicos |
@@ -144,7 +164,7 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 Toda a documentação técnica, conceitual e de arquitetura do monorepo está unificada em [`docs/guide/`](./docs/guide), com renderização interativa via **Docsify** e diagramas **Mermaid v10**:
 
 - [⛪ **Visão Geral & Objetivos**](./docs/guide/README.md): Missão eclesial, pilares arquiteturais e stack tecnológica.
-- [📋 **Regras de Negócio & Funcionalidades**](./docs/guide/regras-funcionalidades.md): Catálogo completo dos 15 Bounded Contexts e recursos da UI.
+- [📋 **Regras de Negócio & Funcionalidades**](./docs/guide/regras-funcionalidades.md): Catálogo completo dos 17 Bounded Contexts e recursos da UI.
 - [🏛️ **Padrões de Arquitetura**](./docs/guide/arquitetura.md): Clean/Hexagonal Architecture, Virtual Threads e **Diagrama Mermaid C4/Container**.
 - [🧩 **Padrões de Projeto (Design Patterns)**](./docs/guide/padroes-projeto.md): Domain Policies puras, Records/Value Objects, Tell Don't Ask e **Diagrama Mermaid de Classes**.
 - [🔄 **Diagramas de Sequência**](./docs/guide/fluxos-sequencia.md): Fluxos temporais de agendamento de eventos, alocação de ativos e homologação do CPC.

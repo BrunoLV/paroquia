@@ -18,12 +18,12 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
   - `versaoTermoConsentimento` (String): Identificador da versão do termo vigente no ato do consentimento (ex.: `"v1.0"`).
   - `usoImagemAutorizado` (boolean): Autorização específica e destacada para captação e veiculação de imagem/vídeo em atividades pastorais.
   - `permitirDivulgacaoAniversario` (boolean): Autorização para citação de data de aniversário em murais comunitários e preces paroquiais.
-- **`EncarregadoDados` (Value Object em `ParoquiaConfiguracao`):** Identificação institucional do Encarregado de Proteção de Dados (DPO) nomeado pela autoridade paroquial:
+- **Encarregado de Proteção de Dados (campos da configuração da paróquia, `ParoquiaConfiguracao`):** Identificação institucional do Encarregado de Proteção de Dados (DPO) nomeado pela autoridade paroquial:
   - `dpoNome` (String): Nome completo do encarregado.
   - `dpoEmail` (String): E-mail institucional oficial para contato com titulares e a ANPD.
   - `dpoTelefone` (String): Telefone institucional para atendimento a requisições de privacidade.
 - **`IncidenteSeguranca` (Raiz de Agregado em `governanca`):** Registro formal de ocorrência que comprometa ou possa comprometer a confidencialidade, integridade ou disponibilidade de dados pessoais:
-  - `IncidenteId` (UUID): Identificador único do incidente.
+  - `id` (UUID): Identificador único do incidente.
   - `titulo` (String): Resumo da ocorrência.
   - `descricao` (String): Relato detalhado do evento.
   - `tipoDadoAfetado` (String): Categoria de dados expostos (dados civis, dados sensíveis/sacramentais).

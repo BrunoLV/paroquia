@@ -6,7 +6,7 @@ Este documento descreve os padrões de projeto táticos aplicados no **Projeto P
 
 ## 1. Diagrama de Classes dos Agregados Centrais
 
-O modelo abaixo ilustra a relação entre os principais Agregados do sistema, seus Value Objects imutáveis e a desacoplação de regras de negócio em Domain Policies (Strategy Pattern):
+O modelo abaixo ilustra a relação entre os principais Agregados do sistema, seus Value Objects imutáveis e a desacoplação de regras de negócio em Domain Policies (Strategy Pattern) (é um modelo de referência: os identificadores tipados existem hoje em `AtaReuniaoId`, `AtivoPatrimonialId`, `AtivoManutencaoId`, `AssentoSacramentalId` e `ReservaId`; nos demais contextos o identificador é um UUID):
 
 ```mermaid
 classDiagram
@@ -175,7 +175,7 @@ public record Periodo(Instant inicio, Instant fim) {
 Para garantir limites transacionais atômicos e evitar grafos gigantescos de navegação ORM em cascata:
 
 - Agregados **nunca** mantêm referências diretas de objeto (como `@ManyToOne` com o objeto completo) para outros agregados no domínio.
-- A associação é sempre efetuada pelo Value Object identificador tipado: `LocalId`, `OrganizacaoId`, `FielId`.
+- A associação é sempre efetuada por **identificador** (UUID ou Value Object identificador tipado, como `AtivoPatrimonialId`), nunca pelo objeto do outro agregado.
 - **Invariante:** Cada transação no banco de dados modifica no máximo **1 agregado raiz**. Se a operação exigir sincronia com outro agregado, o desacoplamento é feito via **Domain Events**.
 
 ---

@@ -10,34 +10,36 @@ Assegurar o mapeamento cadastral, capacidade de público, manutenção e disponi
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Local` (Raiz de Agregado):** Identificado por `LocalId`. Armazena nome, tipo de espaço, endereço, comunidade a que pertence (`OrganizacaoId`), capacidade máxima de pessoas sentadas e em pé, restrições de uso e status ativo.
-- **`TipoLocal` (Enum):** `IGREJA_MATRIZ`, `CAPELA_COMUNIDADE`, `SALAO_PAROQUIAL`, `SALA_CATEQUESE`, `AUDITORIO`, `SECRETARIA`, `CASA_PAROQUIAL`.
-- **`RecursoFixo` (Value Object):** Recursos físicos instalados permanentemente (ar-condicionado, altar, presbitério, projetor fixo, sistema de som).
-- **`StatusLocal` (Enum):** `ATIVO`, `INATIVO`, `EM_MANUTENCAO`.
+- **`Local` (Raiz de Agregado):** identificado por UUID. Armazena nome, tipo, endereço (`EnderecoLocal`), descrição, capacidade máxima de pessoas, a organização (igreja) a que pertence e o status ativo. O ciclo de vida admite **exclusão lógica**.
+- **Tipo do local:** texto de até 32 caracteres, escolhido na interface entre `SALAO_PAROQUIAL`, `IGREJA`, `CAPELA`, `SALA_REUNIAO`, `AUDITORIO`, `QUADRA`, `SECRETARIA` e `OUTRO`.
+- **`EnderecoLocal` (Value Object):** endereço do espaço, imutável.
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-LOC-01: Controle de Ocupação e Lotação Máxima
-- Nenhum evento pode ser confirmado se a estimativa de público informada exceder a capacidade máxima legal/estrutural cadastrada para o local.
+### RN-LOC-01: Capacidade Positiva
+- A capacidade máxima, quando informada, é um número positivo.
 
-### RN-LOC-02: Bloqueio para Manutenção e Reformas
-- Um espaço com status `EM_MANUTENCAO` fica automaticamente indisponível para qualquer agendamento ou reserva no período cadastrado da obra/reforma.
+### RN-LOC-02: Inativação e Exclusão com Eventos Futuros
+- Um local com **eventos futuros agendados** não pode ser inativado nem excluído: os eventos precisam ser remanejados antes. A exclusão é sempre lógica.
 
-### RN-LOC-03: Vínculo Obrigatório com Comunidade
-- Todo local físico deve pertencer a uma comunidade paroquial válida (ou à Matriz Paroquial). Locais não podem existir órfãos de jurisdição pastoral.
+### RN-LOC-03: Vínculo com a Igreja
+- Todo local pertence a uma organização (igreja ou comunidade) da paróquia, e a listagem pode ser restrita a ela.
+
+### RN-LOC-04: Alçada de Cadastro
+- Cadastram, alteram e excluem locais o administrador, o Pároco, o Bispo Diocesano, a secretaria paroquial, o secretário de conselho e o membro do conselho pastoral. Qualquer usuário autenticado consulta.
 
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
-1. **Cadastro e Manutenção de Espaços:** Cadastro detalhado com metragens, fotos, recursos instalados e regras de uso comunitário.
-2. **Consulta de Disponibilidade:** API para consulta de janelas horárias livres para suporte ao módulo `calendario` e `reserva`.
-3. **Bloqueio Emergencial:** Capacidade de o pároco ou secretário interditar temporariamente um espaço por motivos de força maior.
+1. **Cadastro e Manutenção de Espaços:** cadastro do local com tipo, endereço, capacidade e descrição.
+2. **Consulta:** listagem e busca de locais para o calendário e as reservas.
+3. **Inativação:** o local sai de uso, desde que não tenha eventos futuros.
 
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`calendario`:** Verificação de choques e alocação de missas e reuniões.
-- **`reserva`:** Mapeamento de reservas externas (ex.: eventos particulares ou aluguéis sociais).
-- **`patrimonio`:** Vinculação de bens patrimoniais instalados permanentemente no local.
+- **`calendario`:** eventos alocados ao local; a inativação e a exclusão consultam os eventos futuros.
+- **`reserva`:** reservas do local como dependência física (ver `reserva.md`).
+- **`organizacao`:** a organização a que o local pertence.

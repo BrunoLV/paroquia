@@ -10,9 +10,9 @@ Oferecer ao Pároco, coordenadores e secretários uma visão unificada e em temp
 ---
 
 ## 2. Agregados, Entidades e Componentes Principais
-- **`ResumoPeriodo` (Value Object de Leitura):** Métricas consolidadas: total de eventos no período, eventos pendentes de aprovação, projetos ativos e total de fiéis ativos (`totalFieisAtivos`) com contagem de novos cadastrados no mês.
+- **`ResumoGeralDTO` (leitura):** métricas consolidadas: eventos com início no período, projetos ativos (`ABERTO` ou `EM_ANDAMENTO`), solicitações pendentes (eventos e projetos), total de fiéis ativos (`totalFieisAtivos`), novos cadastrados no mês corrente (`novosFieisMes`) e o engajamento pastoral (fiéis com e sem vínculo a pastoral ou movimento).
 - **`AprovacoesPendentes` (Quadro Operacional):** Agrupamento sintético de contagens por tipo de solicitação, com direcionamento rápido para a esteira completa.
-- **`ProjetosPorStatusCard` (Quadro Estratégico):** Visão descritiva das faixas de status (Planejamento, Em Execução, Concluídos, Atrasados/Em Risco), barras proporcionais e alerta de atrasos.
+- **`ProjetosPorStatusCard` (Quadro Estratégico):** Visão descritiva das faixas de status (Planejamento, que reúne os projetos `ABERTO`, Em Execução, Concluídos e Atrasados), barras proporcionais e alerta de atrasos.
 - **`ListaProgressoProjetosAtivos` (Quadro de Risco e Execução):** Listagem de projetos ativos ordenando prioritariamente no topo os projetos em risco (`emRisco === true`), exibindo chip pulsante e diagnóstico de risco.
 - **`WeeklyTimeline` & `UpcomingEvents`:** Cronograma de atividades dos próximos 7 dias e celebrações iminentes.
 

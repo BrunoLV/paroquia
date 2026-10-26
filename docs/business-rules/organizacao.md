@@ -14,7 +14,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 
 ## 2. Agregados, Entidades e Value Objects Principais
 
-- **`Organizacao` (Raiz de Agregado):** identificada por `OrganizacaoId`. Contém nome, contato, tipo, múnus (`SetorPastoral`), subtipo de conselho, vínculo com o catálogo oficial, organização-mãe (`parentId`) e status ativo/inativo. O coordenador e o vice-coordenador **não são gravados na organização**: a leitura os deriva dos vínculos de membro ativos com os papéis de coordenador e de vice (secretário de grupo).
+- **`Organizacao` (Raiz de Agregado):** identificada por UUID. Contém nome, contato, tipo, múnus (`SetorPastoral`), subtipo de conselho, vínculo com o catálogo oficial, organização-mãe (`parentId`) e status ativo/inativo. O coordenador e o vice-coordenador **não são gravados na organização**: a leitura os deriva dos vínculos de membro ativos com os papéis de coordenador e de vice (secretário de grupo).
 - **`TipoOrganizacao`:**
   - `PASTORAL` — **pastoral orgânica**: ação direta da Igreja local, vinculada ao plano de pastoral da paróquia e da diocese (ex.: Batismo, Catequese, Dízimo).
   - `MOVIMENTO` — **movimento apostólico ou associação de fiéis**: espiritualidade, método e itinerário próprios, de âmbito diocesano, nacional ou internacional (ex.: RCC, ECC, Terço dos Homens). Exige estatuto reconhecido.
