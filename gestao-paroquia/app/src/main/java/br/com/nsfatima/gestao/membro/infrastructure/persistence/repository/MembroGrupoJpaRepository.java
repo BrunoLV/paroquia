@@ -61,7 +61,8 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
     /**
      * Conta fiéis <em>distintos</em> com pelo menos um vínculo ativo em grupos dos tipos
      * informados, usado pelo indicador de engajamento pastoral do dashboard (um fiel em três
-     * pastorais conta uma vez).
+     * pastorais conta uma vez). Só conta fiéis com cadastro ativo: o vínculo de um fiel inativado
+     * não pode inflar o engajamento nem reduzir artificialmente o grupo "sem vínculo".
      *
      * @param tipos tipos de grupo considerados engajamento (tipicamente {@code PASTORAL},
      *     {@code MOVIMENTO})
@@ -70,6 +71,7 @@ public interface MembroGrupoJpaRepository extends JpaRepository<MembroGrupoEntit
     @Query("""
             SELECT count(DISTINCT m.fielId) FROM MembroGrupoEntity m
             WHERE m.ativo = true AND m.tipoOrganizacao IN :tipos
+              AND m.fielId IN (SELECT f.id FROM FielEntity f WHERE f.ativo = true)
             """)
     long contarFieisDistintosEngajados(@Param("tipos") Collection<TipoOrganizacao> tipos);
 

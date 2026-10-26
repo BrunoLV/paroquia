@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.dashboard.application.usecase;
 
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
-import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
@@ -18,6 +16,9 @@ import br.com.nsfatima.gestao.dashboard.application.service.EscopoDashboardResol
 import br.com.nsfatima.gestao.dashboard.domain.model.JanelaTemporal;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import br.com.nsfatima.gestao.dashboard.domain.service.JanelaTemporalResolver;
+import br.com.nsfatima.gestao.dashboard.infrastructure.persistence.projection.ContagemPorProjeto;
+import br.com.nsfatima.gestao.dashboard.infrastructure.persistence.projection.EstatisticaEventosProjeto;
+import br.com.nsfatima.gestao.dashboard.infrastructure.persistence.repository.PainelConsultaJpaRepository;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.repository.LocalJpaRepository;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
@@ -26,9 +27,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainService;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
-import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoSolicitacaoAprovacaoEntity;
-import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
-import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,21 +35,21 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -61,21 +60,24 @@ import java.util.stream.Collectors;
  * {@link PeriodoDashboard}; as de estado corrente (fiéis ativos, projetos por status, novos fiéis
  * no mês) o ignoram. O escopo organizacional vem de {@link EscopoDashboardResolver}: a organização
  * pedida no filtro, quando o ator tem acesso a ela, senão a organização do próprio ator.
+ *
+ * <p>O escopo vale para <strong>todas</strong> as métricas: eventos, projetos, aprovações e também
+ * fiéis (com escopo, "fiéis" são os fiéis ativos com vínculo ativo na organização). Eventos
+ * cancelados não entram. A consulta de projetos é agregada (uma consulta por tipo de indicador para
+ * todos os projetos), nunca uma por projeto, e dia/mês/semana são os do fuso da paróquia.
  */
 @Service
 public class ObterDashboardMetricasUseCase {
 
-    private static final String STATUS_EVENTO_PENDENTE = "RASCUNHO";
     private static final int PERCENTUAL_SCALE = 1;
     private static final Set<ProjetoStatus> STATUS_ATIVOS =
             EnumSet.of(ProjetoStatus.ABERTO, ProjetoStatus.EM_ANDAMENTO);
     private static final Set<TipoOrganizacao> TIPOS_ENGAJAMENTO =
             EnumSet.of(TipoOrganizacao.PASTORAL, TipoOrganizacao.MOVIMENTO);
+    private static final String ORGANIZACAO_DESCONHECIDA = "Organização Desconhecida";
 
     private final EventoJpaRepository eventoRepository;
-    private final ProjetoEventoJpaRepository projetoRepository;
-    private final AprovacaoJpaRepository aprovacaoRepository;
-    private final ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository;
+    private final PainelConsultaJpaRepository painelRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
     private final LocalJpaRepository localRepository;
     private final FielJpaRepository fielRepository;
@@ -83,23 +85,21 @@ public class ObterDashboardMetricasUseCase {
     private final ProjetoAgregacaoDomainService projetoAgregacaoDomainService;
     private final JanelaTemporalResolver janelaResolver;
     private final EscopoDashboardResolver escopoResolver;
+    private final RelogioNegocio relogio;
 
     public ObterDashboardMetricasUseCase(
             EventoJpaRepository eventoRepository,
-            ProjetoEventoJpaRepository projetoRepository,
-            AprovacaoJpaRepository aprovacaoRepository,
-            ProjetoSolicitacaoAprovacaoJpaRepository projetoAprovacaoRepository,
+            PainelConsultaJpaRepository painelRepository,
             OrganizacaoJpaRepository organizacaoRepository,
             LocalJpaRepository localRepository,
             FielJpaRepository fielRepository,
             MembroGrupoJpaRepository membroRepository,
             ProjetoAgregacaoDomainService projetoAgregacaoDomainService,
             JanelaTemporalResolver janelaResolver,
-            EscopoDashboardResolver escopoResolver) {
+            EscopoDashboardResolver escopoResolver,
+            RelogioNegocio relogio) {
         this.eventoRepository = eventoRepository;
-        this.projetoRepository = projetoRepository;
-        this.aprovacaoRepository = aprovacaoRepository;
-        this.projetoAprovacaoRepository = projetoAprovacaoRepository;
+        this.painelRepository = painelRepository;
         this.organizacaoRepository = organizacaoRepository;
         this.localRepository = localRepository;
         this.fielRepository = fielRepository;
@@ -107,6 +107,7 @@ public class ObterDashboardMetricasUseCase {
         this.projetoAgregacaoDomainService = projetoAgregacaoDomainService;
         this.janelaResolver = janelaResolver;
         this.escopoResolver = escopoResolver;
+        this.relogio = relogio;
     }
 
     /**
@@ -125,113 +126,96 @@ public class ObterDashboardMetricasUseCase {
     @Transactional(readOnly = true)
     public DashboardMetricasDTO execute(
             EventoActorContext actorContext, PeriodoDashboard periodo, UUID organizacaoIdSolicitado) {
-        Instant agora = Instant.now();
+        Instant agora = relogio.agora();
         JanelaTemporal janela = janelaResolver.resolver(periodo, agora);
         UUID escopo = escopoResolver.resolver(actorContext, organizacaoIdSolicitado).orElse(null);
 
-        List<EventoEntity> eventosPeriodo = comEscopo(eventoRepository.findAllInPeriod(janela.inicio(), janela.fim()),
+        List<EventoEntity> eventosPeriodo = comEscopo(
+                eventoRepository.findAllInPeriod(janela.inicio(), janela.fim()), escopo);
+        List<EventoEntity> eventosSemana = comEscopo(eventosDaSemana(), escopo);
+        List<EventoEntity> orfaos = comEscopo(eventoRepository.findOrfaosNoPeriodo(janela.inicio(), janela.fim()),
                 escopo);
-        List<ProjetoEventoEntity> projetos = projetoRepository.findAll();
-        List<ProjetoEventoEntity> projetosAtivos = filtrarProjetosAtivos(projetos, escopo);
-        Map<UUID, String> nomesOrganizacoes = carregarNomesOrganizacoes();
+        List<ProjetoEventoEntity> projetosAtivos = painelRepository.findProjetos(STATUS_ATIVOS, escopo);
+        IndicadoresProjetos indicadores = carregarIndicadores(projetosAtivos, agora);
+
+        Map<UUID, String> nomesOrganizacoes = nomesOrganizacoes(eventosPeriodo, eventosSemana);
 
         return new DashboardMetricasDTO(
-                resumoGeral(eventosPeriodo, projetosAtivos, agora, escopo),
+                resumoGeral(eventosPeriodo.size(), projetosAtivos.size(), escopo),
                 distribuicao(eventosPeriodo, nomesOrganizacoes),
-                projetosPorStatus(projetos, escopo, agora),
-                projetosAtivos.stream().map(p -> detalheProjeto(p, agora)).toList(),
-                eventosOrfaos(janela, escopo, projetosAtivos),
-                eventosSemana(agora, escopo, nomesOrganizacoes));
+                projetosPorStatus(projetosAtivos, indicadores, escopo, agora),
+                projetosAtivos.stream().map(p -> detalheProjeto(p, indicadores, agora)).toList(),
+                eventosOrfaos(orfaos, projetosAtivos),
+                eventosSemana(eventosSemana, nomesOrganizacoes));
     }
 
-    private ResumoGeralDTO resumoGeral(List<EventoEntity> eventosPeriodo, List<ProjetoEventoEntity> projetosAtivos,
-                                       Instant agora, UUID escopo) {
-        long engajados = membroRepository.contarFieisDistintosEngajados(TIPOS_ENGAJAMENTO);
-        long ativos = fielRepository.countByAtivoTrue();
+    private ResumoGeralDTO resumoGeral(int eventosNoPeriodo, int projetosAtivos, UUID escopo) {
+        Instant inicioDoMes = relogio.inicioDoMes();
+        long ativos;
+        long novos;
+        long engajados;
+        if (escopo == null) {
+            ativos = fielRepository.countByAtivoTrue();
+            novos = fielRepository.countByAtivoTrueAndCriadoEmUtcGreaterThanEqual(inicioDoMes);
+            engajados = membroRepository.contarFieisDistintosEngajados(TIPOS_ENGAJAMENTO);
+        } else {
+            ativos = painelRepository.contarFieisAtivosDaOrganizacao(escopo);
+            novos = painelRepository.contarFieisNovosDaOrganizacao(escopo, inicioDoMes);
+            engajados = painelRepository.contarFieisEngajadosDaOrganizacao(escopo, TIPOS_ENGAJAMENTO);
+        }
         return new ResumoGeralDTO(
-                eventosPeriodo.size(),
-                projetosAtivos.size(),
+                eventosNoPeriodo,
+                projetosAtivos,
                 contarAprovacoesPendentes(escopo),
                 ativos,
-                fielRepository.countByAtivoTrueAndCriadoEmUtcGreaterThanEqual(inicioDoMes(agora)),
+                novos,
                 engajados,
                 Math.max(0, ativos - engajados));
     }
 
     private int contarAprovacoesPendentes(UUID escopo) {
-        List<AprovacaoEntity> aprovacoesEvento =
-                aprovacaoRepository.findByStatusOrderByCriadoEmUtcAsc(AprovacaoStatus.PENDENTE);
-        List<ProjetoSolicitacaoAprovacaoEntity> aprovacoesProjeto =
-                projetoAprovacaoRepository.findByStatus(AprovacaoStatus.PENDENTE);
-        if (escopo == null) {
-            return aprovacoesEvento.size() + aprovacoesProjeto.size();
+        return (int) (painelRepository.contarAprovacoesDeEvento(AprovacaoStatus.PENDENTE, escopo)
+                + painelRepository.contarSolicitacoesDeProjeto(AprovacaoStatus.PENDENTE, escopo));
+    }
+
+    private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetosAtivos,
+                                                   IndicadoresProjetos indicadores, UUID escopo, Instant agora) {
+        Map<ProjetoStatus, Long> porStatus = new HashMap<>();
+        for (Object[] linha : painelRepository.contarProjetosPorStatus(escopo)) {
+            porStatus.put((ProjetoStatus) linha[0], ((Number) linha[1]).longValue());
         }
-        return contarNoEscopoEvento(aprovacoesEvento, escopo) + contarNoEscopoProjeto(aprovacoesProjeto, escopo);
-    }
-
-    private int contarNoEscopoEvento(List<AprovacaoEntity> aprovacoes, UUID orgId) {
-        Set<UUID> ids = aprovacoes.stream()
-                .map(AprovacaoEntity::getEventoId).filter(Objects::nonNull).collect(Collectors.toSet());
-        Set<UUID> noEscopo = eventoRepository.findAllById(ids).stream()
-                .filter(e -> orgId.equals(e.getOrganizacaoResponsavelId()))
-                .map(EventoEntity::getId).collect(Collectors.toSet());
-        return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getEventoId())).count();
-    }
-
-    private int contarNoEscopoProjeto(List<ProjetoSolicitacaoAprovacaoEntity> aprovacoes, UUID orgId) {
-        Set<UUID> ids = aprovacoes.stream()
-                .map(ProjetoSolicitacaoAprovacaoEntity::getProjetoId)
-                .filter(Objects::nonNull).collect(Collectors.toSet());
-        Set<UUID> noEscopo = projetoRepository.findAllById(ids).stream()
-                .filter(p -> orgId.equals(p.getOrganizacaoResponsavelId()))
-                .map(ProjetoEventoEntity::getId).collect(Collectors.toSet());
-        return (int) aprovacoes.stream().filter(a -> noEscopo.contains(a.getProjetoId())).count();
-    }
-
-    private ProjetosPorStatusDTO projetosPorStatus(List<ProjetoEventoEntity> projetos, UUID escopo,
-                                                   Instant agora) {
-        List<ProjetoEventoEntity> visiveis = projetos.stream()
-                .filter(p -> escopo == null || escopo.equals(p.getOrganizacaoResponsavelId()))
-                .toList();
-        int atrasados = (int) visiveis.stream().filter(p -> estaAtrasado(p, agora)).count();
+        int atrasados = (int) projetosAtivos.stream().filter(p -> estaAtrasado(p, indicadores, agora)).count();
         return new ProjetosPorStatusDTO(
-                contarStatus(visiveis, ProjetoStatus.ABERTO),
-                contarStatus(visiveis, ProjetoStatus.EM_ANDAMENTO),
-                contarStatus(visiveis, ProjetoStatus.CONCLUIDO),
+                porStatus.getOrDefault(ProjetoStatus.ABERTO, 0L).intValue(),
+                porStatus.getOrDefault(ProjetoStatus.EM_ANDAMENTO, 0L).intValue(),
+                porStatus.getOrDefault(ProjetoStatus.CONCLUIDO, 0L).intValue(),
                 atrasados);
     }
 
-    private int contarStatus(List<ProjetoEventoEntity> projetos, ProjetoStatus status) {
-        return (int) projetos.stream().filter(p -> p.getStatus() == status).count();
-    }
-
-    private boolean estaAtrasado(ProjetoEventoEntity p, Instant agora) {
-        if (!STATUS_ATIVOS.contains(p.getStatus())) {
-            return false;
-        }
+    private boolean estaAtrasado(ProjetoEventoEntity p, IndicadoresProjetos indicadores, Instant agora) {
         if (p.getFimUtc() != null && p.getFimUtc().isBefore(agora)) {
             return true;
         }
-        int pendentes = (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
-        return projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), pendentes);
+        return projetoAgregacaoDomainService.verificarSeEstaEmRisco(
+                p.getInicioUtc(), p.getFimUtc(), (int) indicadores.estatistica(p.getId()).pendentes());
     }
 
-    private DetalheProjetoDTO detalheProjeto(ProjetoEventoEntity p, Instant agora) {
-        int totalEventos = (int) eventoRepository.countByProjetoId(p.getId());
-        int realizados = (int) eventoRepository.countByProjetoIdAndFimUtcLessThan(p.getId(), agora);
-        int pendentes = (int) eventoRepository.countByProjetoIdAndFimUtcGreaterThanEqual(p.getId(), agora);
-        int pendentesAprovacao = (int) eventoRepository.countByProjetoIdAndStatus(p.getId(), STATUS_EVENTO_PENDENTE);
+    private DetalheProjetoDTO detalheProjeto(ProjetoEventoEntity p, IndicadoresProjetos indicadores, Instant agora) {
+        Estatistica estatistica = indicadores.estatistica(p.getId());
+        int total = (int) estatistica.total();
+        int realizados = (int) estatistica.realizados();
         return new DetalheProjetoDTO(
                 p.getNome(),
                 p.getStatus().name(),
                 projetoAgregacaoDomainService.calcularPercentualTempoDecorrido(p.getInicioUtc(), p.getFimUtc()),
-                totalEventos,
+                total,
                 realizados,
-                calcularPercentualExecucao(realizados, totalEventos),
-                pendentesAprovacao,
-                projetoAgregacaoDomainService.verificarSeEstaEmRisco(p.getInicioUtc(), p.getFimUtc(), pendentes),
-                proximoMarco(p.getId(), agora),
-                eventoRepository.findInvolvedOrganizationNames(p.getId()));
+                calcularPercentualExecucao(realizados, total),
+                indicadores.aprovacoesPendentes().getOrDefault(p.getId(), 0L).intValue(),
+                projetoAgregacaoDomainService.verificarSeEstaEmRisco(
+                        p.getInicioUtc(), p.getFimUtc(), (int) estatistica.pendentes()),
+                proximoMarco(indicadores.proximosMarcos().get(p.getId())),
+                indicadores.envolvidos().getOrDefault(p.getId(), List.of()));
     }
 
     /** Percentual de eventos realizados sobre o total; {@code ZERO} se não houver eventos. */
@@ -243,24 +227,24 @@ public class ObterDashboardMetricasUseCase {
                         .divide(BigDecimal.valueOf(totalEventos), PERCENTUAL_SCALE, RoundingMode.HALF_UP);
     }
 
-    private ProximoMarcoDTO proximoMarco(UUID projetoId, Instant agora) {
-        return eventoRepository.findProximoMarco(projetoId, agora)
-                .map(e -> new ProximoMarcoDTO(
-                        e.getTitulo(),
-                        LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
-                        e.getNivelPrioridade() == null ? 4 : e.getNivelPrioridade()))
-                .orElse(null);
+    private ProximoMarcoDTO proximoMarco(EventoEntity evento) {
+        if (evento == null) {
+            return null;
+        }
+        return new ProximoMarcoDTO(
+                evento.getTitulo(),
+                LocalDateTime.ofInstant(evento.getInicioUtc(), relogio.fuso()),
+                evento.getNivelPrioridade() == null ? 4 : evento.getNivelPrioridade());
     }
 
-    private List<EventoOrfaoDTO> eventosOrfaos(JanelaTemporal janela, UUID escopo,
-                                               List<ProjetoEventoEntity> projetosAtivos) {
-        return comEscopo(eventoRepository.findOrfaosNoPeriodo(janela.inicio(), janela.fim()), escopo).stream()
+    private List<EventoOrfaoDTO> eventosOrfaos(List<EventoEntity> orfaos, List<ProjetoEventoEntity> projetosAtivos) {
+        return orfaos.stream()
                 .map(e -> {
                     Optional<ProjetoEventoEntity> sugestao = sugerirProjeto(e, projetosAtivos);
                     return new EventoOrfaoDTO(
                             e.getId(),
                             e.getTitulo(),
-                            LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
+                            LocalDateTime.ofInstant(e.getInicioUtc(), relogio.fuso()),
                             sugestao.map(ProjetoEventoEntity::getId).orElse(null),
                             sugestao.map(ProjetoEventoEntity::getNome).orElse(null));
                 })
@@ -281,32 +265,33 @@ public class ObterDashboardMetricasUseCase {
         return eventos.stream()
                 .collect(Collectors.groupingBy(EventoEntity::getOrganizacaoResponsavelId, Collectors.counting()))
                 .entrySet().stream()
-                .map(e -> new DistribuicaoEventosDTO(nomes.getOrDefault(e.getKey(), "Organização Desconhecida"),
+                .map(e -> new DistribuicaoEventosDTO(nomes.getOrDefault(e.getKey(), ORGANIZACAO_DESCONHECIDA),
                         e.getValue()))
                 .sorted(Comparator.comparingLong(DistribuicaoEventosDTO::quantidadeEventos).reversed())
                 .toList();
     }
 
-    private List<EventoSemanalDTO> eventosSemana(Instant agora, UUID escopo, Map<UUID, String> nomesOrg) {
-        ZonedDateTime nowZoned = agora.atZone(ZoneOffset.UTC);
-        Instant inicio = nowZoned.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .truncatedTo(ChronoUnit.DAYS).toInstant();
-        Instant fim = nowZoned.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-                .plusDays(1).truncatedTo(ChronoUnit.DAYS).toInstant();
-        Map<UUID, String> nomesLocais = carregarNomesLocais();
-        return comEscopo(eventoRepository.findAllInPeriod(inicio, fim), escopo).stream()
-                .map(e -> new EventoSemanalDTO(
-                        e.getTitulo(),
-                        LocalDateTime.ofInstant(e.getInicioUtc(), ZoneId.systemDefault()),
-                        nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
-                        nomesOrg.getOrDefault(e.getOrganizacaoResponsavelId(), "Organização Desconhecida")))
-                .toList();
+    /** Eventos da semana civil corrente (segunda a domingo) no fuso da paróquia. */
+    private List<EventoEntity> eventosDaSemana() {
+        LocalDate segunda = relogio.hoje().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        Instant inicio = relogio.inicioDoDia(segunda);
+        Instant fim = relogio.inicioDoDia(segunda.plusDays(7));
+        return eventoRepository.findAllInPeriod(inicio, fim.minusNanos(1));
     }
 
-    private List<ProjetoEventoEntity> filtrarProjetosAtivos(List<ProjetoEventoEntity> projetos, UUID escopo) {
-        return projetos.stream()
-                .filter(p -> STATUS_ATIVOS.contains(p.getStatus()))
-                .filter(p -> escopo == null || escopo.equals(p.getOrganizacaoResponsavelId()))
+    private List<EventoSemanalDTO> eventosSemana(List<EventoEntity> eventos, Map<UUID, String> nomesOrg) {
+        Set<UUID> idsLocais = eventos.stream().map(EventoEntity::getLocalId).filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Map<UUID, String> nomesLocais = new HashMap<>();
+        if (!idsLocais.isEmpty()) {
+            localRepository.findAllById(idsLocais).forEach(l -> nomesLocais.put(l.getId(), l.getNome()));
+        }
+        return eventos.stream()
+                .map(e -> new EventoSemanalDTO(
+                        e.getTitulo(),
+                        LocalDateTime.ofInstant(e.getInicioUtc(), relogio.fuso()),
+                        nomesLocais.getOrDefault(e.getLocalId(), "Sem Local"),
+                        nomesOrg.getOrDefault(e.getOrganizacaoResponsavelId(), ORGANIZACAO_DESCONHECIDA)))
                 .toList();
     }
 
@@ -317,20 +302,60 @@ public class ObterDashboardMetricasUseCase {
         return eventos.stream().filter(e -> escopo.equals(e.getOrganizacaoResponsavelId())).toList();
     }
 
-    private Map<UUID, String> carregarNomesOrganizacoes() {
+    /** Resolve apenas os nomes das organizações que aparecem nos eventos exibidos (sem varrer a tabela). */
+    private Map<UUID, String> nomesOrganizacoes(List<EventoEntity> periodo, List<EventoEntity> semana) {
+        Set<UUID> ids = new HashSet<>();
+        periodo.forEach(e -> ids.add(e.getOrganizacaoResponsavelId()));
+        semana.forEach(e -> ids.add(e.getOrganizacaoResponsavelId()));
+        ids.remove(null);
         Map<UUID, String> nomes = new HashMap<>();
-        organizacaoRepository.findAll().forEach(o -> nomes.put(o.getId(), o.getNome()));
+        if (!ids.isEmpty()) {
+            organizacaoRepository.findAllById(ids).forEach(o -> nomes.put(o.getId(), o.getNome()));
+        }
         return nomes;
     }
 
-    private Map<UUID, String> carregarNomesLocais() {
-        Map<UUID, String> nomes = new HashMap<>();
-        localRepository.findAll().forEach(l -> nomes.put(l.getId(), l.getNome()));
-        return nomes;
+    private IndicadoresProjetos carregarIndicadores(List<ProjetoEventoEntity> projetosAtivos, Instant agora) {
+        Set<UUID> ids = projetosAtivos.stream().map(ProjetoEventoEntity::getId).collect(Collectors.toSet());
+        if (ids.isEmpty()) {
+            return IndicadoresProjetos.VAZIO;
+        }
+        Map<UUID, Estatistica> estatisticas = painelRepository.estatisticasEventosPorProjeto(ids, agora).stream()
+                .collect(Collectors.toMap(EstatisticaEventosProjeto::projetoId, this::paraEstatistica));
+        Map<UUID, Long> aprovacoes = painelRepository.contarAprovacoesPorProjeto(ids, AprovacaoStatus.PENDENTE)
+                .stream().collect(Collectors.toMap(ContagemPorProjeto::projetoId, ContagemPorProjeto::quantidade));
+        Map<UUID, EventoEntity> marcos = painelRepository.eventosFuturosDosProjetos(ids, agora).stream()
+                .collect(Collectors.toMap(
+                        EventoEntity::getProjetoId, Function.identity(), (primeiro, outro) -> primeiro));
+        Map<UUID, List<String>> envolvidos = new HashMap<>();
+        for (Object[] linha : painelRepository.nomesOrganizacoesEnvolvidasPorProjeto(ids)) {
+            if (linha[1] != null) {
+                envolvidos.computeIfAbsent((UUID) linha[0], k -> new ArrayList<>()).add((String) linha[1]);
+            }
+        }
+        return new IndicadoresProjetos(estatisticas, aprovacoes, marcos, envolvidos);
     }
 
-    private Instant inicioDoMes(Instant agora) {
-        return agora.atZone(ZoneOffset.UTC)
-                .with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS).toInstant();
+    private Estatistica paraEstatistica(EstatisticaEventosProjeto linha) {
+        return new Estatistica(linha.total(), linha.realizados(), linha.pendentes());
+    }
+
+    /** Contagens de eventos de um projeto. */
+    private record Estatistica(long total, long realizados, long pendentes) {
+        static final Estatistica ZERO = new Estatistica(0, 0, 0);
+    }
+
+    /** Indicadores de todos os projetos ativos, carregados em lote. */
+    private record IndicadoresProjetos(
+            Map<UUID, Estatistica> estatisticas,
+            Map<UUID, Long> aprovacoesPendentes,
+            Map<UUID, EventoEntity> proximosMarcos,
+            Map<UUID, List<String>> envolvidos) {
+
+        static final IndicadoresProjetos VAZIO = new IndicadoresProjetos(Map.of(), Map.of(), Map.of(), Map.of());
+
+        Estatistica estatistica(UUID projetoId) {
+            return estatisticas.getOrDefault(projetoId, Estatistica.ZERO);
+        }
     }
 }

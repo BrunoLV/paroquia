@@ -380,6 +380,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public List<EventoEntity> findAllInPeriod(Instant inicioUtc, Instant fimUtc) {
         return storage.stream()
                 .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && !e.getInicioUtc().isAfter(fimUtc))
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
                 .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
                 .toList();
     }

@@ -4,18 +4,31 @@ import br.com.nsfatima.gestao.dashboard.domain.model.JanelaTemporal;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 /**
  * Traduz o recorte temporal escolhido no filtro global ({@link PeriodoDashboard}) na
- * {@link JanelaTemporal} correspondente, sempre ancorada em UTC. Concentrado em um serviço puro
+ * {@link JanelaTemporal} correspondente. Dia e mês são os do fuso da paróquia (uma celebração às 22h
+ * de Brasília do último dia do mês ainda pertence a esse mês); a janela resultante é expressa em
+ * instantes UTC. Concentrado em um serviço puro
  * para que todos os cálculos de métrica compartilhem exatamente a mesma definição de janela e
  * para permitir testar as bordas (virada de dia/mês) isoladamente.
  */
 public class JanelaTemporalResolver {
+
+    private final ZoneId fuso;
+
+    /**
+     * Cria o resolvedor para o fuso civil da paróquia.
+     *
+     * @param fuso fuso civil usado para delimitar dia e mês
+     */
+    public JanelaTemporalResolver(ZoneId fuso) {
+        this.fuso = fuso;
+    }
 
     /**
      * Resolve a janela para o recorte informado a partir do instante de referência.
@@ -25,7 +38,7 @@ public class JanelaTemporalResolver {
      * @return janela {@code [inicio, fim)} correspondente ao recorte
      */
     public JanelaTemporal resolver(PeriodoDashboard periodo, Instant referencia) {
-        ZonedDateTime agora = referencia.atZone(ZoneOffset.UTC);
+        ZonedDateTime agora = referencia.atZone(fuso);
         return switch (periodo == null ? PeriodoDashboard.SEMANA : periodo) {
             case HOJE -> hoje(agora);
             case SEMANA -> proximosSeteDias(referencia, agora);
