@@ -13,9 +13,10 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
 - **`MembroGrupo` (Raiz de Agregado):** Identificado por `MembroGrupoId`. Faz o vínculo entre um `FielId` e uma `OrganizacaoId`, contendo status da participação, data de ingresso, data de desligamento e papel canônico.
 - **`PapelOrganizacional` (Camada C):**
   - `COORDENADOR` (`coordenador`): Gestão de agentes, escalas e proposição de projetos da pastoral ou movimento.
-  - `SECRETARIO_GRUPO` (`secretario-grupo`): Apoio operacional e registro interno de presenças.
+  - `SECRETARIO_GRUPO` (`secretario-grupo`): Apoio operacional e registro interno de presenças; é também o papel do vice-coordenador.
   - `MEMBRO_ATIVO` (`membro-ativo`): Participante regular de atividades e escalas do grupo.
   - `VOLUNTARIO` (`voluntario`): Apoio operacional pontual.
+  - Nos conselhos valem ainda `SECRETARIO_CONSELHO`, `MEMBRO_CONSELHO_PASTORAL` e `MEMBRO_CONSELHO_ECONOMICO`. Quais papéis cada tipo de organização admite está em `organizacao.md`, RN-ORG-07.
 - **`StatusMembro`:** `ATIVO`, `INATIVO`.
 - **`IdoneidadeAgente` (Value Object):** datas de formação doutrinária básica, vivência sacramental atestada pelo Pároco, termo de proteção de menores (assinatura e validade) e envio (missão), com o responsável pelo envio. Guarda somente datas, nunca o conteúdo dos documentos.
 

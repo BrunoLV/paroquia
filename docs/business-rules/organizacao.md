@@ -65,7 +65,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 ### RN-ORG-07: Papéis de Vínculo por Tipo de Organização
 - Existe **uma única tabela** de quais papéis um vínculo pode ter em cada tipo de organização. Pastoral, movimento e serviço paroquial admitem coordenador, secretário de grupo (que é também o papel do vice-coordenador), membro ativo e voluntário. O conselho admite secretário de conselho, membro do conselho pastoral, membro do conselho econômico, coordenador e vice-coordenador (secretário de grupo).
 - Todos os caminhos que criam ou alteram vínculo (cadastro de membros, promoção a coordenador, vínculo por usuário e mandato de coordenação) recusam o papel que o tipo não admite. O contexto do calendário consulta a mesma tabela para decidir autorização, e a interface só oferece os papéis válidos do tipo.
-- O banco repete a regra: um vínculo com papel que o tipo da organização não admite não é gravado. Os vínculos antigos que já a violavam foram trocados pelo papel de membro comum do tipo, e a troca fica registrada com o papel anterior.
+- O banco repete a regra: um vínculo com papel que o tipo da organização não admite não é gravado. Uma tabela de normalização guarda, por vínculo, o papel anterior de quem teve o papel trocado pelo de membro comum do tipo.
 
 ---
 

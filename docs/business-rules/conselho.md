@@ -27,7 +27,7 @@ Assegurar que o que foi tratado e deliberado nas reuniões fique registrado de f
 - **`ConflitoInteresse`:** declaração de um participante sobre uma deliberação, com descrição.
 - **`Presenca`:** pessoa (por identificador do fiel), função na reunião e situação (`PRESENTE`, `AUSENTE_JUSTIFICADA`, `AUSENTE`); ou, nas assembleias, apenas o **total de participantes**.
 - **`AtaAnterior`:** referência à ata da reunião anterior e o resultado da sua leitura (`APROVADA`, `APROVADA_COM_RESSALVAS` ou `NAO_APLICAVEL`).
-- **`PapelOrganizacional` (conselhos):** `SECRETARIO_CONSELHO` (redige e submete as atas), `MEMBRO_CONSELHO_PASTORAL` e `MEMBRO_CONSELHO_ECONOMICO` (conselheiros, sem poder de redação).
+- **`PapelOrganizacional` (conselhos):** `SECRETARIO_CONSELHO` (redige e submete as atas), `MEMBRO_CONSELHO_PASTORAL` e `MEMBRO_CONSELHO_ECONOMICO` (conselheiros, sem poder de redação), além de `COORDENADOR` e do vice-coordenador (`SECRETARIO_GRUPO`), que são membros do conselho (`organizacao.md`, RN-ORG-07).
 
 ---
 
@@ -78,7 +78,10 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 - A "Reunião do CAEP" aceita o conselho econômico da paróquia e o das comunidades, pois não há outro tipo para as reuniões deste último.
 
 ### RN-CON-05: Presença e Quórum
-- A presença é **nominal** (lista de pessoas, identificadas pelo cadastro de fiéis ou, no caso do clero, de clérigos ativos, nunca digitadas) ou **por total de participantes**, conforme o tipo. Nos colegiados e nos organismos, só podem constar **membros ativos** do órgão (na reunião conjunta, dos dois órgãos); nas reuniões de presença livre, qualquer fiel **ativo** do cadastro. Nas reuniões de presença livre convocadas por conselho (reunião de pastoral, de coordenadores, de animadores, planejamento pastoral e comissão especial), o formulário oferece, além dos membros do conselho, os membros ativos das pastorais, movimentos e serviços a ele articulados, identificados pelo nome do organismo; o coordenador de um organismo é sugerido como "Coordenador(a) de pastoral ou organismo" e o vice como "Representante de pastoral ou movimento". A ação "Incluir todos os membros" inclui apenas os do órgão convocante. Além dos membros, o redator **busca qualquer fiel ativo pelo nome** (ao menos 3 letras, no máximo 20 resultados, sem diferenciar maiúsculas nem acentos); a busca devolve só identificador e nome, é privativa de quem redige o tipo no órgão e é recusada nos tipos de presença só de membros. Quem não está cadastrado como fiel não pode constar, pois o nome nunca é digitado.
+- A presença é **nominal** (lista de pessoas, identificadas pelo cadastro de fiéis ou, no caso do clero, de clérigos ativos, nunca digitadas) ou **por total de participantes**, conforme o tipo.
+- **Presença só de membros** (CPP, CPC, CAEP, reunião conjunta e organismo): só constam membros ativos do órgão (na reunião conjunta, dos dois órgãos).
+- **Presença livre** (reunião de pastoral, de coordenadores, de animadores, planejamento pastoral e comissão especial): consta qualquer fiel **ativo** do cadastro. O formulário oferece, além dos membros do órgão convocante, os membros ativos das pastorais, movimentos e serviços articulados a ele, identificados pelo nome do organismo; o coordenador do organismo é sugerido como "Coordenador(a) de pastoral ou organismo" e o vice como "Representante de pastoral ou movimento". "Incluir todos os membros" inclui apenas os do órgão convocante.
+- **Busca de fiéis** (só na presença livre): o redator busca qualquer fiel ativo pelo nome, com ao menos 3 letras, no máximo 20 resultados, sem diferenciar maiúsculas nem acentos. A busca devolve só identificador e nome, é privativa de quem redige o tipo no órgão e é recusada nos tipos de presença só de membros. Quem não está cadastrado como fiel não pode constar, pois o nome nunca é digitado.
 - **O Pároco é o presidente dos conselhos** (RN-CON-01); o conselho tem ainda o seu coordenador e vice-coordenador, funções distintas da presidência e dos coordenadores de pastoral. O coordenador e o vice-coordenador **não deixam de ser membros**: cada um tem vínculo de membro com o conselho, com o papel de coordenador e de vice (o mesmo papel de secretário de grupo das pastorais), e o formulário da ata sugere a função a partir desse vínculo: nas reuniões nominais convocadas por conselho ele consta na lista, já incluído pelo formulário como Presidente (a situação é editável; ausente, fica sem função). Os demais clérigos (vigário, diácono) podem constar na lista com a função que o encargo sugere. O clero é escolhido entre os clérigos ativos, pois não é cadastrado como fiel, e fica fora da regra "só membros do órgão".
 - O **quórum** é a maioria absoluta dos membros ativos convocados, **mais o Pároco**, que preside por direito próprio nos tipos com quórum (metade mais um); no quórum contam os membros presentes e o Pároco presente como Presidente, e o outro clero presente apenas assiste; na reunião conjunta, a maioria absoluta do total de membros dos dois conselhos. O total de convocados é **congelado na submissão** para que o quórum de uma ata não mude quando a composição do órgão mudar. O quórum é **informativo**: consta da ata e dos documentos, mas não impede a lavratura.
 - Ausência justificada não conta como presença.
@@ -123,7 +126,7 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 
 ## 6. Integrações com outros Bounded Contexts
 - **`organizacao`:** órgão convocante e órgão associado, tipo e subtipo do conselho e membros ativos para presença e quórum.
-- **`fiel`:** identificação das pessoas na presença e nos conflitos de interesses; os nomes são resolvidos na leitura e na exportação, nunca guardados na ata.
+- **`fiel`:** identificação das pessoas na presença e nos conflitos de interesses, e busca de fiéis ativos pelo nome nas reuniões de presença livre; os nomes são resolvidos na leitura e na exportação, nunca guardados na ata.
 - **`iam`:** papéis globais e vínculos por organização que definem leitura e redação.
 - **`governanca` / `calendario`:** identidade institucional (paróquia, diocese, endereço e logotipo) e log global de auditoria.
 
@@ -132,6 +135,7 @@ Os colegiados têm base explícita na CNBB e no Direito Canônico. Os demais tip
 ## 7. Privacidade & Segurança (LGPD e RBAC)
 - A ata guarda **apenas identificadores** das pessoas; nomes aparecem só na leitura e nos documentos, para quem tem permissão de ler a ata.
 - Clérigos e leigos recebem o mesmo tratamento de privacidade na presença e nos conflitos de interesses.
+- A busca de fiéis para a presença expõe apenas identificador e nome, nunca contato ou documento, e só a quem redige o tipo no órgão.
 - O mínimo privilégio vale também para o `ADMIN`, que não acessa o conteúdo das atas.
 - O endereço de origem e os estados completos da trilha ficam apenas no banco, para perícia; a consulta mostra autor, perfil, ação e data.
 - Os documentos exportados não ficam armazenados nem em cache: são gerados a cada pedido e cada pedido é auditado.

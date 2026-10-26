@@ -97,23 +97,24 @@ stateDiagram-v2
 
 ---
 
-## 4. Ciclo de Vida da Ata do Conselho Pastoral Paroquial (`AtaConselho`)
+## 4. Ciclo de Vida da Ata de Reunião (`AtaReuniao`)
 
-Garante a fé pública eclesiástica e rastreabilidade documental das decisões do CPC e CAEP:
+Garante a fé pública eclesiástica e a rastreabilidade documental das atas dos conselhos e das demais reuniões pastorais. O caminho depende do tipo: os que exigem homologação passam pelo Pároco; os demais são registrados na submissão (`conselho.md`, seção 3):
 
 ```mermaid
 stateDiagram-v2
-    [*] --> MINUTA: Redação Iniciada pelo Secretário
+    [*] --> RASCUNHO: Redator abre a ata
 
-    MINUTA --> EM_REVISAO: Disponibilizada aos Conselheiros para Apontamentos
-    EM_REVISAO --> MINUTA: Ajustes Solicitados
+    RASCUNHO --> PENDENTE_HOMOLOGACAO: Submissão (tipo que exige homologação)
+    RASCUNHO --> REGISTRADA: Submissão (tipo sem homologação)
 
-    EM_REVISAO --> PRONTA_PARA_HOMOLOGACAO: Validação de Quórum e Pautas
+    PENDENTE_HOMOLOGACAO --> HOMOLOGADA: Pároco homologa e a ata recebe número
+    PENDENTE_HOMOLOGACAO --> VETADA: Pároco veta com motivo
 
-    PRONTA_PARA_HOMOLOGACAO --> HOMOLOGADA: Assinada e Homologada pelo Pároco
-    PRONTA_PARA_HOMOLOGACAO --> DEVOLVIDA: Pároco solicita correções doutrinárias ou administrativas
+    VETADA --> RASCUNHO: Reabertura pelo redator
 
-    DEVOLVIDA --> MINUTA: Reabertura para Edição
-
-    HOMOLOGADA --> [*]: Arquivamento Definitivo (100% Imutável)
+    HOMOLOGADA --> [*]: Selada (100% imutável)
+    REGISTRADA --> [*]: Selada (100% imutável)
 ```
+
+Ata selada nunca é editada nem excluída: a correção é uma **ata retificadora**, nova ata em `RASCUNHO` ligada à original, com justificativa obrigatória.

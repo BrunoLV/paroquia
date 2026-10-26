@@ -92,15 +92,20 @@ br.com.nsfatima.gestao
 ## 4. Conselhos Paroquiais e Atas (`conselho`)
 
 ### Funcionalidades
-- **Gestão do CPC e CAEP:** Registro de composições dos conselhos paroquiais com mandatos e atas de reuniões periódicas.
-- **Pautas e Deliberações:** Estruturação de temas debatidos, votações nominais e encaminhamentos acordados.
-- **Homologação Paroquial:** Fluxo no qual a ata é redigida pelo secretário, assinada pelos presentes e homologada pelo Pároco.
+- **Atas por tipo de reunião:** 12 tipos (CPP, CPC, CAEP, reunião conjunta, reunião de pastoral, coordenadores, assembleias, organismo, planejamento pastoral, comissão especial e animadores), cada um com suas regras de convocante, homologação, quórum, presença e votação.
+- **Pautas e Deliberações:** itens de pauta com relato e deliberações, votação consultiva e declaração de conflito de interesses.
+- **Homologação Paroquial:** nos tipos que a exigem, a ata é redigida pelo secretário e homologada ou vetada, com motivo, pelo Pároco.
+- **Ata retificadora, exportação e trilha:** correção de ata selada por nova ata ligada à original; exportação em Word e PDF (estruturada ou narrativa) e trilha de auditoria de cada ação.
 
 ### Regras de Negócio Críticas
-1. **Imutabilidade Pós-Homologação:**
-   - Após ser homologada pelo Pároco, uma ata torna-se estritamente imutável para garantir fé pública eclesiástica.
-2. **Quórum Mínimo:**
-   - Deliberações estatutárias exigem validação de quórum de conselheiros ativos.
+1. **Imutabilidade Pós-Selagem:**
+   - Ata homologada ou registrada é estritamente imutável e nunca é excluída, para garantir fé pública eclesiástica.
+2. **Quórum Informativo:**
+   - Nos colegiados, o quórum é a maioria absoluta dos membros ativos mais o Pároco; consta da ata, mas não impede a lavratura.
+3. **Segregação:**
+   - O redator (por órgão) não homologa, e o Pároco não redige.
+
+O detalhamento está em `docs/business-rules/conselho.md`.
 
 ---
 
@@ -120,7 +125,7 @@ br.com.nsfatima.gestao
 ### Funcionalidades
 - **Ficha Cadastral do Fiel:** Cadastro unificado de pessoas físicas com dados civis e de contato.
 - **Histórico Sacramental:** Registro canônico de sacramentos recebidos (Batismo, Primeira Comunhão, Crisma, Matrimônio, Ordem).
-- **Vínculo Pastoral (Membro):** Associação do fiel a um ou mais grupos paroquiais, com papel específico (Membro, Coordenador, Vice-Coordenador, Tesoureiro, Secretário).
+- **Vínculo Pastoral (Membro):** Associação do fiel a um ou mais grupos paroquiais, com papel específico (Membro Ativo, Voluntário, Coordenador e Secretário de Grupo, que é também o papel do Vice-Coordenador; nos conselhos, Secretário e Membro do Conselho).
 - **Gestão de Mandatos:** Período de vigência de lideranças com alertas automáticos de expiração de mandato.
 
 ### Regras de Negócio Críticas (LGPD)
