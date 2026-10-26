@@ -54,6 +54,19 @@ describe('ImportModal', () => {
     expect(validateButton.querySelector('[data-testid="CheckIcon"]')).toBeInTheDocument();
   });
 
+  it('offers only the entity types the backend imports (no USUARIO)', async () => {
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
+
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /Organizações/i })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('option', { name: /Membros/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /Eventos/i })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: /Usuários/i })).not.toBeInTheDocument();
+  });
+
   it('triggers CSV template download', async () => {
     mockDownloadTemplate.mockResolvedValueOnce(undefined);
     renderModal(<ImportModal open={true} onClose={mockOnClose} />);

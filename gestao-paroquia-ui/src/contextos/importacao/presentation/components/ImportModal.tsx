@@ -27,13 +27,13 @@ interface ImportModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  defaultEntity?: 'MEMBRO' | 'USUARIO' | 'ORGANIZACAO' | 'EVENTO';
+  defaultEntity?: 'MEMBRO' | 'ORGANIZACAO' | 'EVENTO';
 }
 
 type EntidadeImportacao = NonNullable<ImportModalProps['defaultEntity']>;
 
 const isEntidadeImportacao = (value: string): value is EntidadeImportacao => (
-  value === 'MEMBRO' || value === 'USUARIO' || value === 'ORGANIZACAO' || value === 'EVENTO'
+  value === 'MEMBRO' || value === 'ORGANIZACAO' || value === 'EVENTO'
 );
 
 const STEPS = ['Upload e Template', 'Pré-visualização e Validação', 'Confirmação'];
@@ -160,7 +160,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 onChange={(e) => isEntidadeImportacao(e.target.value) && setEntityType(e.target.value)}
               >
                 <MenuItem value="MEMBRO">Membros / Féis Leigos</MenuItem>
-                <MenuItem value="USUARIO">Usuários do Sistema</MenuItem>
                 <MenuItem value="ORGANIZACAO">Organizações / Pastorais</MenuItem>
                 <MenuItem value="EVENTO">Eventos Paroquiais</MenuItem>
               </SearchableSelect>
