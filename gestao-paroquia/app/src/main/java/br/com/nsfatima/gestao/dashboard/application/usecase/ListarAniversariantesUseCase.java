@@ -35,7 +35,10 @@ import java.util.stream.IntStream;
 @Service
 public class ListarAniversariantesUseCase {
 
-    /** Cache compartilhado (expiração de 10 min via {@code CacheConfig}); ver ponytail acima. */
+    /**
+     * Cache compartilhado (expiração de 10 min via {@code CacheConfig}); a chave inclui o dia de negócio
+     * para que o resultado de ontem não seja servido após a virada do dia em Brasília.
+     */
     static final String CACHE = "dashboardAniversariantes";
 
     private static final MonthDay VINTE_E_NOVE_DE_FEVEREIRO = MonthDay.of(2, 29);
@@ -55,7 +58,7 @@ public class ListarAniversariantesUseCase {
      *     {@code MES} (mês vigente); {@code null} equivale a {@code SEMANA}
      * @return aniversariantes ordenados por mês e dia
      */
-    @Cacheable(cacheNames = CACHE, key = "#periodo")
+    @Cacheable(cacheNames = CACHE, key = "#periodo + '@' + @relogioNegocio.hoje()")
     @Transactional(readOnly = true)
     public List<AniversarianteDTO> execute(PeriodoDashboard periodo) {
         Set<MonthDay> alvo = diasAlvo(periodo == null ? PeriodoDashboard.SEMANA : periodo);
