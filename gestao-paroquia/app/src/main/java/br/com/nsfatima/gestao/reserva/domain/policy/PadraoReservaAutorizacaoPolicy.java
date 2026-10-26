@@ -14,6 +14,9 @@ import java.util.UUID;
  */
 public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoPolicy {
 
+    private static final String OPERADOR_OBRIGATORIO = "Operador é obrigatório.";
+    private static final String RESERVA_OBRIGATORIA = "Reserva é obrigatória.";
+
     @Override
     public StatusReserva resolveStatusInicial(UsuarioActor solicitante, UUID pastoralMovimentoId) {
         Objects.requireNonNull(solicitante, "Solicitante é obrigatório.");
@@ -25,8 +28,8 @@ public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoP
 
     @Override
     public void assertAutorizacaoAprovacao(UsuarioActor operador, Reserva reserva) {
-        Objects.requireNonNull(operador, "Operador é obrigatório.");
-        Objects.requireNonNull(reserva, "Reserva é obrigatória.");
+        Objects.requireNonNull(operador, OPERADOR_OBRIGATORIO);
+        Objects.requireNonNull(reserva, RESERVA_OBRIGATORIA);
 
         if (operador.isAdminOuParoco()) {
             return;
@@ -43,8 +46,8 @@ public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoP
 
     @Override
     public void assertAutorizacaoCancelamento(UsuarioActor operador, Reserva reserva, Instant agora) {
-        Objects.requireNonNull(operador, "Operador é obrigatório.");
-        Objects.requireNonNull(reserva, "Reserva é obrigatória.");
+        Objects.requireNonNull(operador, OPERADOR_OBRIGATORIO);
+        Objects.requireNonNull(reserva, RESERVA_OBRIGATORIA);
 
         if (operador.isAdminOuParoco()) {
             return;
@@ -62,5 +65,20 @@ public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoP
         }
 
         throw new ReservaNaoAutorizadaException("Você não possui permissão para cancelar esta reserva.");
+    }
+
+    @Override
+    public void assertAutorizacaoFinalizacao(UsuarioActor operador, Reserva reserva) {
+        Objects.requireNonNull(operador, OPERADOR_OBRIGATORIO);
+        Objects.requireNonNull(reserva, RESERVA_OBRIGATORIA);
+
+        boolean autorizado = operador.isAdminOuParoco()
+                || operador.isCoordenadorDaOrganizacao(reserva.getPastoralMovimentoId())
+                || Objects.equals(operador.id(), reserva.getSolicitanteId());
+        if (!autorizado) {
+            throw new ReservaNaoAutorizadaException(
+                    "Apenas quem solicitou a reserva, o coordenador da pastoral ou a administração "
+                            + "podem finalizar o uso.");
+        }
     }
 }

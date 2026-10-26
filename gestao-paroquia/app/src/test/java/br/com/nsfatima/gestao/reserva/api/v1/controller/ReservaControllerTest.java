@@ -19,6 +19,7 @@ import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrente
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.OcorrenciaHorario;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.ResultadoRecorrencia;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaUseCase;
+import br.com.nsfatima.gestao.reserva.application.usecase.FinalizarUsoLocalUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ListarReservasUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ObterDisponibilidadeItemUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ObterMetricasReservasUseCase;
@@ -66,14 +67,16 @@ class ReservaControllerTest {
     @Mock private ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase;
     @Mock private ObterMetricasReservasUseCase obterMetricasReservasUseCase;
     @Mock private EnriquecedorReservaService enriquecedorReservaService;
+    @Mock private FinalizarUsoLocalUseCase finalizarUsoLocalUseCase;
     @Mock private ReservaSecurityAdapter securityAdapter;
 
     private ReservaController controller() {
         return new ReservaController(
                 criarReservaUseCase, criarReservaRecorrenteUseCase, aprovarReservaUseCase, rejeitarReservaUseCase,
                 cancelarReservaUseCase, registrarRetiradaAtivoUseCase, registrarDevolucaoAtivoUseCase,
-                listarReservasUseCase, buscarReservaPorIdUseCase, obterDisponibilidadeItemUseCase,
-                obterMetricasReservasUseCase, enriquecedorReservaService, securityAdapter);
+                finalizarUsoLocalUseCase, listarReservasUseCase, buscarReservaPorIdUseCase,
+                obterDisponibilidadeItemUseCase, obterMetricasReservasUseCase, enriquecedorReservaService,
+                securityAdapter);
     }
 
     private UsuarioActor ator() {
@@ -234,6 +237,21 @@ class ReservaControllerTest {
         when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
 
         ReservaResponse response = controller().registrarDevolucao(id, new RegistrarDevolucaoRequest("sem avarias"));
+
+        assertThat(response.id()).isEqualTo(id);
+    }
+
+    @Test
+    @DisplayName("finalizarUso delega ao use case e converte para ReservaResponse")
+    void deveFinalizarUsoDeLocal() {
+        UsuarioActor ator = ator();
+        when(securityAdapter.obterAtorAutenticado()).thenReturn(ator);
+        Reserva r = reserva();
+        UUID id = r.getId().value();
+        when(finalizarUsoLocalUseCase.executar(id, ator)).thenReturn(r);
+        when(enriquecedorReservaService.enriquecer(r)).thenReturn(dtoDe(r));
+
+        ReservaResponse response = controller().finalizarUso(id);
 
         assertThat(response.id()).isEqualTo(id);
     }

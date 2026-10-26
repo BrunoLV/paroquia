@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException.
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaTransicaoInvalidaException;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -96,5 +97,16 @@ class ReservaExceptionHandlerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().message()).isEqualTo("Ativo em manutenção.");
+    }
+
+    @Test
+    @DisplayName("handleTransicaoInvalida retorna 400 em vez de falha interna para transição de estado ilegal")
+    void deveTratarTransicaoInvalida() {
+        ReservaTransicaoInvalidaException ex = new ReservaTransicaoInvalidaException("Reserva retirada.");
+
+        ResponseEntity<ValidationErrorResponse> response = handler().handleTransicaoInvalida(ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().message()).isEqualTo("Reserva retirada.");
     }
 }

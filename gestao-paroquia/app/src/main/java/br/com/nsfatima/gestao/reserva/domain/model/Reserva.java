@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.reserva.domain.model;
 
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaTransicaoInvalidaException;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -127,7 +129,7 @@ public class Reserva implements Serializable {
     public void aprovar(UUID aprovadorId, Instant agora) {
         Objects.requireNonNull(aprovadorId, "Identificador do aprovador é obrigatório.");
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser aprovadas. Status atual: " + this.status);
         }
         this.status = StatusReserva.CONFIRMADA;
@@ -146,7 +148,7 @@ public class Reserva implements Serializable {
             throw new IllegalArgumentException("O motivo da rejeição não pode ser vazio.");
         }
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser rejeitadas. Status atual: " + this.status);
         }
         this.status = StatusReserva.CANCELADA;
@@ -172,7 +174,7 @@ public class Reserva implements Serializable {
             throw new IllegalArgumentException("O motivo do cancelamento não pode ser vazio.");
         }
         if (!this.status.admiteCancelamento()) {
-            throw new IllegalStateException("A reserva não pode ser cancelada no estado: " + this.status);
+            throw new ReservaTransicaoInvalidaException("A reserva não pode ser cancelada no estado: " + this.status);
         }
         this.status = StatusReserva.CANCELADA;
         this.canceladoPorId = operadorId;
@@ -186,11 +188,11 @@ public class Reserva implements Serializable {
     public void registrarRetirada(UUID operadorId, Instant agora) {
         Objects.requireNonNull(operadorId, "Identificador do operador de saída é obrigatório.");
         if (this.tipoItem != TipoItemReserva.ATIVO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Registro de saída física é aplicável exclusivamente a bens patrimoniais móveis (ATIVO).");
         }
         if (this.status != StatusReserva.CONFIRMADA) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas CONFIRMADAS podem ter saída registrada. Status atual: " + this.status);
         }
         this.status = StatusReserva.RETIRADO;
@@ -203,11 +205,11 @@ public class Reserva implements Serializable {
     public void registrarDevolucao(UUID operadorId, String checkAvarias, Instant agora) {
         Objects.requireNonNull(operadorId, "Identificador do operador de devolução é obrigatório.");
         if (this.tipoItem != TipoItemReserva.ATIVO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Registro de devolução com avarias é aplicável exclusivamente a bens patrimoniais móveis (ATIVO).");
         }
         if (this.status != StatusReserva.RETIRADO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status RETIRADO podem ser devolvidas. Status atual: " + this.status);
         }
         Objects.requireNonNull(checkAvarias, "O relatório de conferência de avarias (check_avarias) é obrigatório.");
@@ -226,14 +228,14 @@ public class Reserva implements Serializable {
     public void finalizarUsoLocal(Instant agora) {
         Objects.requireNonNull(agora, "Instante da finalização é obrigatório.");
         if (this.tipoItem != TipoItemReserva.LOCAL) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas locais podem ser finalizados diretamente sem checklist de devolução.");
         }
         if (this.status != StatusReserva.CONFIRMADA) {
-            throw new IllegalStateException("Apenas reservas confirmadas podem ser finalizadas.");
+            throw new ReservaTransicaoInvalidaException("Apenas reservas confirmadas podem ser finalizadas.");
         }
         if (agora.isBefore(this.intervalo.dataHoraInicio())) {
-            throw new IllegalStateException("O uso do local só pode ser finalizado depois de iniciado.");
+            throw new ReservaTransicaoInvalidaException("O uso do local só pode ser finalizado depois de iniciado.");
         }
         this.status = StatusReserva.FINALIZADA;
         this.updatedAt = agora;
@@ -259,7 +261,7 @@ public class Reserva implements Serializable {
      */
     public void expirar(Instant agora) {
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser expiradas. Status atual: " + this.status);
         }
         this.status = StatusReserva.EXPIRADA;

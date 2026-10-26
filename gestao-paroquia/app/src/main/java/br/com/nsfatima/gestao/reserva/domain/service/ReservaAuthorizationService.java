@@ -92,4 +92,11 @@ public class ReservaAuthorizationService {
     public void validarAutorizacaoCancelamento(UsuarioActor operador, Reserva reserva, Instant agora) {
         policy.assertAutorizacaoCancelamento(operador, reserva, agora);
     }
+
+    /**
+     * Valida se o usuário pode finalizar o uso de um local reservado (solicitante, coordenador ou administração).
+     */
+    public void validarAutorizacaoFinalizacao(UsuarioActor operador, Reserva reserva) {
+        policy.assertAutorizacaoFinalizacao(operador, reserva);
+    }
 }
