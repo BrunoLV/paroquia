@@ -46,6 +46,14 @@ Possibilitar o planejamento e o acompanhamento de projetos de médio e longo pra
 - **`SECRETARIO_GRUPO` e `SECRETARIO_CONSELHO`:** criam e editam projetos da própria organização, sem iniciar nem concluir.
 - **`ADMIN`:** isolado na infraestrutura técnica; não tem alçada sobre projetos pastorais.
 
+- Redefinir o período do projeto só é aceito se nenhum evento não cancelado vinculado ficar fora dele (início antes do novo início ou fim depois do novo fim).
+
+### RN-PROJ-07: Transferência de Responsabilidade
+- Transferir o projeto a outra organização exige alçada de edição sobre a organização atual **e** sobre a de destino; o destino deve existir e estar ativa.
+
+### RN-PROJ-08: Ativação Automática e Fuso
+- A rotina diária (00:00:01 no fuso da paróquia) inicia os projetos `ABERTO` cujo início chegou, sempre pela transição do próprio projeto (`iniciar`). O ano paroquial que condiciona a criação é o do dia civil de Brasília do início.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso

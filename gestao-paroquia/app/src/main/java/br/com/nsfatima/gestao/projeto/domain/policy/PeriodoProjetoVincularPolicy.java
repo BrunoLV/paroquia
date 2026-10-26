@@ -5,11 +5,22 @@ import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.List;
 
 /** Impede vínculos em projetos terminais ou fora do período formal aprovado. */
 public final class PeriodoProjetoVincularPolicy implements ProjetoVincularPolicy {
+
+    private final ZoneId fuso;
+
+    /**
+     * Cria a política para o fuso civil da paróquia, que define o dia civil do fim do projeto e do evento.
+     *
+     * @param fuso fuso civil da paróquia
+     */
+    public PeriodoProjetoVincularPolicy(ZoneId fuso) {
+        this.fuso = fuso;
+    }
 
     @Override
     public void validarEvento(ProjetoVinculo projeto, Instant inicioEvento, Instant fimEvento) {
@@ -29,7 +40,7 @@ public final class PeriodoProjetoVincularPolicy implements ProjetoVincularPolicy
         if (!possuiPeriodo(projeto)) {
             return;
         }
-        LocalDate fimProjeto = projeto.fim().atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate fimProjeto = projeto.fim().atZone(fuso).toLocalDate();
         if (regra.dataLimite() == null && regra.numeroOcorrencias() == null) {
             throw new IllegalArgumentException("Para eventos vinculados a projetos, a repetição deve possuir limite.");
         }
@@ -39,7 +50,7 @@ public final class PeriodoProjetoVincularPolicy implements ProjetoVincularPolicy
         }
         if (regra.numeroOcorrencias() != null) {
             List<LocalDate> datas = regra.gerarDatas(
-                    inicioEvento.atZone(ZoneOffset.UTC).toLocalDate(), fimProjeto.plusYears(5));
+                    inicioEvento.atZone(fuso).toLocalDate(), fimProjeto.plusYears(5));
             int ultimaOcorrencia = Math.min(datas.size(), regra.numeroOcorrencias()) - 1;
             if (datas.isEmpty() || datas.get(ultimaOcorrencia).isAfter(fimProjeto)) {
                 throw new IllegalArgumentException(

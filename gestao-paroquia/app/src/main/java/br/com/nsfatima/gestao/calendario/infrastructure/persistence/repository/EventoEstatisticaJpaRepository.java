@@ -111,6 +111,27 @@ public interface EventoEstatisticaJpaRepository {
     long countByProjetoIdAndStatus(UUID projetoId, String status);
 
     /**
+     * Conta os eventos não cancelados de um projeto que ficariam fora do período informado, isto é,
+     * que começam antes do início ou terminam depois do fim. Usado para impedir que a redefinição do
+     * período do projeto deixe eventos vinculados órfãos do cronograma (RN-PROJ-03).
+     *
+     * @param projetoId identificador do projeto
+     * @param inicioUtc novo início do projeto
+     * @param fimUtc novo fim do projeto
+     * @return quantidade de eventos vinculados fora do novo período
+     */
+    @Query("""
+            select count(e) from EventoEntity e
+            where e.projetoId = :projetoId
+              and e.status != 'CANCELADO'
+              and (e.inicioUtc < :inicioUtc or e.fimUtc > :fimUtc)
+            """)
+    long contarEventosVinculadosForaDoPeriodo(
+            @Param("projetoId") UUID projetoId,
+            @Param("inicioUtc") Instant inicioUtc,
+            @Param("fimUtc") Instant fimUtc);
+
+    /**
      * Conta os eventos de um projeto cujo fim já ocorreu antes do instante informado (eventos já
      * encerrados).
      *

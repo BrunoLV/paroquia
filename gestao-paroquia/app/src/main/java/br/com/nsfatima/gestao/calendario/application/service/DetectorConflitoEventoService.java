@@ -15,6 +15,7 @@ import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException.
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaConflitoService;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -409,14 +409,12 @@ public class DetectorConflitoEventoService {
                     tipoHorario, igrejaVinculoId, periodos);
         }
 
-        LocalDate startOfSeries = inicioUtc.atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate startOfSeries = inicioUtc.atZone(BR_ZONE).toLocalDate();
         int year = startOfSeries.getYear();
         LocalDate endOfYear = LocalDate.of(year, 12, 31);
         List<LocalDate> dates = regra.gerarDatas(startOfSeries, endOfYear);
 
         Duration duration = Duration.between(inicioUtc, fimUtc);
-        Duration timeOfDay = Duration.between(
-                startOfSeries.atStartOfDay().toInstant(ZoneOffset.UTC), inicioUtc);
 
         List<ConflitoEventoItemDto> todosConflitos = new ArrayList<>();
         for (LocalDate date : dates) {
@@ -427,7 +425,7 @@ public class DetectorConflitoEventoService {
                 occStart = faixa.inicioUtc();
                 occEnd = faixa.fimUtc();
             } else {
-                occStart = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
+                occStart = RelogioNegocio.mesmoHorarioNoDia(inicioUtc, date, BR_ZONE);
                 occEnd = occStart.plus(duration);
             }
             List<ConflitoEventoItemDto> choquesOcorrencia = detectarConflitos(

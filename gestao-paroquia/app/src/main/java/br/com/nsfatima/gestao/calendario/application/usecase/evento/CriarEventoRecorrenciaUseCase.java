@@ -13,13 +13,13 @@ import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.GeradorRecorr
 import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +35,7 @@ public class CriarEventoRecorrenciaUseCase {
     private final BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy;
     private final AnoParoquialJpaRepository anoParoquialRepository;
     private final ValidadorVinculoProjeto validadorVinculoProjeto;
+    private final RelogioNegocio relogio;
 
     public CriarEventoRecorrenciaUseCase(
             EventoRecorrenciaJpaRepository recurrenceRepository,
@@ -42,13 +43,15 @@ public class CriarEventoRecorrenciaUseCase {
             GeradorRecorrenciaAnualJob generationJob,
             BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
             AnoParoquialJpaRepository anoParoquialRepository,
-            ValidadorVinculoProjeto validadorVinculoProjeto) {
+            ValidadorVinculoProjeto validadorVinculoProjeto,
+            RelogioNegocio relogio) {
         this.recurrenceRepository = recurrenceRepository;
         this.eventRepository = eventRepository;
         this.generationJob = generationJob;
         this.bloqueioAnoParoquialPolicy = bloqueioAnoParoquialPolicy;
         this.anoParoquialRepository = anoParoquialRepository;
         this.validadorVinculoProjeto = validadorVinculoProjeto;
+        this.relogio = relogio;
     }
 
     /**
@@ -64,7 +67,7 @@ public class CriarEventoRecorrenciaUseCase {
     public EventoRecorrenciaResponse execute(UUID eventoId, RegraRecorrencia regra) {
         EventoEntity baseEvent = validateEvent(eventoId);
         AnoParoquialStatus statusAno = anoParoquialRepository.findByAno(
-                        baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).getYear())
+                        relogio.anoDe(baseEvent.getInicioUtc()))
                 .map(ano -> ano.getStatus())
                 .orElse(null);
         bloqueioAnoParoquialPolicy.assertPermitido(
@@ -89,8 +92,8 @@ public class CriarEventoRecorrenciaUseCase {
         baseEvent.setRecorrenciaId(entity.getId());
         eventRepository.save(baseEvent);
 
-        // Immediate generation for current year
-        generationJob.executeForYear(LocalDate.now(ZoneOffset.UTC).getYear());
+        // Gera apenas a série recém-criada, no ano corrente da paróquia
+        generationJob.executeForRule(entity, relogio.anoDe(relogio.agora()));
 
         return new EventoRecorrenciaResponse(
                 entity.getId(),
@@ -100,24 +103,14 @@ public class CriarEventoRecorrenciaUseCase {
     }
 
     private void adjustBaseEventToFirstOccurrence(EventoEntity baseEvent, RegraRecorrencia regra) {
-        LocalDate startOfSeries = baseEvent.getInicioUtc().atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate startOfSeries = relogio.dataDe(baseEvent.getInicioUtc());
         List<LocalDate> validDates = regra.gerarDatas(startOfSeries, startOfSeries.plusYears(1));
 
-        if (!validDates.isEmpty()) {
-            LocalDate firstValidDate = validDates.getFirst();
-            if (!firstValidDate.equals(startOfSeries)) {
-                // Move base event to the first valid date
-                Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
-
-                Instant baseDateStart = startOfSeries.atStartOfDay().toInstant(ZoneOffset.UTC);
-                Duration timeOfDay = Duration.between(baseDateStart, baseEvent.getInicioUtc());
-
-                Instant newStartUtc = firstValidDate.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
-                Instant newEndUtc = newStartUtc.plus(duration);
-
-                baseEvent.setInicioUtc(newStartUtc);
-                baseEvent.setFimUtc(newEndUtc);
-            }
+        if (!validDates.isEmpty() && !validDates.getFirst().equals(startOfSeries)) {
+            Duration duration = Duration.between(baseEvent.getInicioUtc(), baseEvent.getFimUtc());
+            Instant newStart = relogio.mesmoHorarioNoDia(baseEvent.getInicioUtc(), validDates.getFirst());
+            baseEvent.setInicioUtc(newStart);
+            baseEvent.setFimUtc(newStart.plus(duration));
         }
     }
 

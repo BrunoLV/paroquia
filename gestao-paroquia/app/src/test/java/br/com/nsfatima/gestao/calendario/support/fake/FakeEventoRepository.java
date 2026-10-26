@@ -121,6 +121,14 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
+    public long contarEventosVinculadosForaDoPeriodo(UUID projetoId, Instant inicioUtc, Instant fimUtc) {
+        return storage.stream()
+                .filter(e -> projetoId.equals(e.getProjetoId()) && !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> e.getInicioUtc().isBefore(inicioUtc) || e.getFimUtc().isAfter(fimUtc))
+                .count();
+    }
+
+    @Override
     public long countByProjetoIdAndFimUtcLessThan(UUID projetoId, Instant now) {
         return storage.stream().filter(e -> projetoId.equals(e.getProjetoId()) && e.getFimUtc().isBefore(now)).count();
     }
@@ -159,12 +167,6 @@ public class FakeEventoRepository implements EventoJpaRepository {
         return storage.stream()
                 .filter(e -> projetoId.equals(e.getProjetoId()))
                 .toList();
-    }
-
-    @Override
-    public boolean existsByRecorrenciaIdAndInicioUtc(UUID recorrenciaId, Instant inicioUtc) {
-        return storage.stream()
-                .anyMatch(e -> recorrenciaId.equals(e.getRecorrenciaId()) && inicioUtc.equals(e.getInicioUtc()));
     }
 
     @Override
@@ -386,6 +388,7 @@ public class FakeEventoRepository implements EventoJpaRepository {
     public List<EventoEntity> findAllInPeriod(Instant inicioUtc, Instant fimUtc) {
         return storage.stream()
                 .filter(e -> !e.getInicioUtc().isBefore(inicioUtc) && !e.getInicioUtc().isAfter(fimUtc))
+                .filter(e -> !"CANCELADO".equals(e.getStatus()))
                 .sorted(Comparator.comparing(EventoEntity::getInicioUtc))
                 .toList();
     }

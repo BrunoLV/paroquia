@@ -12,6 +12,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.Orga
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.OrganizacaoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,21 +29,21 @@ import java.util.stream.Collectors;
 /**
  * Caso de uso responsável por montar e exportar o calendário de eventos em um arquivo
  * (delegando a geração binária a um {@link ExportadorCalendario} escolhido por formato).
- * Resolve o período de exportação (ano, mês ou intervalo customizado, sempre convertido
- * para UTC a partir do fuso America/Sao_Paulo), busca os eventos elegíveis com os filtros
+ * Resolve o período de exportação (ano, mês ou intervalo customizado; ano e mês são dias civis
+ * do fuso da paróquia, convertidos para instantes UTC), busca os eventos elegíveis com os filtros
  * de organização/categoria informados e carrega os mapas auxiliares (local, organização,
  * configuração da paróquia) necessários para renderizar o documento sem consultas N+1.
  */
 @Service
 public class ExportacaoCalendarioUseCase {
 
-    private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
     private final EventoJpaRepository eventoRepository;
     private final LocalJpaRepository localRepository;
     private final OrganizacaoJpaRepository organizacaoRepository;
     private final ProjetoEventoJpaRepository projetoEventoRepository;
     private final ParoquiaConfiguracaoRepository paroquiaConfigRepository;
     private final List<ExportadorCalendario> exportadores;
+    private final RelogioNegocio relogio;
 
     public ExportacaoCalendarioUseCase(
             EventoJpaRepository eventoRepository,
@@ -52,13 +51,15 @@ public class ExportacaoCalendarioUseCase {
             OrganizacaoJpaRepository organizacaoRepository,
             ProjetoEventoJpaRepository projetoEventoRepository,
             ParoquiaConfiguracaoRepository paroquiaConfigRepository,
-            List<ExportadorCalendario> exportadores) {
+            List<ExportadorCalendario> exportadores,
+            RelogioNegocio relogio) {
         this.eventoRepository = eventoRepository;
         this.localRepository = localRepository;
         this.organizacaoRepository = organizacaoRepository;
         this.projetoEventoRepository = projetoEventoRepository;
         this.paroquiaConfigRepository = paroquiaConfigRepository;
         this.exportadores = exportadores;
+        this.relogio = relogio;
     }
 
     /**
@@ -89,18 +90,18 @@ public class ExportacaoCalendarioUseCase {
         Instant end;
 
         if ("ANO".equalsIgnoreCase(opcao)) {
-            int targetYear = ano != null ? ano : LocalDate.now(BR_ZONE).getYear();
-            start = LocalDate.of(targetYear, 1, 1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            end = LocalDate.of(targetYear, 12, 31).atTime(23, 59, 59, 999999999).atZone(ZoneOffset.UTC).toInstant();
+            int targetYear = ano != null ? ano : relogio.hoje().getYear();
+            start = relogio.inicioDoDia(LocalDate.of(targetYear, 1, 1));
+            end = relogio.inicioDoDia(LocalDate.of(targetYear + 1, 1, 1)).minusNanos(1);
         } else if ("MES".equalsIgnoreCase(opcao)) {
-            int targetYear = ano != null ? ano : LocalDate.now(BR_ZONE).getYear();
-            int targetMonth = mes != null ? mes : LocalDate.now(BR_ZONE).getMonthValue();
+            int targetYear = ano != null ? ano : relogio.hoje().getYear();
+            int targetMonth = mes != null ? mes : relogio.hoje().getMonthValue();
             LocalDate firstDay = LocalDate.of(targetYear, targetMonth, 1);
-            start = firstDay.atStartOfDay(ZoneOffset.UTC).toInstant();
-            end = firstDay.plusMonths(1).minusDays(1).atTime(23, 59, 59, 999999999).atZone(ZoneOffset.UTC).toInstant();
+            start = relogio.inicioDoDia(firstDay);
+            end = relogio.inicioDoDia(firstDay.plusMonths(1)).minusNanos(1);
         } else if ("PERIODO".equalsIgnoreCase(opcao)) {
             start = dataInicio != null ? dataInicio : Instant.EPOCH;
-            end = dataFim != null ? dataFim : Instant.now().plusSeconds(31536000); // +1 ano default
+            end = dataFim != null ? dataFim : relogio.agora().plusSeconds(31536000); // +1 ano default
         } else {
             throw new IllegalArgumentException("Opção de exportação inválida: " + opcao);
         }

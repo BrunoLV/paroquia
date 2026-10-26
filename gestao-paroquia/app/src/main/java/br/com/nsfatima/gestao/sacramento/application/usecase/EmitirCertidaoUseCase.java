@@ -11,6 +11,7 @@ import br.com.nsfatima.gestao.sacramento.domain.model.Averbacao;
 import br.com.nsfatima.gestao.sacramento.domain.model.OperacaoSacramental;
 import br.com.nsfatima.gestao.sacramento.domain.model.PapelParticipante;
 import br.com.nsfatima.gestao.sacramento.domain.model.Participante;
+import br.com.nsfatima.gestao.sacramento.domain.model.Ressalva;
 import br.com.nsfatima.gestao.sacramento.domain.model.StatusAssento;
 import br.com.nsfatima.gestao.sacramento.domain.model.StatusAverbacao;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Emite certidão narrativa de assento homologado. Certidão simples nunca contém filiação de assento
  * marcado como sensível (adotiva), nem averbações reservadas ou pendentes de homologação (LGPD).
+ *
+ * <p>O teor selado nunca é sobrescrito, mas a certidão não pode repetir como certo um dado que o
+ * Pároco já retificou: cada {@code Ressalva} atestada é anexada ao texto ("onde consta X, leia-se Y").
+ * Em assento sensível, a ressalva que toca a filiação não é anexada, para não reabrir pela retificação
+ * o dado que a certidão simples omite.
  */
 @Service
 public class EmitirCertidaoUseCase {
 
     private static final Set<PapelParticipante> FILIACAO =
             EnumSet.of(PapelParticipante.PAI, PapelParticipante.MAE, PapelParticipante.ADOTANTE);
+
+    private static final Pattern FILIACAO_NO_CAMPO =
+            Pattern.compile("filia|\\bpai\\b|\\bm[aã]e\\b|adot|genitor", Pattern.CASE_INSENSITIVE);
 
     private final EventoActorContextResolver actorResolver;
     private final AssentoAcessoService acesso;
@@ -62,7 +72,7 @@ public class EmitirCertidaoUseCase {
                 assento.getTeor().localCelebracao(), texto, averbacoes);
     }
 
-    private static String narrativa(AssentoSacramental a) {
+    static String narrativa(AssentoSacramental a) {
         boolean ocultarFiliacao = a.getTeor().dadoSensivel();
         String pessoas = a.getTeor().participantes().stream()
                 .filter(p -> !(ocultarFiliacao && FILIACAO.contains(p.papel())))
@@ -72,7 +82,22 @@ public class EmitirCertidaoUseCase {
                 .formatted(a.getTeor().referenciaLivro().livro(), a.getTeor().referenciaLivro().folha(),
                         a.getTeor().referenciaLivro().termo(), a.getTeor().paroquiaCustodiante(), a.getTipo(),
                         a.getTeor().dataCelebracao(), a.getTeor().localCelebracao())
-                + "Constam: " + pessoas + ".";
+                + "Constam: " + pessoas + "." + ressalvas(a);
+    }
+
+    private static String ressalvas(AssentoSacramental a) {
+        String itens = a.getRessalvas().stream()
+                .filter(r -> !(a.getTeor().dadoSensivel() && FILIACAO_NO_CAMPO.matcher(r.campo()).find()))
+                .map(EmitirCertidaoUseCase::descrever)
+                .collect(Collectors.joining(" "));
+        return itens.isEmpty() ? "" : " Ressalvas: " + itens;
+    }
+
+    private static String descrever(Ressalva r) {
+        return r.valorOriginal() == null || r.valorOriginal().isBlank()
+                ? "no campo \"%s\", leia-se \"%s\".".formatted(r.campo(), r.valorCorrigido())
+                : "no campo \"%s\", onde consta \"%s\", leia-se \"%s\".".formatted(
+                        r.campo(), r.valorOriginal(), r.valorCorrigido());
     }
 
     private static String descrever(Participante p) {

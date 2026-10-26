@@ -1,9 +1,10 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
+import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
-import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
@@ -11,13 +12,17 @@ import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +34,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FormatoEventoLocaisValidationTest {
+
+    private static final RelogioNegocio RELOGIO = new RelogioNegocio(
+            Clock.fixed(Instant.parse("2026-10-01T12:00:00Z"), ZoneOffset.UTC), ZoneId.of("America/Sao_Paulo"));
 
     @Mock
     private EventoDomainService domainService;
@@ -46,7 +54,7 @@ class FormatoEventoLocaisValidationTest {
     private AnoParoquialJpaRepository anoParoquialRepository;
 
     @Mock
-    private br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService idempotencyService;
+    private EventoIdempotencyService idempotencyService;
 
     @Mock
     private EventoPatchAuthorizationService authorizationService;
@@ -57,7 +65,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, null,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
 
         when(actorContextResolver.resolveRequired())
@@ -97,7 +106,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, null,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
 
         when(actorContextResolver.resolveRequired())
@@ -143,7 +153,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, authorizationService,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
@@ -160,7 +171,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, authorizationService,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
         EventoActorContext secretaria = new EventoActorContext("sec", "SECRETARIA_PAROQUIAL", "PAROQUIA",
                 null, null, null);

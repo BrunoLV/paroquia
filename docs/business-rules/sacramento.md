@@ -80,6 +80,7 @@ O Pároco só sela o termo quando a policy do sacramento não aponta pendências
 
 ### RN-SAC-09: LGPD e Certidões
 - A certidão só é emitida de assento `SEALED`. Em assento marcado como `dadoSensivel` (filiação adotiva) a certidão omite pai, mãe e adotantes; averbações reservadas ou pendentes de homologação também são omitidas.
+- **Ressalvas:** o teor selado nunca é sobrescrito, mas a certidão anexa ao texto cada ressalva atestada ("no campo X, onde consta Y, leia-se Z"), para não repetir como certo um dado já retificado. A justificativa da retificação não vai para a certidão. Em assento `dadoSensivel`, a ressalva cujo campo toca a filiação (pai, mãe, adotante, genitor) não é anexada, para não reabrir por retificação o dado que a certidão simples omite.
 - O documento de cada participante é cifrado em repouso.
 - Visão 360º: `GET /api/v1/sacramentos/vinculados/{pessoaId}` lista os assentos em que o fiel ou clérigo está vinculado, respeitando a visibilidade do ator; cada item informa o participante e o papel que a pessoa ocupa no termo.
 

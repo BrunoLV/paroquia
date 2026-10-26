@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
+import java.time.ZoneId;
+import java.time.Clock;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import br.com.nsfatima.gestao.calendario.domain.type.CategoriaEvento;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.CicloLiturgicoEntity;
@@ -32,6 +35,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProvisionamentoLiturgicoServiceTest {
 
+    private static final RelogioNegocio RELOGIO = new RelogioNegocio(
+            Clock.systemUTC(), ZoneId.of("America/Sao_Paulo"));
+
     @Mock
     private AnoLiturgicoRepository anoLiturgicoRepository;
 
@@ -52,7 +58,7 @@ class ProvisionamentoLiturgicoServiceTest {
 
     @BeforeEach
     void setUp() {
-        motorLiturgico = new MotorLiturgico();
+        motorLiturgico = new MotorLiturgico(RELOGIO);
         service = new ProvisionamentoLiturgicoService(
                 anoLiturgicoRepository,
                 cicloLiturgicoRepository,

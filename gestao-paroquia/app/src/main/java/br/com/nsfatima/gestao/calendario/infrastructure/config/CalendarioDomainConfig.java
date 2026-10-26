@@ -26,6 +26,8 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.E
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.ZoneId;
+
 /** Registra Strategies puras do calendário sem contaminar a camada de domínio com Spring. */
 @Configuration
 public class CalendarioDomainConfig {
@@ -54,8 +56,8 @@ public class CalendarioDomainConfig {
     }
 
     @Bean
-    public BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy() {
-        return new AnoParoquialFechadoPolicy();
+    public BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy(ZoneId outputZoneId) {
+        return new AnoParoquialFechadoPolicy(outputZoneId);
     }
 
     @Bean
