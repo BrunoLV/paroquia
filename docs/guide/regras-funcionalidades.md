@@ -151,14 +151,14 @@ O detalhamento está em `docs/business-rules/conselho.md`.
 
 ### Funcionalidades
 - **Autenticação Segura:** Autenticação via JSON Web Tokens (JWT) com verificação de assinatura e expiração.
-- **Role-Based Access Control (RBAC):**
-  - `ADMIN`: Acesso total à administração do sistema e auditoria.
-  - `PAROCO`: autoridade máxima canônica, decisões de aprovação, homologações e relatórios gerais.
-  - `SECRETARIA`: Gestão diária de fiéis, agendamentos, emissão de certidões e relatórios.
-  - `COORDENADOR`: Gerenciamento do seu grupo pastoral e solicitação de eventos/ativos.
-  - `MEMBER`: Consulta a calendários e agendas do seu grupo.
+- **Matriz Ortogonal de 14 Papéis Canônicos em 3 Camadas:**
+  - **Camada 1 — Papéis Globais (`PapelAcesso`):** `ADMIN` (infraestrutura e logs, isolado de decisões eclesiais), `BISPO_DIOCESANO`, `PAROCO`, `VIGARIO`, `DIACONO_PAROQUIAL`, `SECRETARIA_PAROQUIAL` e `FIEL`.
+  - **Camada 2 — Vínculos de Conselho:** `SECRETARIO_CONSELHO`, `MEMBRO_CONSELHO_PASTORAL` (CPP/CPC) e `MEMBRO_CONSELHO_ECONOMICO` (CAEP).
+  - **Camada 3 — Vínculos de Organização Pastoral:** `COORDENADOR`, `SECRETARIO_GRUPO` (acumula Vice-Coordenador), `MEMBRO_ATIVO` e `VOLUNTARIO`.
 - **Proteção contra IDOR (*Insecure Direct Object References*):**
   - Usuários só podem visualizar ou manipular recursos dentro do escopo de organizações autorizadas.
+
+O detalhamento está em `docs/business-rules/iam.md`.
 
 ---
 
@@ -171,6 +171,8 @@ O detalhamento está em `docs/business-rules/conselho.md`.
   - **Atas de conselho:** Word (`.docx`, via Apache POI XWPF) e PDF (via OpenPDF), com cabeçalho institucional.
   - **Relatórios do painel:** PDF e CSV, gerados na interface (jsPDF).
 
+O detalhamento está em `docs/business-rules/importacao.md`.
+
 ---
 
 ## 10. Painel Executivo e Dashboard (`dashboard`)
@@ -179,3 +181,61 @@ O detalhamento está em `docs/business-rules/conselho.md`.
 - **Widgets de Logística:** Alertas de choque de horários, eventos órfãos de organização e taxa de ocupação de ambientes.
 - **Métricas Comunitárias:** Total de fiéis cadastrados, retenção pastoral, aniversariantes do mês e distribuição por tempo litúrgico.
 - **Progresso de Projetos:** acompanhamento dos projetos ativos, com o indicador de risco de atraso.
+
+O detalhamento está em `docs/business-rules/painel.md`.
+
+---
+
+## 11. Clero e Governo Eclesiástico (`clero`)
+
+### Funcionalidades
+- **Cadastro de Ministros Ordenados:** Registro próprio de clérigos (`DIACONO_TRANSITORIO`, `DIACONO_PERMANENTE`, `PADRE_DIOCESANO`, `PADRE_RELIGIOSO`, `BISPO`), datas de ordenação e diocese de incardinação.
+- **Histórico de Encargos:** Controle de função eclesiástica atual (`PAROCO`, `VIGARIO_PAROQUIAL`, `ADMINISTRADOR_PAROQUIAL`, `DIACONO_AUXILIAR`, `BISPO_DIOCESANO`, `EMERITO`) com encerramento automático do encargo anterior ao assumir novo ofício.
+- **Governo da Paróquia e Diocese:** Registro do decreto de ereção, data de posse do Pároco, livro de tombo e vínculo com a Mitra Diocesana.
+- **Paridade LGPD:** Proteção criptográfica de dados civis, segregação entre DTO institucional e DTO completo, autoatendimento no Portal de Consentimento e trilha de auditoria forense.
+
+O detalhamento está em `docs/business-rules/clero.md`.
+
+---
+
+## 12. Livros e Assentos Sacramentais (`sacramento`)
+
+### Funcionalidades
+- **Fé Pública Canônica Perpétua (Cân. 535):** Lavratura de assentos nos Livros Paroquiais (Batismo, Crisma, Matrimônio e Ordem) com numeração por livro, folha e termo.
+- **Imutabilidade e Averbações:** Assentos lavrados são imutáveis e jamais excluídos fisicamente (Art. 16, I da LGPD); retificações e anotações inter-sacramentais ocorrem exclusivamente por averbações formais datadas.
+- **Reivindicação e Moderação de Vínculos:** Vinculação entre cadastros de fiéis e registros sacramentais sujeita à homologação na Central de Aprovações.
+
+O detalhamento está em `docs/business-rules/sacramento.md`.
+
+---
+
+## 13. Reservas de Locais e Ativos (`reserva`)
+
+### Funcionalidades
+- **Ciclo de Vida de Empréstimo:** Solicitação, aprovação, retirada (`RETIRADO`) e devolução (`FINALIZADA`) de espaços físicos (`LOCAL`) e bens móveis (`ATIVO`).
+- **Prevenção de Conflitos e Vistoria:** Bloqueio automático contra sobreposição de reservas confirmadas ou janelas de manutenção; registro de vistoria na devolução com abertura automática de manutenção em caso de avaria.
+
+O detalhamento está em `docs/business-rules/reserva.md`.
+
+---
+
+## 14. Projetos Paroquiais (`projeto`)
+
+### Funcionalidades
+- **Planejamento Pastoral e Obras:** Cadastro de projetos com período de vigência, organização responsável e associação de eventos do calendário.
+- **Indicador Preditivo de Risco:** Cálculo dinâmico de risco de atraso com base na proporção de eventos concluídos/confirmados frente ao progresso temporal do projeto.
+
+O detalhamento está em `docs/business-rules/projeto.md`.
+
+---
+
+## 15. Governança, Ano Paroquial e Conformidade LGPD (`governanca` e `observabilidade`)
+
+### Funcionalidades
+- **Auditoria Universal (`BaseAuditableEntity`):** Rastreabilidade automática em UTC (`criado_em_utc`, `atualizado_em_utc`, `criado_por`, `atualizado_por`) e trilha de auditoria imutável.
+- **Ciclo do Ano Paroquial e Identidade Visual:** Abertura/fechamento do Ano Paroquial pelo Pároco e configuração de cores e logotipos binarizados (fundo claro e escuro).
+- **Portal de Consentimento Passwordless (`/portal/consentimento`):** Autoatendimento público para fiéis e clérigos via código OTP de 6 dígitos enviado por e-mail, diálogo de transparência canônica (Cân. 535), salvaguarda de menores (Art. 14, § 1º) e emissão de comprovante digital com hash SHA-256 do termo.
+- **Painel do Encarregado (DPO), ROPA e Incidentes:** Inventário ROPA exportável (Art. 37), atendimento a requisições de titulares com protocolo e prazo legal de 15 dias (Arts. 18 e 19), gestão de incidentes de segurança (Art. 48) e página pública `/politica-privacidade`.
+- **Observabilidade (`observabilidade`):** Telemetria via Spring Boot Actuator, métricas Prometheus, logs JSON assíncronos via Log4j2 Disruptor (Loki/Promtail) com garantia de PII Zero.
+
+O detalhamento está em `docs/business-rules/governanca.md`, `docs/business-rules/lgpd.md` e `docs/guide/logging-metricas.md`.

@@ -55,7 +55,7 @@ Este documento define as regras Mandatórias, Invariantes de arquitetura do mono
    * Esse diretório contém somente regras de negócio e fluxos operacionais. Diretivas técnicas e visuais pertencem ao Design System e às instruções dos agentes.
    * Cada implementação que afete regras de negócio, fluxos ou políticas **DEVE OBRIGATORIAMENTE** atualizar `docs/business-rules/<modulo>.md` no mesmo ciclo de desenvolvimento.
 4. **VERSIONAMENTO SEMÂNTICO & `CHANGELOG.md`:**
-   * Versão base atual: `0.1.0`. Ao concluir cada entrega, questione o usuário se fecha versão do sistema.
+   * Versão base atual: `0.12.1`. Ao concluir cada entrega, questione o usuário se fecha versão do sistema.
    * Se SIM: incremente a versão no `build.gradle.kts` e `package.json` e crie a seção `[X.Y.Z] - AAAA-MM-DD` no `CHANGELOG.md`.
    * Se NÃO: registre sob `[Unreleased]` no `CHANGELOG.md`.
 5. **CONVENTIONAL COMMITS & PULL REQUEST:**

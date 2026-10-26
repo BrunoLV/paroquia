@@ -25,7 +25,7 @@ Esta skill estabelece o fluxo oficial, padronizado e inegociável de engenharia 
 Ao receber uma solicitação do usuário no modo de planejamento (ou comando `/plan`):
 
 1. **Mapeamento de Contexto & Módulos Afetados:**
-   - Identifique quais dos 15 Bounded Contexts são impactados (`calendario`, `aprovacao`, `fiel`, `clero`, `projeto`, etc.).
+   - Identifique quais dos 17 Bounded Contexts são impactados (`calendario`, `aprovacao`, `fiel`, `clero`, `sacramento`, `conselho`, `governanca`, `projeto`, etc.).
    - **Consulte obrigatoriamente** o documento correspondente em `docs/business-rules/<modulo>.md` para absorver as regras vigentes e não violar invariantes existentes.
 2. **Desenho Arquitetural & Técnico:**
    - Especifique as alterações de backend (entidades, use cases, ports, adapters, DDL Flyway) e/ou frontend (componentes, hooks TanStack Query, schemas Zod, Design System).

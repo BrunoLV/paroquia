@@ -743,9 +743,9 @@ export const PrivacidadeDpoTab: React.FC = () => {
                         onChange={(e) => setEditStatus(e.target.value as StatusIncidente)}
                       >
                         <MenuItem value="EM_ANALISE">Em Análise</MenuItem>
-                        <MenuItem value="CONTAINED">Contido</MenuItem>
-                        <MenuItem value="RESOLVED">Resolvido</MenuItem>
-                        <MenuItem value="CLOSED">Encerrado</MenuItem>
+                        <MenuItem value="CONTIDO">Contido</MenuItem>
+                        <MenuItem value="NOTIFICADO">Notificado</MenuItem>
+                        <MenuItem value="ENCERRADO">Encerrado</MenuItem>
                       </SearchableSelect>
                     </FormControl>
                   </Grid>

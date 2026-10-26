@@ -56,9 +56,9 @@ O ecossistema é organizado em um **Monorepo com fronteiras estritamente isolada
 
 Utilize o menu lateral ou os links abaixo para explorar os tópicos específicos da documentação:
 
-- [📋 Regras de Negócio e Funcionalidades](regras-funcionalidades.md): Detalhamento dos 15 domínios do backend e recursos da interface web.
+- [📋 Regras de Negócio e Funcionalidades](regras-funcionalidades.md): Detalhamento dos 17 domínios do backend e dos 16 contextos da interface web.
 - [🏛️ Padrões de Arquitetura](arquitetura.md): Princípios de Clean Architecture, Hexagonal e diagrama C4 Container.
 - [🧩 Padrões de Projeto (Design Patterns)](padroes-projeto.md): Aplicação prática de GoF e DDD tático com diagrama de classes dos agregados.
-- [🔄 Diagramas de Sequência](fluxos-sequencia.md): Fluxos visuais de agendamento de eventos, validação de choque e homologação do CPC.
-- [⚙️ Diagramas de Estados](estados.md): Máquinas de estado finito de eventos, aprovações e ativos patrimoniais.
+- [🔄 Diagramas de Sequência](fluxos-sequencia.md): Fluxos visuais de agendamento de eventos, reserva de locais/ativos e homologação de atas de conselho.
+- [⚙️ Diagramas de Estados](estados.md): Máquinas de estado finito de eventos, aprovações, reservas, ativos patrimoniais e atas.
 - [📊 Logging & Métricas](logging-metricas.md): Log4j2 assíncrono, MDC, filtros LGPD PII Zero e métricas Prometheus/Actuator.

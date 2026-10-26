@@ -10,7 +10,7 @@ Assegurar o registro formal do clero paroquial e diocesano, mantendo o históric
 ---
 
 ## 2. Agregados, Entidades e Value Objects Principais
-- **`Clerigo` (Raiz de Agregado):** identificado por UUID. Cadastro pessoal e canônico próprio, **não é um fiel**: nome civil e eclesiástico, data de nascimento, país de origem, documentos (CPF, RG ou documento estrangeiro), contatos, endereço, `GrauOrdem`, diocese de incardinação e as datas de ordenação diaconal, presbiteral e episcopal. Inativar o clérigo é uma transição explícita (exclusão lógica).
+- **`Clerigo` (Raiz de Agregado):** identificado por UUID. Cadastro pessoal e canônico próprio, **não é um fiel**: nome civil e eclesiástico, data de nascimento, país de origem, documentos (CPF, RG ou documento estrangeiro), contatos, endereço, `GrauOrdem`, diocese de incardinação, as datas de ordenação diaconal, presbiteral e episcopal, e os atributos de consentimento LGPD (`termoConsentimentoAceito`, `dataHoraConsentimentoUtc`, `ipConsentimento`, `versaoTermoConsentimento`, `canalConsentimento`, `hashTermoConsentimento`, `usoImagemAutorizado`, `permitirDivulgacaoAniversario`). Inativar o clérigo é uma transição explícita (exclusão lógica).
 - **`GrauOrdem` (Enum):** `DIACONO_TRANSITORIO`, `DIACONO_PERMANENTE`, `PADRE_DIOCESANO`, `PADRE_RELIGIOSO` e `BISPO`.
 - **`FuncaoEclesiastica` (Enum):** `BISPO_DIOCESANO`, `PAROCO`, `ADMINISTRADOR_PAROQUIAL`, `VIGARIO_PAROQUIAL`, `DIACONO_AUXILIAR` e `EMERITO`.
 - **Encargo clerical:** a função que o clérigo exerce numa unidade territorial (a Matriz), com a indicação de ser a **atual** e a data de encerramento. O histórico de encargos de cada clérigo é preservado.
@@ -32,8 +32,9 @@ Assegurar o registro formal do clero paroquial e diocesano, mantendo o históric
 ### RN-CLE-03: Governo da Paróquia
 - O Pároco do governo eclesiástico é um clérigo cadastrado. A data de posse, o decreto de ereção, a data de instalação e o livro de tombo constam do registro de governo, e a diocese é a da paróquia.
 
-### RN-CLE-04: Paridade de Proteção de Dados (LGPD)
-- Aplicação das mesmas restrições de privacidade: os dados civis de padres e diáconos têm a mesma blindagem dispensada aos fiéis leigos.
+### RN-CLE-04: Paridade de Proteção de Dados e Consentimento (LGPD)
+- Aplicação das mesmas restrições de privacidade: os dados civis de padres, diáconos e bispos têm a mesma blindagem criptográfica (AES-256 + blind index SHA-256 de CPF) e segregação de DTOs (`ClerigoInstitucionalResponse` vs `ClerigoResponse`) dispensada aos fiéis leigos.
+- O clérigo gerencia suas manifestações e revogações de consentimento tanto via secretaria quanto por autoatendimento no Portal de Consentimento (`/portal/consentimento`, com validação OTP por e-mail), gerando trilha forense imutável em `calendario.historico_consentimentos` visível no modal de detalhes do clérigo (`ClerigoViewModal`).
 - O clérigo corrige seus contatos e endereço por **solicitação de ajuste**, analisada e, se aceita, aplicada ao cadastro; uma solicitação já processada não se processa de novo.
 
 ---

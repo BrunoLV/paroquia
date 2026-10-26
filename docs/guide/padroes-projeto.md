@@ -32,14 +32,29 @@ classDiagram
         +sobrepoe(Periodo outro) boolean
     }
 
-    class EventoStatus {
+    class EventoStatusInput {
         <<enumeration>>
         RASCUNHO
-        PENDENTE_APROVACAO
         CONFIRMADO
-        REJEITADO
+        ADICIONADO_EXTRA
         CANCELADO
-        CONCLUIDO
+    }
+
+    class StatusAtivo {
+        <<enumeration>>
+        DISPONIVEL
+        RESERVADO
+        EM_MANUTENCAO
+    }
+
+    class StatusReserva {
+        <<enumeration>>
+        PENDENTE
+        CONFIRMADA
+        RETIRADO
+        FINALIZADA
+        CANCELADA
+        EXPIRADA
     }
 
     class Evento {
@@ -48,7 +63,7 @@ classDiagram
         -Periodo periodo
         -LocalId localId
         -OrganizacaoId organizacaoResponsavelId
-        -EventoStatus status
+        -EventoStatusInput status
         -String justificativaExtra
         +submeterParaAprovacao(AprovacaoEventoPolicy policy) void
         +confirmar(ParocoContext paroco) void
@@ -72,14 +87,26 @@ classDiagram
     }
 
     class AtivoPatrimonial {
-        -UUID id
-        -String numeroTombo
+        -AtivoPatrimonialId id
+        -String codigoTombamento
         -String nome
-        -EstadoAtivo estado
-        -LocalId localBaseId
-        +alocarParaEvento(EventoId eventoId, Periodo periodo) void
-        +devolver() void
-        +registrarManutencao(String laudo) void
+        -StatusAtivo status
+        -UUID unidadeTerritorialId
+        +iniciarManutencao(String motivo) void
+        +concluirManutencao() void
+        +excluirLogicamente() void
+    }
+
+    class Reserva {
+        -ReservaId id
+        -TipoRecursoReserva tipoRecurso
+        -UUID recursoId
+        -Periodo periodo
+        -StatusReserva status
+        +confirmar() void
+        +registrarRetirada(String estadoRetirada) void
+        +registrarDevolucao(String estadoDevolucao, boolean avaria) void
+        +cancelar(String motivo) void
     }
 
     class Fiel {
@@ -112,12 +139,14 @@ classDiagram
     Evento --> Periodo : "possui"
     Evento --> LocalId : "alocado em"
     Evento --> OrganizacaoId : "gerido por"
-    Evento --> EventoStatus : "estado"
+    Evento --> EventoStatusInput : "estado"
     Evento ..> ChoqueHorarioPolicy : "valida conflito"
     Evento ..> AprovacaoEventoPolicy : "avalia aprovacao"
     ChoqueHorarioPolicy <|.. ChoqueHorarioPolicyImpl : "implementa"
 
-    AtivoPatrimonial --> LocalId : "base"
+    AtivoPatrimonial --> StatusAtivo : "estado"
+    Reserva --> StatusReserva : "estado"
+    Reserva --> Periodo : "período"
     AtivoPatrimonial ..> EventoId : "alocado"
 
     Fiel --> FielId : "identificado por"

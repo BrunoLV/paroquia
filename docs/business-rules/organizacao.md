@@ -18,7 +18,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 - **`TipoOrganizacao`:**
   - `PASTORAL` — **pastoral orgânica**: ação direta da Igreja local, vinculada ao plano de pastoral da paróquia e da diocese (ex.: Batismo, Catequese, Dízimo).
   - `MOVIMENTO` — **movimento apostólico ou associação de fiéis**: espiritualidade, método e itinerário próprios, de âmbito diocesano, nacional ou internacional (ex.: RCC, ECC, Terço dos Homens). Exige estatuto reconhecido.
-  - `SERVICO_PAROQUIAL` — suporte litúrgico e operacional direto (ex.: Coroinhas, Acolhida, Pascom, Ministros Extraordinários da Sagrada Comunhão). Substitui o antigo `MINISTERIO`.
+  - `SERVICO_PAROQUIAL` — suporte litúrgico e operacional direto (ex.: Coroinhas, Acolhida, Pascom, Ministros Extraordinários da Sagrada Comunhão).
   - `CONSELHO` — órgão colegiado consultivo.
 - **`SubtipoConselho`:** `CPP` (Conselho Pastoral Paroquial, Cân. 536), `CPC` (conselho pastoral comunitário) e `CAEP` (conselho para assuntos econômicos, Cân. 537).
 - **`SetorPastoral`:** os três múnus — ensinar (`FORMACAO_ENSINAR`), santificar (`SANTIFICACAO_LITURGIA`) e governar (`SOCIAL_CARIDADE`).
@@ -85,8 +85,3 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 - **`patrimonio`:** a organização pode ser responsável por ativos, mas nunca titular patrimonial próprio (RN-ORG-04).
 - **`clero`:** vínculo de padres assessores ou diáconos acompanhantes.
 - **`iam`:** o acesso é provisionado ao Fiel pelo fluxo de promoção; a pessoa do domínio é sempre o `Fiel`, nunca o `Usuario`.
-
----
-
-## 6. Observação sobre Nomenclatura
-Até a versão 0.9.0 o agregado chamava-se `GrupoParoquial` (`TipoGrupo`, tabela `grupo_paroquial`). O vocabulário passou a `Organizacao` em código, banco (`V026`) e API (`organizacaoId`, `organizacaoResponsavelId`).

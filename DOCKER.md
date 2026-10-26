@@ -30,6 +30,8 @@ flowchart TD
 
         subgraph Observability["Observabilidade"]
             Prometheus["Prometheus v3\n:9090\n(gestao-prometheus)"]
+            Loki["Grafana Loki v3\n:3100\n(gestao-loki)"]
+            Promtail["Promtail v3\n(gestao-promtail)"]
             Grafana["Grafana v11\n:3001\n(gestao-grafana)"]
         end
     end
@@ -49,7 +51,9 @@ flowchart TD
     DockerSock -.->|"Wormhole"| Builder
 
     Prometheus -->|"Scrape :8080/actuator/prometheus"| API
+    Promtail -->|"Coleta logs de contêineres"| Loki
     Grafana -->|"Datasource PromQL"| Prometheus
+    Grafana -->|"Datasource LogQL"| Loki
 ```
 
 ---
@@ -57,6 +61,7 @@ flowchart TD
 ## 2. Tabela de Serviços e Portas
 
 | Serviço | Contêiner | Imagem Base | Porta Host | Finalidade | Credenciais Padrão |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | **ui** | `gestao-ui` | `node:22-alpine` | `3000` | Interface SPA (React + Vite) | `admin` / `senha123` |
 | **api** | `gestao-api` | `eclipse-temurin:25-jre-alpine` | `8080` | Backend REST API (Spring Boot) | N/A |
 | **db** | `gestao-db` | `postgres:16-alpine` | `5432` | Banco de Dados Relacional | `postgres` / `password` (DB: `calendario`) |

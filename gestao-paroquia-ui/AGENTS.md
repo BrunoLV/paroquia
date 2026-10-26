@@ -69,14 +69,14 @@ Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), 
 
 ## 4.1. Arquitetura DDD e Hexagonal
 
-* Cada capacidade de negócio reside em `src/contextos/<contexto>/`, alinhada ao bounded context do backend.
+* Cada capacidade de negócio reside em `src/contextos/<contexto>/`, alinhada aos 16 bounded contexts correspondentes no frontend (`aprovacao`, `calendario`, `clero`, `conselho`, `fiel`, `governanca`, `iam`, `importacao`, `local`, `membro`, `organizacao`, `painel`, `patrimonio`, `projeto`, `reserva`, `sacramento`).
 * `domain/` contém apenas TypeScript puro; não pode importar React, MUI, Axios, TanStack Query, Zod ou código de infraestrutura.
 * `application/` declara use cases e portas; depende de `domain`, nunca de adapters concretos ou componentes.
 * `infrastructure/http/` concentra adapters, DTOs e mapeadores HTTP; é o único local de cada contexto que conhece o cliente Axios.
 * `presentation/` concentra páginas, componentes, hooks Query e schemas Zod; só acessa dados por contratos/use cases da aplicação.
 * `src/shared/` não contém regras de negócio. `src/app/` apenas compõe providers e rotas.
 * Todo nome de domínio, ação e rota usa português. Apenas convenções técnicas como `Adapter`, `Port`, `Provider`, `Hook`, `Query`, `Mutation`, `DTO` e APIs de bibliotecas ficam em inglês.
-* Rotas canônicas: `/acesso`, `/painel`, `/calendario`, `/projetos`, `/aprovacoes` e `/relatorios`. Rotas inglesas são proibidas.
+* Rotas canônicas exclusivamente em português: públicas (`/acesso`, `/portal/consentimento`, `/politica-privacidade`) e autenticadas (`/painel`, `/calendario`, `/fieis`, `/clerigos`, `/sacramentos`, `/organizacoes`, `/organograma`, `/governo-territorio`, `/conselhos`, `/projetos`, `/aprovacoes`, `/locais`, `/ativos`, `/reservas`, `/ajustes-cadastrais`, `/notificacoes`, `/relatorios`, `/configuracoes`). Rotas inglesas são proibidas.
 
 ---
 

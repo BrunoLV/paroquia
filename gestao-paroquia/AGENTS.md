@@ -34,26 +34,34 @@ O backend opera sob uma arquitetura de monólito modular regido por princípios 
   Todo e qualquer pacote de contexto delimitado deve aderir à seguinte organização estrita de camadas:
 
 ```
-/
+<contexto>/
+├── api/
+│   └── v1/
+│       ├── controller/         <-- Adapters de entrada REST (@RestController, OpenAPI, @PreAuthorize)
+│       └── dto/                <-- Contratos HTTP de requisição e resposta (records, Sealed Interfaces)
+│
 ├── domain/                     <-- CAMADA PURA DE NEGÓCIO (Livre de frameworks)
 │   ├── model/                  <-- Entidades, VOs (records), Raízes de Agregado, IDs Tipados
-│   ├── repository/             <-- Contratos puros de persistência (Portas de Saída)
+│   ├── policy/                 <-- Domain Policies stateless e zero-I/O (regras variáveis / Strategy)
+│   ├── port/                   <-- Contratos puros de persistência e integração (Portas de Saída)
 │   ├── service/                <-- Domain Services (regras stateless que cruzam entidades)
 │   ├── specification/          <-- Regras de negócio encapsuladas e reutilizáveis
 │   ├── event/                  <-- Eventos de Domínio imutáveis (records)
 │   └── exception/              <-- Exceções semânticas de negócio (DomainException)
 │
 ├── application/                <-- ORQUESTRAÇÃO DE FLUXOS E CASOS DE USO
-│   ├── usecase/                <-- Input Ports / Serviços de Aplicação
-│   ├── dto/                    <-- Command, Query e Result DTOs imutáveis (records)
-│   └── saga/                   <-- Process Managers / Orquestração de múltiplos agregados
+│   ├── usecase/                <-- Input Ports / Casos de Uso
+│   ├── service/                <-- Serviços de aplicação e coordenação técnica
+│   └── dto/                    <-- Command, Query e Result DTOs imutáveis (records)
 │
-└── infrastructure/             <-- DETALHES DE TECNOLOGIA E ADAPTADORES
-    ├── configuration/          <-- @Configuration Spring (registro de Domain Services como Beans)
-    ├── db/                     <-- Entidades JPA (@Entity), Spring Data Repositories e Mappers
-    ├── acl/                    <-- Adaptadores e tradutores para outros contextos ou APIs externas
-    ├── messaging/              <-- Listeners e Dispatchers de eventos
-    └── rest/                   <-- Controllers HTTP (@RestController), DTOs de transporte e OpenAPI
+└── infrastructure/             <-- DETALHES DE TECNOLOGIA E ADAPTADORES DE SAÍDA
+    ├── configuration/          <-- @Configuration Spring (registro de Policies/Domain Services)
+    ├── persistence/
+    │   ├── entity/             <-- Entidades JPA (@Entity estendendo BaseAuditableEntity)
+    │   ├── repository/         <-- Spring Data JPA Repositories e implementações de Portas
+    │   └── mapper/             <-- Tradutores bidirecionais Entidade JPA <-> Modelo de Domínio
+    ├── acl/                    <-- Adaptadores Anti-Corruption Layer para outros contextos
+    └── security/               <-- Resolvedores de contexto de ator e segurança
 ```
 
 ---

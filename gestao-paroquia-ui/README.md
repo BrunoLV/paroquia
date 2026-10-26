@@ -13,10 +13,11 @@ Interface administrativa desenvolvida em **React 19** para o sistema de gestão 
 - **Gráficos:** **ApexCharts** (`apexcharts` / `react-apexcharts`) e **Recharts**
 - **Organograma:** `@dabeng/react-orgchart`
 - **Gerenciamento de Estado de Servidor:** **TanStack React Query 5** (cache, re-fetching e sincronização)
+- **Formulários & Validação:** **React Hook Form** + **Zod** (`@hookform/resolvers`)
 - **Cliente HTTP:** **Axios** (configurado com `withCredentials: true`, interceptors de 401 e tratamento centralizado)
 - **Roteamento:** **React Router DOM 6** (rotas protegidas e controle de acesso por permissões)
 - **Testes Automatizados:** **Vitest 2** + **React Testing Library** + **jsdom**
-- **Exportação & Mídia:** `html-to-image` (geração de imagens do organograma paroquial)
+- **Exportação & Mídia:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo e `html-to-image` (geração de imagens do organograma paroquial)
 
 ---
 
@@ -85,18 +86,40 @@ src/
         └── presentation/ # Páginas, componentes, hooks Query, schemas Zod e testes
 ```
 
-Os contextos são `calendario`, `fiel`, `clero`, `conselho`, `painel`, `governanca`, `iam`, `importacao`, `local`, `organizacao`, `membro`, `patrimonio`, `projeto`, `reserva` e `aprovacao`. Nomes de domínio ficam em português; nomes técnicos, como `Adapter`, `Port`, `Provider`, `Hook` e `Query`, permanecem em inglês.
+Os 16 contextos são `calendario`, `fiel`, `clero`, `sacramento`, `conselho`, `painel`, `governanca`, `iam`, `importacao`, `local`, `organizacao`, `membro`, `patrimonio`, `projeto`, `reserva` e `aprovacao`. Nomes de domínio ficam em português; nomes técnicos, como `Adapter`, `Port`, `Provider`, `Hook` e `Query`, permanecem em inglês.
 
-## 🧭 Rotas públicas
+## 🧭 Mapa de Rotas Canônicas
 
-| Área | Rota canônica |
-| --- | --- |
-| Acesso | `/acesso` |
-| Painel | `/painel` |
-| Calendário | `/calendario` |
-| Projetos | `/projetos` |
-| Aprovações | `/aprovacoes` |
-| Relatórios | `/relatorios` |
+### Rotas Públicas (Sem Exigência de Login)
+
+| Área | Rota canônica | Contexto |
+| :--- | :--- | :--- |
+| Acesso e Autenticação | `/acesso` | `iam` |
+| Portal de Consentimento e Revogação LGPD (OTP E-mail) | `/portal/consentimento` | `governanca` |
+| Política de Privacidade e Proteção de Dados | `/politica-privacidade` | `governanca` |
+
+### Rotas Autenticadas (Protegidas por Sessão e Alçada)
+
+| Área | Rota canônica | Contexto |
+| :--- | :--- | :--- |
+| Painel Executivo | `/painel` | `painel` |
+| Calendário Paroquial e Litúrgico | `/calendario` | `calendario` |
+| Cadastro de Fiéis | `/fieis` | `fiel` |
+| Clero e Governo Eclesiástico | `/clerigos` | `clero` |
+| Livros e Assentos Sacramentais | `/sacramentos` | `sacramento` |
+| Organizações Pastorais e Movimentos | `/organizacoes` | `organizacao` |
+| Organograma Paroquial | `/organograma` | `organizacao` |
+| Governo e Unidades Territoriais | `/governo-territorio` | `organizacao` |
+| Conselhos e Atas de Reunião | `/conselhos` | `conselho` |
+| Projetos Paroquiais | `/projetos` | `projeto` |
+| Central de Aprovações | `/aprovacoes` | `aprovacao` |
+| Locais e Espaços Físicos | `/locais` | `local` |
+| Patrimônio e Ativos | `/ativos` | `patrimonio` |
+| Reservas de Locais e Ativos | `/reservas` | `reserva` |
+| Meu Perfil, Ajustes Cadastrais e Privacidade | `/ajustes-cadastrais` | `governanca` / `fiel` |
+| Notificações | `/notificacoes` | `iam` |
+| Relatórios e Exportações | `/relatorios` | `painel` |
+| Configurações, Ano Paroquial e DPO/LGPD | `/configuracoes` | `governanca` / `iam` |
 
 As antigas URLs inglesas não são suportadas.
 

@@ -94,9 +94,9 @@ O sistema cobre ativamente todas as etapas do tratamento de dados pessoais:
 1. **Consentimento Auditável:**
    - Registrar: `termoConsentimentoAceito`, `dataHoraConsentimentoUtc`, `ipConsentimento`, `versaoTermoConsentimento`, `usoImagemAutorizado` e `permitirDivulgacaoAniversario`.
 2. **Direito à Revogação (Art. 8º, § 5º):**
-   - O titular pode revogar a qualquer momento autorizações secundárias (uso de imagem e mural de aniversários).
+   - O titular pode revogar a qualquer momento autorizações secundárias (comunicação, uso de imagem e mural de aniversários) por autoatendimento autenticado (`PATCH /api/v1/meu-perfil/preferencias-privacidade`) ou sem exigência de conta via Portal de Consentimento (`POST /api/v1/publico/consentimento/revogar`).
 3. **Direito à Portabilidade (Art. 18, V):**
-   - Disponibilizar endpoint `GET /api/v1/ajustes-cadastrais/meu-perfil/portabilidade` gerando payload estruturado JSON com todos os dados pessoais do titular.
+   - Disponibilizar endpoint `GET /api/v1/meu-perfil/portabilidade` gerando payload estruturado JSON com todos os dados pessoais do titular.
 
 ### E. Governança do Encarregado (DPO - Art. 41) e Resposta a Incidentes (Art. 48)
 1. **Canal Oficial do DPO:**
