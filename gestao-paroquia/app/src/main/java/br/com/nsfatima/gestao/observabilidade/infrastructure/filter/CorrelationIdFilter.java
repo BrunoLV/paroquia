@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Filtro de borda executado com a maior precedência possível, responsável por garantir que
@@ -25,6 +26,12 @@ import java.util.UUID;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    /**
+     * O id do cliente é ecoado na resposta e gravado em logs; aceitar apenas token curto
+     * alfanumérico (com {@code - _ .}) impede injeção de CR/LF (response splitting) e log forging.
+     */
+    private static final Pattern FORMATO_SEGURO = Pattern.compile("[A-Za-z0-9._-]{1,64}");
 
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
     public static final String CORRELATION_ID_KEY = "correlationId";
@@ -50,7 +57,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        if (correlationId == null || correlationId.isBlank()) {
+        if (correlationId == null || !FORMATO_SEGURO.matcher(correlationId).matches()) {
             correlationId = UUID.randomUUID().toString();
         }
 
