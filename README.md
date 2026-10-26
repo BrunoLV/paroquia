@@ -126,7 +126,7 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 | **Frontend** | React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query 5, Axios, React Router DOM 6 |
 | **Banco de Dados** | PostgreSQL 16 (Ambiente de Execução / Docker), H2 Database (Ambiente de Testes) |
 | **Qualidade & Linters** | **Backend:** Checkstyle 13.8.0, PMD 7.16.0, SpotBugs, JaCoCo <br> **Frontend:** Vitest, React Testing Library, TypeScript (`tsc`) |
-| **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF), docx4j (Word) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
+| **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF), Apache POI XWPF (Word) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
 
 ---
 

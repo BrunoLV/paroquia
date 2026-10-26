@@ -14,7 +14,7 @@ br.com.nsfatima.gestao
 ├── aprovacao           <-- Fila de aprovação de eventos e alterações
 ├── local               <-- Espaços físicos da matriz e comunidades
 ├── patrimonio          <-- Ativos patrimoniais, tombamento, conservação e alocações
-├── conselho            <-- CPC, atas, deliberações e homologações paroquiais
+├── conselho            <-- Conselhos (CPP, CPC, CAEP), atas, deliberações e homologações
 ├── organizacao         <-- Pastorais, movimentos, setores e comunidades
 ├── fiel                <-- Dados cadastrais civis, sacramentais e vocacionais
 ├── membro              <-- Vínculo do fiel a organizações e cargos de liderança
@@ -168,7 +168,7 @@ O detalhamento está em `docs/business-rules/conselho.md`.
 - **Exportação Multiformato:**
   - **PDF:** Fichas de fiéis, atas de conselho e termos de alocação de bens via OpenPDF e jsPDF.
   - **Excel (`.xlsx`):** Relatórios analíticos de eventos, membros e inventário de patrimônio via Apache POI.
-  - **Word (`.docx`):** Documentos e certidões paroquiais parametrizadas via docx4j.
+  - **Word (`.docx`):** Documentos e certidões paroquiais parametrizadas via Apache POI (XWPF).
 - **Importação em Lote:** Carga inicial de cadastros com validação prévia de linhas e retorno analítico de inconsistências.
 
 ---

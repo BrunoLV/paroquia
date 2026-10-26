@@ -36,14 +36,14 @@ flowchart TB
 
             subgraph InfraAdapters ["Infrastructure Adapters (Outbound)"]
                 RepoImpl["Spring Data JPA Adapters<br/>(PostgreSQL Repositories)"]
-                ExportImpl["Export Services<br/>(POI, OpenPDF, docx4j)"]
+                ExportImpl["Export Services<br/>(Apache POI e OpenPDF)"]
                 AuditImpl["Spring Auditing Listener<br/>(BaseAuditableEntity)"]
             end
         end
     end
 
     subgraph PersistenceAndObservability ["Persistência & Telemetria"]
-        DB[("PostgreSQL 16 Database<br/>• Flyway Migrations<br/>• JSONB + Índices GiST")]
+        DB[("PostgreSQL 16 Database<br/>• Flyway Migrations<br/>• JSONB nos dados específicos do sacramento")]
         Prom["Prometheus / Actuator<br/>• /actuator/prometheus<br/>• JVM & Request Metrics"]
         Logs["Async Log4j2 Engine<br/>• LMAX Disruptor<br/>• JSON Structured Output"]
     end

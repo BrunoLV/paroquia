@@ -39,7 +39,7 @@ O ecossistema é organizado em um **Monorepo com fronteiras estritamente isolada
 - **Framework Core:** Spring Boot 4.x com injeção de dependências estrita por construtor imutável.
 - **Servidor Web Embarcado:** Eclipse Jetty 12 configurado para alta concorrência de E/S.
 - **Logging Assíncrono:** Log4j2 com LMAX Disruptor (`AsyncLoggerContextSelector`) e formato JSON estruturado com mascaramento PII.
-- **Persistência Relacional:** PostgreSQL 16 com migrações versionadas via Flyway e H2 para testes automatizados.
+- **Persistência Relacional:** PostgreSQL 16 com migrações versionadas via Flyway e testes automatizados com Testcontainers (PostgreSQL real, sem banco em memória).
 - **Qualidade & Inspeção:** Checkstyle 13, PMD 7, SpotBugs, JaCoCo, JUnit 5, AssertJ e Mockito 5 (`STRICT_STUBS`).
 
 ### Frontend (`gestao-paroquia-ui/`)

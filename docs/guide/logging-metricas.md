@@ -59,7 +59,7 @@ Toda requisição HTTP que ingressa no backend passa por um filtro de observabil
 
 ## 3. Conformidade LGPD & Política PII Zero em Logs
 
-Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`lgpd-privacy-by-design`](.agents/skills/lgpd-privacy-by-design/SKILL.md), é **expressamente proibido** imprimir Informações Pessoais Identificáveis (PII) em texto claro nos logs da aplicação.
+Em estrita consonância com a **LGPD (Lei 13.709/2018)** e a skill canônica [`lgpd-privacy-by-design`](../../.agents/skills/lgpd-privacy-by-design/SKILL.md), é **expressamente proibido** imprimir Informações Pessoais Identificáveis (PII) em texto claro nos logs da aplicação.
 
 ### 3.1. Dados com Proibição Absoluta de Log
 - CPFs, RGs ou números de documentos civis.
