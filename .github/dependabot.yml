@@ -25,6 +25,8 @@ updates:
     schedule:
       interval: weekly
 
+  # directory / cobre Dockerfile.api, Dockerfile.ui e Dockerfile.builder (o fetcher do Dependabot casa qualquer
+  # nome contendo "dockerfile"); docker-compose abaixo cobre as imagens declaradas no compose.
   - package-ecosystem: docker
     directory: /
     schedule:

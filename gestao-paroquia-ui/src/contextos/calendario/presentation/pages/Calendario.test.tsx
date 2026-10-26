@@ -1,6 +1,6 @@
 import {vi} from "vitest";
 import React from 'react';
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import Calendario from './Calendario';
 import {BrowserRouter} from 'react-router-dom';
 import {AuthProvider} from '@/contextos/iam/presentation/auth/AuthContext';
@@ -232,21 +232,20 @@ test('opens and submits event creation form', async () => {
     fireEvent.click(openFormButton);
   });
 
-  // Form title should be visible
   expect(screen.getByText('Criar Novo Evento')).toBeInTheDocument();
 
   // Fill in the title field
-  const titleInput = screen.getByLabelText(/Título do Evento/i);
+  // Consultas por label/role varrem a árvore MUI inteira (~3s cada em jsdom); escopar ao diálogo mantém o teste barato.
+  const dialogo = within(screen.getByText('Criar Novo Evento').closest('[role="dialog"]') as HTMLElement);
+  const titleInput = dialogo.getByLabelText(/Título do Evento/i);
   fireEvent.change(titleInput, { target: { value: 'Novo Evento Teste' } });
 
-  // Select first organization from dropdown - mockOrgs has Pastoral da Juventude
-  const submitButton = screen.getByRole('button', { name: /Salvar/i });
+  const submitButton = screen.getByText(/^Salvar/).closest('button') as HTMLButtonElement;
 
   await act(async () => {
     fireEvent.click(submitButton);
   });
 
-  // Verify post API call
   expect(mockedApiClient.post).toHaveBeenCalledWith(
     '/eventos',
     expect.objectContaining({
@@ -261,7 +260,7 @@ test('opens and submits event creation form', async () => {
       }),
     })
   );
-}, 30000);
+}, 20000);
 
 test('displays events with pending actions with reduced opacity and indicator', async () => {
   const aprovacoesPendentes = [
