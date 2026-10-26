@@ -120,7 +120,8 @@ class AprovacaoFlowRegressionTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "status": "REPROVADA"
+                                  "status": "REPROVADA",
+                                  "observacao": "Reprovado por falta de espaço"
                                 }
                                 """))
                 .andExpect(status().isOk())

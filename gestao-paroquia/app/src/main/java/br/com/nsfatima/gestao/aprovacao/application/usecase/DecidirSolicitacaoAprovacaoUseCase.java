@@ -106,10 +106,11 @@ public class DecidirSolicitacaoAprovacaoUseCase {
 
     @Transactional(noRollbackFor = AprovacaoExecucaoFalhouException.class)
     public DecisaoAprovacaoResponse decidir(UUID aprovacaoId, DecidirAprovacaoRequest request) {
+        validarDecisao(request);
         AprovacaoEntity entity = aprovacaoJpaRepository.findById(aprovacaoId)
                 .orElseThrow(() -> new AprovacaoNaoEncontradaException("Aprovação não encontrada: " + aprovacaoId));
         Aprovacao aprovacao = aprovacaoMapper.toDomain(entity);
-        aprovacao.assegurarDecidivel(inicioAcao(entity), Instant.now());
+        aprovacao.assegurarDecidivel(inicioAcao(entity, request.status() == AprovacaoStatus.APROVADA), Instant.now());
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
         validarAprovacaoUseCase.validarPapelDecisaoAprovacao(actorContext.role(), actorContext.organizationType());
@@ -124,12 +125,12 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                 List<AprovacaoEntity> filhasPendentes = aprovacaoJpaRepository.findByAprovacaoPaiIdAndStatus(
                         entity.getId(), AprovacaoStatus.PENDENTE);
                 for (AprovacaoEntity filha : filhasPendentes) {
-                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha);
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha, true);
                     validarAusenciaConflitoRecursosAprovados(filha);
                 }
             } else {
                 if (entity.getAprovacaoPaiId() != null) {
-                    enriquecerPayloadFilhaComDadosPaiSeNecessario(entity);
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(entity, true);
                 }
                 validarAusenciaConflitoRecursosAprovados(entity);
             }
@@ -168,7 +169,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         // Se for ocorrência filha pontual sendo decidida (já enriquecida acima quando APROVADA, antes da
         // checagem de conflito em linha 134; refazer aqui só é necessário no caminho de reprovação)
         if (entity.getAprovacaoPaiId() != null && request.status() != AprovacaoStatus.APROVADA) {
-            enriquecerPayloadFilhaComDadosPaiSeNecessario(entity);
+            enriquecerPayloadFilhaComDadosPaiSeNecessario(entity, false);
         }
 
         DecisaoAprovacaoResponse response;
@@ -186,7 +187,27 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         return response;
     }
 
-    private void enriquecerPayloadFilhaComDadosPaiSeNecessario(AprovacaoEntity filha) {
+    /**
+     * Só as decisões finais existem: aprovar ou reprovar. {@code PENDENTE} e {@code FALHA_EXECUCAO} são estados
+     * do sistema, e aceitá-los deixaria um chamador executar a ação sem registrar decisão (ou reabrir falhas).
+     * A reprovação exige parecer fundamentado (RN-APR-02).
+     */
+    private void validarDecisao(DecidirAprovacaoRequest request) {
+        if (request.status() != AprovacaoStatus.APROVADA && request.status() != AprovacaoStatus.REPROVADA) {
+            throw new IllegalArgumentException("A decisão deve ser APROVADA ou REPROVADA");
+        }
+        if (request.status() == AprovacaoStatus.REPROVADA
+                && (request.observacao() == null || request.observacao().isBlank())) {
+            throw new IllegalArgumentException("A reprovação exige parecer fundamentado (observação)");
+        }
+    }
+
+    /**
+     * Completa o payload da ocorrência filha com os dados da série. Ao aprovar ({@code estrito}), um payload
+     * ilegível interrompe a decisão em vez de seguir com dados incompletos; ao reprovar, a falha é irrelevante
+     * porque nenhuma ação será executada.
+     */
+    private void enriquecerPayloadFilhaComDadosPaiSeNecessario(AprovacaoEntity filha, boolean estrito) {
         AprovacaoEntity pai = aprovacaoJpaRepository.findById(filha.getAprovacaoPaiId()).orElse(null);
         if (pai == null || pai.getActionPayloadJson() == null) {
             return;
@@ -229,7 +250,13 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                 );
                 filha.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(enriched));
             }
-        } catch (RuntimeException ignored) {
+        } catch (RuntimeException ex) {
+            if (estrito) {
+                throw new ViolacaoRegraNegocioException(
+                        "Payload da ocorrência ilegível; não é possível aprovar com segurança.");
+            }
+            LOGGER.warn("Payload ilegível ao enriquecer ocorrência filha id={}; ignorado por ser reprovação",
+                    filha.getId());
         }
     }
 
@@ -275,7 +302,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                     aprovacaoJpaRepository.save(filha);
                     publishDecisionEvent(filha, null);
                 } else if (status == AprovacaoStatus.APROVADA) {
-                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha);
+                    enriquecerPayloadFilhaComDadosPaiSeNecessario(filha, true);
                     filhaDominio.aprovar(aprovadorId, actorContext.role(), observacao, Instant.now());
                     TipoSolicitacaoInput tipoFilha = TipoSolicitacaoInput.fromJson(filha.getTipoSolicitacao());
                     EstrategiaExecucaoAprovacao stratFilha = strategies.stream()
@@ -309,7 +336,7 @@ public class DecidirSolicitacaoAprovacaoUseCase {
         }
     }
 
-    private Instant inicioAcao(AprovacaoEntity entity) {
+    private Instant inicioAcao(AprovacaoEntity entity, boolean estrito) {
         if (entity.getAprovacaoPaiId() == null && aprovacaoJpaRepository.countByAprovacaoPaiId(entity.getId()) > 0) {
             return null;
         }
@@ -317,6 +344,10 @@ public class DecidirSolicitacaoAprovacaoUseCase {
             AprovacaoAcaoPayload payload = aprovacaoAcaoPayloadMapper.toPayload(entity.getActionPayloadJson());
             return payload == null ? null : payload.inicio();
         } catch (RuntimeException ex) {
+            if (estrito) {
+                throw new ViolacaoRegraNegocioException(
+                        "Payload da solicitação ilegível; não é possível verificar o prazo da ação.");
+            }
             return null;
         }
     }
@@ -447,6 +478,8 @@ public class DecidirSolicitacaoAprovacaoUseCase {
     /**
      * Isola a interpretação do payload de outro domínio (que pode falhar por formato inesperado) da regra de
      * negócio em si, evitando capturar-e-relançar {@link ViolacaoRegraNegocioException} sobre a checagem acima.
+     * Se a verificação não puder ser feita, a aprovação falha fechada: aprovar sem saber se há conflito
+     * duplicaria o uso de espaço ou ativo.
      */
     private List<ConflitoEventoItemDto> detectarConflitosDeRecursos(AprovacaoEntity entity) {
         try {
@@ -467,8 +500,8 @@ public class DecidirSolicitacaoAprovacaoUseCase {
                     payload.periodos()
             );
         } catch (RuntimeException ex) {
-            // Se falhar a interpretação de payload de outro domínio, permite prosseguir
-            return List.of();
+            throw new ViolacaoRegraNegocioException(
+                    "Não foi possível verificar conflitos de espaço e ativos; a aprovação foi bloqueada.");
         }
     }
 

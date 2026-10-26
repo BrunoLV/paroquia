@@ -16,6 +16,7 @@ import java.util.UUID;
  *
  * <p>Invariantes:</p>
  * <ul>
+ *   <li>A reprovação exige parecer fundamentado (RN-APR-02).</li>
  *   <li>Só uma solicitação {@code PENDENTE} pode ser decidida; decidir de novo lança
  *   {@link AprovacaoJaDecididaException}.</li>
  *   <li>Uma solicitação cuja ação já deveria ter começado (evento no passado) não pode ser decidida
@@ -187,7 +188,15 @@ public class Aprovacao {
         registrarDecisao(AprovacaoStatus.APROVADA, aprovadorId, aprovadorPapel, observacao, agora);
     }
 
+    /**
+     * Reprova a solicitação. A recusa exige parecer textual fundamentado (RN-APR-02).
+     *
+     * @throws IllegalArgumentException se a observação for nula ou em branco
+     */
     public void reprovar(String aprovadorId, String aprovadorPapel, String observacao, Instant agora) {
+        if (observacao == null || observacao.isBlank()) {
+            throw new IllegalArgumentException("A reprovação exige parecer fundamentado (observação)");
+        }
         registrarDecisao(AprovacaoStatus.REPROVADA, aprovadorId, aprovadorPapel, observacao, agora);
     }
 

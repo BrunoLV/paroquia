@@ -14,19 +14,21 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 - **`TipoSolicitacaoInput` (Enum):** `CRIACAO_EVENTO`, `EDICAO_EVENTO`, `ALTERACAO_HORARIO`, `CANCELAMENTO`, `RECLASSIFICACAO`, `ALOCACAO_ATIVO_EMPRESTIMO`, `OUTRO`.
 - **`AprovacaoStatus` (Enum):** `PENDENTE`, `APROVADA`, `REPROVADA`, `FALHA_EXECUCAO`. A máquina de estados é `PENDENTE → APROVADA | REPROVADA`; sobre `APROVADA` registra-se a execução, ou `FALHA_EXECUCAO`.
 - **`TipoFalhaAprovacao` (Enum):** `NEGOCIO_CADASTRAL` e `SISTEMICA_APLICACAO`. Só a falha sistêmica admite reexecução.
-- **`AprovadorPapel` (Enum):** `PAROCO` (única alçada ordinária canônica homologatória).
+- **`AprovadorPapel` (Enum):** `PAROCO` (alçada ordinária canônica homologatória) e `BISPO_DIOCESANO` (autoridade superior, com a mesma alçada decisória).
 
 ---
 
 ## 3. Regras de Negócio Invariantes
 
-### RN-APR-01: Alçada Canônica Exclusiva do Pároco
-- A decisão final e homologação de solicitações é **competência privativa do Pároco** (`AprovadorPapel.PAROCO` / `ROLE_GLOBAL_PAROCO`).
+### RN-APR-01: Alçada Canônica do Pároco e do Bispo Diocesano
+- A decisão final e homologação de solicitações é **competência do Pároco** (`ROLE_GLOBAL_PAROCO`) e do **Bispo Diocesano**, autoridade superior com a mesma alçada decisória; a divergência anterior da documentação (alçada só do Pároco) foi resolvida em favor do comportamento vigente do sistema.
 - Conselhos pastorais e coordenadores de pastoral podem propor, redigir e solicitar aprovação, mas **não possuem voto deliberativo** nem podem aprovar solicitações na esteira.
 - O perfil `ADMIN` é estritamente bloqueado de tomar decisões de aprovação eclesial.
+- A decisão só pode ser **APROVADA** ou **REPROVADA**; `PENDENTE` e `FALHA_EXECUCAO` são estados do sistema e não são aceitos como decisão.
 
 ### RN-APR-02: Justificativa Mandatória na Rejeição
-- Toda recusa ou rejeição de solicitação **DEVE conter parecer textual fundamentado**, indicando os motivos pastorais, litúrgicos ou de planejamento.
+- Toda recusa ou rejeição de solicitação **DEVE conter parecer textual fundamentado**, indicando os motivos pastorais, litúrgicos ou de planejamento; reprovação sem parecer é recusada e a solicitação permanece pendente.
+- **Falha fechada:** se o payload da solicitação não puder ser interpretado, ou se a verificação de conflito de espaço e ativos não puder ser concluída, a **aprovação é bloqueada** (nada é executado). A reprovação, que não executa ação alguma, segue possível.
 
 ### RN-APR-03: Fila de Urgência Baseada em Proximidade
 - Solicitações cuja data de início do evento esteja a menos de 48 horas recebem classificação `URGENTE`, com destaque visual no topo das esteiras.
@@ -49,7 +51,7 @@ sequenceDiagram
     autonumber
     actor Propositor as Coordenador / Secretário Conselho / Secretaria
     participant Modulo as Módulo Aprovação
-    actor Paroco as Pároco / Admin (Autoridade Canônica)
+    actor Paroco as Pároco / Bispo (Autoridade Canônica)
     participant Evento as Módulo Calendário / IAM
 
     Propositor->>Modulo: Submeter proposta (evento/projeto/usuário)

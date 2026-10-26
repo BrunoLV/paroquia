@@ -38,7 +38,7 @@ class AprovacaoTest {
     void naoDecideDuasVezes() {
         Aprovacao a = pendente();
         a.aprovar("d", "PAROCO", null, AGORA);
-        assertThatThrownBy(() -> a.reprovar("d2", "PAROCO", null, AGORA))
+        assertThatThrownBy(() -> a.reprovar("d2", "PAROCO", "motivo", AGORA))
                 .isInstanceOf(AprovacaoJaDecididaException.class);
     }
 
