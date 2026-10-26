@@ -40,5 +40,13 @@ public interface DesafioConsentimentoJpaRepository extends JpaRepository<Desafio
             + "WHERE d.id = :id AND d.validadoEmUtc IS NOT NULL AND d.consumidoEmUtc IS NULL")
     int consumir(@Param("id") UUID id, @Param("agora") Instant agora);
 
+    /**
+     * Trava de advisory lock transacional por chave: serializa os pedidos de código do mesmo titular até o
+     * fim da transação, tornando a contagem de pedidos e a criação do desafio atômicas.
+     */
+    @Query(value = "SELECT 1 FROM (SELECT pg_advisory_xact_lock(hashtextextended(:chave, 0))) t",
+            nativeQuery = true)
+    int travarPedidos(@Param("chave") String chave);
+
     void deleteByCriadoEmUtcBefore(Instant limite);
 }

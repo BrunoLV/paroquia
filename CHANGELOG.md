@@ -15,6 +15,7 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **E-mail real** do código OTP e do comprovante via `spring-boot-starter-mail` (`app.mail.enabled`, `app.mail.remetente`, `spring.mail.*`); por padrão nada é enviado.
 - **Anonimização completa** do fiel (CPF hash, nascimento, sexo, dependentes, relações, trilha, conta) e nova anonimização do clérigo com job diário; trilha de consentimento *append-only* por gatilho.
 - **DSAR e incidentes:** máquinas de estado, protocolo `DPO-AAAAMMDD-XXXXXXXXXXXX`, prazos de 15 dias e de 3 dias úteis sinalizados; `IncidenteSeguranca` de domínio em uso.
+- **Pedidos de OTP atômicos** (advisory lock por titular), **recifragem CBC→GCM** na subida (fiéis, dependentes, clérigos e DPO), **feriados nacionais** no prazo de 3 dias úteis do incidente e portal de consentimento sem revelar o e-mail mascarado (anti-enumeração).
 - **Migrações:** V040 (expansão), V041 (migração Java de dados: cifra e rehash, idempotente) e V042 (gatilho append-only).
 
 ---

@@ -142,7 +142,7 @@ public class GerenciarConsentimentoPublicoUseCase {
             return RESPOSTA_PEDIDO_CODIGO;
         }
         TitularEncontrado titular = titularOpt.get();
-        // ponytail: contagem sem trava; pedidos simultâneos podem exceder o limite em 1-2 unidades.
+        desafioRepository.travarPedidos("pedido-codigo:" + titular.tipo() + ":" + titular.id());
         long pedidosRecentes = desafioRepository.countByTitularTipoAndTitularIdAndCriadoEmUtcAfter(
                 titular.tipo(), titular.id(), agora.minusSeconds(JANELA_PEDIDOS_SEGUNDOS));
         if (pedidosRecentes >= MAX_PEDIDOS_CODIGO) {

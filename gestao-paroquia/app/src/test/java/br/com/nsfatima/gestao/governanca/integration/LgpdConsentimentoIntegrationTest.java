@@ -16,6 +16,7 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.H
 import br.com.nsfatima.gestao.support.infrastructure.crypto.CpfBlindIndex;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.CryptoUtils;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.MigracaoCifraPiiLegadaLgpd;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.RecifragemCbcParaGcm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,6 +64,7 @@ class LgpdConsentimentoIntegrationTest {
     @Autowired private HistoricoConsentimentoJpaRepository historicoRepository;
     @Autowired private ServicoEmailNotificacaoConsentimento emailService;
     @Autowired private MigracaoCifraPiiLegadaLgpd migracao;
+    @Autowired private RecifragemCbcParaGcm recifragem;
 
     private static String novoCpf() {
         return String.format("%011d", Math.abs(UUID.randomUUID().getMostSignificantBits()) % 100_000_000_000L);
@@ -191,6 +204,53 @@ class LgpdConsentimentoIntegrationTest {
     }
 
     @Test
+    @DisplayName("Recifragem regrava em GCM os valores CBC legados de fiel, clerigo e DPO, e e idempotente")
+    void recifragemCbcParaGcm() throws Exception {
+        UUID fiel = UUID.randomUUID();
+        jdbc.update("INSERT INTO calendario.fieis (id, nome, email, ativo, criado_em_utc, atualizado_em_utc, "
+                + "criado_por, atualizado_por) VALUES (?, ?, ?, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 't', 't')",
+                fiel, cifrarEmCbcLegado("Fiel Legado Longo"), cifrarEmCbcLegado("legado@exemplo.com"));
+        UUID clerigo = UUID.randomUUID();
+        jdbc.update("INSERT INTO calendario.clerigos (id, nome_civil, nome_eclesiastico, data_nascimento, "
+                + "pais_origem, email, celular, grau_ordem, diocese_incardinacao, criado_em_utc, atualizado_em_utc, "
+                + "criado_por, atualizado_por) VALUES (?, ?, 'Pe. L', ?, 'BRA', ?, '11999990000', 'PRESBITERO', "
+                + "'D', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 't', 't')", clerigo, cifrarEmCbcLegado("Clerigo Legado"),
+                cifrarEmCbcLegado("1970-01-01"), cifrarEmCbcLegado("clerigo@exemplo.com"));
+        String protocolo = "CBC-" + UUID.randomUUID().toString().substring(0, 8);
+        jdbc.update("INSERT INTO calendario.solicitacoes_dpo (id, protocolo, titular_nome, titular_email, "
+                + "tipo_solicitacao, mensagem, prazo_resposta_utc) VALUES (?, ?, ?, ?, 'ACESSO', 'm', "
+                + "CURRENT_TIMESTAMP)", UUID.randomUUID(), protocolo, cifrarEmCbcLegado("Solicitante Legado"),
+                cifrarEmCbcLegado("solic@exemplo.com"));
+
+        int primeira = recifragem.recifrar();
+
+        assertThat(primeira).isGreaterThanOrEqualTo(7);
+        assertThat(jdbc.queryForObject("SELECT nome FROM calendario.fieis WHERE id = ?", String.class, fiel))
+                .startsWith("v1:");
+        assertThat(CryptoUtils.decrypt(jdbc.queryForObject("SELECT email FROM calendario.fieis WHERE id = ?",
+                String.class, fiel))).isEqualTo("legado@exemplo.com");
+        assertThat(CryptoUtils.decrypt(jdbc.queryForObject("SELECT data_nascimento FROM calendario.clerigos "
+                + "WHERE id = ?", String.class, clerigo))).isEqualTo("1970-01-01");
+        assertThat(jdbc.queryForObject("SELECT titular_email FROM calendario.solicitacoes_dpo WHERE protocolo = ?",
+                String.class, protocolo)).startsWith("v1:");
+        assertThat(recifragem.recifrar()).isZero();
+    }
+
+    private static String cifrarEmCbcLegado(String claro) throws Exception {
+        byte[] chave = MessageDigest.getInstance("SHA-256")
+                .digest("default-dev-fallback-key-should-be-changed-in-prod".getBytes(StandardCharsets.UTF_8));
+        byte[] iv = new byte[16];
+        iv[1] = 9;
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(chave, "AES"), new IvParameterSpec(iv));
+        byte[] cifrado = cipher.doFinal(claro.getBytes(StandardCharsets.UTF_8));
+        byte[] combinado = new byte[iv.length + cifrado.length];
+        System.arraycopy(iv, 0, combinado, 0, iv.length);
+        System.arraycopy(cifrado, 0, combinado, iv.length, cifrado.length);
+        return Base64.getEncoder().encodeToString(combinado);
+    }
+
+    @Test
     @DisplayName("Tentativas incorretas persistem mesmo com a excecao e o codigo correto passa a ser recusado")
     void tentativasPersistemApesarDaExcecao() {
         String cpf = novoCpf();
@@ -216,6 +276,29 @@ class LgpdConsentimentoIntegrationTest {
 
         for (int i = 0; i < 5; i++) {
             consentimentoUseCase.solicitarCodigo(new SolicitarCodigoConsentimentoRequest(cpf));
+        }
+
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM calendario.desafios_consentimento WHERE titular_id = ?",
+                Integer.class, fiel)).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("Pedidos simultaneos de codigo nao ultrapassam o limite de 3")
+    void limiteDePedidosEAtomicoSobConcorrencia() throws Exception {
+        String cpf = novoCpf();
+        UUID fiel = novoFiel(cpf);
+        ExecutorService pool = Executors.newFixedThreadPool(10);
+        try {
+            List<Future<?>> tarefas = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                tarefas.add(pool.submit(() ->
+                        consentimentoUseCase.solicitarCodigo(new SolicitarCodigoConsentimentoRequest(cpf))));
+            }
+            for (Future<?> tarefa : tarefas) {
+                tarefa.get();
+            }
+        } finally {
+            pool.shutdown();
         }
 
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM calendario.desafios_consentimento WHERE titular_id = ?",
