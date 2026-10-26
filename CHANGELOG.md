@@ -8,6 +8,19 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Corrigido
+- **Reserva e Local (consistência):**
+  - `POST /api/v1/reservas` não aceita mais `eventoId` nem `grupoRecorrenciaId`: qualquer solicitante se autoconfirmava informando um evento. Esses vínculos só nascem pela integração com eventos e pela série recorrente.
+  - Dupla reserva: a criação passa a bloquear a linha do local/ativo antes de consultar conflitos (teste de concorrência com Testcontainers). A janela de busca deriva do buffer máximo (240 min, agora imposto pelo `IntervaloReserva`) em vez de ±4h fixas.
+  - `ReservaCriacaoService` único para pedido avulso, série recorrente e eventos: valida existência/atividade/`reservavel` do item, conflito, janela de manutenção do ativo e publica `RESERVADO`. A integração com eventos deixou de gerar `UUID` aleatório para solicitante, operador e pastoral (falha de imediato) e a cascata não tenta mais cancelar reservas retiradas ou finalizadas.
+  - Reserva `RETIRADO` não pode ser cancelada; transições de estado ilegais respondem 400 (antes 500).
+  - Expiração de pendentes: uma transação por reserva, sem `catch (Exception ignored)`, e pedido feito com menos de 48 h de antecedência só expira no início.
+  - Corrida manutenção × reserva: `EnviarAtivoParaManutencao` bloqueia a linha do ativo, a mesma tomada na criação de reservas.
+  - Local: inativação/exclusão consideram reservas em aberto; removida a remoção física (`LocalRepository.delete`).
+
+### Adicionado
+- `PATCH /api/v1/reservas/{id}/finalizar` e ação "Finalizar Uso" na tela de reservas (RN-RES-06).
+
 ---
 
 ## [0.12.1] - 2026-10-25

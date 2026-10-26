@@ -22,7 +22,7 @@ Assegurar o mapeamento cadastral, capacidade de público, manutenção e disponi
 - A capacidade máxima, quando informada, é um número positivo.
 
 ### RN-LOC-02: Inativação e Exclusão com Eventos Futuros
-- Um local com **eventos futuros agendados** não pode ser inativado nem excluído: os eventos precisam ser remanejados antes. A exclusão é sempre lógica.
+- Um local com **eventos futuros agendados** (inclusive os que o ocupam como um dos vários locais do evento) ou com **reservas pendentes ou confirmadas ainda não encerradas** não pode ser inativado nem excluído: os eventos e as reservas precisam ser remanejados antes. A exclusão é **sempre lógica**; não existe remoção física.
 
 ### RN-LOC-03: Vínculo com a Igreja
 - Todo local pertence a uma organização (igreja ou comunidade) da paróquia, e a listagem pode ser restrita a ela.
@@ -41,5 +41,5 @@ Assegurar o mapeamento cadastral, capacidade de público, manutenção e disponi
 
 ## 5. Integrações com outros Bounded Contexts
 - **`calendario`:** eventos alocados ao local; a inativação e a exclusão consultam os eventos futuros.
-- **`reserva`:** reservas do local como dependência física (ver `reserva.md`).
+- **`reserva`:** reservas do local como dependência física; as reservas em aberto também impedem a inativação e a exclusão (ver `reserva.md`).
 - **`organizacao`:** a organização a que o local pertence.
