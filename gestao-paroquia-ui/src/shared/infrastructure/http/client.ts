@@ -14,7 +14,6 @@ apiClient.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     if (status === 401) {
-      localStorage.removeItem('user');
       // Remove window.location.href = '/acesso' to avoid infinite refresh loops.
       // Component-level logic (e.g., ProtectedRoute) should handle redirection.
     } else if (status && status >= 400 && !error.config?.url?.includes('/observabilidade/logs')) {

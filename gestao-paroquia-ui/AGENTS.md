@@ -99,5 +99,7 @@ Resumo do que ele cobre: layout de página (`PageHeader`, `Stack spacing={3}`), 
 * Instalar dependências: `npm install`
 * Iniciar servidor de desenvolvimento: `npm run dev`
 * Validação de tipos TypeScript e Build: `npm run build`
+* Lint (ESLint, inclui fronteiras DDD de `domain/`/`application/` e Axios só em `infrastructure/`): `npm run lint`
+* Formatação (Prettier, escopo adotado): `npm run format:check`
 * Executar testes automatizados: `npm test`
 * Executar teste específico: `npx vitest run <caminho_do_arquivo>`

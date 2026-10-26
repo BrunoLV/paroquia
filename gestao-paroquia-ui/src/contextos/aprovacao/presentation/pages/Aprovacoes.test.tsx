@@ -9,7 +9,7 @@ import {approveUsuario, getUsuarios} from '@/contextos/iam/infrastructure/http/u
 import {MemoryRouter} from 'react-router-dom';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
 
-let mockCurrentUser = {
+const mockCurrentUser = {
   id: '1',
   name: 'Administrador',
   roles: ['ROLE_ADMIN', 'ADMIN'],

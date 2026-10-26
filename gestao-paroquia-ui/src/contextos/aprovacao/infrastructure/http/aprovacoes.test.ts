@@ -1,6 +1,5 @@
 import {vi} from "vitest";
 import apiClient from '@/shared/infrastructure/http/client';
-// @ts-ignore
 import {decideAprovacao, getAprovacoes} from './aprovacoes';
 
 vi.mock('@/shared/infrastructure/http/client', () => ({

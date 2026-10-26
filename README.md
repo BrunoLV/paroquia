@@ -59,7 +59,7 @@ O backend está organizado em 17 bounded contexts (mais o módulo transversal `s
 ### Pré-requisitos
 
 - **Docker** e **Docker Compose** (v2+)
-- Para desenvolvimento fora de contêineres: **Java 25**, **Node.js 18+** e **npm 9+** (veja os READMEs de [backend](./gestao-paroquia/README.md) e [frontend](./gestao-paroquia-ui/README.md))
+- Para desenvolvimento fora de contêineres: **Java 25**, **Node.js 22+** (LTS, igual ao `Dockerfile.ui`) e **npm 10+** (veja os READMEs de [backend](./gestao-paroquia/README.md) e [frontend](./gestao-paroquia-ui/README.md))
 
 ### Configuração inicial
 

@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
@@ -65,6 +65,9 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       exclude: ['src/**/*.test.{ts,tsx}', 'src/app/setupTests.ts', 'src/app/vite-env.d.ts'],
+      // Piso medido em 2026-10 (statements/lines 75,3%, branches 71,5%, functions 50,5%) com folga de ~5 p.p.:
+      // impede regressão sem travar o PR por flutuação. Subir conforme os contextos sem testes forem cobertos.
+      thresholds: { statements: 70, lines: 70, branches: 66, functions: 45 },
     },
   },
 });
