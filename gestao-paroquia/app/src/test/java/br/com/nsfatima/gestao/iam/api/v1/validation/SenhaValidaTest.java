@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.iam.api.v1.validation;
 import br.com.nsfatima.gestao.iam.api.v1.dto.AlterarMinhaSenhaRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.CriarUsuarioRequest;
 import br.com.nsfatima.gestao.iam.api.v1.dto.RedefinirSenhaRequest;
+import br.com.nsfatima.gestao.membro.api.v1.dto.PromoverACoordenadorRequest;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.DisplayName;
@@ -50,5 +51,15 @@ class SenhaValidaTest {
     void deveRejeitarSenhaEmBranco() {
         assertThat(validator.validate(new RedefinirSenhaRequest("         "))).isNotEmpty();
         assertThat(validator.validate(new RedefinirSenhaRequest(null))).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("Promoção a coordenador: senha opcional, mas se presente deve seguir a política")
+    void promocaoDeveValidarSenhaOpcional() {
+        UUID id = UUID.randomUUID();
+        assertThat(validator.validate(new PromoverACoordenadorRequest(id, id, "COORDENADOR", null, null))).isEmpty();
+        assertThat(validator.validate(new PromoverACoordenadorRequest(id, id, "COORDENADOR", "u", "12345678")))
+                .isEmpty();
+        assertThat(validator.validate(new PromoverACoordenadorRequest(id, id, "COORDENADOR", "u", "123"))).isNotEmpty();
     }
 }

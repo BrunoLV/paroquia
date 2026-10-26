@@ -16,6 +16,11 @@ public class SenhaValidaValidator implements ConstraintValidator<SenhaValida, St
 
     @Override
     public boolean isValid(String senha, ConstraintValidatorContext context) {
+        return atende(senha);
+    }
+
+    /** Aplica a política fora do Bean Validation (ex.: campos opcionais que só validam se presentes). */
+    public static boolean atende(String senha) {
         if (senha == null || senha.isBlank()) {
             return false;
         }
