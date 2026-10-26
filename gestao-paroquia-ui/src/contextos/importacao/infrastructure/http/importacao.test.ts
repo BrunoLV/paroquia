@@ -25,11 +25,12 @@ describe('adapter HTTP de importação em massa', () => {
   });
 
   it('confirma a importação enviando somente os itens recebidos', async () => {
-    const itens = [{ nome: 'Maria' }];
-    client.post.mockResolvedValueOnce({ data: { registrosImportados: 1 } });
+    const itens = [{ linha: 2, dados: { nome: 'Maria' } }];
+    const resultado = { registrosImportados: 1, enviadosParaAprovacao: 0, erros: [] };
+    client.post.mockResolvedValueOnce({ data: resultado });
 
-    await expect(confirmarImportacao('FIEIS', itens)).resolves.toEqual({ registrosImportados: 1 });
+    await expect(confirmarImportacao('FIEIS', itens)).resolves.toEqual(resultado);
 
-    expect(client.post).toHaveBeenCalledWith('/importacao/confirmar?tipo=FIEIS', itens);
+    expect(client.post).toHaveBeenCalledWith('/importacao/confirmar?tipo=FIEIS', { itens });
   });
 });
