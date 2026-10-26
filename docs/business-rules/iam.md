@@ -77,7 +77,7 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 
 ### RN-IAM-09: Política Única de Senha e Proteção contra Tentativas Abusivas
 - **Política Única de Senha:** Toda senha nova — criação administrativa de usuário, troca pelo próprio usuário (RN-IAM-08) e redefinição administrativa — deve ter no mínimo 8 caracteres e no máximo 72 bytes em UTF-8 (limite do BCrypt; acentos ocupam mais de um byte). A mesma regra vale em todos os fluxos; senha em branco é sempre recusada.
-- **Limite de Tentativas de Login:** Após 5 falhas de credencial dentro de 15 minutos para a mesma combinação de endereço de origem e usuário, novas tentativas (inclusive com a senha correta) são recusadas com HTTP 429 e `Retry-After` até a janela expirar. Login bem-sucedido zera o contador. Os limites são configuráveis por paróquia.
+- **Limite de Tentativas de Login:** Após 5 falhas de credencial dentro de 15 minutos para a mesma combinação de endereço de origem e usuário, novas tentativas (inclusive com a senha correta) são recusadas com HTTP 429 e `Retry-After` até a janela expirar. Login bem-sucedido zera o contador. Os limites são configuráveis por paróquia. O endereço de origem considera apenas a conexão direta, salvo proxies reversos explicitamente declarados como confiáveis.
 - **Limite de Pedidos de Redefinição:** A solicitação pública de redefinição aceita no máximo 3 pedidos em 15 minutos por combinação de endereço de origem e usuário (existente ou não, para não revelar contas); excedido, responde 429.
 
 ---

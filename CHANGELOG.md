@@ -14,6 +14,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Superfície pública reduzida:** `/actuator/metrics`, OpenAPI e Swagger exigem ADMIN (Swagger/OpenAPI desligados fora do perfil dev); `/actuator/prometheus` aceita ADMIN ou token Bearer dedicado (`APP_METRICS_SCRAPE_TOKEN`); `POST /api/v1/observabilidade/logs` exige autenticação e neutraliza caracteres de controle (log forging).
 - **Sessão e cabeçalhos:** cookie `SameSite=Lax`, `HttpOnly` e `Secure` (configurável por `SESSION_COOKIE_SECURE`), CSP, HSTS e Referrer-Policy.
 - **Política única de senha** (`@SenhaValida`: mín. 8 caracteres, máx. 72 bytes) em criação, alteração e redefinição; UI alinhada.
+- **Correlation id:** `X-Correlation-Id` recebido só é ecoado se for token seguro (`[A-Za-z0-9._-]{1,64}`); caso contrário gera UUID.
+- **Rate limit atrás de proxy:** `app.security.rate-limit.trusted-proxies` (`APP_TRUSTED_PROXIES`); default usa só o IP da conexão.
 - **Flyway:** `baseline-on-migrate` desligado fora do perfil dev.
 
 ### Modificado

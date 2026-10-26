@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.iam.infrastructure.security.LimitadorTentativas;
+import br.com.nsfatima.gestao.iam.infrastructure.security.ResolvedorIpCliente;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,9 +78,11 @@ public class SecurityConfig {
             JsonAuthenticationOutcomeProcessor authenticationOutcomeProcessor,
             ObjectMapper objectMapper,
             @Qualifier("limitadorLogin") LimitadorTentativas limitadorLogin,
+            ResolvedorIpCliente resolvedorIp,
             @Value("${app.security.metrics-scrape-token:}") String metricsScrapeToken) {
         JsonUsernamePasswordAuthenticationFilter loginFilter =
-                new JsonUsernamePasswordAuthenticationFilter(authenticationManager, objectMapper, limitadorLogin);
+                new JsonUsernamePasswordAuthenticationFilter(
+                        authenticationManager, objectMapper, limitadorLogin, resolvedorIp);
         loginFilter.setAuthenticationSuccessHandler(authenticationOutcomeProcessor);
         loginFilter.setAuthenticationFailureHandler(authenticationOutcomeProcessor);
 

@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
 import br.com.nsfatima.gestao.iam.infrastructure.security.LimitadorTentativas;
+import br.com.nsfatima.gestao.iam.infrastructure.security.ResolvedorIpCliente;
 import br.com.nsfatima.gestao.iam.infrastructure.security.TentativasExcessivasException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,11 +32,14 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
 
     private final ObjectMapper objectMapper;
     private final LimitadorTentativas limitador;
+    private final ResolvedorIpCliente resolvedorIp;
 
     public JsonUsernamePasswordAuthenticationFilter(
             AuthenticationManager authenticationManager,
             ObjectMapper objectMapper,
-            LimitadorTentativas limitador) {
+            LimitadorTentativas limitador,
+            ResolvedorIpCliente resolvedorIp) {
+        this.resolvedorIp = resolvedorIp;
         this.objectMapper = objectMapper;
         this.limitador = limitador;
         setAuthenticationManager(authenticationManager);
@@ -75,7 +79,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             }
         }
 
-        String chave = LimitadorTentativas.chave(request.getRemoteAddr(), username);
+        String chave = LimitadorTentativas.chave(resolvedorIp.resolver(request), username);
         if (limitador.bloqueado(chave)) {
             throw new TentativasExcessivasException(limitador.janela());
         }

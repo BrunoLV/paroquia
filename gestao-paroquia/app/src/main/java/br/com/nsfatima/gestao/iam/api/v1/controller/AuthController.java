@@ -9,6 +9,7 @@ import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntit
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LimitadorTentativas;
+import br.com.nsfatima.gestao.iam.infrastructure.security.ResolvedorIpCliente;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.organizacao.api.v1.dto.OrganizacaoResponse;
@@ -58,18 +59,21 @@ public class AuthController {
     private final AlterarSenhaUseCase alterarSenhaUseCase;
     private final AuditoriaPersistenceService auditLogService;
     private final LimitadorTentativas limitadorResetSenha;
+    private final ResolvedorIpCliente resolvedorIp;
 
     public AuthController(
             UsuarioJpaRepository usuarioRepository,
             PasswordEncoder passwordEncoder,
             AlterarSenhaUseCase alterarSenhaUseCase,
             AuditoriaPersistenceService auditLogService,
-            @Qualifier("limitadorResetSenha") LimitadorTentativas limitadorResetSenha) {
+            @Qualifier("limitadorResetSenha") LimitadorTentativas limitadorResetSenha,
+            ResolvedorIpCliente resolvedorIp) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.alterarSenhaUseCase = alterarSenhaUseCase;
         this.auditLogService = auditLogService;
         this.limitadorResetSenha = limitadorResetSenha;
+        this.resolvedorIp = resolvedorIp;
     }
 
     /**
@@ -155,7 +159,7 @@ public class AuthController {
     public ResponseEntity<Void> solicitarResetSenha(
             @RequestBody @Valid SolicitarResetSenhaRequest request,
             HttpServletRequest http) {
-        String chave = LimitadorTentativas.chave(http.getRemoteAddr(), request.username());
+        String chave = LimitadorTentativas.chave(resolvedorIp.resolver(http), request.username());
         if (limitadorResetSenha.bloqueado(chave)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .header(HttpHeaders.RETRY_AFTER, String.valueOf(limitadorResetSenha.janela().toSeconds()))
