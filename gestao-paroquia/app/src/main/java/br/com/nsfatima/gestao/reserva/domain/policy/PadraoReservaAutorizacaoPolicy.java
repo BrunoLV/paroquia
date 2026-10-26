@@ -69,6 +69,20 @@ public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoP
 
     @Override
     public void assertAutorizacaoFinalizacao(UsuarioActor operador, Reserva reserva) {
+        exigirSolicitanteCoordenadorOuAdministracao(operador, reserva,
+                "Apenas quem solicitou a reserva, o coordenador da pastoral ou a administração "
+                        + "podem finalizar o uso.");
+    }
+
+    @Override
+    public void assertAutorizacaoCustodia(UsuarioActor operador, Reserva reserva) {
+        exigirSolicitanteCoordenadorOuAdministracao(operador, reserva,
+                "Apenas quem solicitou a reserva, o coordenador da pastoral ou a administração "
+                        + "podem registrar a retirada ou a devolução do ativo.");
+    }
+
+    private void exigirSolicitanteCoordenadorOuAdministracao(
+            UsuarioActor operador, Reserva reserva, String mensagemNegacao) {
         Objects.requireNonNull(operador, OPERADOR_OBRIGATORIO);
         Objects.requireNonNull(reserva, RESERVA_OBRIGATORIA);
 
@@ -76,9 +90,7 @@ public final class PadraoReservaAutorizacaoPolicy implements ReservaAutorizacaoP
                 || operador.isCoordenadorDaOrganizacao(reserva.getPastoralMovimentoId())
                 || Objects.equals(operador.id(), reserva.getSolicitanteId());
         if (!autorizado) {
-            throw new ReservaNaoAutorizadaException(
-                    "Apenas quem solicitou a reserva, o coordenador da pastoral ou a administração "
-                            + "podem finalizar o uso.");
+            throw new ReservaNaoAutorizadaException(mensagemNegacao);
         }
     }
 }

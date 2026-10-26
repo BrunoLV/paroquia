@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservaSecurityAdapterTest {
 
@@ -25,27 +27,21 @@ class ReservaSecurityAdapterTest {
     }
 
     @Test
-    @DisplayName("Deve retornar ator padrão ROLE_ADMIN quando não há autenticação no contexto")
-    void deveRetornarAtorPadraoQuandoSemAutenticacao() {
+    @DisplayName("Sem autenticação no contexto o acesso é negado, sem ator privilegiado padrão")
+    void deveNegarQuandoSemAutenticacao() {
         SecurityContextHolder.clearContext();
 
-        UsuarioActor ator = adapter.obterAtorAutenticado();
-
-        assertThat(ator.nome()).isEqualTo("Sistema");
-        assertThat(ator.roles()).contains("ROLE_ADMIN", "ADMIN");
-        assertThat(ator.isAdminOuParoco()).isTrue();
+        assertThatThrownBy(adapter::obterAtorAutenticado).isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
-    @DisplayName("Deve retornar ator padrão quando principal não é UsuarioDetails")
-    void deveRetornarAtorPadraoQuandoPrincipalDesconhecido() {
+    @DisplayName("Principal que não é UsuarioDetails também é negado")
+    void deveNegarQuandoPrincipalDesconhecido() {
         TestingAuthenticationToken auth = new TestingAuthenticationToken("usuario-generico", "senha");
         auth.setAuthenticated(true);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        UsuarioActor ator = adapter.obterAtorAutenticado();
-
-        assertThat(ator.nome()).isEqualTo("Sistema");
+        assertThatThrownBy(adapter::obterAtorAutenticado).isInstanceOf(AccessDeniedException.class);
     }
 
     @Test

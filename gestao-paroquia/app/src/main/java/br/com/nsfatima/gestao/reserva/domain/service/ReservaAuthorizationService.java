@@ -99,4 +99,11 @@ public class ReservaAuthorizationService {
     public void validarAutorizacaoFinalizacao(UsuarioActor operador, Reserva reserva) {
         policy.assertAutorizacaoFinalizacao(operador, reserva);
     }
+
+    /**
+     * Valida se o usuário pode registrar retirada ou devolução de um ativo (solicitante, coordenador ou administração).
+     */
+    public void validarAutorizacaoCustodia(UsuarioActor operador, Reserva reserva) {
+        policy.assertAutorizacaoCustodia(operador, reserva);
+    }
 }

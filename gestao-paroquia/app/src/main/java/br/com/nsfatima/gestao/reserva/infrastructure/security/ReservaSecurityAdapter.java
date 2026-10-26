@@ -3,6 +3,7 @@ package br.com.nsfatima.gestao.reserva.infrastructure.security;
 import br.com.nsfatima.gestao.iam.infrastructure.security.LeitorVinculoExterno;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService.UsuarioActor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,20 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Resolve o ator da requisição a partir do contexto de segurança. Fail-closed: sem usuário autenticado
+ * (UsuarioDetails) o acesso é negado, nunca se assume um ator privilegiado.
+ */
 @Component
 public class ReservaSecurityAdapter {
 
     public UsuarioActor obterAtorAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof UsuarioDetails userDetails)) {
-            // Em cenários de teste anônimos ou jobs internos
-            return new UsuarioActor(
-                    UUID.randomUUID(),
-                    "Sistema",
-                    List.of("ROLE_ADMIN", "ADMIN"),
-                    List.of(),
-                    List.of()
-            );
+            throw new AccessDeniedException("Operação de reserva exige um usuário autenticado.");
         }
 
         List<String> roles = userDetails.getAuthorities().stream()
