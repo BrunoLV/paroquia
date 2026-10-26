@@ -128,13 +128,37 @@ class UsuarioDelegatedAdminIntegrationTest {
     }
 
     @Test
-    void coordinatorShouldResetPasswordOfMemberInSameOrg() throws Exception {
+    void coordinatorShouldNotResetPasswordOfMemberInSameOrg() throws Exception {
         authenticateAs(coordinatorId, "ROLE_COORDENADOR");
 
         mockMvc.perform(post("/api/v1/usuarios/" + memberId + "/redefinir-senha")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"newPassword\": \"new-pass\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void parocoShouldResetPasswordOfCommonMember() throws Exception {
+        authenticateAs(coordinatorId, "ROLE_PAROCO");
+
+        mockMvc.perform(post("/api/v1/usuarios/" + memberId + "/redefinir-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"new-pass\"}"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void parocoShouldNotResetPasswordOfUserWithGlobalRole() throws Exception {
+        UUID secretariaId = createUser("secretaria");
+        UsuarioEntity secretaria = usuarioRepository.findById(secretariaId).orElseThrow();
+        secretaria.setRoles("ROLE_SECRETARIA_PAROQUIAL");
+        usuarioRepository.save(secretaria);
+        authenticateAs(coordinatorId, "ROLE_PAROCO");
+
+        mockMvc.perform(post("/api/v1/usuarios/" + secretariaId + "/redefinir-senha")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"newPassword\": \"new-pass\"}"))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -40,4 +40,17 @@ public final class PadraoUsuarioGerenciamentoAutorizacaoPolicy implements Usuari
             throw new AccessDeniedException("Apenas Admin ou Coordenador de Organização pode executar esta ação");
         }
     }
+
+    @Override
+    public void assertPodeRedefinirSenha(boolean atorEAdmin, boolean atorEParoco, boolean alvoPossuiPapelGlobal) {
+        if (atorEAdmin) {
+            return;
+        }
+        if (!atorEParoco) {
+            throw new AccessDeniedException("Apenas Admin ou Pároco pode redefinir a senha de um usuário");
+        }
+        if (alvoPossuiPapelGlobal) {
+            throw new AccessDeniedException("Apenas Admin pode redefinir a senha de um usuário com papel global");
+        }
+    }
 }

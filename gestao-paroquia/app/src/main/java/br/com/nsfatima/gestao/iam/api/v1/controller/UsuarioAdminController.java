@@ -107,14 +107,14 @@ public class UsuarioAdminController {
      *
      * @param id      identificador do usuário alvo
      * @param request nova senha em texto puro, a ser criptografada antes da persistência
-     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
-     *     coordenador de uma organização à qual o usuário-alvo pertence
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global, ou
+     *     Pároco sobre um alvo sem papel global
      */
     @PostMapping("/{id}/redefinir-senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO', 'COORDENADOR')")
-    @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais, pároco ou coordenadores" +
-            " de organização podem redefinir senhas.")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO')")
+    @Operation(summary = "Redefine a senha de um usuário", description = "Administradores globais redefinem qualquer" +
+            " senha; o pároco, apenas a de usuários sem papel global. Coordenadores não redefinem senhas.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),

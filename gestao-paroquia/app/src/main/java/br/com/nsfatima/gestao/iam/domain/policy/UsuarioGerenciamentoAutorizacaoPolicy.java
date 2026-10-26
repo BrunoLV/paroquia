@@ -36,4 +36,16 @@ public interface UsuarioGerenciamentoAutorizacaoPolicy {
      * @throws AccessDeniedException se o ator não for coordenador ativo daquela organização
      */
     void assertECoordenadorDaOrganizacao(boolean atorECoordenadorNaOrganizacao);
+
+    /**
+     * Garante que a redefinição administrativa de senha (que equivale a assumir a conta) só é feita por quem
+     * tem alçada sobre o alvo: o admin global redefine qualquer conta; o Pároco redefine apenas contas sem
+     * papel global, de modo que ninguém com papel de coordenação ou secretaria assuma a conta de um superior.
+     *
+     * @param atorEAdmin {@code true} se o ator é admin global
+     * @param atorEParoco {@code true} se o ator é Pároco
+     * @param alvoPossuiPapelGlobal {@code true} se o usuário-alvo tem qualquer papel global ativo
+     * @throws AccessDeniedException se o ator não tiver alçada sobre o alvo
+     */
+    void assertPodeRedefinirSenha(boolean atorEAdmin, boolean atorEParoco, boolean alvoPossuiPapelGlobal);
 }
