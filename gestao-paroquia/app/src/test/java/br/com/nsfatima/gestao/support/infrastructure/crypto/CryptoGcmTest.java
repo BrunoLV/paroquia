@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.support.infrastructure.crypto;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,5 +91,10 @@ class CryptoGcmTest {
                 .isEqualTo("maria@exemplo.com");
         assertThat(new EncryptedLocalDateConverter().convertToEntityAttribute("1990-05-15"))
                 .isEqualTo(LocalDate.of(1990, 5, 15));
+    }
+
+    @AfterAll
+    static void restaurarChavePadrao() {
+        CryptoUtils.setSecretKey(PepperDeTesteExtension.CHAVE);
     }
 }

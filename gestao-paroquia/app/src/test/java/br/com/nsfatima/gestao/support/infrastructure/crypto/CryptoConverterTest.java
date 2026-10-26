@@ -14,7 +14,7 @@ class CryptoConverterTest {
 
     @BeforeAll
     static void setUp() {
-        CryptoUtils.setSecretKey("my-secret-key-32bytes-1234567890");
+        CryptoUtils.setSecretKey(PepperDeTesteExtension.CHAVE);
     }
 
     @Test

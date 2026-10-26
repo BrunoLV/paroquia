@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
+import br.com.nsfatima.gestao.iam.domain.exception.GerenciamentoUsuarioNegadoException;
 import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.domain.policy.PadraoUsuarioGerenciamentoAutorizacaoPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
@@ -55,7 +56,7 @@ class UsuarioAuthorizationServiceTest {
         autenticarCom("ROLE_COORDENADOR");
 
         assertThatThrownBy(() -> service.requirePodeRedefinirSenhaDe(alvoId))
-                .isInstanceOf(AccessDeniedException.class);
+                .isInstanceOf(GerenciamentoUsuarioNegadoException.class);
     }
 
     @Test
@@ -64,7 +65,7 @@ class UsuarioAuthorizationServiceTest {
         when(papelGlobal.isGlobalByUsuarioId(alvoId)).thenReturn(true);
 
         assertThatThrownBy(() -> service.requirePodeRedefinirSenhaDe(alvoId))
-                .isInstanceOf(AccessDeniedException.class);
+                .isInstanceOf(GerenciamentoUsuarioNegadoException.class);
     }
 
     @Test

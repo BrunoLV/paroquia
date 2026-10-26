@@ -1,6 +1,14 @@
 spring:
   main:
     banner-mode: "off"
+  datasource:
+    url: jdbc:tc:postgresql:16-alpine:///calendario?TC_DAEMON=true
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      idle-timeout: 10000
+      max-lifetime: 30000
   jpa:
     open-in-view: false
     hibernate:
@@ -15,6 +23,7 @@ spring:
     schemas: calendario
     default-schema: calendario
     locations: classpath:db/migration
+    ignore-migration-patterns: "*:missing"
 
 logging:
   level:
@@ -30,3 +39,9 @@ app:
   paroquia:
     nome: "Paróquia Nossa Senhora de Fátima"
     diocese: "Diocese de São Miguel Paulista"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics

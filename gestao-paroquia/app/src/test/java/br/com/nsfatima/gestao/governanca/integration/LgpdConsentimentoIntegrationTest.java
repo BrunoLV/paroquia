@@ -16,6 +16,7 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.H
 import br.com.nsfatima.gestao.support.infrastructure.crypto.CpfBlindIndex;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.CryptoUtils;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.MigracaoCifraPiiLegadaLgpd;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.PepperDeTesteExtension;
 import br.com.nsfatima.gestao.support.infrastructure.crypto.RecifragemCbcParaGcm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -238,7 +239,7 @@ class LgpdConsentimentoIntegrationTest {
 
     private static String cifrarEmCbcLegado(String claro) throws Exception {
         byte[] chave = MessageDigest.getInstance("SHA-256")
-                .digest("default-dev-fallback-key-should-be-changed-in-prod".getBytes(StandardCharsets.UTF_8));
+                .digest(PepperDeTesteExtension.CHAVE.getBytes(StandardCharsets.UTF_8));
         byte[] iv = new byte[16];
         iv[1] = 9;
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
