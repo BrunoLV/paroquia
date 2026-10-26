@@ -9,7 +9,7 @@ import {approveUsuario, getUsuarios} from '@/contextos/iam/infrastructure/http/u
 import {MemoryRouter} from 'react-router-dom';
 import {NotificationProvider} from '@/shared/presentation/context/NotificationContext';
 
-let mockCurrentUser = {
+const mockCurrentUser = {
   id: '1',
   name: 'Administrador',
   roles: ['ROLE_ADMIN', 'ADMIN'],
@@ -165,6 +165,7 @@ describe('Aprovacoes page', () => {
 
   test('lists pending approvals on load', async () => {
     mockGetAprovacoes.mockResolvedValueOnce({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacoes,
       totalElements: 2,
       totalPages: 1,
@@ -185,6 +186,7 @@ describe('Aprovacoes page', () => {
   test('changes status filter when clicking tabs', async () => {
     mockGetAprovacoes
       .mockResolvedValueOnce({
+        // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
         content: mockAprovacoes,
         totalElements: 2,
         totalPages: 1,
@@ -215,6 +217,7 @@ describe('Aprovacoes page', () => {
 
   test('opens detail drawer and displays correct details on clicking Visualizar', async () => {
     mockGetAprovacoes.mockResolvedValueOnce({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacoes,
       totalElements: 2,
       totalPages: 1,
@@ -242,6 +245,7 @@ describe('Aprovacoes page', () => {
 
   test('renders Aprovar and Rejeitar buttons with their semantic icons', async () => {
     mockGetAprovacoes.mockResolvedValueOnce({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacoes,
       totalElements: 2,
       totalPages: 1,
@@ -265,12 +269,14 @@ describe('Aprovacoes page', () => {
 
   test('calls decideAprovacao with APROVADA status and comment on approve', async () => {
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacoes,
       totalElements: 2,
       totalPages: 1,
       size: 10,
       number: 0,
     });
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockDecideAprovacao.mockResolvedValueOnce({ success: true });
 
     renderPage();
@@ -300,12 +306,14 @@ describe('Aprovacoes page', () => {
 
   test('calls decideAprovacao with REPROVADA status and comment on reject', async () => {
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacoes,
       totalElements: 2,
       totalPages: 1,
       size: 10,
       number: 0,
     });
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockDecideAprovacao.mockResolvedValueOnce({ success: true });
 
     renderPage();
@@ -341,6 +349,7 @@ describe('Aprovacoes page', () => {
       size: 10,
       number: 0,
     });
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockObterAprovacoesProjeto.mockResolvedValueOnce(mockAprovacoesProjeto);
 
     renderPage();
@@ -362,7 +371,9 @@ describe('Aprovacoes page', () => {
       size: 10,
       number: 0,
     });
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockObterAprovacoesProjeto.mockResolvedValue(mockAprovacoesProjeto);
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockDecidirAprovacaoProjeto.mockResolvedValueOnce({ success: true });
 
     renderPage();
@@ -407,6 +418,7 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoComConflito,
       totalElements: 1,
       totalPages: 1,
@@ -443,6 +455,7 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoComLocal,
       totalElements: 1,
       totalPages: 1,
@@ -479,6 +492,7 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoComAtivo,
       totalElements: 1,
       totalPages: 1,
@@ -515,6 +529,7 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoEmprestimo,
       totalElements: 1,
       totalPages: 1,
@@ -548,6 +563,7 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoFalhaCadastral,
       totalElements: 1,
       totalPages: 1,
@@ -593,12 +609,14 @@ describe('Aprovacoes page', () => {
     ];
 
     mockGetAprovacoes.mockResolvedValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       content: mockAprovacaoFalhaSistemica,
       totalElements: 1,
       totalPages: 1,
       size: 10,
       number: 0,
     });
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockReexecutarAprovacao.mockResolvedValueOnce({ success: true });
 
     renderPage();

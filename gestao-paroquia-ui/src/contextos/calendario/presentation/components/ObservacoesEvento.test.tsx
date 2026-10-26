@@ -2,7 +2,6 @@ import {vi} from "vitest";
 import React from 'react';
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
-// @ts-ignore
 import ObservacoesEvento from './ObservacoesEvento';
 import {createObservacao, getObservacoes} from '@/contextos/calendario/infrastructure/http/observacoes';
 import {ThemeProvider} from '@mui/material/styles';

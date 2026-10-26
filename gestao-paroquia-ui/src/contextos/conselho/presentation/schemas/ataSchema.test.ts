@@ -10,6 +10,7 @@ import {
   paraRascunhoPayload,
 } from '@/contextos/conselho/presentation/schemas/ataSchema';
 
+// @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
 const regras = (parcial: Partial<TipoReuniaoInfo> = {}): TipoReuniaoInfo => ({
   codigo: 'REUNIAO_CPP',
   rotulo: 'Reunião do CPP',

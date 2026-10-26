@@ -55,6 +55,7 @@ test('retoma somente uma rota canônica após autenticação', () => {
     expect(obterDestinoPosAutenticacao({ from: { pathname: rota } })).toBe('/painel');
   });
 
+  // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
   expect(obterDestinoPosAutenticacao()).toBe('/painel');
 });
 

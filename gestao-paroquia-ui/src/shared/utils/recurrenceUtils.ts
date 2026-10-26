@@ -16,7 +16,7 @@ export const formatIsoToLocal = (isoString: string): string => {
 
 export const getRecurrenceDates = (start: Date, rule: RecurrenceRule, limit: Date): Date[] => {
   const dates: Date[] = [];
-  let current = new Date(start);
+  const current = new Date(start);
   const maxOccurrences = rule.numeroOcorrencias || 1000;
   const interval = rule.intervalo || 1;
 

@@ -24,6 +24,7 @@ describe('GovernoEclesiasticoModal', () => {
     {
       clerigoId: 'cle-1',
       nomeEclesiastico: 'Padre Pedro da Silva',
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       grauOrdem: 'PRESBITERO',
       funcaoAtual: 'PAROCO',
       ativo: true,

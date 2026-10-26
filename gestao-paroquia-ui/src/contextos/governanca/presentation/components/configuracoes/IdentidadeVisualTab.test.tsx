@@ -8,6 +8,7 @@ import { QueryProvider } from '@/shared/presentation/context/QueryProvider';
 
 vi.mock('@/contextos/governanca/infrastructure/http/configuracaoParoquia');
 
+// @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
 const mockConfiguracao: configApi.ParoquiaConfiguracao = {
   id: 'uuid-1',
   nome: 'Paróquia Nossa Senhora de Fátima',

@@ -11,6 +11,10 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ### Adicionado
 - `PATCH /api/v1/reservas/{id}/finalizar` e ação "Finalizar Uso" na tela de reservas (RN-RES-06).
 - **Fronteiras arquiteturais protegidas por ArchUnit:** regras de encapsulamento entre contextos (um contexto não acessa `application`/`infrastructure` de outro; `support` é o núcleo compartilhado), de dependência mútua entre contextos e de proibição de chamar setters de auditoria fora das entidades. O legado é congelado com `FreezingArchRule` em `app/src/test/resources/archunit_store`; qualquer violação nova falha o build.
+- **Qualidade do Frontend:** ESLint (flat config com `typescript-eslint`, `react-hooks`, `jsx-a11y`) e Prettier, scripts `lint`, `format:check` e `typecheck:tests`; regra `no-restricted-imports` impedindo React/MUI/TanStack/Zod/Axios em `contextos/*/domain` e `application` e Axios fora de `infrastructure`. Regras legadas ruidosas (`no-explicit-any`, `no-unused-vars`, `no-autofocus`, `no-useless-catch`) ficam como `warn` documentado em `eslint.config.js`.
+- **Testes:** cobertura mínima para `membro`, `projeto`, `patrimonio` e `importacao`; piso de cobertura no Vitest (statements/lines 70%, branches 66%, functions 45%).
+- **CI:** lint e Prettier do frontend, type-check informativo dos testes, `npm audit` e dependency review informativos, job de build das imagens Docker (sem push) e `.github/dependabot.yml` (gradle, npm, github-actions, docker, docker-compose).
+- **Gradle:** `distributionSha256Sum` no wrapper; `spring-boot-starter-quartz` no `libs.versions.toml`.
 
 ### Segurança / LGPD
 - **Segredos obrigatórios:** `APP_CRYPTO_KEY` e `APP_CONSENT_SECRET` (>= 32 caracteres) deixam de ter valor padrão; a API aborta o boot sem eles. Perfil `dev` (`application-dev.yml`, ativado por `./manage.sh dev`) traz valores explícitos de desenvolvimento.
@@ -30,9 +34,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Pedidos de OTP atômicos** (advisory lock por titular), **recifragem CBC→GCM** na subida (fiéis, dependentes, clérigos e DPO), **feriados nacionais** no prazo de 3 dias úteis do incidente e portal de consentimento sem revelar o e-mail mascarado (anti-enumeração).
 - **Migrações:** V040 (expansão), V041 (migração Java de dados: cifra e rehash, idempotente) e V042 (gatilho append-only).
 - **Reserva e Local:** retirada e devolução de ativo restritas a solicitante, coordenador e administração; `ReservaSecurityAdapter` nega acesso (fail-closed) sem usuário autenticado em vez de assumir ADMIN; buffer legado acima de 240 min é limitado na leitura.
+- `AuthContext` não persiste mais o `user` (PII) em `localStorage`; o cache legado é purgado no carregamento.
 
 ### Modificado
 - **Docker:** compose sem credenciais padrão (`.env` obrigatório, `${VAR:?}`), portas de infraestrutura em `127.0.0.1`, `db-seeder` e `ui-dev` apenas no perfil `dev`; `Dockerfile.ui` agora gera build estático servido por nginx sem privilégios (alvo `dev` separado); Loki com retenção de 7 dias; Prometheus autenticado por token; comentário "Spring Boot 3" corrigido. `DOCKER.md` e `docs/guide/docker.md` atualizados.
+- **TypeScript:** `target` ES2022; `tsconfig.test.json` checa os arquivos de teste; shim de tipos do Vitest substituído por tipos reais.
+- **SpotBugs bloqueante:** `ignoreFailures=false`, com baseline por classe/padrão em `config/spotbugs/spotbugs-filter.xml` (débitos reais sinalizados: `GerenciarRelacionamentoFamiliarUseCase` e `CorrelationIdFilter`).
+- **Node 22** alinhado entre CI, READMEs, `engines` e `Dockerfile.ui`; `AGENTS.md` raiz ajustado: Convention Plugins em `build-logic` só ao surgir o segundo módulo Gradle.
+- `Projetos.tsx` passa a usar adapter e hooks do contexto `projeto`; detecção de erro HTTP em `errorUtils`/`useEventoCrud` sem importar Axios.
 
 ### Corrigido
 - **Autorização e escalonamento de privilégios (backend):**
@@ -76,6 +85,7 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Pureza do domínio:** a normalização de enums (`EnumRequestNormalizer`) passa para `support.domain` (função pura); `@JsonCreator`/`@JsonValue` saem dos 13 enums de domínio e o vínculo JSON fica em mix-ins `@JacksonMixin` por contexto na camada `api` (desserialização das requisições inalterada); a policy de gerenciamento de usuários do IAM lança `GerenciamentoUsuarioNegadoException` em vez da `AccessDeniedException` do Spring, mapeada para 403/`ACCESS_DENIED` no `SecurityExceptionHandler` (corpo idêntico).
 - **Auditoria manual removida:** casos de uso, mappers e serviço de idempotência não preenchem mais `criadoEmUtc`/`atualizadoEmUtc`/`criadoPor`; os setters de `BaseAuditableEntity` são `protected` e os aliases `setCreatedAt`/`setUpdatedAt` foram removidos. Os construtores de reidratação das entidades mantêm o instante já persistido para o `merge`.
 - **`@Order` dos advices:** segurança 1, contextos 2, validação 3, global `LOWEST_PRECEDENCE` explícito (substitui o `@Order()` vazio).
+- `FielViewModal` e `ClerigoViewModal`: `useQuery` chamado após retorno antecipado (violação de rules-of-hooks).
 
 ---
 

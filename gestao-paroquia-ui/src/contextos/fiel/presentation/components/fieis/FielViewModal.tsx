@@ -96,17 +96,19 @@ export const FielViewModal: React.FC<FielViewModalProps> = ({
   onEdit,
   onInativar,
 }) => {
-  if (!fiel) return null;
-
-  const dados = detalheFiel ?? fiel;
-  const isAtivo = Boolean(dados.isAtivo ?? dados.ativo);
   const fielId = fiel?.fielId ?? fiel?.id;
 
+  // Hook antes do retorno antecipado (rules-of-hooks); `enabled` já cobre fiel ausente.
   const { data: historicoConsentimentos, isLoading: loadingHistorico } = useQuery({
     queryKey: ['historico-consentimento', 'FIEL', fielId],
     queryFn: () => listarHistoricoConsentimento('FIEL', fielId!),
     enabled: Boolean(open && fielId),
   });
+
+  if (!fiel) return null;
+
+  const dados = detalheFiel ?? fiel;
+  const isAtivo = Boolean(dados.isAtivo ?? dados.ativo);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

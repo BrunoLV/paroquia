@@ -20,6 +20,7 @@ describe('Layout component link visibility', () => {
 
   test('renders "Aprovações" link for users with approval permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -44,6 +45,7 @@ describe('Layout component link visibility', () => {
 
   test('does not render "Aprovações" link for users without approval permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -68,6 +70,7 @@ describe('Layout component link visibility', () => {
 
   test('places Fiéis and Pastorais e Movimentos in gestão paroquial', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -95,6 +98,7 @@ describe('Layout component link visibility', () => {
 
   test('renders "Configurações" link for users with management permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -119,6 +123,7 @@ describe('Layout component link visibility', () => {
 
   test('does not render "Configurações" link for users without management permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -143,6 +148,7 @@ describe('Layout component link visibility', () => {
 
   test('renders "Governo & Território" link for users with territorial management permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -167,6 +173,7 @@ describe('Layout component link visibility', () => {
 
   test('does not render "Governo & Território" link for users without territorial management permissions', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '2', name: 'Membro', roles: ['ROLE_PASTORAL_MEMBRO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -191,6 +198,7 @@ describe('Layout component link visibility', () => {
 
   test('renders menu items in functional order across sections', () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,
@@ -252,6 +260,7 @@ describe('Layout component link visibility', () => {
 
   test('toggles category expansion when clicking category header', async () => {
     mockUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Padre', roles: ['ROLE_CLERO_PAROCO'] },
       logout: vi.fn(),
       isLoading: false,

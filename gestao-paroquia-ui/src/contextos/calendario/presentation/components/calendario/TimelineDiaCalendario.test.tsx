@@ -40,6 +40,7 @@ describe('TimelineDiaCalendario', () => {
   });
 
   it('segrega e renderiza eventos de dia inteiro no topo da timeline', () => {
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     const allDayEvent: Evento = {
       id: 'evt-all-day',
       titulo: 'Festa de São Mateus Apóstolo',
@@ -93,6 +94,7 @@ describe('TimelineDiaCalendario', () => {
 
   it('exibe indicador de momento atual (Agora) quando a data visualizada for o dia de hoje', () => {
     const today = new Date();
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     const futureTimedEvent: Evento = {
       id: 'evt-today',
       titulo: 'Reunião do CPP',

@@ -29,43 +29,18 @@ import {
     canTransitionProjeto as userCanTransitionProjeto,
     isGlobalCreator as userIsGlobalCreator
 } from '@/contextos/iam/presentation/auth/permissions';
-import apiClient from '@/shared/infrastructure/http/client';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
 import {Projeto} from '@/shared/domain/types/types';
 import {useNotification} from '@/shared/presentation/context/NotificationContext';
 import { extractErrorMessage } from '@/shared/utils/errorUtils';
-import {cancelarProjeto, concluirProjeto, iniciarProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
-
-// DTO interfaces for project summaries
-interface StatusExecucao {
-  totalEventos: number;
-  eventosRealizados: number;
-  eventosPendentes: number;
-}
-
-interface MapaColaboracao {
-  envolvidos: string[];
-}
-
-interface SaudeTemporal {
-  percentualTempoDecorrido: number;
-  emRisco: boolean;
-}
-
-interface ProjetoResumo {
-  statusExecucao: StatusExecucao;
-  mapaColaboracao: MapaColaboracao;
-  saudeTemporal: SaudeTemporal;
-}
+import {cancelarProjeto, concluirProjeto, iniciarProjeto, salvarProjeto} from '@/contextos/projeto/infrastructure/http/projetos';
+import {useProjetoResumo, useProjetos} from '@/contextos/projeto/presentation/hooks/useProjetosQueries';
 
 const Projetos = () => {
   const { user } = useAuth();
   const { showError, showSuccess } = useNotification();
 
-  const projetosQuery = useQuery({
-    queryKey: ['projetos'],
-    queryFn: async () => (await apiClient.get<Projeto[]>('/projetos')).data ?? [],
-  });
+  const projetosQuery = useProjetos();
   const organizacoesQuery = useQuery({ queryKey: ['organizacoes'], queryFn: getOrganizacoes });
   const projects = projetosQuery.data ?? [];
   const organizations = organizacoesQuery.data ?? [];
@@ -73,11 +48,7 @@ const Projetos = () => {
 
   // Drawer states (Project Details & Summary)
   const [selectedProject, setSelectedProject] = useState<Projeto | null>(null);
-  const resumoQuery = useQuery({
-    queryKey: ['projeto-resumo', selectedProject?.id],
-    queryFn: async () => (await apiClient.get<ProjetoResumo>(`/projetos/${selectedProject!.id}/resumo`)).data,
-    enabled: Boolean(selectedProject?.id),
-  });
+  const resumoQuery = useProjetoResumo(selectedProject?.id);
   const resumo = resumoQuery.data ?? null;
   const isLoadingResumo = resumoQuery.isFetching;
 
@@ -194,7 +165,7 @@ const Projetos = () => {
 
   const saveProjetoMutation = useMutation({
     mutationFn: (payload: Record<string, unknown>) =>
-      isEditMode ? apiClient.patch(`/projetos/${formId}`, payload) : apiClient.post('/projetos', payload),
+      salvarProjeto(isEditMode ? formId : null, payload),
   });
 
   const handleSave = async () => {

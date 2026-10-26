@@ -47,10 +47,9 @@ interface LoginResponse {
 
 /**
  * Contexto de sessão/autenticação da aplicação. A fonte da verdade da sessão é o backend
- * (cookie de sessão via `apiClient`, `withCredentials: true`); `localStorage['user']` é
- * apenas um cache de exibição para evitar flash de UI deslogada entre navegações — nunca é
- * usado para autorizar chamadas, só para preencher `user` até a verificação assíncrona
- * (`/auth/me`) confirmar ou invalidar a sessão.
+ * (cookie de sessão via `apiClient`, `withCredentials: true`). O `user` vive só em memória:
+ * dados pessoais não são persistidos em localStorage (LGPD); `isLoading` cobre o intervalo
+ * até a verificação assíncrona (`/autenticacao/meu-perfil`) confirmar ou invalidar a sessão.
  */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -61,15 +60,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  * Ciclo de vida da sessão:
  * - Ao montar, dispara `GET /auth/me` para validar se existe uma sessão de servidor ainda
  *   válida (o cookie de sessão é enviado automaticamente pelo Axios). Se válida, popula
- *   `user` e espelha o resultado em `localStorage['user']` (apenas cache de exibição).
- *   Se a chamada falhar (401/expirada/inexistente), limpa o cache local e mantém `user`
+ *   `user` apenas em memória (React state): nenhum dado do usuário é persistido no navegador.
+ *   Se a chamada falhar (401/expirada/inexistente), mantém `user`
  *   como `null` — não há refresh de token automático aqui; expirar a sessão simplesmente
  *   desloga o usuário na próxima verificação.
  * - `login` chama `POST /auth/login`; o backend estabelece a sessão via cookie e a resposta
  *   traz os dados do usuário (em `response.data.user` ou diretamente em `response.data`,
- *   dependendo do formato retornado), que são gravados em `user` e em `localStorage['user']`.
+ *   dependendo do formato retornado), que são gravados somente em `user` (memória).
  * - `logout` chama `POST /auth/logout` para encerrar a sessão no servidor; independente do
- *   resultado da chamada, sempre limpa `localStorage['user']` e zera `user` no `finally`,
+ *   resultado da chamada, sempre zera `user` no `finally`,
  *   garantindo que a UI nunca fique presa em estado "autenticado" caso a chamada falhe.
  */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -90,16 +89,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             organizations: data.organizations || []
           };
           setUser(currentUser);
-          localStorage.setItem('user', JSON.stringify(currentUser));
         }
       } catch (error) {
-        localStorage.removeItem('user');
         setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
 
+    // Purga o cache `user` gravado por versões anteriores (PII em localStorage nunca lida pela aplicação).
+    localStorage.removeItem('user');
     verifySession();
   }, []);
 
@@ -132,7 +131,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
       }
 
-      localStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
     } catch (error) {
       throw error;
@@ -144,7 +142,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await apiClient.post('/autenticacao/logout');
     } catch (error) {
     } finally {
-      localStorage.removeItem('user');
       setUser(null);
     }
   };
