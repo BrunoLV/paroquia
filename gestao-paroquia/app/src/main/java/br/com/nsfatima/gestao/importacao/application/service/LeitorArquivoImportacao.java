@@ -32,6 +32,9 @@ import java.util.Map;
 @Component
 public class LeitorArquivoImportacao {
 
+    /** Máximo de linhas de dados por arquivo, para que um upload não monopolize memória nem a transação do lote. */
+    public static final int MAX_LINHAS = 1000;
+
     /**
      * Monta um arquivo de exemplo (cabeçalho + linhas de amostra) para o tipo de entidade
      * informado, no formato solicitado.
@@ -107,25 +110,28 @@ public class LeitorArquivoImportacao {
     private String getHeadersParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> "usuarioUsername,organizacaoNome,papel,igrejaId";
-            case ORGANIZACAO -> "nome,tipo,contato,parentId,pastoralOficialId";
-            case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId";
+            case ORGANIZACAO -> "nome,tipo,contato,parentId,pastoralOficialId,setorPastoral,subtipoConselho";
+            case EVENTO -> "nome,descricao,dataInicio,dataFim,categoria,localId,igrejaId,organizacaoId,justificativa";
         };
     }
 
-    /** Linhas de exemplo preenchidas no template, ilustrando um preenchimento válido por tipo. */
+    /**
+     * Linhas de exemplo do template. Os identificadores (igreja, organização-mãe, catálogo oficial) ficam em
+     * branco porque dependem do cadastro de cada paróquia; a importação não assume nenhum por omissão.
+     */
     private List<String> getSampleRowsParaTipo(TipoEntidadeImportacao tipo) {
         return switch (tipo) {
             case MEMBRO -> List.of(
-                    "joao.silva@email.com,Pastoral da Comunicação,COORDENADOR,",
-                    "maria.souza@email.com,Pastoral da Catequese,MEMBRO,"
+                    "joao.silva@email.com,Pastoral da Comunicação,MEMBRO_ATIVO,",
+                    "maria.souza@email.com,Pastoral da Catequese,VOLUNTARIO,"
             );
             case ORGANIZACAO -> List.of(
-                    "Pastoral da Música,PASTORAL,musica@paroquia.org,,",
-                    "Grupo de Jovens,MOVIMENTO,jovens@paroquia.org,,"
+                    "Pastoral da Música,PASTORAL,musica@paroquia.org,,,SANTIFICACAO_LITURGIA,",
+                    "Conselho de Pastoral da Comunidade,CONSELHO,cpc@paroquia.org,,,,CPC"
             );
             case EVENTO -> List.of(
-                    "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,,,",
-                    "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,,,"
+                    "Missa Dominical,Missa Solene com a Comunidade,2026-08-02 09:00,2026-08-02 10:30,LITURGICO,,,,",
+                    "Encontro da Catequese,Formação sobre Sacramentos,2026-08-05 14:00,2026-08-05 16:00,FORMATIVO,,,,"
             );
         };
     }
@@ -157,6 +163,7 @@ public class LeitorArquivoImportacao {
                 for (int i = 0; i < headers.length; i++) {
                     map.put(headers[i].trim(), (i < values.length) ? values[i].trim() : "");
                 }
+                exigirDentroDoLimite(rows);
                 rows.add(map);
             }
         }
@@ -199,11 +206,19 @@ public class LeitorArquivoImportacao {
                     map.put(headers.get(c), val);
                 }
                 if (!empty) {
+                    exigirDentroDoLimite(rows);
                     rows.add(map);
                 }
             }
         }
         return rows;
+    }
+
+    private void exigirDentroDoLimite(List<Map<String, String>> rows) {
+        if (rows.size() >= MAX_LINHAS) {
+            throw new IllegalArgumentException(
+                    "O arquivo excede o máximo de " + MAX_LINHAS + " linhas por importação.");
+        }
     }
 
     /**

@@ -8,6 +8,17 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Corrigido
+- **Importação em lote respeita as regras do domínio de destino (`fix/importacao-regras-destino`):**
+  - Eventos importados passam pelo caso de uso de criação do calendário (autorização, ano paroquial fechado, conflito e esteira de aprovação); o status deixa de vir da planilha.
+  - Fim dos valores assumidos em silêncio (tipo de organização, organização responsável, organização-mãe, catálogo oficial, datas, categoria): a linha é rejeitada com mensagem clara.
+  - O dry-run usa o mesmo parse e as mesmas validações da confirmação.
+  - A confirmação grava cada linha em transação própria e devolve o total importado, o total enviado para aprovação e os erros por linha (corrige `UnexpectedRollbackException` e perda do lote); a UI exibe as linhas rejeitadas.
+  - Importação de membros delega a `AdicionarVinculoUseCase` e nunca atribui coordenação, vice-coordenação nem papéis de conselho.
+  - Entrada endurecida: corpo validado, limites de 2 MB e 1.000 linhas, sem ator padrão `system_admin`, sem PII em log.
+  - Modelos de planilha corrigidos (papéis válidos; colunas de setor, subtipo e justificativa).
+  - **Contrato:** `POST /api/v1/importacao/confirmar` passa a receber `{ "itens": [{ "linha", "dados" }] }` e a responder `{ registrosImportados, enviadosParaAprovacao, erros[] }`.
+
 ---
 
 ## [0.12.1] - 2026-10-25

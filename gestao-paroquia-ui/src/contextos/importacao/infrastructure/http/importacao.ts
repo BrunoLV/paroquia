@@ -14,6 +14,22 @@ export interface ImportacaoValidacaoResultado {
   itens: ImportacaoItemResultado[];
 }
 
+export interface ImportacaoLinha {
+  linha: number;
+  dados: Record<string, string>;
+}
+
+export interface ImportacaoErroLinha {
+  linha: number;
+  mensagem: string;
+}
+
+export interface ImportacaoConfirmacaoResultado {
+  registrosImportados: number;
+  enviadosParaAprovacao: number;
+  erros: ImportacaoErroLinha[];
+}
+
 /**
  * Passo 1 do fluxo de importação em massa: baixa a planilha-modelo (CSV/XLSX) para o
  * tipo de entidade escolhido, já com as colunas esperadas pelo backend, e dispara o
@@ -59,14 +75,13 @@ export const validarImportacao = async (tipo: string, file: File): Promise<Impor
 };
 
 /**
- * Passo 3 (final) do fluxo de importação em massa: persiste efetivamente os registros
- * previamente validados no passo 2. Deve receber apenas os itens marcados como válidos
- * (`valido: true`) retornados por `validarImportacao` — itens inválidos não devem ser
- * reenviados aqui, pois este endpoint não revalida, apenas grava.
+ * Passo 3 (final) do fluxo de importação em massa: grava os registros validados no passo 2. O backend NÃO confia
+ * no que recebe: cada linha é reinterpretada e submetida às mesmas regras de domínio da validação, e grava em
+ * transação própria. O erro de uma linha não impede a gravação das demais; os motivos voltam em `erros`.
  * @param tipo Tipo de entidade sendo importada, deve ser o mesmo dos passos anteriores.
- * @param validItems Linhas já validadas e aprovadas para importação (campo `dados` de cada item válido).
+ * @param itens Linhas marcadas como válidas em `validarImportacao`, com o número da linha do arquivo original.
  */
-export const confirmarImportacao = async (tipo: string, validItems: Record<string, string>[]): Promise<{ registrosImportados: number }> => {
-  const response = await api.post<{ registrosImportados: number }>(`/importacao/confirmar?tipo=${tipo}`, validItems);
+export const confirmarImportacao = async (tipo: string, itens: ImportacaoLinha[]): Promise<ImportacaoConfirmacaoResultado> => {
+  const response = await api.post<ImportacaoConfirmacaoResultado>(`/importacao/confirmar?tipo=${tipo}`, { itens });
   return response.data;
 };
