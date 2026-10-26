@@ -19,7 +19,8 @@ import java.util.UUID;
  * <p>Regras de integridade referencial:
  * <ul>
  *   <li>Não é permitido inativar (ativo=false) nem excluir logicamente (soft delete) um Local que possua
- *       eventos futuros agendados não cancelados;</li>
+ *       eventos futuros agendados não cancelados (inclusive pela associação a múltiplos locais) nem
+ *       reservas pendentes ou confirmadas ainda não encerradas;</li>
  *   <li>Exclusão é sempre lógica (preenche {@code deletedAt} com o timestamp atual), preservando histórico
  *       de referências de Eventos passados.</li>
  * </ul>
@@ -101,8 +102,13 @@ public class LocalService {
         Local local = localRepository.findById(id)
                 .orElseThrow(() -> LocalNegocioException.notFound(id));
 
-        if (!ativo && local.isAtivo() && localRepository.hasFutureEvents(id)) {
-            throw LocalNegocioException.hasFutureEventsOnDeactivate(id);
+        if (!ativo && local.isAtivo()) {
+            if (localRepository.hasFutureEvents(id)) {
+                throw LocalNegocioException.hasFutureEventsOnDeactivate(id);
+            }
+            if (localRepository.hasFutureReservas(id)) {
+                throw LocalNegocioException.hasFutureReservasOnDeactivate(id);
+            }
         }
 
         local.alterarCadastro(nome, tipo, enderecoLocal, capacidadeMaxima, descricao, igrejaId);
@@ -128,6 +134,9 @@ public class LocalService {
 
         if (localRepository.hasFutureEvents(id)) {
             throw LocalNegocioException.hasFutureEventsOnDelete(id);
+        }
+        if (localRepository.hasFutureReservas(id)) {
+            throw LocalNegocioException.hasFutureReservasOnDelete(id);
         }
 
         local.marcarExcluido();

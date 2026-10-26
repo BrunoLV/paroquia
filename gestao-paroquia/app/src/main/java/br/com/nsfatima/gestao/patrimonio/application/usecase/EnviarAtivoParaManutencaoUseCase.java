@@ -32,6 +32,16 @@ import java.util.UUID;
  * se houver reservas {@code PENDENTE}/{@code CONFIRMADA} no intervalo (que devem ser canceladas
  * antes) ou se já houver uma manutenção em aberto. Uma vez registrada, a janela bloqueia o
  * calendário de reservas.
+ *
+ * <p>Concorrência: o bem é carregado com bloqueio de escrita na linha, o mesmo que a criação de reservas toma
+ * antes de consultar conflitos e janelas de manutenção. Assim, uma reserva e o envio para manutenção do mesmo
+ * bem passam um de cada vez: quem chega depois enxerga o resultado do primeiro (reserva impeditiva ou janela
+ * de manutenção) e é recusado.</p>
+ *
+ * <p>Esta transação grava dois agregados ({@code AtivoManutencao} e {@code AtivoPatrimonial}) por decisão
+ * deliberada: separá-los deixaria uma manutenção em aberto ao lado de um bem {@code DISPONIVEL}/{@code RESERVADO},
+ * e nada reconcilia de volta para {@code EM_MANUTENCAO} (a sincronização só alterna {@code RESERVADO} e
+ * {@code DISPONIVEL}). A atomicidade é o que garante a precedência de {@code EM_MANUTENCAO}.</p>
  */
 @Service
 public class EnviarAtivoParaManutencaoUseCase {
@@ -96,7 +106,7 @@ public class EnviarAtivoParaManutencaoUseCase {
     }
 
     private AtivoPatrimonial carregar(UUID ativoId) {
-        AtivoPatrimonial ativo = ativoRepository.findById(new AtivoPatrimonialId(ativoId))
+        AtivoPatrimonial ativo = ativoRepository.findByIdComBloqueio(new AtivoPatrimonialId(ativoId))
                 .orElseThrow(() -> new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId));
         if (ativo.estaExcluido()) {
             throw new AtivoPatrimonialNaoEncontradoException("Ativo não encontrado: " + ativoId);

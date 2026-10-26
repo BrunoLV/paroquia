@@ -8,6 +8,8 @@ import java.util.UUID;
  */
 public class LocalNegocioException extends RuntimeException {
 
+    private static final String NAO_EXCLUIR = "Não é permitido excluir o local ";
+
     /**
      * Cria a exceção com uma mensagem de negócio específica.
      *
@@ -35,7 +37,7 @@ public class LocalNegocioException extends RuntimeException {
      * @return exceção pronta para ser lançada
      */
     public static LocalNegocioException inUse(UUID id) {
-        return new LocalNegocioException("Não é permitido excluir o local " + id + " pois possui eventos associados.");
+        return new LocalNegocioException(NAO_EXCLUIR + id + " pois possui eventos associados.");
     }
 
     /**
@@ -46,7 +48,7 @@ public class LocalNegocioException extends RuntimeException {
      */
     public static LocalNegocioException hasFutureEventsOnDelete(UUID id) {
         return new LocalNegocioException(
-                "Não é permitido excluir o local " + id + " pois existem eventos futuros agendados.");
+                NAO_EXCLUIR + id + " pois existem eventos futuros agendados.");
     }
 
     /**
@@ -58,5 +60,27 @@ public class LocalNegocioException extends RuntimeException {
     public static LocalNegocioException hasFutureEventsOnDeactivate(UUID id) {
         return new LocalNegocioException(
                 "Não é permitido inativar o local " + id + " pois existem eventos futuros agendados.");
+    }
+
+    /**
+     * Cria a exceção para bloqueio de exclusão de local com reservas pendentes ou confirmadas em aberto.
+     *
+     * @param id ID do local
+     * @return exceção pronta para ser lançada
+     */
+    public static LocalNegocioException hasFutureReservasOnDelete(UUID id) {
+        return new LocalNegocioException(
+                NAO_EXCLUIR + id + " pois existem reservas futuras ou em andamento.");
+    }
+
+    /**
+     * Cria a exceção para bloqueio de inativação de local com reservas pendentes ou confirmadas em aberto.
+     *
+     * @param id ID do local
+     * @return exceção pronta para ser lançada
+     */
+    public static LocalNegocioException hasFutureReservasOnDeactivate(UUID id) {
+        return new LocalNegocioException(
+                "Não é permitido inativar o local " + id + " pois existem reservas futuras ou em andamento.");
     }
 }
