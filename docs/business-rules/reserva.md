@@ -27,6 +27,7 @@ Permitir a reserva estruturada de locais e de ativos patrimoniais, sempre em nom
 - Um **ativo em manutenção** (ou com manutenção prevista) no intervalo não pode ser reservado (ver `patrimonio.md`, RN-PAT-04). O bloqueio do item é o mesmo tomado ao enviar o ativo para manutenção, de modo que reserva e manutenção do mesmo bem também não se atropelam.
 - Só se reserva item **existente, em uso e elegível a reserva**: local ativo e não excluído; ativo não excluído e marcado como reservável.
 - Todo caminho de criação (pedido avulso, série recorrente e evento) aplica as mesmas verificações e notifica o patrimônio para refletir `RESERVADO` no bem.
+- Criar ou editar um evento com local inativo/inexistente ou ativo não reservável (ou em manutenção) é **recusado com erro 400 de regra de negócio** (choque de agenda, 409), e nem o evento nem suas reservas são gravados.
 
 ### RN-RES-03: Status Inicial e Alçada
 - A reserva nasce **`CONFIRMADA`** quando criada a partir de um evento oficial, ou quando o solicitante é o Pároco, o administrador, a **secretaria paroquial** ou o coordenador da pastoral ou movimento. Nos demais casos nasce **`PENDENTE`**, aguardando análise. O vínculo com evento ou série recorrente **nunca é informado pelo cliente**: só a integração com eventos e o endpoint recorrente o estabelecem, o que impede que um pedido comum se autoconfirme.
@@ -43,6 +44,7 @@ Permitir a reserva estruturada de locais e de ativos patrimoniais, sempre em nom
 
 ### RN-RES-06: Custódia do Ativo
 - Só a reserva de **ativo** `CONFIRMADA` tem a **retirada** registrada (`RETIRADO`). A **devolução** só vale sobre `RETIRADO` e exige o **relatório de conferência de avarias**; ela leva a reserva a `FINALIZADA`.
+- Registram a **retirada** e a **devolução** do ativo apenas o solicitante da reserva, o coordenador da pastoral ou movimento e a administração (Pároco, administrador, secretaria paroquial); os demais são negados (403).
 - A reserva de **local** `CONFIRMADA` é finalizada diretamente, sem conferência, por ato manual (`PATCH /reservas/{id}/finalizar`) do solicitante, do coordenador da pastoral ou movimento ou da administração, **depois de iniciado o uso**. Não há finalização automática.
 
 ### RN-RES-07: Reservas Recorrentes

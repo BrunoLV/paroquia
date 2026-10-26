@@ -18,6 +18,9 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Corrida manutenção × reserva: `EnviarAtivoParaManutencao` bloqueia a linha do ativo, a mesma tomada na criação de reservas.
   - Local: inativação/exclusão consideram reservas em aberto; removida a remoção física (`LocalRepository.delete`).
 
+### Segurança
+- Retirada e devolução de ativo restritas a solicitante, coordenador e administração; `ReservaSecurityAdapter` nega acesso (fail-closed) sem usuário autenticado em vez de assumir ADMIN; buffer legado acima de 240 min é limitado na leitura.
+
 ### Adicionado
 - `PATCH /api/v1/reservas/{id}/finalizar` e ação "Finalizar Uso" na tela de reservas (RN-RES-06).
 
