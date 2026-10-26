@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -79,9 +80,16 @@ public class EventoIdempotencyService {
                         "Idempotency-Key already used with a different payload");
             }
 
-            EventoEntity evento = eventoRepository.findById(Objects.requireNonNull(existingRecord.getEventoId()))
-                    .orElseThrow(() -> new IllegalStateException("Idempotent event not found"));
-            return Optional.of(new IdempotencyResult(eventoMapper.toResponse(evento), true));
+            UUID eventoId = Objects.requireNonNull(existingRecord.getEventoId());
+            Optional<EventoEntity> evento = eventoRepository.findById(eventoId);
+            if (evento.isEmpty()) {
+                // O evento registrado foi excluído: o replay devolveria algo que não existe mais. O registro
+                // obsoleto é descartado para que a mesma chave (ex.: reimportação) crie o evento de novo.
+                idempotencyRepository.delete(existingRecord);
+                idempotencyRepository.flush();
+                return Optional.empty();
+            }
+            return Optional.of(new IdempotencyResult(eventoMapper.toResponse(evento.get()), true));
         }
         return Optional.empty();
     }

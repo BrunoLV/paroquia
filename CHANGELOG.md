@@ -52,6 +52,18 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Expiração de pendentes: uma transação por reserva, sem `catch (Exception ignored)`, e pedido feito com menos de 48 h de antecedência só expira no início.
   - Corrida manutenção × reserva: `EnviarAtivoParaManutencao` bloqueia a linha do ativo, a mesma tomada na criação de reservas.
   - Local: inativação/exclusão consideram reservas em aberto; removida a remoção física (`LocalRepository.delete`).
+- **Importação em lote respeita as regras do domínio de destino:**
+  - Eventos importados passam pelo caso de uso de criação do calendário (autorização, ano paroquial fechado, conflito e esteira de aprovação); o status deixa de vir da planilha.
+  - Fim dos valores assumidos em silêncio (tipo de organização, organização responsável, organização-mãe, catálogo oficial, datas, categoria): a linha é rejeitada com mensagem clara.
+  - O dry-run usa o mesmo parse e as mesmas validações da confirmação.
+  - A confirmação grava cada linha em transação própria e devolve o total importado, o total enviado para aprovação e os erros por linha (corrige `UnexpectedRollbackException` e perda do lote); a UI exibe as linhas rejeitadas.
+  - Importação de membros delega a `AdicionarVinculoUseCase` e nunca atribui coordenação, vice-coordenação nem papéis de conselho.
+  - Entrada endurecida: corpo validado, limites de 2 MB e 1.000 linhas, sem ator padrão `system_admin`, sem PII em log.
+  - Modelos de planilha corrigidos (papéis válidos; colunas de setor, subtipo e justificativa).
+  - UI de importação deixa de oferecer o tipo "Usuários", inexistente no backend.
+  - Chave de idempotência de evento excluído é descartada, permitindo reimportá-lo (antes o replay falhava).
+  - `OrganizacaoService` audita com o principal autenticado (ou `sistema` sem autenticação) em vez do ator fixo `admin`.
+  - **Contrato:** `POST /api/v1/importacao/confirmar` passa a receber `{ "itens": [{ "linha", "dados" }] }` e a responder `{ registrosImportados, enviadosParaAprovacao, erros[] }`.
 
 ---
 

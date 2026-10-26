@@ -1,5 +1,7 @@
 package br.com.nsfatima.gestao.importacao.api.v1.controller;
 
+import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoConfirmacaoRequest;
+import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoConfirmacaoResultadoDTO;
 import br.com.nsfatima.gestao.importacao.api.v1.dto.ImportacaoValidacaoResultadoDTO;
 import br.com.nsfatima.gestao.importacao.application.service.ImportacaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,12 +11,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Expõe o fluxo de importação em lote em três passos — baixar template, validar arquivo
@@ -105,21 +104,20 @@ public class ImportacaoController {
 
     @PostMapping("/confirmar")
     @PreAuthorize("hasAnyRole('ADMIN', 'PAROCO', 'BISPO_DIOCESANO', 'SECRETARIA_PAROQUIAL', 'SECRETARIO_CONSELHO')")
-    @Operation(summary = "Confirm batch import", description = "Persists validated records into the system")
+    @Operation(summary = "Confirm batch import", description = "Revalidates and persists each line in its own "
+            + "transaction, returning the imported total and the errors per line")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Importação concluída com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos para importação"),
+            @ApiResponse(responseCode = "200", description = "Lote processado; linhas rejeitadas vêm em 'erros'",
+                    content = @Content(schema = @Schema(implementation = ImportacaoConfirmacaoResultadoDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Tipo desconhecido ou corpo inválido"),
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    public ResponseEntity<Map<String, Object>> confirmar(
+    public ResponseEntity<ImportacaoConfirmacaoResultadoDTO> confirmar(
             @Parameter(description = "Tipo de entidade a persistir")
             @RequestParam(defaultValue = "MEMBRO") String tipo,
-            @RequestBody List<Map<String, String>> validItems,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @Valid @RequestBody ImportacaoConfirmacaoRequest request) {
 
-        String actor = userDetails != null ? userDetails.getUsername() : "system_admin";
-        int totalSalvos = importacaoService.confirmarImportacao(tipo, validItems, actor);
-        return ResponseEntity.ok(Map.of("status", "SUCCESS", "registrosImportados", totalSalvos));
+        return ResponseEntity.ok(importacaoService.confirmarImportacao(tipo, request.itens()));
     }
 }

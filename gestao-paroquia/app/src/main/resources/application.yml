@@ -1,6 +1,12 @@
 spring:
   application:
     name: gestao-paroquia-api
+  servlet:
+    multipart:
+      # Teto do framework acima do limite de 2 MB da importação (ImportacaoService), para que o excesso
+      # seja recusado com mensagem de negócio (400) e não como erro genérico do container.
+      max-file-size: 5MB
+      max-request-size: 6MB
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/calendario}
     username: ${DB_USER:postgres}

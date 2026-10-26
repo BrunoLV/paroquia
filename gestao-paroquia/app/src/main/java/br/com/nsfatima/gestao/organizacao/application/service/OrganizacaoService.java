@@ -11,6 +11,9 @@ import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepositor
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,7 +32,7 @@ import java.util.UUID;
 @Transactional
 public class OrganizacaoService {
 
-    private static final String AUDIT_ACTOR = "admin";
+    private static final String AUDIT_ACTOR_SISTEMA = "sistema";
     private static final String AUDIT_ACTION = "acao-admin";
     private static final String AUDIT_TARGET = "organizacao";
     private static final String AUDIT_RESULT = "sucesso";
@@ -113,7 +116,7 @@ public class OrganizacaoService {
 
         organizacaoRepository.save(org);
 
-        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+        auditLogService.log(atorAutenticado(), AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, org.getId(),
                 KEY_ORGANIZACAO_ID, org.getId(),
@@ -195,7 +198,7 @@ public class OrganizacaoService {
         aplicarContatos(org, contato, email, telefone);
         organizacaoRepository.save(org);
 
-        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+        auditLogService.log(atorAutenticado(), AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, id,
                 KEY_ORGANIZACAO_ID, id,
@@ -224,7 +227,7 @@ public class OrganizacaoService {
 
         organizacaoRepository.delete(id);
 
-        auditLogService.log(AUDIT_ACTOR, AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
+        auditLogService.log(atorAutenticado(), AUDIT_ACTION, AUDIT_TARGET, AUDIT_RESULT, Map.of(
                 KEY_RESOURCE_TYPE, VALUE_RESOURCE_TYPE,
                 KEY_RESOURCE_ID, id,
                 KEY_ORGANIZACAO_ID, id,
@@ -265,5 +268,16 @@ public class OrganizacaoService {
         } else {
             org.definirContatos(email, telefone);
         }
+    }
+
+    /**
+     * Ator da trilha de auditoria: o principal autenticado da requisição. Execuções sem autenticação (cargas e
+     * jobs internos) são registradas como {@code sistema}, nunca como um usuário que não agiu.
+     */
+    private String atorAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean autenticado = auth != null && auth.isAuthenticated() && auth.getName() != null
+                && !"anonymousUser".equals(auth.getName());
+        return autenticado ? auth.getName() : AUDIT_ACTOR_SISTEMA;
     }
 }

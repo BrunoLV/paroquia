@@ -216,18 +216,7 @@ public class CriarEventoUseCase {
 
         EventoActorContext actorContext = actorContextResolver.resolveRequired();
 
-        PapelGlobal atorGlobal = PapelGlobal.fromStoredValue(actorContext.role());
-        PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
-        if (atorGlobal == PapelGlobal.SECRETARIA_PAROQUIAL
-                || atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO
-                || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
-            if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
-                throw new ViolacaoRegraNegocioException(
-                        "Justificativa é obrigatória para operações submetidas pelo Secretário");
-            }
-        }
-
-        validarEstruturaRequisicao(request);
+        validarRequisicao(actorContext, request);
 
         boolean decisaoPastoralImediata = false;
         if (request.isLiberarConflitoAgenda()) {
@@ -261,6 +250,39 @@ public class CriarEventoUseCase {
         }
 
         return new ResultadoOperacaoEvento.Sucesso(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Valida, sem persistir nem abrir solicitação de aprovação, tudo o que {@link #execute} exige do ator e da
+     * requisição antes de decidir entre criação imediata e aprovação: justificativa do secretário, estrutura
+     * (locais, datas, ano paroquial, participantes, projeto) e escopo de criação. Permite que fluxos em lote
+     * (importação) apontem o erro de uma linha sem divergir da gravação real.
+     *
+     * @param request dados do evento a criar
+     * @throws ViolacaoRegraNegocioException se a requisição violar uma regra de negócio do calendário
+     * @throws IllegalArgumentException se datas, status ou participantes forem inconsistentes
+     */
+    @Transactional(readOnly = true)
+    public void validarCriacao(CriarEventoRequest request) {
+        EventoActorContext actorContext = actorContextResolver.resolveRequired();
+        validarRequisicao(actorContext, request);
+        authorizationService.resolveModoRequisicaoCriacao(
+                actorContext, request.organizacaoResponsavelId(), request.igrejaVinculoId());
+    }
+
+    private void validarRequisicao(EventoActorContext actorContext, CriarEventoRequest request) {
+        PapelGlobal atorGlobal = PapelGlobal.fromStoredValue(actorContext.role());
+        PapelOrganizacional atorPapel = PapelOrganizacional.fromStoredValue(actorContext.role());
+        if (atorGlobal == PapelGlobal.SECRETARIA_PAROQUIAL
+                || atorPapel == PapelOrganizacional.SECRETARIO_CONSELHO
+                || atorPapel == PapelOrganizacional.SECRETARIO_GRUPO) {
+            if (request.adicionadoExtraJustificativa() == null || request.adicionadoExtraJustificativa().isBlank()) {
+                throw new ViolacaoRegraNegocioException(
+                        "Justificativa é obrigatória para operações submetidas pelo Secretário");
+            }
+        }
+
+        validarEstruturaRequisicao(request);
     }
 
     /**
