@@ -56,7 +56,6 @@ class ApproveCancelEventoIntegrationTest {
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setMotivoCancelamentoSnapshot("Cancelar apos deliberacao");
         aprovacaoJpaRepository.save(aprovacao);
 

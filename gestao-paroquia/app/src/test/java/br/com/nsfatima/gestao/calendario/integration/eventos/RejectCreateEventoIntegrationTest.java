@@ -65,7 +65,6 @@ class RejectCreateEventoIntegrationTest {
         aprovacao.setTipoSolicitacao("CRIACAO_EVENTO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setActionPayloadJson(aprovacaoAcaoPayloadMapper.toJson(payload));
         aprovacaoJpaRepository.save(aprovacao);
 

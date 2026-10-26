@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,8 +38,6 @@ class UsuarioJpaRepositoryTest {
         usuario.setPasswordHash("hash");
         usuario.setEnabled(true);
         usuario.setFielId(FielTestFixtures.criarFiel(fielRepository));
-        usuario.setCriadoEmUtc(Instant.now());
-        usuario.setAtualizadoEmUtc(Instant.now());
         repository.save(usuario);
 
         Optional<UsuarioEntity> found = repository.findByUsernameIgnoreCase("testuser");
@@ -56,8 +53,6 @@ class UsuarioJpaRepositoryTest {
         usuario.setUsername("semfiel");
         usuario.setPasswordHash("hash");
         usuario.setEnabled(true);
-        usuario.setCriadoEmUtc(Instant.now());
-        usuario.setAtualizadoEmUtc(Instant.now());
 
         assertThatThrownBy(() -> repository.saveAndFlush(usuario))
                 .isInstanceOf(DataIntegrityViolationException.class);

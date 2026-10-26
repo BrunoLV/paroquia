@@ -204,7 +204,6 @@ class ProjetoGovernancaIntegrationTest {
         req.setSolicitanteId("solicitante");
         req.setSolicitantePapel("coordenador");
         req.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);
-        req.setCriadoEmUtc(Instant.now());
         req.setActionPayloadJson(payloadJson);
         approvalRepository.saveAndFlush(req);
 

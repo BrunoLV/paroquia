@@ -23,7 +23,7 @@ import java.util.List;
  * transição vedada pelo estado (409) e conteúdo ou tipo de reunião inválido (422).
  */
 @RestControllerAdvice
-@Order(3)
+@Order(2)
 public class ConselhoExceptionHandler extends BaseExceptionHandler {
 
     private static final String CAMPO_ATA = "ata";

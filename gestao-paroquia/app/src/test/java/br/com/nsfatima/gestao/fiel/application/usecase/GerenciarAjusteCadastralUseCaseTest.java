@@ -19,7 +19,6 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.SolicitacaoAjusteCadastralJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -220,7 +219,6 @@ class GerenciarAjusteCadastralUseCaseTest {
         entity.setEnderecoCidade("São Paulo");
         entity.setEnderecoEstado("SP");
         entity.setStatus("PENDENTE");
-        entity.setCriadoEmUtc(Instant.now());
         return entity;
     }
 }

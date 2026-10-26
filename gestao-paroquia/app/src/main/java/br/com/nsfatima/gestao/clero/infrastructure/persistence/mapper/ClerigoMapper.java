@@ -73,8 +73,6 @@ public class ClerigoMapper {
     public ClerigoEntity toEntity(Clerigo c) {
         ClerigoEntity e = new ClerigoEntity();
         e.setId(c.getId());
-        e.setCriadoEmUtc(c.getCriadoEmUtc());
-        e.setCriadoPor(c.getCriadoPor());
         aplicar(c, e);
         return e;
     }
@@ -109,8 +107,6 @@ public class ClerigoMapper {
         e.setDataOrdenacaoEpiscopal(c.getDataOrdenacaoEpiscopal());
         e.setAtivo(c.isAtivo());
         e.setDeletedAt(c.getDeletedAt());
-        e.setAtualizadoEmUtc(c.getAtualizadoEmUtc());
-        e.setAtualizadoPor(c.getAtualizadoPor());
     }
 
     public EnderecoClerigoDto toEnderecoDto(ClerigoEntity clerigo) {

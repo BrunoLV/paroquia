@@ -38,7 +38,6 @@ public class GerenciarNotificacaoUseCase {
         notificacao.setUsuarioId(usuarioId);
         notificacao.setTipo(tipo != null ? tipo : "GERAL");
         notificacao.setMensagem(mensagem);
-        notificacao.setCriadoEmUtc(Instant.now());
         repository.save(notificacao);
     }
 

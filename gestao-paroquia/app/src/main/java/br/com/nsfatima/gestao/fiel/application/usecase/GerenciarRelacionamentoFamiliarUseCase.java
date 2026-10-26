@@ -135,7 +135,6 @@ public class GerenciarRelacionamentoFamiliarUseCase {
         r.setPessoaDestinoId(destinoId);
         r.setTipoPessoaDestino(tipoDestino);
         r.setTipo(tipo);
-        r.setCriadoEmUtc(Instant.now());
         relacoes.save(r);
     }
 

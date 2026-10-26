@@ -8,7 +8,6 @@ import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.O
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -56,7 +55,6 @@ public class RegistrarObservacaoSistemaUseCase {
         observacao.setUsuarioId(autorFinal);
         observacao.setTipo(tipo.name());
         observacao.setConteudo(conteudo);
-        observacao.setCriadoEmUtc(Instant.now());
         observacao.setRemovida(false);
         observacaoEventoJpaRepository.save(observacao);
 

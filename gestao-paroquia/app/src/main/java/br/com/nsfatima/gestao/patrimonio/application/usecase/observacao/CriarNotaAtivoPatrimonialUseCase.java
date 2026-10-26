@@ -6,7 +6,6 @@ import br.com.nsfatima.gestao.patrimonio.infrastructure.persistence.repository.O
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -41,7 +40,6 @@ public class CriarNotaAtivoPatrimonialUseCase {
         entity.setUsuarioId(usuarioId);
         entity.setTipo(tipo.name());
         entity.setConteudo(conteudo);
-        entity.setCriadoEmUtc(Instant.now());
         return repository.save(entity);
     }
 }

@@ -33,7 +33,6 @@ public final class AprovacaoFlowTestFixtures {
         aprovacao.setTipoSolicitacao(tipoSolicitacao);
         aprovacao.setAprovadorPapel(aprovadorPapel);
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         return aprovacao;
     }
 }

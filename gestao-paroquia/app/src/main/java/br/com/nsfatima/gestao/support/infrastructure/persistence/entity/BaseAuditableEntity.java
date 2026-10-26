@@ -16,6 +16,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * <p>Centraliza o rastreamento temporal e autoral via {@link AuditingEntityListener} do Spring Data JPA,
  * garantindo o preenchimento automatico e consistente das colunas {@code criado_em_utc},
  * {@code atualizado_em_utc}, {@code criado_por} e {@code atualizado_por} em todas as entidades persistidas.
+ *
+ * <p>Os setters são {@code protected}: apenas a própria entidade (ex.: construtor de reidratação a partir
+ * do domínio, necessário para que um {@code merge} não anule em memória o instante de criação já
+ * persistido) pode tocar nos campos. Casos de uso, serviços e mappers nunca preenchem auditoria — o
+ * listener grava os valores no {@code persist}/{@code update}. Se o instante é regra de negócio (data
+ * informada, prazo), modele coluna própria em vez de reutilizar estes campos.
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -41,7 +47,7 @@ public abstract class BaseAuditableEntity extends BaseVersionedEntity {
         return criadoEmUtc;
     }
 
-    public void setCriadoEmUtc(Instant criadoEmUtc) {
+    protected void setCriadoEmUtc(Instant criadoEmUtc) {
         this.criadoEmUtc = criadoEmUtc;
     }
 
@@ -49,7 +55,7 @@ public abstract class BaseAuditableEntity extends BaseVersionedEntity {
         return atualizadoEmUtc;
     }
 
-    public void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
+    protected void setAtualizadoEmUtc(Instant atualizadoEmUtc) {
         this.atualizadoEmUtc = atualizadoEmUtc;
     }
 
@@ -57,7 +63,7 @@ public abstract class BaseAuditableEntity extends BaseVersionedEntity {
         return criadoPor;
     }
 
-    public void setCriadoPor(String criadoPor) {
+    protected void setCriadoPor(String criadoPor) {
         this.criadoPor = criadoPor;
     }
 
@@ -65,7 +71,7 @@ public abstract class BaseAuditableEntity extends BaseVersionedEntity {
         return atualizadoPor;
     }
 
-    public void setAtualizadoPor(String atualizadoPor) {
+    protected void setAtualizadoPor(String atualizadoPor) {
         this.atualizadoPor = atualizadoPor;
     }
 
@@ -73,16 +79,8 @@ public abstract class BaseAuditableEntity extends BaseVersionedEntity {
         return criadoEmUtc;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.criadoEmUtc = createdAt;
-    }
-
     public Instant getUpdatedAt() {
         return atualizadoEmUtc;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.atualizadoEmUtc = updatedAt;
     }
 }
 

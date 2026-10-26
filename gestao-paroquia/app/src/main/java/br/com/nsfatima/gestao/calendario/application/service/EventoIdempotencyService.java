@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,7 +101,6 @@ public class EventoIdempotencyService {
         record.setRequestHash(requestHash);
         record.setEventoId(created.id());
         record.setResponseStatus(201);
-        record.setCreatedAt(Instant.now());
         idempotencyRepository.save(record);
 
         return new IdempotencyResult(created, false);

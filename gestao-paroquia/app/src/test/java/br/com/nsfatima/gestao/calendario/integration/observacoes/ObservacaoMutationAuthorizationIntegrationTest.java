@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -68,7 +67,6 @@ class ObservacaoMutationAuthorizationIntegrationTest {
         systemObservacao.setUsuarioId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         systemObservacao.setTipo("CANCELAMENTO");
         systemObservacao.setConteudo("Gerada automaticamente");
-        systemObservacao.setCriadoEmUtc(Instant.now());
         systemObservacao.setRemovida(false);
         observacaoEventoJpaRepository.save(systemObservacao);
 

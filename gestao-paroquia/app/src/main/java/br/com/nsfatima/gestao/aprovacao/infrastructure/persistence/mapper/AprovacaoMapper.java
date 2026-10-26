@@ -124,7 +124,6 @@ public class AprovacaoMapper {
         entity.setTipoSolicitacao(dominio.getTipoSolicitacao());
         entity.setAprovadorPapel(dominio.getAprovadorPapel());
         entity.setStatus(dominio.getStatus());
-        entity.setCriadoEmUtc(dominio.getCriadoEmUtc());
         entity.setDecididoEmUtc(dominio.getDecididoEmUtc());
         entity.setSolicitanteId(dominio.getSolicitanteId());
         entity.setActionPayloadJson(dominio.getActionPayloadJson());

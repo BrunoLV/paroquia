@@ -22,7 +22,7 @@ import java.util.List;
  * as pendências).
  */
 @RestControllerAdvice
-@Order(3)
+@Order(2)
 public class SacramentoExceptionHandler extends BaseExceptionHandler {
 
     public SacramentoExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {

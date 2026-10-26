@@ -51,7 +51,6 @@ class AprovacaoAlreadyDecidedIntegrationTest {
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.APROVADA);
-        aprovacao.setCriadoEmUtc(Instant.now().minusSeconds(300));
         aprovacao.setDecididoEmUtc(Instant.now().minusSeconds(120));
         aprovacaoJpaRepository.save(aprovacao);
 

@@ -6,6 +6,7 @@ import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorItem;
 import br.com.nsfatima.gestao.support.api.v1.error.ValidationErrorResponse;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,12 @@ import java.util.List;
  * Handler de última instância: {@code ConflitoAgendaEclesialException} (conflito de agenda entre
  * eventos eclesiais) vira 400, e qualquer outra exceção não tratada por um handler mais específico
  * (ver {@link DomainExceptionHandler} e outros {@code @RestControllerAdvice} com {@link Order}
- * numérico menor) vira 500 genérico — este é o único advice sem {@code Order} explícito, portanto
- * o Spring o executa por último entre os advices desta aplicação, atuando como rede de segurança
- * para não vazar stack traces/detalhes internos ao cliente.
+ * numérico menor) vira 500 genérico. A precedência {@code Ordered.LOWEST_PRECEDENCE} faz o Spring executá-lo
+ * por último entre os advices desta aplicação (segurança 1, contextos 2, validação 3), atuando como rede
+ * de segurança para não vazar stack traces/detalhes internos ao cliente.
  */
 @RestControllerAdvice
-@Order()
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler extends BaseExceptionHandler {
 
     public GlobalExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {

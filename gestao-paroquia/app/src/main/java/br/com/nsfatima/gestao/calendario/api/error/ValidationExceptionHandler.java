@@ -28,7 +28,7 @@ import java.util.List;
  * Handles request validation and JSON mapping exceptions.
  */
 @RestControllerAdvice
-@Order(4)
+@Order(3)
 public class ValidationExceptionHandler extends BaseExceptionHandler {
 
     public ValidationExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {
