@@ -253,6 +253,24 @@ class AdicionarVinculoUseCaseTest {
     }
 
     @Test
+    void deveRecusarViceCoordenadorSemIdoneidade() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        MembroGrupoEntity semIdoneidade = membroBasico();
+        semIdoneidade.setPapel(PapelOrganizacional.VOLUNTARIO.name());
+        when(vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(any(UUID.class), eq(organizacaoId)))
+                .thenReturn(Optional.of(semIdoneidade));
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.SECRETARIO_GRUPO, UUID.randomUUID()));
+
+        assertTrue(ex.getMessage().contains("idoneidade"));
+        verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
     void deveRecusarCoordenadorParaFielSemVinculoPrevioNaOrganizacao() {
         mockAuthentication("ROLE_CLERO_PAROCO");
         UUID usuarioId = UUID.randomUUID();

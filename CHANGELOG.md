@@ -16,6 +16,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - `membro`: `/membros` não atribui mais `COORDENADOR` nem papéis de conselho (nem reativa vínculos de liderança); promoção a coordenador só pelo Pároco/Bispo e com limite de um coordenador ativo por organização.
   - `aprovacao`: decisão só aceita `APROVADA`/`REPROVADA`; reprovação exige parecer; payload ilegível ou verificação de conflito impossível bloqueia a aprovação (falha fechada); Bispo Diocesano reconhecido como aprovador; listagens restritas a quem decide ou ao solicitante, sem detalhe técnico de falha para os demais.
   - `calendario`: `EventoActorContextResolver` nega acesso a principal sem papel reconhecido em vez de assumi-lo coordenador.
+  - `membro`/`organizacao`: vice-coordenação (secretário de grupo) passa a exigir idoneidade (RN-MEM-04) na promoção e no vínculo administrativo e deixa de ser atribuível em `/membros`; homologar, vetar e encerrar mandato de coordenação é só do Pároco (RN-ORG-05), o Bispo apenas propõe.
+  - `fiel`: auditoria de relacionamento familiar não falha mais quando a origem não tem unidade territorial (NPE apontado pelo SpotBugs).
   - `fiel`: consulta por papel (completa, contato do grupo ou somente id e nome) e papéis globais não são mais limitados pela organização do vínculo.
 
 ---

@@ -28,10 +28,10 @@ Permitir a gestão da participação dos leigos nas diversas frentes evangelizad
 - A coordenação é temporária e nasce de um **mandato homologado** (ver `organizacao.md`, RN-ORG-05); a promoção direta permanece restrita ao Pároco e também exige idoneidade (RN-MEM-04).
 - O papel `ADMIN` é expressamente impedido de nomear ou prover coordenadores de pastoral.
 
-- **Cadastro corrente não confere liderança:** o cadastro de membros (`/api/v1/membros`) só atribui papéis de participação comum — voluntário, membro ativo e secretário de grupo. `COORDENADOR` e os papéis de conselho só são conferidos pela promoção do Pároco ou pelo vínculo administrativo da organização, nunca por criação ou edição de membro, nem pela reativação de um vínculo de liderança. Editar dados de um coordenador sem mudar seu papel continua permitido.
+- **Cadastro corrente não confere liderança:** o cadastro de membros (`/api/v1/membros`) só atribui papéis de participação comum — voluntário e membro ativo. `COORDENADOR`, a vice-coordenação (`SECRETARIO_GRUPO`) e os papéis de conselho só são conferidos pela promoção do Pároco ou pelo vínculo administrativo da organização, nunca por criação ou edição de membro, nem pela reativação de um vínculo de liderança. Editar dados de um coordenador sem mudar seu papel continua permitido.
 - **Quem pode promover:** apenas Pároco (ou Bispo Diocesano). Papéis globais como Secretaria Paroquial, Vigário ou Diácono não promovem coordenadores, e Admin também não.
 - **Limite de coordenação:** a organização (por igreja de contexto) tem um único coordenador ativo; a promoção direta é recusada enquanto houver outro. O vínculo administrativo, por sua vez, rebaixa o coordenador anterior a membro comum ao empossar o novo.
-- **Idoneidade no vínculo administrativo:** atribuir a coordenação por `POST /api/v1/usuarios/{id}/membros` também exige idoneidade (RN-MEM-04) e que o fiel já seja membro ativo da organização.
+- **Idoneidade no vínculo administrativo:** atribuir a coordenação por `POST /api/v1/usuarios/{id}/membros` também exige idoneidade (RN-MEM-04), para coordenador e vice-coordenador, e que o fiel já seja membro ativo da organização.
 
 ### RN-MEM-02: Criação Automatizada de Login
 - Ao ser promovido a `COORDENADOR` pelo Pároco, caso o Fiel ainda não possua usuário de sistema (`Usuario`), o login é provisionado automaticamente com credenciais iniciais para acesso às rotas de coordenação.

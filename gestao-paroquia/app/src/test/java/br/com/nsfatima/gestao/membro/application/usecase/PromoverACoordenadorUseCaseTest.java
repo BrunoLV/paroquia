@@ -248,6 +248,25 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     @Test
+    void deveRecusarViceCoordenadorSemIdoneidade() {
+        authenticateAsParoco();
+        MembroGrupoEntity semIdoneidade = new MembroGrupoEntity();
+        semIdoneidade.setId(UUID.randomUUID());
+        semIdoneidade.setFielId(fielId);
+        semIdoneidade.setOrganizacaoId(organizacaoId);
+        semIdoneidade.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        semIdoneidade.setPapel("VOLUNTARIO");
+        semIdoneidade.setAtivo(true);
+        when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
+                .thenReturn(Optional.of(semIdoneidade));
+        var comoVice = new PromoverACoordenadorRequest(fielId, organizacaoId, "SECRETARIO_GRUPO", "x", "y");
+
+        assertThatThrownBy(() -> useCase.execute(comoVice))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("idoneidade");
+    }
+
+    @Test
     void deveRecusarSegundoCoordenadorAtivoNaMesmaOrganizacao() {
         authenticateAsParoco();
         MembroGrupoEntity outro = new MembroGrupoEntity();

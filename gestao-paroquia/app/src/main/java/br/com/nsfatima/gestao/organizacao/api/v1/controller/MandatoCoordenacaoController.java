@@ -98,7 +98,7 @@ public class MandatoCoordenacaoController {
      * @return o mandato homologado
      */
     @PostMapping("/{mandatoId}/homologacao")
-    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('PAROCO')")
     @Operation(summary = "Homologa um mandato de coordenação")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Mandato homologado"),
@@ -121,7 +121,7 @@ public class MandatoCoordenacaoController {
      * @return o mandato vetado
      */
     @PostMapping("/{mandatoId}/veto")
-    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('PAROCO')")
     @Operation(summary = "Veta um mandato de coordenação")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Mandato vetado"),
@@ -144,7 +144,7 @@ public class MandatoCoordenacaoController {
      * @return o mandato encerrado
      */
     @PostMapping("/{mandatoId}/encerramento")
-    @PreAuthorize("hasAnyRole('PAROCO', 'BISPO_DIOCESANO')")
+    @PreAuthorize("hasAnyRole('PAROCO')")
     @Operation(summary = "Encerra um mandato de coordenação")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Mandato encerrado"),

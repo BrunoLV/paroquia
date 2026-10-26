@@ -94,7 +94,7 @@ public class PromoverACoordenadorUseCase {
         }
 
         MembroGrupo membroAgregado = membroGrupoMapper.toDomain(membro);
-        List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(papel.isCoordenacao(),
+        List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(papel.exigeIdoneidadeDeCoordenacao(),
                 organizacao.getSetorPastoral(), membroAgregado.getIdoneidade(), LocalDate.now());
         if (!pendencias.isEmpty()) {
             throw new IllegalArgumentException("Agente sem idoneidade para a função: " + String.join(" ", pendencias));

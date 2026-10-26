@@ -16,7 +16,7 @@ import java.util.Set;
 public final class PoliticaPapelMembroComum {
 
     private static final Set<PapelOrganizacional> PAPEIS_COMUNS = Set.of(
-            PapelOrganizacional.VOLUNTARIO, PapelOrganizacional.MEMBRO_ATIVO, PapelOrganizacional.SECRETARIO_GRUPO);
+            PapelOrganizacional.VOLUNTARIO, PapelOrganizacional.MEMBRO_ATIVO);
 
     private PoliticaPapelMembroComum() {
     }
@@ -25,7 +25,7 @@ public final class PoliticaPapelMembroComum {
      * Indica se o papel pode ser conferido pelo cadastro corrente de membros.
      *
      * @param papel papel pretendido
-     * @return {@code true} para voluntário, membro ativo e secretário de grupo
+     * @return {@code true} para voluntário e membro ativo
      */
     public static boolean ehComum(PapelOrganizacional papel) {
         return papel != null && PAPEIS_COMUNS.contains(papel);

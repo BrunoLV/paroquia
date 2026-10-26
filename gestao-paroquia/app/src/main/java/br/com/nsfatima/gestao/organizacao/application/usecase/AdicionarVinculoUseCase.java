@@ -34,8 +34,8 @@ import java.util.UUID;
  * <ul>
  *   <li>pastorais e movimentos exigem uma igreja de vínculo (Matriz/Comunidade) explícita;</li>
  *   <li>vincular membros a um conselho exige que quem executa a ação seja ADMIN ou PAROCO;</li>
- *   <li>atribuir a coordenação exige o PAROCO (ou BISPO) e a idoneidade do Fiel (RN-MEM-04), que já deve ser
- *       membro ativo da organização;</li>
+ *   <li>atribuir a coordenação exige o PAROCO (ou BISPO); coordenação e vice-coordenação (secretário de grupo)
+ *       exigem a idoneidade do Fiel (RN-MEM-04), que já deve ser membro ativo da organização;</li>
  *   <li>definir o PAROCO do CLERO exige que quem executa a ação seja ADMIN;</li>
  *   <li>vínculos duplicados (mesma combinação fiel/organização/papel/igreja) são reativados em vez de
  *       duplicados;</li>
@@ -140,7 +140,7 @@ public class AdicionarVinculoUseCase {
                     "Apenas o Pároco ou Admin podem definir membros e secretários do Conselho");
         }
 
-        if (papel.isCoordenacao()) {
+        if (papel.exigeIdoneidadeDeCoordenacao()) {
             exigirIdoneidade(fielId, organizacaoId);
         }
 

@@ -223,6 +223,18 @@ class MembroUseCaseTest {
     }
 
     @Test
+    @DisplayName("Cadastro de membros não confere vice-coordenação (SECRETARIO_GRUPO), que exige idoneidade")
+    void naoAtribuiViceCoordenadorNoCadastroDeMembros() {
+        stubFielEOrganizacao(TipoOrganizacao.PASTORAL);
+        var comoVice = new MembroRequest(fielId, organizacaoId, "SECRETARIO_GRUPO", LocalDate.now(), null, true);
+
+        assertThatThrownBy(() -> adicionarUseCase.execute(comoVice, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(repository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
     @DisplayName("Cadastro de membros não confere papéis de conselho")
     void naoAtribuiPapelDeConselhoNoCadastroDeMembros() {
         stubFielEOrganizacao(TipoOrganizacao.CONSELHO);

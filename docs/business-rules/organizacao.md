@@ -51,7 +51,7 @@ O módulo gerencia a comunhão pastoral, a legitimidade canônica e a administra
 
 ### RN-ORG-05: Mandato de Coordenação como Encargo Temporário (Cân. 519 e 317)
 - Nenhuma liderança laical tem mandato legítimo sem a **confirmação do Pároco**. A coordenação é um encargo eclesial temporário, e não uma eleição civil autônoma.
-- O mandato é **proposto** (Pároco, Bispo ou mesa do CPP), e somente o Pároco o **homologa**, **veta** (com motivo obrigatório) ou **encerra**. O papel `ADMIN` não homologa.
+- O mandato é **proposto** (Pároco, Bispo ou mesa do CPP), e somente o Pároco o **homologa**, **veta** (com motivo obrigatório) ou **encerra** — o Bispo Diocesano propõe, mas não homologa, veta nem encerra (o sistema aplica essa alçada). O papel `ADMIN` não homologa.
 - A duração máxima é de **3 anos** (`PoliticaDuracaoMandato`); a renovação é um novo mandato, sempre homologado.
 - Não pode haver dois mandatos proposto/homologado concomitantes para a mesma função e período na mesma organização.
 - Só um **membro ativo** da organização pode ser proposto.
