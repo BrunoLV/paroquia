@@ -8,6 +8,10 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+---
+
+## [0.12.0] - 2026-10-25
+
 ### Adicionado
 - **Conselhos e Atas como espinha dorsal das reuniões da paróquia (módulo `conselho`):**
   - **Agregado `AtaReuniao`** com itens de pauta, deliberações (parecer, votação consultiva e declaração de conflito de interesses), presença nominal ou por total de participantes, leitura e aprovação da ata anterior, quórum por maioria absoluta e numeração sequencial (`003/2026`) por órgão e ano atribuída ao selar.
