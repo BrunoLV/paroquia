@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Tipo de solicitação de aprovação, conforme recebido em requisições da API — cada
@@ -32,7 +31,6 @@ public enum TipoSolicitacaoInput {
      * @param rawValue valor textual recebido na requisição
      * @return constante de tipo de solicitação normalizada
      */
-    @JsonCreator
     public static TipoSolicitacaoInput fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, TipoSolicitacaoInput.class);
     }

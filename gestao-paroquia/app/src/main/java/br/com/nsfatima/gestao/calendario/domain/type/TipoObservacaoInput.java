@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Tipo de observação de evento conforme recebido em requisições da API. Apenas
@@ -31,7 +30,6 @@ public enum TipoObservacaoInput {
      * @param rawValue valor textual recebido na requisição
      * @return constante de tipo de observação normalizada
      */
-    @JsonCreator
     public static TipoObservacaoInput fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, TipoObservacaoInput.class);
     }

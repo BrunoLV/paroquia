@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 import java.util.Locale;
 
@@ -27,7 +26,6 @@ public enum TipoOrganizacao {
      * @param rawValue valor bruto recebido na requisição
      * @return o {@link TipoOrganizacao} correspondente
      */
-    @JsonCreator
     public static TipoOrganizacao fromJson(String rawValue) {
         if (rawValue == null) {
             return null;

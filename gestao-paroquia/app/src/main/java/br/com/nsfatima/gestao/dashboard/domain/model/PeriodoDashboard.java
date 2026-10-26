@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.dashboard.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Recorte temporal do filtro global do dashboard. Define a janela sobre a qual as métricas de
@@ -28,7 +27,6 @@ public enum PeriodoDashboard {
      * @param rawValue valor textual recebido na requisição
      * @return o {@link PeriodoDashboard} normalizado correspondente
      */
-    @JsonCreator
     public static PeriodoDashboard fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, PeriodoDashboard.class);
     }

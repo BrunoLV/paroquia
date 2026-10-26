@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.organizacao.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Classifica uma {@link Organizacao} do tipo {@code PASTORAL} segundo os três eixos clássicos da ação
@@ -20,7 +18,6 @@ public enum SetorPastoral {
      * @param value valor bruto recebido na requisição
      * @return o {@link SetorPastoral} correspondente
      */
-    @JsonCreator
     public static SetorPastoral fromValue(String value) {
         return EnumRequestNormalizer.normalize(value, SetorPastoral.class);
     }
@@ -30,7 +27,6 @@ public enum SetorPastoral {
      *
      * @return o nome desta constante
      */
-    @JsonValue
     public String toValue() {
         return name();
     }

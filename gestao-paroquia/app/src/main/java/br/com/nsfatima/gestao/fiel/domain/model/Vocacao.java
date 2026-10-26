@@ -1,6 +1,5 @@
 package br.com.nsfatima.gestao.fiel.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.util.Locale;
 
@@ -45,7 +44,6 @@ public enum Vocacao {
      * @param rawValue valor bruto recebido na requisição
      * @return a {@link Vocacao} correspondente, ou {@code null} se não reconhecida
      */
-    @JsonCreator
     public static Vocacao fromJson(String rawValue) {
         return fromStoredValue(rawValue);
     }
