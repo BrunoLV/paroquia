@@ -61,6 +61,7 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 - **Pendência e Notificação de Homologação:** As contas criadas pela Secretaria Paroquial nascem desabilitadas (`enabled = false`). O sistema emite automaticamente uma notificação persistente (`tipo = "USUARIO_APROVACAO_PENDENTE"`) para todos os Párocos e Administradores ativos da paróquia.
 - **Papel Base e Acesso Inicial:** Todo usuário associado a um Fiel leigo nasce com a autoridade `ROLE_FIEL` atribuída. Usuários fiéis que ainda não possuam vínculo organizacional ativo em pastorais/movimentos navegam em escopo paroquial padrão (`PAROQUIA`), garantindo acesso ao dashboard pessoal sem falhas de escopo (`ROLE_SCOPE_INVALID`).
 - **Aprovação Privativa:** A deliberação e habilitação da conta (`PUT /api/v1/usuarios/{id}/aprovar`) é restrita privativamente a `ADMIN`, `PAROCO` e `BISPO_DIOCESANO`.
+- **Remoção de Vínculo:** A remoção (`DELETE /api/v1/usuarios/{id}/membros/{vinculoId}`) só vale para um vínculo que pertença ao fiel do usuário da rota — vínculo alheio é tratado como inexistente — e exige que o ator seja admin/Pároco ou coordenador **da organização daquele vínculo**; coordenar outra organização do mesmo usuário não basta.
 - **Interoperabilidade de Vínculos:** O endpoint de vinculação a grupos (`POST /api/v1/usuarios/{id}/membros`) aceita `organizacaoId` via DTO `AdicionarVinculoRequest`, prevenindo erros de validação Jackson de campo desconhecido.
 
 ### RN-IAM-06: Pureza do Bounded Context IAM e Segregação de Dados Pastorais

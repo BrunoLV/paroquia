@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest
@@ -104,7 +105,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         return usuarioRepository.save(user).getId();
     }
 
-    private void createVinculo(UUID userId, UUID organizationId, String papel) {
+    private UUID createVinculo(UUID userId, UUID organizationId, String papel) {
         UUID fielId = usuarioRepository.findById(userId).orElseThrow().getFielId();
         MembroGrupoEntity m = new MembroGrupoEntity();
         m.setId(UUID.randomUUID());
@@ -113,7 +114,7 @@ class UsuarioDelegatedAdminIntegrationTest {
         m.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
         m.setPapel(papel);
         m.setAtivo(true);
-        vinculoRepository.save(m);
+        return vinculoRepository.save(m).getId();
     }
 
     private void authenticateAs(UUID userId, String roles) {
@@ -206,5 +207,35 @@ class UsuarioDelegatedAdminIntegrationTest {
                         .content("{\"organizacaoId\": \"" + otherOrgId + "\", \"tipo\": \"PASTORAL\", \"papel\": " +
                                 "\"VOLUNTARIO\", \"igrejaVinculoId\": \"" + churchId + "\"}"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void coordinatorShouldRemoveVinculoOfMemberInHisOrg() throws Exception {
+        authenticateAs(coordinatorId, "ROLE_COORDENADOR");
+        UUID vinculoId = vinculoRepository.findAll().stream()
+                .filter(v -> orgId.equals(v.getOrganizacaoId()) && "voluntario".equals(v.getPapel()))
+                .findFirst().orElseThrow().getId();
+
+        mockMvc.perform(delete("/api/v1/usuarios/" + memberId + "/membros/" + vinculoId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void coordinatorShouldNotRemoveVinculoOfSharedUserInAnotherOrg() throws Exception {
+        UUID vinculoEmOutraOrg = createVinculo(memberId, otherOrgId, "voluntario");
+        authenticateAs(coordinatorId, "ROLE_COORDENADOR");
+
+        mockMvc.perform(delete("/api/v1/usuarios/" + memberId + "/membros/" + vinculoEmOutraOrg))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void coordinatorShouldNotRemoveVinculoBelongingToAnotherUser() throws Exception {
+        UUID vinculoDoEstranho = vinculoRepository.findAll().stream()
+                .filter(v -> otherOrgId.equals(v.getOrganizacaoId())).findFirst().orElseThrow().getId();
+        authenticateAs(coordinatorId, "ROLE_COORDENADOR");
+
+        mockMvc.perform(delete("/api/v1/usuarios/" + memberId + "/membros/" + vinculoDoEstranho))
+                .andExpect(status().is4xxClientError());
     }
 }
