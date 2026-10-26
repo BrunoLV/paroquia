@@ -8,6 +8,14 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Corrigido
+- **Fuso horário único de negócio:** novo `RelogioNegocio` (relógio + `America/Sao_Paulo`, configurável em `app.timezone.output`) usado no ano paroquial de eventos e projetos, exportação mensal/anual, recorrência (dia civil e horário local preservados), janelas e métricas do painel, aniversariantes (29/02 comemora em 28/02 em ano não bissexto) e crons da recorrência anual e da ativação de projetos.
+- **Recorrência anual:** as ocorrências materializadas passam pela detecção de conflito (as conflitantes não são geradas), herdam ativos e envolvidos e criam a reserva de local; a criação de uma série gera só a regra afetada e não há mais consulta por data.
+- `CriarEventoUseCase` com construtor único e dependências obrigatórias (sem fallback que silenciava a detecção de conflito).
+- **Painel:** eventos cancelados fora das métricas; "pendentes de aprovação" do projeto conta aprovações pendentes; escopo organizacional aplicado a fiéis e aprovações (resumo e pendências de homologação); engajamento exige fiel ativo; ocupação de ambientes derivada de reservas de local por organização responsável, com sobreposições unidas; consultas agregadas no lugar de `findAll()` e N+1 de projetos.
+- **Projeto:** redefinir o período revalida os eventos vinculados (RN-PROJ-03); a transferência de responsável exige alçada sobre a organização de destino, existente e ativa; a ativação automática usa `Projeto.iniciar()`.
+- **Sacramento:** a certidão anexa as ressalvas atestadas ao texto.
+
 ---
 
 ## [0.12.1] - 2026-10-25
