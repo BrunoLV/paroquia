@@ -121,6 +121,14 @@ public class FakeEventoRepository implements EventoJpaRepository {
     }
 
     @Override
+    public long contarEventosVinculadosForaDoPeriodo(UUID projetoId, Instant inicioUtc, Instant fimUtc) {
+        return storage.stream()
+                .filter(e -> projetoId.equals(e.getProjetoId()) && !"CANCELADO".equals(e.getStatus()))
+                .filter(e -> e.getInicioUtc().isBefore(inicioUtc) || e.getFimUtc().isAfter(fimUtc))
+                .count();
+    }
+
+    @Override
     public long countByProjetoIdAndFimUtcLessThan(UUID projetoId, Instant now) {
         return storage.stream().filter(e -> projetoId.equals(e.getProjetoId()) && e.getFimUtc().isBefore(now)).count();
     }

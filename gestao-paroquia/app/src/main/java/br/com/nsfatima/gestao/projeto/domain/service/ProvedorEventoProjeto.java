@@ -50,6 +50,18 @@ public interface ProvedorEventoProjeto {
     long contarPorProjetoIdEFimUtcMaiorOuIgualA(UUID projetoId, Instant data);
 
     /**
+     * Conta os eventos não cancelados vinculados ao projeto que ficariam fora do período informado
+     * (começam antes do início ou terminam depois do fim), usado para revalidar o vínculo quando o
+     * período do projeto é redefinido (RN-PROJ-03).
+     *
+     * @param projetoId ID do projeto.
+     * @param inicio    novo início do projeto.
+     * @param fim       novo fim do projeto.
+     * @return quantidade de eventos vinculados fora do novo período.
+     */
+    long contarEventosForaDoPeriodo(UUID projetoId, Instant inicio, Instant fim);
+
+    /**
      * Lista os nomes distintos das organizações (pastorais/movimentos) envolvidas nos eventos
      * vinculados ao projeto, usado para montar o mapa de colaboração do projeto.
      *

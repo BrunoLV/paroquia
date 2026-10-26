@@ -73,6 +73,19 @@ public class ProvedorEventoProjetoCalendario implements ProvedorEventoProjeto {
     }
 
     /**
+     * Conta os eventos não cancelados de um projeto que ficariam fora do período informado.
+     *
+     * @param projetoId identificador do projeto
+     * @param inicio novo início do projeto
+     * @param fim novo fim do projeto
+     * @return quantidade de eventos do projeto fora do novo período
+     */
+    @Override
+    public long contarEventosForaDoPeriodo(UUID projetoId, Instant inicio, Instant fim) {
+        return eventoRepository.contarEventosVinculadosForaDoPeriodo(projetoId, inicio, fim);
+    }
+
+    /**
      * Lista os nomes das organizações envolvidas nos eventos de um projeto.
      *
      * @param projetoId identificador do projeto

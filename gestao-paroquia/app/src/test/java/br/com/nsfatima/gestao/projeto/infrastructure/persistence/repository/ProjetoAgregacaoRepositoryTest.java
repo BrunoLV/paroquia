@@ -92,6 +92,27 @@ class ProjetoAgregacaoRepositoryTest {
     }
 
     @Test
+    @DisplayName("Conta eventos nao cancelados que ficariam fora do novo periodo do projeto")
+    void deveContarEventosForaDoNovoPeriodo() {
+        UUID projetoId = UUID.randomUUID();
+        ProjetoEventoEntity projeto = new ProjetoEventoEntity();
+        projeto.setId(projetoId);
+        projeto.setNome("Projeto Periodo");
+        projetoRepository.save(projeto);
+        Instant base = Instant.parse("2026-06-10T12:00:00Z");
+        saveEvento(projetoId, EventoStatusInput.CONFIRMADO, base);
+        saveEvento(projetoId, EventoStatusInput.CONFIRMADO, base.plus(30, ChronoUnit.DAYS));
+        saveEvento(projetoId, EventoStatusInput.CANCELADO, base.plus(90, ChronoUnit.DAYS));
+
+        assertThat(eventoRepository.contarEventosVinculadosForaDoPeriodo(
+                projetoId, base.minus(1, ChronoUnit.DAYS), base.plus(60, ChronoUnit.DAYS))).isZero();
+        assertThat(eventoRepository.contarEventosVinculadosForaDoPeriodo(
+                projetoId, base.minus(1, ChronoUnit.DAYS), base.plus(10, ChronoUnit.DAYS))).isEqualTo(1);
+        assertThat(eventoRepository.contarEventosVinculadosForaDoPeriodo(
+                projetoId, base.plus(1, ChronoUnit.DAYS), base.plus(60, ChronoUnit.DAYS))).isEqualTo(1);
+    }
+
+    @Test
     @DisplayName("Deve buscar nomes de organizações envolvidas no projeto")
     void deveBuscarNomesOrganizacoesEnvolvidas() {
         UUID projetoId = UUID.randomUUID();
