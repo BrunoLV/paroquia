@@ -15,8 +15,11 @@ import br.com.nsfatima.gestao.organizacao.domain.repository.OrganizacaoRepositor
 import br.com.nsfatima.gestao.organizacao.domain.repository.PastoralMovimentoOficialRepository;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.UnidadeTerritorialEntity;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.UnidadeTerritorialJpaRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -38,6 +41,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 class OrganizacaoServiceTest {
 
     private final UUID cleroUnidadeId = UUID.randomUUID();
@@ -107,6 +111,23 @@ class OrganizacaoServiceTest {
         assertTrue(created.isAtivo());
         verify(repository).save(any(Organizacao.class));
         verify(auditLogService).log(anyString(), anyString(), anyString(), anyString(), anyMap());
+    }
+
+    @AfterEach
+    void limparContextoDeSeguranca() {
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void auditaComOPrincipalAutenticadoEComSistemaQuandoNaoHaAutenticacao() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new TestingAuthenticationToken("secretaria.paroquial", "n/a", "ROLE_SECRETARIA_PAROQUIAL"));
+        service.criar("PJ", TipoOrganizacao.MOVIMENTO, "pj@test.com", conselhoId, movimentoOficialId);
+        verify(auditLogService).log(eq("secretaria.paroquial"), anyString(), anyString(), anyString(), anyMap());
+
+        SecurityContextHolder.clearContext();
+        service.criar("PJ2", TipoOrganizacao.MOVIMENTO, "pj2@test.com", conselhoId, movimentoOficialId);
+        verify(auditLogService).log(eq("sistema"), anyString(), anyString(), anyString(), anyMap());
     }
 
     @Test

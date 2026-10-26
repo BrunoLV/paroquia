@@ -17,6 +17,9 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Importação de membros delega a `AdicionarVinculoUseCase` e nunca atribui coordenação, vice-coordenação nem papéis de conselho.
   - Entrada endurecida: corpo validado, limites de 2 MB e 1.000 linhas, sem ator padrão `system_admin`, sem PII em log.
   - Modelos de planilha corrigidos (papéis válidos; colunas de setor, subtipo e justificativa).
+  - UI de importação deixa de oferecer o tipo "Usuários", inexistente no backend.
+  - Chave de idempotência de evento excluído é descartada, permitindo reimportá-lo (antes o replay falhava).
+  - `OrganizacaoService` audita com o principal autenticado (ou `sistema` sem autenticação) em vez do ator fixo `admin`.
   - **Contrato:** `POST /api/v1/importacao/confirmar` passa a receber `{ "itens": [{ "linha", "dados" }] }` e a responder `{ registrosImportados, enviadosParaAprovacao, erros[] }`.
 
 ---
