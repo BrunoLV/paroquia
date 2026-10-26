@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.fiel.api.v1.controller;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
+import br.com.nsfatima.gestao.fiel.domain.policy.PoliticaVisaoFiel;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.CriarFielRequest;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielConsultaResponse;
@@ -36,7 +37,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -84,13 +84,12 @@ public class FielController {
     })
     public List<? extends FielConsultaResponse> listar() {
         var context = actorContextResolver.resolveRequired();
-        if (isCoordenador(context.role(), context.organizationId())) {
-            return listFieisUseCase.executeContatoNoGrupo(context.organizationId());
-        }
-        if (context.organizationId() != null) {
-            return listFieisUseCase.executeNoGrupo(context.organizationId());
-        }
-        return listFieisUseCase.execute();
+        UUID grupo = context.organizationId();
+        return switch (PoliticaVisaoFiel.para(context.role())) {
+            case COMPLETA -> listFieisUseCase.execute();
+            case CONTATO -> grupo == null ? List.of() : listFieisUseCase.executeContatoNoGrupo(grupo);
+            case NOME -> grupo == null ? listFieisUseCase.executeNomes() : listFieisUseCase.executeNomesNoGrupo(grupo);
+        };
     }
 
     @GetMapping("/{id}")
@@ -106,15 +105,15 @@ public class FielController {
     public FielConsultaResponse obter(
             @Parameter(description = "Identificador único do fiel") @PathVariable UUID id) {
         var context = actorContextResolver.resolveRequired();
-        if (context.organizationId() != null
-                && membroGrupoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(
-                        id, context.organizationId()).isEmpty()) {
-            throw new AccessDeniedException("Coordenador só pode consultar fiéis vinculados à sua organização");
+        var visao = PoliticaVisaoFiel.para(context.role());
+        if (visao != PoliticaVisaoFiel.Visao.COMPLETA && !podeConsultar(visao, id, context.organizationId())) {
+            throw new AccessDeniedException("Só é possível consultar fiéis vinculados à sua organização");
         }
-        if (isCoordenador(context.role(), context.organizationId())) {
-            return getFielUseCase.executeContato(id);
-        }
-        return getFielUseCase.execute(id);
+        return switch (visao) {
+            case COMPLETA -> getFielUseCase.execute(id);
+            case CONTATO -> getFielUseCase.executeContato(id);
+            case NOME -> getFielUseCase.executeNome(id);
+        };
     }
 
     @PostMapping
@@ -208,9 +207,10 @@ public class FielController {
         cicloVidaFielUseCase.desativar(id, context.actor());
     }
 
-    private boolean isCoordenador(String papel, UUID organizacaoId) {
-        return organizacaoId != null && papel != null
-                && papel.toUpperCase(Locale.ROOT).contains("COORDENADOR");
+    private boolean podeConsultar(PoliticaVisaoFiel.Visao visao, UUID fielId, UUID organizacaoId) {
+        if (organizacaoId == null) {
+            return visao != PoliticaVisaoFiel.Visao.CONTATO;
+        }
+        return membroGrupoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId).isPresent();
     }
-
 }

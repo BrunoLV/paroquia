@@ -26,6 +26,11 @@ Manter o livro de registro pastoral, sacramental e cadastral dos membros da comu
 - **Criptografia em Repouso:** Dados civis identificadores (como CPF e endereços) devem ser protegidos contra acesso direto desautorizado.
 - **Prevenção contra IDOR:** Todo acesso a dados de fiel exige validação de permissão no backend antes de expor os dados.
 
+### RN-FIE-05: Visão da Consulta por Papel
+- **Registro completo e sem limite de organização:** Admin, Pároco, Bispo Diocesano e Secretaria Paroquial — um vínculo pastoral que eles tenham não restringe a consulta.
+- **Nome e contato, só do próprio grupo:** o coordenador vê os membros ativos de sua organização; sem organização, não recebe fiel algum.
+- **Somente identificador e nome:** papéis consultivos (secretário e membros de conselho, vigário) e qualquer outro papel não previsto; quando o papel tem organização, a consulta fica restrita aos membros dela.
+
 ### RN-FIE-02: Paridade Clérigo/Fiel
 - Clérigos (padres, diáconos, bispos) e leigos recebem **exatamente o mesmo nível de proteção de privacidade**. Dados civis de clérigos não podem ser expostos publicamente em listagens de pastoral ou governo, ficando restritos a modais de governança/RH autorizados.
 

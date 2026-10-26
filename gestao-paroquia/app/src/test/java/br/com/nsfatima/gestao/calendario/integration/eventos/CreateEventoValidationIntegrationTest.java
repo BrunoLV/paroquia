@@ -19,7 +19,7 @@ class CreateEventoValidationIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "COORDENADOR")
     void deveRejeitarCriarQuandoFimEAntesIniciar() throws Exception {
         String payload = """
                 {
@@ -42,7 +42,7 @@ class CreateEventoValidationIntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "COORDENADOR")
     void deveRejeitarAdicionadoExtraSemJustificativa() throws Exception {
         String payload = """
                 {

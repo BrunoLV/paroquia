@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.fiel.api.v1.dto.ConsentimentoLgpdDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.ContatoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.EnderecoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.FielNomeResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.IdentificacaoDto;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.IgrejaFrequentaDto;
@@ -60,6 +61,10 @@ public class FielMapper {
                         fiel.getVersaoTermoConsentimento(),
                         fiel.isUsoImagemAutorizado(),
                         fiel.isPermitirDivulgacaoAniversario()));
+    }
+
+    public FielNomeResponse toNomeResponse(FielEntity fiel) {
+        return new FielNomeResponse(fiel.getId(), fiel.getNome());
     }
 
     public FielContatoResponse toContatoResponse(FielEntity fiel) {

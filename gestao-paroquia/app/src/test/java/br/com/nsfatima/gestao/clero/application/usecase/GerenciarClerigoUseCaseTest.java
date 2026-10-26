@@ -312,8 +312,9 @@ class GerenciarClerigoUseCaseTest {
         UUID id = UUID.randomUUID();
         UUID outroParoco = UUID.randomUUID();
         when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
-        when(encargos.findByFuncaoAndAtualTrue(FuncaoEclesiastica.PAROCO))
-                .thenReturn(List.of(encargoAtual(outroParoco, FuncaoEclesiastica.PAROCO)));
+        when(encargos.findByFuncaoAndAtualTrue(any(FuncaoEclesiastica.class))).thenAnswer(inv ->
+                inv.getArgument(0) == FuncaoEclesiastica.PAROCO
+                        ? List.of(encargoAtual(outroParoco, FuncaoEclesiastica.PAROCO)) : List.of());
 
         assertThatThrownBy(() -> useCase.atualizar(id, requisicao(FuncaoEclesiastica.PAROCO), "paroco", "paroco"))
                 .isInstanceOf(IllegalArgumentException.class)

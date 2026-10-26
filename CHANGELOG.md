@@ -8,6 +8,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Corrigido
+- **Autorização e escalonamento de privilégios (backend):**
+  - `iam`: redefinição administrativa de senha restrita a `ADMIN` (qualquer conta) e `PAROCO` (apenas contas sem papel global); coordenador não redefine mais senhas.
+  - `organizacao`: remoção de vínculo valida que o vínculo pertence ao fiel da rota e que o ator coordena a organização dele (IDOR). Vínculo administrativo: coordenação só pelo Pároco/Bispo e com idoneidade; membros de conselho só por Pároco/Admin.
+  - `clero`: conferir ou mudar a função de um clérigo exige Pároco ou Bispo; reenviar a mesma função não fecha/reabre o encargo; um único Pároco/Administrador Paroquial ativo.
+  - `membro`: `/membros` não atribui mais `COORDENADOR` nem papéis de conselho (nem reativa vínculos de liderança); promoção a coordenador só pelo Pároco/Bispo e com limite de um coordenador ativo por organização.
+  - `aprovacao`: decisão só aceita `APROVADA`/`REPROVADA`; reprovação exige parecer; payload ilegível ou verificação de conflito impossível bloqueia a aprovação (falha fechada); Bispo Diocesano reconhecido como aprovador; listagens restritas a quem decide ou ao solicitante, sem detalhe técnico de falha para os demais.
+  - `calendario`: `EventoActorContextResolver` nega acesso a principal sem papel reconhecido em vez de assumi-lo coordenador.
+  - `fiel`: consulta por papel (completa, contato do grupo ou somente id e nome) e papéis globais não são mais limitados pela organização do vínculo.
+
 ---
 
 ## [0.12.1] - 2026-10-25

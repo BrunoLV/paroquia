@@ -19,7 +19,7 @@ class EventoOrganizacaoParticipantesIntegrityIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "COORDENADOR")
     void deveRejeitarQuandoResponsavelOrganizacaoERepetidoEmParticipantes() throws Exception {
         String payload = """
                 {

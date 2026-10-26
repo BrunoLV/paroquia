@@ -34,7 +34,7 @@ class UpdateEventoAuditIntegrationTest {
     private EventoAuditPublisher eventoAuditPublisher;
 
     @Test
-    @WithMockUser(username = "tester-success")
+    @WithMockUser(username = "tester-success", roles = "COORDENADOR")
     @SuppressWarnings("null")
     void devePublicarSucessoAuditarEmComSucessoPatch() throws Exception {
         UUID eventoId = UUID.randomUUID();
@@ -66,7 +66,7 @@ class UpdateEventoAuditIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "tester-failure")
+    @WithMockUser(username = "tester-failure", roles = "COORDENADOR")
     void devePublicarFalhaAuditarEmFalhouPatch() throws Exception {
         String payload = """
                 {

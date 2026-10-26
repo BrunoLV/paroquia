@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.FielNomeResponse;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ import java.util.UUID;
 @Service
 public class ObterFielUseCase {
 
+    private static IllegalArgumentException naoEncontrado(UUID id) {
+        return new IllegalArgumentException("Fiel não encontrado: " + id);
+    }
+
     private final FielJpaRepository fielRepository;
     private final FielMapper fielMapper;
 
@@ -32,7 +37,7 @@ public class ObterFielUseCase {
     public FielResponse execute(UUID id) {
         return fielRepository.findById(id)
                 .map(fielMapper::toResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
+                .orElseThrow(() -> naoEncontrado(id));
     }
 
     /**
@@ -49,9 +54,16 @@ public class ObterFielUseCase {
     }
 
     @Transactional(readOnly = true)
+    public FielNomeResponse executeNome(UUID id) {
+        return fielRepository.findById(id)
+                .map(fielMapper::toNomeResponse)
+                .orElseThrow(() -> naoEncontrado(id));
+    }
+
+    @Transactional(readOnly = true)
     public FielContatoResponse executeContato(UUID id) {
         return fielRepository.findById(id)
                 .map(fielMapper::toContatoResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado: " + id));
+                .orElseThrow(() -> naoEncontrado(id));
     }
 }
