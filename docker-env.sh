@@ -40,6 +40,10 @@ check_docker() {
         log_error "O daemon do Docker não está acessível. Verifique se o serviço está ativo ou se seu usuário tem permissão (grupo docker)."
         exit 1
     fi
+    if [ ! -f .env ]; then
+        log_error "Arquivo .env ausente. O docker-compose.yml não possui credenciais padrão: execute 'cp .env.example .env' e preencha os valores."
+        exit 1
+    fi
 }
 
 check_port_conflicts() {

@@ -11,9 +11,9 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
     chown -R appuser:appgroup /app
 
 # Configurações de ambiente com suporte a contêineres e limites de memória
+# DB_USER, DB_PASSWORD, APP_CRYPTO_KEY e APP_CONSENT_SECRET nao possuem valor padrao na imagem: devem ser
+# injetados no deploy (a API aborta o boot sem os segredos).
 ENV DB_URL=jdbc:postgresql://db:5432/calendario \
-    DB_USER=postgres \
-    DB_PASSWORD=postgres \
     PORT=8080 \
     JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseSerialGC -Djdk.virtualThreadScheduler.parallelism=2"
 

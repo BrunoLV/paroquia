@@ -8,6 +8,17 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Segurança
+- **Segredos obrigatórios:** `APP_CRYPTO_KEY` e `APP_CONSENT_SECRET` (>= 32 caracteres) deixam de ter valor padrão; a API aborta o boot sem eles. Perfil `dev` (`application-dev.yml`, ativado por `./manage.sh dev`) traz valores explícitos de desenvolvimento.
+- **Login e reset de senha:** limite de tentativas por IP + usuário (5 falhas/15 min no login; 3 pedidos/15 min no reset) com resposta 429 e `Retry-After`.
+- **Superfície pública reduzida:** `/actuator/metrics`, OpenAPI e Swagger exigem ADMIN (Swagger/OpenAPI desligados fora do perfil dev); `/actuator/prometheus` aceita ADMIN ou token Bearer dedicado (`APP_METRICS_SCRAPE_TOKEN`); `POST /api/v1/observabilidade/logs` exige autenticação e neutraliza caracteres de controle (log forging).
+- **Sessão e cabeçalhos:** cookie `SameSite=Lax`, `HttpOnly` e `Secure` (configurável por `SESSION_COOKIE_SECURE`), CSP, HSTS e Referrer-Policy.
+- **Política única de senha** (`@SenhaValida`: mín. 8 caracteres, máx. 72 bytes) em criação, alteração e redefinição; UI alinhada.
+- **Flyway:** `baseline-on-migrate` desligado fora do perfil dev.
+
+### Modificado
+- **Docker:** compose sem credenciais padrão (`.env` obrigatório, `${VAR:?}`), portas de infraestrutura em `127.0.0.1`, `db-seeder` e `ui-dev` apenas no perfil `dev`; `Dockerfile.ui` agora gera build estático servido por nginx sem privilégios (alvo `dev` separado); Loki com retenção de 7 dias; Prometheus autenticado por token; comentário "Spring Boot 3" corrigido. `DOCKER.md` e `docs/guide/docker.md` atualizados.
+
 ---
 
 ## [0.12.1] - 2026-10-25

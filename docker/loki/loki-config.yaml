@@ -32,3 +32,10 @@ ruler:
 limits_config:
   allow_structured_metadata: true
   volume_enabled: true
+  # Logs podem conter dados de uso/atores; retenção limitada (7 dias) exige o compactor abaixo.
+  retention_period: 168h
+
+compactor:
+  working_directory: /loki/compactor
+  retention_enabled: true
+  delete_request_store: filesystem
