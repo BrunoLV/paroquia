@@ -12,6 +12,9 @@ spring:
       ddl-auto: none
   flyway:
     enabled: true
+    # A V041 é migração Java registrada como bean (precisa da chave de cifragem); slices @DataJpaTest não
+    # carregam esse bean e, sobre um banco já migrado, a veriam como "ausente".
+    ignore-migration-patterns: "*:missing"
 
 logging:
   level:
