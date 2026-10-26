@@ -59,7 +59,7 @@ const PortalConsentimentoPage: React.FC = () => {
 
   // Etapa 2
   const [codigoOtp, setCodigoOtp] = useState('');
-  const [emailMascarado, setEmailMascarado] = useState('');
+  const [mensagemPedido, setMensagemPedido] = useState('');
   const [tempoRestante, setTempoRestante] = useState(600);
 
   // Etapa 3 (Sessão validada)
@@ -95,7 +95,7 @@ const PortalConsentimentoPage: React.FC = () => {
     setCarregando(true);
     try {
       const resp = await solicitarCodigoConsentimento({ cpf: digitos });
-      setEmailMascarado(resp.emailMascarado);
+      setMensagemPedido(resp.mensagem);
       setTempoRestante(resp.expiraEmSegundos);
       setEtapa(2);
       showSuccess(resp.mensagem);
@@ -245,7 +245,7 @@ const PortalConsentimentoPage: React.FC = () => {
         {etapa === 2 && (
           <Box component="form" onSubmit={handleValidarCodigo}>
             <Alert severity="success" sx={{ mb: 3 }}>
-              Um código verificador de 6 dígitos foi enviado para <strong>{emailMascarado}</strong>.
+              {mensagemPedido}
               O código expira em <strong>{formatarTempo(tempoRestante)}</strong>.
             </Alert>
             <Card variant="outlined" sx={{ p: 3, mb: 3, borderRadius: 2 }}>
