@@ -10,6 +10,25 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [0.12.1] - 2026-10-25
+
+### Corrigido
+- **Corretude Documental e de Contratos:**
+  - `README.md`: remoção de linhas duplicadas/corrompidas na tabela de domínios de negócio, unificação da contagem de 17 Bounded Contexts no backend e 16 contextos no frontend, e substituição da menção ao H2 Database (banido) por PostgreSQL 16 via Testcontainers.
+  - `DOCKER.md` e `docs/guide/docker.md`: correção da sintaxe da tabela Markdown de serviços/portas e adição dos contêineres `loki` (`:3100`), `promtail` e `db-seeder` nos diagramas Mermaid e tabelas.
+  - `docs/business-rules/lgpd.md` e `.agents/skills/lgpd-privacy-by-design/SKILL.md`: alinhamento dos endpoints autenticados de portabilidade e preferências com `AjusteCadastralController` (`GET /api/v1/meu-perfil/portabilidade` e `PATCH /api/v1/meu-perfil/preferencias-privacidade`).
+  - `PrivacidadeDpoTab.tsx`: alinhamento das opções de status do incidente de segurança (`EM_ANALISE`, `CONTIDO`, `NOTIFICADO`, `ENCERRADO`) com o enum canônico `StatusIncidente`.
+
+### Modificado
+- **Completude e Fidelidade Conceitual da Documentação:**
+  - `gestao-paroquia-ui/README.md` e `gestao-paroquia-ui/AGENTS.md`: inclusão do contexto `sacramento` (16 contextos) e mapeamento completo das 20 rotas canônicas (3 públicas e 17 autenticadas) implementadas em `AppRoutes.tsx`.
+  - `docs/guide/regras-funcionalidades.md`: adição das seções dedicadas a `clero`, `sacramento`, `reserva`, `projeto`, `governanca` e `observabilidade`, além da atualização da seção `iam` com os 14 Papéis Canônicos Ortogonais em 3 camadas.
+  - `docs/guide/padroes-projeto.md` e `docs/guide/fluxos-sequencia.md`: atualização dos diagramas de classes e de sequência para refletirem `EventoStatusInput`, `StatusAtivo` e o fluxo de empréstimo e vistoria no módulo `reserva` (`StatusReserva`).
+  - `docs/business-rules/organizacao.md`, `governanca.md`, `clero.md` e `aprovacao.md`: remoção de referências históricas em `organizacao.md` (diretiva Zero Histórico), inclusão dos agregados de privacidade/DPO em `governanca.md`, paridade de consentimento LGPD em `clero.md` e fila de Vínculos Sacramentais em `aprovacao.md`.
+  - `gestao-paroquia/AGENTS.md`, `AGENTS.md`, `.agents/skills/fluxo-desenvolvimento/SKILL.md` e `.github/pull-request.instructions.md`: atualização da topologia de pacotes Hexagonal e da listagem de todos os 17 Bounded Contexts.
+
+---
+
 ## [0.12.0] - 2026-10-25
 
 ### Adicionado

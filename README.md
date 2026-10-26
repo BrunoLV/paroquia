@@ -17,10 +17,11 @@ O sistema cobre o ciclo operacional completo da paróquia: agendamento de evento
 
 O repositório é organizado em módulos independentes, cada um com suas próprias regras de arquitetura, testes e documentação:
 
-- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 15 bounded contexts — veja a [lista completa](./gestao-paroquia/README.md).
-- **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** SPA em **React 19**, **TypeScript**, **MUI 9**, **TanStack Query** e **Vite 5**, organizada em bounded contexts DDD com camadas Hexagonais (`domain`, `application`, `infrastructure` e `presentation`).
-- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4, Prometheus, Grafana e seeder automático de dados. Veja o guia completo em [**`DOCKER.md`**](./DOCKER.md).
-- **[Documentação (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões, observabilidade e infraestrutura Docker.
+- **[Backend (`gestao-paroquia`)](./gestao-paroquia):** API RESTful desenvolvida em **Java 25** com **Spring Boot 4**, servidor web **Jetty 12**, **Log4j2**, estruturada sob os princípios de **Domain-Driven Design (DDD)** e **Clean Architecture (Ports & Adapters)**. Organizada em 17 bounded contexts (+ módulo transversal `support`) — veja a [lista completa](./gestao-paroquia/README.md).
+- **[Frontend (`gestao-paroquia-ui`)](./gestao-paroquia-ui):** SPA em **React 19**, **TypeScript**, **MUI 9**, **TanStack Query** e **Vite 5**, organizada em 16 bounded contexts DDD com camadas Hexagonais (`domain`, `application`, `infrastructure` e `presentation`).
+- **[Infraestrutura (`docker-compose.yml`)](./docker-compose.yml):** Orquestração completa em Docker para banco de dados PostgreSQL 16, build do backend (`Dockerfile.builder`), API (`Dockerfile.api`), frontend UI (`Dockerfile.ui`), pgAdmin 4, Prometheus, Loki, Promtail, Grafana e seeder automático de dados. Veja o guia completo em [**`DOCKER.md`**](./DOCKER.md).
+- **[Regras de Negócio Viva (`docs/business-rules/`)](./docs/business-rules):** Especificação normativa em tempo presente (*Living Documentation*) das regras canônicas, civis e operacionais de cada Bounded Context.
+- **[Documentação Técnica (`docs/guide/`)](./docs/guide):** Portal de documentação técnica via Docsify com suporte a Mermaid — arquitetura, diagramas conceituais, regras de negócio, padrões, observabilidade e infraestrutura Docker.
 
 - **Scripts utilitários (`manage.sh`, `docker-env.sh`):** Interface de linha de comando e gerenciamento do ciclo de vida do ambiente (subir serviços, testar, checar qualidade, compilar e reiniciar os contêineres).
 
@@ -49,23 +50,6 @@ O backend está organizado em 17 bounded contexts (mais o módulo transversal `s
 | `importacao` | Importação em lote (CSV e XLSX) de membros, organizações e eventos |
 | `dashboard` | Métricas executivas e visão consolidada |
 | `observabilidade` | Logs estruturados, telemetria, healthchecks e auditoria |
-| `support` | Utilitários transversais e tratamento global de exceções |
-
---- | :--- |
-| `calendario` | Ciclo de vida de eventos paroquiais, agendamento e recorrência |
-| `aprovacao` | Workflows de aprovação de eventos e solicitações |
-| `local` | Cadastro e controle de espaços físicos |
-| `iam` | Identidade, acesso, roles e autenticação JWT |
-| `governanca` | Auditoria, políticas de segurança e rastreabilidade |
-| `organizacao` | Hierarquia organizacional (pastorais, movimentos, setores, comunidades) |
-| `fiel` | Cadastro base da pessoa fiel (identidade, contato, vocação) |
-| `membro` | Vínculo do fiel a grupos, papéis e lideranças na estrutura organizacional |
-| `projeto` | Vinculação de eventos a projetos paroquiais e métricas |
-| `conselho` | Decisões e homologações do Conselho Paroquial (CPC) |
-| `patrimonio` | Ativos patrimoniais, alocação, transferência e manutenção |
-| `importacao` | Importação/exportação em lote (Excel, PDF) |
-| `dashboard` | Métricas executivas e visão consolidada |
-| `observabilidade` | Logs estruturados, telemetria e healthchecks |
 | `support` | Utilitários transversais e tratamento global de exceções |
 
 ---
@@ -143,8 +127,8 @@ Além desses serviços expostos, o Docker Compose também orquestra dois serviç
 | Camada | Tecnologias e Ferramentas |
 | :--- | :--- |
 | **Backend** | Java 25 (Gradle Toolchain), Spring Boot 4, Eclipse Jetty 12, Log4j2 (Async Disruptor), Spring Data JPA, Spring Security, Spring Actuator, Spring Cache + Caffeine, Flyway |
-| **Frontend** | React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query 5, Axios, React Router DOM 6 |
-| **Banco de Dados** | PostgreSQL 16 (Ambiente de Execução / Docker), H2 Database (Ambiente de Testes) |
+| **Frontend** | React 19, TypeScript, Vite 5, Material UI (MUI 9), TanStack React Query 5, React Hook Form, Zod, Axios, React Router DOM 6 |
+| **Banco de Dados** | PostgreSQL 16 (Ambiente de Execução / Docker e Testes de Integração via Testcontainers) |
 | **Qualidade & Linters** | **Backend:** Checkstyle 13.8.0, PMD 7.16.0, SpotBugs, JaCoCo <br> **Frontend:** Vitest, React Testing Library, TypeScript (`tsc`) |
 | **Relatórios / Mídia** | **Backend:** Apache POI (Excel), OpenPDF (PDF), Apache POI XWPF (Word) <br> **Frontend:** `jspdf` + `jspdf-autotable` (PDF), `docx` (Word), CSV nativo, `html-to-image` (exportação de organogramas) |
 

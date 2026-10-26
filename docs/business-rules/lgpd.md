@@ -53,7 +53,7 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 - Todo titular cadastrado como fiel e autenticado no sistema tem o direito de requisitar e baixar a qualquer momento um arquivo estruturado (`meus-dados-paroquia.json`) contendo a integralidade dos seus dados civis decifrados, seus relacionamentos familiares, seu histórico pastoral e seus vínculos sacramentais.
 
 ### RN-LGP-05: Direito à Revogação de Consentimentos Secundários (Art. 8º, § 5º)
-- O fiel pode alterar e revogar a qualquer momento as autorizações para uso de imagem e divulgação de aniversário diretamente em seu perfil (`PATCH /api/v1/ajustes-cadastrais/meu-perfil/preferencias-privacidade`), com efeito imediato nas rotinas de exportação e murais.
+- O fiel pode alterar e revogar a qualquer momento as autorizações para uso de imagem e divulgação de aniversário diretamente em seu perfil (`PATCH /api/v1/meu-perfil/preferencias-privacidade`) ou pelo Portal de Consentimento (`/portal/consentimento`), com efeito imediato nas rotinas de exportação e murais.
 
 ### RN-LGP-06: Fé Pública Canônica e Exceção de Guarda (Art. 16, I)
 - Os assentos dos Livros Paroquiais (Batismo, Crisma, Matrimônio e Ordem) são dotados de fé pública eclesiástica perpétua e constituem patrimônio histórico e canônico da Igreja Católica.
@@ -111,14 +111,14 @@ sequenceDiagram
     participant DPO as Encarregado (DPO)
 
     Titular->>UI: Solicita exportação dos próprios dados
-    UI->>API: GET /api/v1/ajustes-cadastrais/meu-perfil/portabilidade
+    UI->>API: GET /api/v1/meu-perfil/portabilidade
     API->>FielRepo: Busca dados do titular logado
     FielRepo-->>API: Retorna entidade com dados decifrados
     API-->>UI: Payload JSON estruturado (Portabilidade Art. 18)
     UI-->>Titular: Download de 'meus-dados-paroquia.json'
 
     Titular->>UI: Revoga autorização de imagem
-    UI->>API: PATCH /api/v1/ajustes-cadastrais/meu-perfil/preferencias-privacidade
+    UI->>API: PATCH /api/v1/meu-perfil/preferencias-privacidade
     API->>FielRepo: Atualiza uso_imagem_autorizado = false
     API-->>UI: Sucesso 204 No Content
     UI-->>Titular: Notificação de preferência salva

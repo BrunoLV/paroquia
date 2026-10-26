@@ -65,46 +65,56 @@ sequenceDiagram
 
 ---
 
-## 2. Fluxo de Alocação Concorrente de Ativo Patrimonial
+## 2. Fluxo de Reserva de Local ou Ativo Patrimonial (`reserva`)
 
-Este fluxo demonstra como a concorrência na alocação de itens patrimoniais (som, projetores, cadeiras) é tratada:
+Este fluxo demonstra como o módulo `reserva` gerencia solicitações, checagem de conflitos/manutenção, retirada e devolução com conferência de avarias de ativos patrimoniais (som, projetores, paramentos) e locais:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Operador as "Operador de Logística"
-    participant UI as "Ativos Page / Modal"
-    participant Controller as "AtivoController"
-    participant UseCase as "AlocarAtivoUseCase"
-    participant AtivoRepo as "AtivoRepository"
-    participant ConflitoPolicy as "ConflitoAlocacaoPolicy"
+    actor Solicitante as "Coordenador / Agente Pastoral"
+    actor Operador as "Secretaria / Pároco"
+    participant UI as "Reservas UI (/reservas)"
+    participant Controller as "ReservaController"
+    participant UseCase as "GerenciarReservaUseCase"
+    participant ReservaRepo as "ReservaRepository"
+    participant AtivoPort as "PatrimonioPort / LocalPort"
 
-    Operador->>UI: Seleciona Ativo e Evento para alocação
-    UI->>Controller: POST /api/v1/ativos/{id}/alocacoes (AlocarAtivoRequest)
-    Controller->>UseCase: executar(command)
+    Solicitante->>UI: Seleciona Recurso (ATIVO ou LOCAL), Evento e Período
+    UI->>Controller: POST /api/v1/reservas (CriarReservaRequest)
+    Controller->>UseCase: solicitar(command)
 
     activate UseCase
-    UseCase->>AtivoRepo: buscarPorIdComLock(ativoId)
-    AtivoRepo-->>UseCase: AtivoPatrimonial
-
-    UseCase->>AtivoRepo: buscarAlocacoesNoPeriodo(ativoId, periodo)
-    AtivoRepo-->>UseCase: List[Alocacao] alocacoesExistentes
-
-    UseCase->>ConflitoPolicy: verificarDisponibilidade(ativo, periodo, alocacoesExistentes)
+    UseCase->>AtivoPort: verificarExistenciaEManutencao(recursoId, periodo)
+    UseCase->>ReservaRepo: buscarReservasConflitantes(recursoId, periodo)
     
-    alt Ativo em Manutenção ou com Alocação Conflitante
-        ConflitoPolicy-->>UseCase: Falha (Indisponível)
-        UseCase-->>Controller: Lança AtivoIndisponivelException
-        Controller-->>UI: 422 Unprocessable Entity
-        UI-->>Operador: Notifica indisponibilidade do ativo
-    else Ativo Disponível
-        UseCase->>UseCase: ativo.alocarParaEvento(eventoId, periodo)
-        UseCase->>AtivoRepo: salvar(ativo)
-        UseCase-->>Controller: AlocacaoConfirmadaDTO
+    alt Recurso em Manutenção ou com Reserva Confirmada/Retirada no Período
+        UseCase-->>Controller: Lança ConflitoReservaException
+        Controller-->>UI: 409 Conflict / 422 Unprocessable Entity
+        UI-->>Solicitante: Notifica indisponibilidade no período
+    else Recurso Disponível
+        UseCase->>ReservaRepo: salvar(Reserva em PENDENTE ou CONFIRMADA)
+        UseCase-->>Controller: ReservaResponse
         deactivate UseCase
-        Controller-->>UI: 200 OK
-        UI-->>Operador: Exibe ativo com status ALOCADO
+        Controller-->>UI: 201 Created
+        UI-->>Solicitante: Exibe reserva registrada
     end
+
+    Operador->>UI: Registra retirada do bem pelo responsável
+    UI->>Controller: POST /api/v1/reservas/{id}/retirada
+    Controller->>UseCase: registrarRetirada(id, estadoRetirada)
+    UseCase->>AtivoPort: marcarStatusAtivo(RESERVADO)
+    UseCase-->>Controller: ReservaResponse (status RETIRADO)
+
+    Operador->>UI: Registra devolução e vistoria (com ou sem avaria)
+    UI->>Controller: POST /api/v1/reservas/{id}/devolucao
+    Controller->>UseCase: registrarDevolucao(id, estadoDevolucao, avariaDetectada)
+    alt Avaria Detectada
+        UseCase->>AtivoPort: abrirManutencaoAutomatica(ativoId, descricaoAvaria)
+    else Sem Avaria
+        UseCase->>AtivoPort: marcarStatusAtivo(DISPONIVEL)
+    end
+    UseCase-->>Controller: ReservaResponse (status FINALIZADA)
 ```
 
 ---

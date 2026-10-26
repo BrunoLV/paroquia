@@ -25,6 +25,8 @@ flowchart TD
 
         subgraph Metrics["Observabilidade"]
             Prometheus["Prometheus v3\n:9090"]
+            Loki["Grafana Loki v3\n:3100"]
+            Promtail["Promtail v3"]
             Grafana["Grafana v11\n:3001"]
         end
     end
@@ -34,7 +36,9 @@ flowchart TD
     Seeder --> DB
     PGAdmin --> DB
     Prometheus -->|Scrape| API
-    Grafana -->|Consulta| Prometheus
+    Promtail -->|Coleta Logs| Loki
+    Grafana -->|PromQL| Prometheus
+    Grafana -->|LogQL| Loki
     Builder -.->|Gera Jar| API
 ```
 
@@ -44,13 +48,16 @@ flowchart TD
 
 | Serviço | Contêiner | Imagem Base | Porta Host | Finalidade | Credenciais |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Frontend UI** | `gestao-ui` | `node:22-alpine` | `3000` | Interface Web React | - |
+| **Frontend UI** | `gestao-ui` | `node:22-alpine` | `3000` | Interface Web React | `admin` / `senha123` |
 | **Backend API** | `gestao-api` | `eclipse-temurin:25-jre-alpine` | `8080` | REST API Spring Boot | - |
 | **Banco de Dados** | `gestao-db` | `postgres:16-alpine` | `5432` | PostgreSQL 16 | `postgres` / `password` |
+| **DB Seeder** | `gestao-db-seeder` | `postgres:16-alpine` | N/A | Carga inicial automática de dados | `postgres` / `password` |
 | **Builder** | `gestao-builder` | `eclipse-temurin:25-jdk-alpine` | N/A | Compilação e Testcontainers | Usuário: `dev` |
 | **pgAdmin 4** | `gestao-pgadmin` | `dpage/pgadmin4:9.1` | `5050` | Interface do Banco | `admin@paroquia.local` / `admin` |
 | **Prometheus** | `gestao-prometheus` | `prom/prometheus:v3.2.1` | `9090` | Armazenamento de Séries Temporais | - |
 | **Grafana** | `gestao-grafana` | `grafana/grafana:11.5.2` | `3001` | Dashboards em Tempo Real | `admin` / `admin` |
+| **Loki** | `gestao-loki` | `grafana/loki:3.2.1` | `3100` | Agregação de Logs Estruturados | - |
+| **Promtail** | `gestao-promtail` | `grafana/promtail:3.2.1` | N/A | Coletor de Logs para Loki | - |
 
 ---
 

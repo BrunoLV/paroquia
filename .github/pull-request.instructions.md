@@ -52,11 +52,13 @@ Descreva sucintamente o problema resolvido, o objetivo de negócio ou a motivaç
 - [ ] importacao
 - [ ] local
 - [ ] membro
+- [ ] observabilidade
 - [ ] organizacao
 - [ ] painel / dashboard
 - [ ] patrimonio
 - [ ] projeto
 - [ ] reserva
+- [ ] sacramento
 
 ## ✅ Checklist de Qualidade e Governança
 - [ ] **Branching:** Branch criada a partir de `master` atualizada conforme GitHub Flow.

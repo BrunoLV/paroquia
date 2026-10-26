@@ -66,7 +66,7 @@ flowchart TB
 
 ### 2.1. Arquitetura Hexagonal (Ports & Adapters) & Clean Architecture
 
-O backend organiza cada um dos 15 domínios em 4 camadas bem delimitadas:
+O backend organiza cada um dos 17 domínios (+ módulo transversal `support`) em 4 camadas bem delimitadas:
 
 ```
 br.com.nsfatima.gestao.<contexto>/
@@ -118,7 +118,7 @@ Todas as entidades mapeadas no banco de dados compartilham o mesmo contrato unif
 
 ### 2.4. Arquitetura do Frontend Reativo (React 19)
 
-O frontend adota DDD e Arquitetura Hexagonal por bounded context. Cada contexto replica a fronteira `domain`, `application`, `infrastructure` e `presentation`; `app` compõe a SPA e `shared` contém apenas capacidades transversais.
+O frontend adota DDD e Arquitetura Hexagonal nos seus 16 bounded contexts (`src/contextos/<contexto>/`). Cada contexto replica a fronteira `domain`, `application`, `infrastructure` e `presentation`; `app` compõe a SPA e `shared` contém apenas capacidades transversais.
 
 1. **Separação Estado de Servidor vs Estado de Interface:**
    - **Server State:** Gerenciado exclusivamente pelo **TanStack React Query v5**, provendo cache inteligente, invalidação após mutações e suporte a *optimistic updates*.

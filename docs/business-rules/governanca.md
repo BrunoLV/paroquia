@@ -16,6 +16,12 @@ Assegurar que toda operação de criação, edição ou remoção de dados no ec
   - `criado_por` (`String` / `UUID`): Identificador do usuário autor da criação.
   - `atualizado_por` (`String` / `UUID`): Identificador do usuário autor da atualização.
 - **`RegistroAuditoria`:** Log estruturado imutável de eventos de mutação e acessos administrativos.
+- **`ParoquiaConfiguracao`:** Configuração institucional da paróquia contendo parâmetros de identidade visual (cores primária/secundária e logotipos binarizados para fundo claro e escuro) e os canais públicos do Encarregado de Proteção de Dados / DPO (`dpoNome`, `dpoEmail`, `dpoTelefone`).
+- **Agregados de Privacidade e LGPD (detalhados em [`lgpd.md`](./lgpd.md)):**
+  - `IncidenteSeguranca`: Registro de incidentes de segurança de dados pessoais e notificações à ANPD/titulares (`EM_ANALISE`, `CONTIDO`, `NOTIFICADO`, `ENCERRADO`).
+  - `SolicitacaoDpo`: Requisições de titulares (DSAR - Arts. 18 e 19) com protocolo rastreável (`DPO-YYYYMMDD-XXXX`) e controle de prazo legal de 15 dias (`ABERTA`, `EM_ATENDIMENTO`, `CONCLUIDA`).
+  - `DesafioConsentimento`: Desafios OTP temporários de 6 dígitos (hash SHA-256) para autoatendimento sem senha no Portal de Consentimento.
+  - `HistoricoConsentimento`: Trilha forense imutável (`calendario.historico_consentimentos`) de concessões, atualizações e revogações de consentimento de fiéis e clérigos.
 
 ---
 
@@ -38,7 +44,7 @@ Assegurar que toda operação de criação, edição ou remoção de dados no ec
 ### RN-GOV-05: Single Source of Truth (SSOT) dos Dados Institucionais
 - Os dados cadastrais da paróquia (Nome, Diocese, CNPJ, Endereço, Telefone e E-mail) **NÃO DEVEM** ser duplicados em arquivos de configuração estática (`application.yml`) nem em tabelas redundantes.
 - A fonte única da verdade para dados civis, endereço e contatos é a entidade da Igreja Matriz (`UnidadeTerritorial`), enquanto a Diocese/Arquidiocese de vinculação deriva do Governo Eclesiástico (`GovernoEclesiastico`).
-- A tabela `calendario.paroquia_configuracao` armazena exclusivamente os parâmetros de branding e identidade visual (cores primária/secundária e logotipos binarizados).
+- A tabela `calendario.paroquia_configuracao` armazena os parâmetros de branding e identidade visual (cores primária/secundária e logotipos binarizados) e a identificação pública do Encarregado de Proteção de Dados / DPO (`dpo_nome`, `dpo_email`, `dpo_telefone`).
 
 ### RN-GOV-06: Persistência Binarizada de Logotipos e Dupla Variante de Fundo
 - Os logotipos oficiais da paróquia são persistidos no banco de dados como binários (`bytea`) com seus respectivos tipos MIME (`logo_fundo_claro_mime_type`, `logo_fundo_escuro_mime_type`).

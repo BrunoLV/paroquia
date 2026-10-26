@@ -36,6 +36,10 @@ Assegurar que nenhuma alteração de impacto pastoral, litúrgico ou patrimonial
 - A tela central de aprovações (`/aprovacoes`) disponibiliza a aba "Solicitações de Usuários" exclusivamente para perfis autorizados (`PAROCO`, `ADMIN`).
 - A deliberação favorável ativa imediatamente o acesso do fiel ao sistema.
 
+### RN-APR-05: Esteira de Homologação de Vínculos Sacramentais
+- A tela central de aprovações (`/aprovacoes`) disponibiliza a 3ª aba dedicada a **Vínculos Sacramentais** (`/api/v1/sacramentos/vinculos-pendentes`), exibindo reivindicações e vinculações pendentes entre cadastros de fiéis e assentos sacramentais lavrados nos livros paroquiais.
+- A homologação ou rejeição fundamentada vincula definitivamente o fiel ao registro sacramental ou descarta a pendência, mantendo a integridade canônica do Livro de Assentos.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso
@@ -63,5 +67,6 @@ sequenceDiagram
 ---
 
 ## 5. Integrações com outros Bounded Contexts
-- **`calendario`:** Mudança de estado do evento (`CONFIRMADO`, `PENDENTE`, `CANCELADO`).
+- **`calendario`:** Mudança de estado do evento (`CONFIRMADO`, `ADICIONADO_EXTRA`, `CANCELADO`).
 - **`iam`:** Notificação de aprovação pendente (`USUARIO_APROVACAO_PENDENTE`) para Párocos/Admins e liberação de acesso de fiéis cadastrados pela secretaria.
+- **`sacramento`:** Moderação de vínculos sacramentais pendentes (`aprovarVinculoSacramental` / `rejeitarVinculoSacramental`) na Central de Aprovações.
