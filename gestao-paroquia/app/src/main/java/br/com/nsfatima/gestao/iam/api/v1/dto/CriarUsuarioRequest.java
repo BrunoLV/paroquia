@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.api.v1.dto;
 
+import br.com.nsfatima.gestao.iam.api.v1.validation.SenhaValida;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.util.UUID;
  */
 public record CriarUsuarioRequest(
         @NotBlank @Size(min = 3, max = 50) String username,
-        @NotBlank @Size(min = 8, max = 100) String password,
+        @SenhaValida String password,
         UUID fielId,
         UUID clerigoId
 ) {

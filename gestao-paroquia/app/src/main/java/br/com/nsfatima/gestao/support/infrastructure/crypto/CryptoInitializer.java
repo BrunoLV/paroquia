@@ -10,17 +10,31 @@ import org.springframework.stereotype.Component;
  * contexto. Existe porque {@link CryptoUtils} é uma classe utilitária estática (sem estado gerido
  * pelo Spring) e por isso não pode receber a chave via injeção de dependência direta — este
  * componente é a ponte entre a configuração do Spring e o estado estático da classe utilitária.
+ *
+ * <p>A chave é obrigatória e não tem valor padrão: um fallback público no código-fonte tornaria os
+ * dados pessoais cifrados em repouso decifráveis por qualquer pessoa com acesso ao repositório.
+ * Ausência ou chave curta derrubam o boot (fail-fast). O perfil {@code dev} e os testes declaram
+ * valores explícitos próprios.
  */
 @Component
 public class CryptoInitializer {
 
-    @Value("${app.security.crypto-key:default-dev-fallback-key-should-be-changed-in-prod}")
-    private String cryptoKey;
+    static final int TAMANHO_MINIMO_CHAVE = 32;
+
+    private final String cryptoKey;
+
+    public CryptoInitializer(@Value("${app.security.crypto-key:}") String cryptoKey) {
+        if (cryptoKey == null || cryptoKey.isBlank() || cryptoKey.length() < TAMANHO_MINIMO_CHAVE) {
+            throw new IllegalStateException(
+                    "APP_CRYPTO_KEY (app.security.crypto-key) é obrigatória e deve ter ao menos "
+                            + TAMANHO_MINIMO_CHAVE + " caracteres.");
+        }
+        this.cryptoKey = cryptoKey;
+    }
 
     /**
      * Propaga a chave de criptografia configurada para {@link CryptoUtils} logo após a construção
-     * do bean, garantindo que a chave de produção substitua o fallback de desenvolvimento antes de
-     * qualquer operação de cifragem/decifragem ocorrer.
+     * do bean, antes de qualquer operação de cifragem/decifragem.
      */
     @PostConstruct
     public void init() {

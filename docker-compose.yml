@@ -1,8 +1,14 @@
 # ==============================================================================
 # docker-compose.yml - Arquitetura de Microsserviços e Infraestrutura da Paróquia
 # ==============================================================================
-# Orquestra Banco de Dados (PostgreSQL 16), Builder, API Spring Boot, Frontend Vite,
-# Ferramentas de Observabilidade (Prometheus + Grafana) e pgAdmin.
+# Orquestra Banco de Dados (PostgreSQL 16), Builder, API Spring Boot, Frontend (nginx),
+# Ferramentas de Observabilidade (Prometheus + Grafana + Loki) e pgAdmin.
+#
+# SEGREDOS: nenhuma credencial tem valor padrão. Copie .env.example para .env e preencha;
+# variáveis obrigatórias ausentes (${VAR:?}) abortam o `docker compose`. Serviços de infraestrutura
+# (db, pgadmin, prometheus, grafana, loki, exporter) publicam portas apenas em 127.0.0.1.
+# Serviços de desenvolvimento (seeder com usuários de teste e UI com hot reload) só sobem com
+# `--profile dev`.
 # ==============================================================================
 
 networks:
@@ -23,9 +29,9 @@ services:
     environment:
       POSTGRES_DB: calendario
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./gestao-paroquia/docker/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql:ro
@@ -82,7 +88,7 @@ services:
         max-file: "3"
 
   # ----------------------------------------------------------------------------
-  # 3. Backend REST API - Spring Boot 3 / Java 25
+  # 3. Backend REST API - Spring Boot 4 / Java 25
   # ----------------------------------------------------------------------------
   api:
     build:
@@ -104,11 +110,15 @@ services:
     environment:
       - DB_URL=jdbc:postgresql://db:5432/calendario
       - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_PASSWORD=${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
       - PORT=8080
       - APP_CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173
       - JAVA_TOOL_OPTIONS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseSerialGC -Djdk.virtualThreadScheduler.parallelism=2
-      - APP_CRYPTO_KEY=default-dev-fallback-key-should-be-changed-in-prod
+      - APP_CRYPTO_KEY=${APP_CRYPTO_KEY:?defina APP_CRYPTO_KEY (>= 32 caracteres) no .env}
+      - APP_CONSENT_SECRET=${APP_CONSENT_SECRET:?defina APP_CONSENT_SECRET (>= 32 caracteres) no .env}
+      - APP_METRICS_SCRAPE_TOKEN=${APP_METRICS_SCRAPE_TOKEN:?defina APP_METRICS_SCRAPE_TOKEN no .env}
+      # Cookie Secure exige HTTPS; o compose local serve HTTP. Em producao (TLS no proxy) use true.
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-false}
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus,metrics
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
@@ -130,15 +140,18 @@ services:
         max-file: "3"
 
   # ----------------------------------------------------------------------------
-  # 4. Seeder de Banco de Dados - Carga de dados iniciais para ambiente local
+  # 4. Seeder de Banco de Dados - Carga de dados iniciais (SOMENTE perfil dev)
+  # Cria usuários de teste com senha em texto claro ({noop}senha123). Nunca usar em
+  # ambiente real: `docker compose --profile dev up db-seeder` ou `./docker-env.sh seed`.
   # ----------------------------------------------------------------------------
   db-seeder:
     image: postgres:16-alpine
     container_name: gestao-db-seeder
+    profiles: ["dev"]
     networks:
       - paroquia-net
     environment:
-      - PGPASSWORD=password
+      - PGPASSWORD=${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
     depends_on:
       api:
         condition: service_healthy
@@ -159,14 +172,50 @@ services:
         max-file: "3"
 
   # ----------------------------------------------------------------------------
-  # 5. Frontend - React + Vite SPA
+  # 5. Frontend - build estático React servido por nginx (sem privilégios, porta 8080 interna)
+  # nginx encaminha /api para a API, mantendo UI e API na mesma origem.
   # ----------------------------------------------------------------------------
   ui:
     build:
       context: ./gestao-paroquia-ui
       dockerfile: ../Dockerfile.ui
+      target: runtime
+      additional_contexts:
+        nginxconf: ./docker/nginx
+      args:
+        VITE_API_URL: /api/v1
     container_name: gestao-ui
     restart: unless-stopped
+    networks:
+      - paroquia-net
+    ports:
+      - "3000:8080"
+    depends_on:
+      api:
+        condition: service_started
+    mem_limit: 128M
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------------------
+  # 5b. Frontend de desenvolvimento - Vite com hot reload (SOMENTE perfil dev, porta 5173)
+  # ----------------------------------------------------------------------------
+  ui-dev:
+    build:
+      context: ./gestao-paroquia-ui
+      dockerfile: ../Dockerfile.ui
+      target: dev
+    container_name: gestao-ui-dev
+    profiles: ["dev"]
     networks:
       - paroquia-net
     working_dir: /app
@@ -174,7 +223,7 @@ services:
       - ./gestao-paroquia-ui:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
+      - "5173:3000"
     environment:
       - VITE_API_URL=http://localhost:8080/api/v1
       - VITE_API_PROXY_TARGET=http://api:8080
@@ -184,11 +233,6 @@ services:
         condition: service_started
     mem_limit: 1024M
     cpus: 1.0
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1024M
     logging:
       driver: json-file
       options:
@@ -205,10 +249,10 @@ services:
     networks:
       - paroquia-net
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@paroquia.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:?defina PGADMIN_DEFAULT_EMAIL no .env}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?defina PGADMIN_DEFAULT_PASSWORD no .env}
     ports:
-      - "5050:80"
+      - "127.0.0.1:5050:80"
     depends_on:
       - db
     mem_limit: 256M
@@ -239,7 +283,9 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
+    secrets:
+      - metrics_scrape_token
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -266,11 +312,11 @@ services:
     networks:
       - paroquia-net
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-grafana-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?defina GRAFANA_ADMIN_PASSWORD no .env}
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     volumes:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
@@ -302,7 +348,7 @@ services:
       - paroquia-net
     command: -config.file=/etc/loki/local-config.yaml
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     volumes:
       - ./docker/loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
       - loki_data:/loki
@@ -326,6 +372,9 @@ services:
     image: grafana/promtail:3.2.1
     container_name: gestao-promtail
     restart: unless-stopped
+    # Permanece root: descobrir containers via /var/run/docker.sock exige acesso ao socket (equivalente a
+    # root no host de qualquer forma; ':ro' no bind nao restringe a API do Docker). Rodar sem root exigiria
+    # group_add com o GID do grupo docker do host, que varia por maquina.
     user: "0:0"
     networks:
       - paroquia-net
@@ -360,9 +409,9 @@ services:
     networks:
       - paroquia-net
     environment:
-      DATA_SOURCE_NAME: "postgresql://postgres:password@db:5432/calendario?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://postgres:${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}@db:5432/calendario?sslmode=disable"
     ports:
-      - "9187:9187"
+      - "127.0.0.1:9187:9187"
     depends_on:
       db:
         condition: service_healthy
@@ -378,6 +427,14 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+# ==============================================================================
+# Segredos (montados em /run/secrets/<nome>; lidos do ambiente do host/.env)
+# ==============================================================================
+
+secrets:
+  metrics_scrape_token:
+    environment: APP_METRICS_SCRAPE_TOKEN
 
 # ==============================================================================
 # Volumes Persistentes

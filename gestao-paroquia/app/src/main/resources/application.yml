@@ -18,7 +18,8 @@ spring:
     enabled: true
     schemas: calendario
     default-schema: calendario
-    baseline-on-migrate: true
+    # Baseline implícito mascara bancos fora do controle do Flyway; só o perfil dev o habilita.
+    baseline-on-migrate: false
     baseline-version: 0
     # A criação inicial do schema é sequencial; novas evoluções devem preservar sua ordem.
     out-of-order: false
@@ -28,13 +29,32 @@ spring:
 
 server:
   port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        # TLS é terminado no proxy reverso em produção; o perfil dev e o compose local (HTTP) desligam.
+        secure: ${SESSION_COOKIE_SECURE:true}
 
 app:
   timezone:
     output: ${APP_TIMEZONE:America/Sao_Paulo}
   security:
-    crypto-key: ${APP_CRYPTO_KEY:default-dev-fallback-key-should-be-changed-in-prod}
-
+    # Obrigatórios e sem default: ausência derruba o boot (CryptoInitializer / TokenConsentimentoService).
+    crypto-key: ${APP_CRYPTO_KEY:}
+    consent-secret: ${APP_CONSENT_SECRET:}
+    # Token Bearer opcional que autoriza apenas GET /actuator/prometheus (scrape do Prometheus).
+    metrics-scrape-token: ${APP_METRICS_SCRAPE_TOKEN:}
+    rate-limit:
+      # IPs (separados por vírgula) de proxies reversos cujo X-Forwarded-For é confiável; vazio = só o IP da conexão.
+      trusted-proxies: ${APP_TRUSTED_PROXIES:}
+      login:
+        max-attempts: ${APP_LOGIN_MAX_ATTEMPTS:5}
+        window-minutes: ${APP_LOGIN_WINDOW_MINUTES:15}
+      reset-senha:
+        max-attempts: ${APP_RESET_MAX_ATTEMPTS:3}
+        window-minutes: ${APP_RESET_WINDOW_MINUTES:15}
 
 management:
   endpoints:
@@ -49,8 +69,11 @@ management:
         gestao.aprovacao: true
 
 springdoc:
+  # Documentação da API desligada por padrão; apenas o perfil dev a habilita (e mesmo assim exige ADMIN).
   api-docs:
+    enabled: false
     path: /v3/api-docs
   swagger-ui:
+    enabled: false
     path: /swagger-ui.html
     operationsSorter: method

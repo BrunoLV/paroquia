@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>Recebe lotes de eventos do frontend (React / Vite), associa-os ao contexto de rastreabilidade
  * da sessão do usuário e os despacha para a esteira de logging assíncrono (Log4j2 / LMAX Disruptor),
- * permitindo que sejam indexados pelo Loki e inspecionados em tempo real no Grafana.
+ * permitindo que sejam indexados pelo Loki e inspecionados em tempo real no Grafana. Exige sessão
+ * autenticada (endpoint anônimo permitiria inundar e forjar logs); o conteúdo é higienizado pelo
+ * {@link LogClienteDTO} (PII, caracteres de controle, tamanhos) e o lote é limitado a 50 eventos.
  */
 @RestController
 @RequestMapping("/api/v1/observabilidade/logs")
@@ -47,6 +50,7 @@ public class LogClienteController {
      * @return 202 Accepted indicando recepção do lote
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Registrar lote de logs do frontend",
             description = "Recebe eventos de erro e logs de interface gerados pela SPA React e os "
@@ -54,6 +58,7 @@ public class LogClienteController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Lote de logs aceito para processamento assíncrono"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload inválido ou lote vazio",

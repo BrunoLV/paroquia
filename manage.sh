@@ -76,7 +76,7 @@ show_endpoints() {
     echo -e "${BOLD}Endereços dos Serviços:${NC}"
     echo -e "  • Frontend (UI):       ${CYAN}http://localhost:3000${NC}"
     echo -e "  • Backend (API):       ${CYAN}http://localhost:8080/api${NC}"
-    echo -e "  • Swagger UI:          ${CYAN}http://localhost:8080/swagger-ui/index.html${NC}"
+    echo -e "  • Swagger UI:          ${CYAN}http://localhost:8080/swagger-ui/index.html${NC} (requer login ADMIN)"
     echo -e "  • Actuator Health:     ${CYAN}http://localhost:8080/actuator/health${NC}"
     echo -e "  • Actuator Metrics:    ${CYAN}http://localhost:8080/actuator/metrics${NC}"
     echo -e "  • Prometheus:          ${CYAN}http://localhost:9090${NC}"
@@ -132,6 +132,11 @@ cmd_dev() {
         log_info "Iniciando Backend Spring Boot em segundo plano..."
         (
             cd gestao-paroquia
+            # Perfil dev: chaves de desenvolvimento explícitas, Swagger habilitado e cookie sem Secure (HTTP local).
+            # A senha do banco vem do .env (mesma do container db); demais valores do .env não são carregados.
+            export SPRING_PROFILES_ACTIVE=dev
+            DB_PASSWORD="$(grep -E '^POSTGRES_PASSWORD=' ../.env | cut -d= -f2-)"
+            export DB_PASSWORD
             nohup ./gradlew :app:bootRun --no-daemon > "$API_LOG_FILE" 2>&1 &
             echo $! > "$API_PID_FILE"
         )

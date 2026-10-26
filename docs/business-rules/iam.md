@@ -80,6 +80,11 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 - **Redefinição Administrativa de Senha:** Redefinir a senha de outro usuário (`POST /api/v1/usuarios/{id}/redefinir-senha`) equivale a assumir a conta dele, por isso a alçada é a mais restrita: `ADMIN` redefine qualquer conta; `PAROCO` redefine apenas contas **sem papel global** (um usuário com papel global — Pároco, Bispo, Vigário, Diácono, Secretaria ou Admin — só tem a senha redefinida pelo `ADMIN`). Coordenadores de pastoral/movimento e demais papéis **não** redefinem senhas, ainda que o alvo seja membro de sua organização.
 - **Solicitação Pública de Redefinição de Acesso:** Usuários não autenticados ou impossibilitados de logar podem registrar uma solicitação pública de redefinição na tela de login (`POST /api/v1/autenticacao/solicitar-reset-senha`), informando seu username ou e-mail. A solicitação fica registrada para liberação controlada pela administração paroquial.
 
+### RN-IAM-09: Política Única de Senha e Proteção contra Tentativas Abusivas
+- **Política Única de Senha:** Toda senha nova — criação administrativa de usuário, troca pelo próprio usuário (RN-IAM-08) e redefinição administrativa — deve ter no mínimo 8 caracteres e no máximo 72 bytes em UTF-8 (limite do BCrypt; acentos ocupam mais de um byte). A mesma regra vale em todos os fluxos; senha em branco é sempre recusada.
+- **Limite de Tentativas de Login:** Após 5 falhas de credencial dentro de 15 minutos para a mesma combinação de endereço de origem e usuário, novas tentativas (inclusive com a senha correta) são recusadas com HTTP 429 e `Retry-After` até a janela expirar. Login bem-sucedido zera o contador. Os limites são configuráveis por paróquia. O endereço de origem considera apenas a conexão direta, salvo proxies reversos explicitamente declarados como confiáveis.
+- **Limite de Pedidos de Redefinição:** A solicitação pública de redefinição aceita no máximo 3 pedidos em 15 minutos por combinação de endereço de origem e usuário (existente ou não, para não revelar contas); excedido, responde 429.
+
 ---
 
 ## 4. Fluxos Operacionais e Casos de Uso

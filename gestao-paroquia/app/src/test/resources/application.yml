@@ -19,6 +19,10 @@ logging:
     org.springframework.security: DEBUG
 
 app:
+  security:
+    crypto-key: chave-de-criptografia-exclusiva-para-testes-automatizados
+    consent-secret: segredo-de-consentimento-exclusivo-para-testes-automatizados
+    metrics-scrape-token: token-de-scrape-exclusivo-para-testes
   paroquia:
     nome: "Paróquia Nossa Senhora de Fátima"
     diocese: "Diocese de São Miguel Paulista"

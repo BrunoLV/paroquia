@@ -1,31 +1,60 @@
-FROM node:22-alpine
+# ==============================================================================
+# Dockerfile.ui - Frontend React/Vite da Paróquia
+# Alvos:
+#   runtime (padrão) - build estático servido por nginx sem privilégios (produção)
+#   dev              - servidor de desenvolvimento Vite com hot reload (apenas desenvolvimento local)
+# O contexto de build é ./gestao-paroquia-ui (ver docker-compose.yml).
+# ==============================================================================
 
-LABEL org.opencontainers.image.title="Paróquia UI" \
-      org.opencontainers.image.description="Frontend React + TypeScript + Vite para Gestão Paroquial" \
-      org.opencontainers.image.source="https://github.com/brunoluizviana/paroquia"
+FROM node:22-alpine AS deps
 
 WORKDIR /app
 
-# Assegura que o diretório pertença ao usuário node
-RUN chown -R node:node /app
-
-# Copia manifestos de dependências
-COPY --chown=node:node package.json package-lock.json ./
-
 # Instala dependências com tolerância a falhas de rede (retries, timeouts e cache mount)
+COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && \
-    mkdir -p /app/node_modules/.vite && \
-    chown -R node:node /app/node_modules
+    npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
 
-# Copia o código fonte com permissões de usuário
+
+FROM deps AS dev
+
+LABEL org.opencontainers.image.title="Paróquia UI (dev)" \
+      org.opencontainers.image.description="Servidor de desenvolvimento Vite - NAO usar em producao" \
+      org.opencontainers.image.source="https://github.com/brunoluizviana/paroquia"
+
 COPY --chown=node:node . .
+RUN mkdir -p /app/node_modules/.vite && chown -R node:node /app/node_modules /app
 
 EXPOSE 3000
-
 ENV PORT=3000 \
     HOST=0.0.0.0
-
 USER node
-
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
+
+
+FROM deps AS build
+
+# A URL da API é resolvida em tempo de build (Vite embute VITE_*). O padrão relativo funciona porque o
+# nginx da imagem final encaminha /api para o backend, mantendo UI e API na mesma origem.
+ARG VITE_API_URL=/api/v1
+ENV VITE_API_URL=${VITE_API_URL}
+
+COPY . .
+RUN npm run build
+
+
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+
+LABEL org.opencontainers.image.title="Paróquia UI" \
+      org.opencontainers.image.description="Frontend React estático servido por nginx" \
+      org.opencontainers.image.source="https://github.com/brunoluizviana/paroquia"
+
+# 'nginxconf' é um contexto adicional nomeado (docker-compose: build.additional_contexts -> ./docker/nginx),
+# necessário porque a configuração fica fora do contexto principal ./gestao-paroquia-ui.
+COPY --from=nginxconf default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=5 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/healthz || exit 1
