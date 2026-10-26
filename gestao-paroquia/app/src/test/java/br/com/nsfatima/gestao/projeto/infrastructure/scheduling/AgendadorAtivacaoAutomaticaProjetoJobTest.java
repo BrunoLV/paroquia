@@ -3,10 +3,16 @@ package br.com.nsfatima.gestao.projeto.infrastructure.scheduling;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
 import br.com.nsfatima.gestao.projeto.domain.model.ProjetoStatus;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoEventoEntity;
+import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +37,9 @@ class AgendadorAtivacaoAutomaticaProjetoJobTest {
     void setUp() {
         repository = mock(ProjetoEventoJpaRepository.class);
         lockRepository = mock(JobLockJpaRepository.class);
-        scheduler = new AgendadorAtivacaoAutomaticaProjetoJob(repository, lockRepository);
+        scheduler = new AgendadorAtivacaoAutomaticaProjetoJob(repository, lockRepository, new ProjetoMapper(),
+                new RelogioNegocio(Clock.fixed(Instant.parse("2026-10-26T03:00:01Z"), ZoneOffset.UTC),
+                        ZoneId.of("America/Sao_Paulo")));
     }
 
     @Test
@@ -61,5 +69,20 @@ class AgendadorAtivacaoAutomaticaProjetoJobTest {
 
         verify(repository, never()).findByStatusAndInicioUtcLessThanEqual(any(), any());
         verify(lockRepository, never()).releaseLock(anyString());
+    }
+
+    @Test
+    void deveUsarOInstanteDoRelogioDeNegocioEPassarPeloAgregado() {
+        when(lockRepository.acquireLock(anyString(), any(), any())).thenReturn(true);
+        ProjetoEventoEntity project = new ProjetoEventoEntity();
+        project.setId(UUID.randomUUID());
+        project.setNome("Projeto Sem Nome Vazio");
+        project.setStatus(ProjetoStatus.ABERTO);
+        when(repository.findByStatusAndInicioUtcLessThanEqual(ProjetoStatus.ABERTO,
+                Instant.parse("2026-10-26T03:00:01Z"))).thenReturn(List.of(project));
+
+        scheduler.activateProjects();
+
+        assertEquals(ProjetoStatus.EM_ANDAMENTO, project.getStatus());
     }
 }

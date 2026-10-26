@@ -75,16 +75,4 @@ public interface EventoValidacaoJpaRepository {
      * @return {@code true} caso exista ao menos um evento da organização, {@code false} caso contrário
      */
     boolean existsByOrganizacaoResponsavelId(UUID organizacaoId);
-
-    /**
-     * Verifica se já existe uma ocorrência de evento para uma determinada recorrência em um
-     * instante de início específico, usado para evitar geração duplicada de ocorrências de uma
-     * série recorrente.
-     *
-     * @param recorrenciaId identificador da recorrência (série) de eventos
-     * @param inicioUtc instante de início da ocorrência a ser verificada
-     * @return {@code true} caso já exista uma ocorrência com esse início para a recorrência, {@code false} caso
-     *     contrário
-     */
-    boolean existsByRecorrenciaIdAndInicioUtc(UUID recorrenciaId, Instant inicioUtc);
 }

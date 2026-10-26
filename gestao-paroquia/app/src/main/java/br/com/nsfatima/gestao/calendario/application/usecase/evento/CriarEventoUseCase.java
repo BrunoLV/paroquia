@@ -16,7 +16,6 @@ import br.com.nsfatima.gestao.calendario.application.service.ValidadorPrioridade
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
 import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.policy.ModoRequisicaoCriacao;
-import br.com.nsfatima.gestao.calendario.application.service.MotorLiturgico;
 import br.com.nsfatima.gestao.calendario.application.service.ProvisionamentoLiturgicoService;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.AnoLiturgicoEntity;
 import br.com.nsfatima.gestao.calendario.domain.type.EventoStatusInput;
@@ -38,10 +37,10 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.A
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContext;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.EventoActorContextResolver;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
 import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,6 +55,11 @@ import java.util.UUID;
 
 /**
  * Caso de uso responsável por criar novos eventos, tratando idempotência, autorização e fluxos de aprovação.
+ *
+ * <p>Todas as colaborações são obrigatórias: a detecção de conflito de agenda nunca é silenciada por
+ * ausência de dependência. O ano paroquial do evento é o do dia civil no fuso da paróquia
+ * ({@link RelogioNegocio}), de modo que uma celebração às 22h de 31/12 em Brasília pertence ao ano que
+ * termina, e não ao seguinte.
  */
 @Service
 public class CriarEventoUseCase {
@@ -77,13 +80,13 @@ public class CriarEventoUseCase {
     private final AnoParoquialJpaRepository anoParoquialRepository;
     private final ValidadorPrioridadeAgenda validadorPrioridadeAgendaService;
     private final CacheManager cacheManager;
-    private final MotorLiturgico motorLiturgico;
     private final CicloLiturgicoRepository cicloLiturgicoRepository;
     private final ProvisionamentoLiturgicoService provisionamentoLiturgicoService;
     private final EventoReservaIntegrationService eventoReservaIntegrationService;
     private final DetectorConflitoEventoService detectorConflitoEventoService;
     private final CriarEventoRecorrenciaUseCase criarEventoRecorrenciaUseCase;
     private final EventoLocalJpaRepository eventoLocalJpaRepository;
+    private final RelogioNegocio relogio;
 
     public CriarEventoUseCase(
             EventoDomainService domainService,
@@ -102,44 +105,13 @@ public class CriarEventoUseCase {
             AnoParoquialJpaRepository anoParoquialRepository,
             ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
             CacheManager cacheManager,
-            MotorLiturgico motorLiturgico,
-            CicloLiturgicoRepository cicloLiturgicoRepository,
-            ProvisionamentoLiturgicoService provisionamentoLiturgicoService,
-            EventoReservaIntegrationService eventoReservaIntegrationService,
-            DetectorConflitoEventoService detectorConflitoEventoService) {
-        this(domainService, repository, envolvimentoRepository, mapper, idempotencyService, auditPublisher,
-                metricsPublisher, authorizationService, actorContextResolver, aprovacaoRequestUseCase,
-                updateEnvolvidosUseCase, validadorVinculoProjeto, bloqueioAnoParoquialPolicy, anoParoquialRepository,
-                validadorPrioridadeAgendaService, cacheManager, motorLiturgico, cicloLiturgicoRepository,
-                provisionamentoLiturgicoService, eventoReservaIntegrationService, detectorConflitoEventoService,
-                null, null);
-    }
-
-    @Autowired
-    public CriarEventoUseCase(
-            EventoDomainService domainService,
-            EventoJpaRepository repository,
-            EventoEnvolvidoJpaRepository envolvimentoRepository,
-            EventoMapper mapper,
-            EventoIdempotencyService idempotencyService,
-            EventoAuditPublisher auditPublisher,
-            CadastroEventoMetricsPublisher metricsPublisher,
-            EventoPatchAuthorizationService authorizationService,
-            EventoActorContextResolver actorContextResolver,
-            CriarEventoSolicitacaoAprovacaoUseCase aprovacaoRequestUseCase,
-            AtualizarEventoEnvolvidosUseCase updateEnvolvidosUseCase,
-            ValidadorVinculoProjeto validadorVinculoProjeto,
-            BloqueioAnoParoquialPolicy bloqueioAnoParoquialPolicy,
-            AnoParoquialJpaRepository anoParoquialRepository,
-            ValidadorPrioridadeAgenda validadorPrioridadeAgendaService,
-            CacheManager cacheManager,
-            MotorLiturgico motorLiturgico,
             CicloLiturgicoRepository cicloLiturgicoRepository,
             ProvisionamentoLiturgicoService provisionamentoLiturgicoService,
             EventoReservaIntegrationService eventoReservaIntegrationService,
             DetectorConflitoEventoService detectorConflitoEventoService,
-            @Autowired(required = false) CriarEventoRecorrenciaUseCase criarEventoRecorrenciaUseCase,
-            @Autowired(required = false) EventoLocalJpaRepository eventoLocalJpaRepository) {
+            CriarEventoRecorrenciaUseCase criarEventoRecorrenciaUseCase,
+            EventoLocalJpaRepository eventoLocalJpaRepository,
+            RelogioNegocio relogio) {
         this.domainService = domainService;
         this.repository = repository;
         this.envolvimentoRepository = envolvimentoRepository;
@@ -156,13 +128,13 @@ public class CriarEventoUseCase {
         this.anoParoquialRepository = anoParoquialRepository;
         this.validadorPrioridadeAgendaService = validadorPrioridadeAgendaService;
         this.cacheManager = cacheManager;
-        this.motorLiturgico = motorLiturgico;
         this.cicloLiturgicoRepository = cicloLiturgicoRepository;
         this.provisionamentoLiturgicoService = provisionamentoLiturgicoService;
         this.eventoReservaIntegrationService = eventoReservaIntegrationService;
         this.detectorConflitoEventoService = detectorConflitoEventoService;
         this.criarEventoRecorrenciaUseCase = criarEventoRecorrenciaUseCase;
         this.eventoLocalJpaRepository = eventoLocalJpaRepository;
+        this.relogio = relogio;
     }
 
     /**
@@ -170,7 +142,7 @@ public class CriarEventoUseCase {
      */
     @Transactional(readOnly = true)
     public List<ConflitoEventoItemDto> detectarConflitos(CriarEventoRequest request) {
-        if (detectorConflitoEventoService == null || request == null) {
+        if (request == null) {
             return List.of();
         }
         if (request.regraRecorrencia() != null) {
@@ -256,7 +228,7 @@ public class CriarEventoUseCase {
         processarCancelamentosPrioridade(request);
 
         EventoResponse response = criarImediato(idempotencyKey, request, actorContext.actor());
-        if (request.regraRecorrencia() != null && criarEventoRecorrenciaUseCase != null) {
+        if (request.regraRecorrencia() != null) {
             criarEventoRecorrenciaUseCase.execute(response.id(), request.regraRecorrencia());
         }
 
@@ -312,7 +284,7 @@ public class CriarEventoUseCase {
 
     private void validarBloqueioAnoParoquial(Instant inicio, EventoStatusInput statusEvento) {
         AnoParoquialStatus statusAno = inicio == null ? null : anoParoquialRepository
-                .findByAno(inicio.atZone(ZoneOffset.UTC).getYear())
+                .findByAno(relogio.anoDe(inicio))
                 .map(ano -> ano.getStatus())
                 .orElse(null);
         bloqueioAnoParoquialPolicy.assertPermitido(inicio, statusAno, statusEvento);
@@ -344,17 +316,10 @@ public class CriarEventoUseCase {
         EventoStatusInput status = request.status() == null ? EventoStatusInput.RASCUNHO : request.status();
         EventoEntity entity = mapper.toNewEntity(request, status);
 
-        if (provisionamentoLiturgicoService != null) {
-            AnoLiturgicoEntity anoLiturgico = provisionamentoLiturgicoService.resolveAndEnsure(request.inicio());
-            entity.setAnoLiturgicoRef(anoLiturgico.getAno());
-        } else if (motorLiturgico != null) {
-            int anoLiturgicoRef = motorLiturgico.resolveAnoLiturgico(request.inicio());
-            entity.setAnoLiturgicoRef(anoLiturgicoRef);
-        }
-        if (cicloLiturgicoRepository != null) {
-            cicloLiturgicoRepository.findAll().stream().findFirst()
-                    .ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
-        }
+        AnoLiturgicoEntity anoLiturgico = provisionamentoLiturgicoService.resolveAndEnsure(request.inicio());
+        entity.setAnoLiturgicoRef(anoLiturgico.getAno());
+        cicloLiturgicoRepository.findAll().stream().findFirst()
+                .ifPresent(c -> entity.setCicloLiturgicoId(c.getId()));
 
         boolean hasOverlap = repository.existsByInicioUtcLessThanAndFimUtcGreaterThan(request.fim(), request.inicio());
         entity.setEstadoConflito(domainService.resolveEstadoConflito(hasOverlap));
@@ -362,7 +327,7 @@ public class CriarEventoUseCase {
 
         EventoEntity saved = Objects.requireNonNull(repository.save(entity));
 
-        if (eventoLocalJpaRepository != null && request.localIds() != null && !request.localIds().isEmpty()) {
+        if (request.localIds() != null && !request.localIds().isEmpty()) {
             List<EventoLocalEntity> locais = request.localIds().stream()
                     .filter(Objects::nonNull)
                     .distinct()
@@ -370,26 +335,24 @@ public class CriarEventoUseCase {
                     .toList();
             eventoLocalJpaRepository.saveAll(locais);
             saved.definirLocaisCarregados(eventoLocalJpaRepository.findByEventoId(saved.getId()));
-        } else if (saved.getLocalId() != null && eventoLocalJpaRepository != null) {
+        } else if (saved.getLocalId() != null) {
             eventoLocalJpaRepository.save(new EventoLocalEntity(saved.getId(), saved.getLocalId()));
             saved.definirLocaisCarregados(eventoLocalJpaRepository.findByEventoId(saved.getId()));
         }
 
-        if (eventoReservaIntegrationService != null) {
-            UUID solicitanteId = actorContextResolver.resolveRequired().usuarioId();
-            eventoReservaIntegrationService.criarReservasEvento(
-                    saved.getId(),
-                    saved.getTitulo(),
-                    saved.getLocalId(),
-                    request.localIds(),
-                    request.ativoIds(),
-                    solicitanteId,
-                    saved.getOrganizacaoResponsavelId(),
-                    saved.getInicioUtc(),
-                    saved.getFimUtc(),
-                    saved.getPeriodosList()
-            );
-        }
+        UUID solicitanteId = actorContextResolver.resolveRequired().usuarioId();
+        eventoReservaIntegrationService.criarReservasEvento(
+                saved.getId(),
+                saved.getTitulo(),
+                saved.getLocalId(),
+                request.localIds(),
+                request.ativoIds(),
+                solicitanteId,
+                saved.getOrganizacaoResponsavelId(),
+                saved.getInicioUtc(),
+                saved.getFimUtc(),
+                saved.getPeriodosList()
+        );
 
         if (request.participantes() != null && !request.participantes().isEmpty()) {
             List<EventoEnvolvidoInput> envolvidos = request.participantes().stream()
@@ -413,7 +376,7 @@ public class CriarEventoUseCase {
         boolean conflictPendente = EstadoConflitoAgenda.PENDENTE.name().equals(response.estadoConflito());
 
         metricsPublisher.publishCreateSuccess(conflictPendente, result.replay());
-        metricsPublisher.publishEventRegistrationLeadTime(Duration.between(Instant.now(), inicio));
+        metricsPublisher.publishEventRegistrationLeadTime(Duration.between(relogio.agora(), inicio));
 
         auditPublisher.publishCreateSuccess(
                 actor, response.id().toString(), result.replay(), response.estadoConflito());
