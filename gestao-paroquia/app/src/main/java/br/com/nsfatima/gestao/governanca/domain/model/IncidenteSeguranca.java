@@ -1,6 +1,7 @@
 package br.com.nsfatima.gestao.governanca.domain.model;
 
-import java.time.DayOfWeek;
+import br.com.nsfatima.gestao.governanca.domain.service.FeriadosNacionais;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -11,7 +12,7 @@ import java.util.UUID;
  * Modelo de domínio para incidentes de segurança (Art. 48 LGPD). Concentra as invariantes que antes viviam
  * no caso de uso: a máquina de estados de {@link StatusIncidente}, a linha do tempo coerente (detecção não
  * pode anteceder a ocorrência), a exigência de notificação à ANPD para o estado {@code NOTIFICADO} e o prazo
- * de comunicação de 3 dias úteis a partir da detecção. É imutável: cada transição devolve nova instância.
+ * de comunicação de 3 dias úteis (sem fins de semana e feriados nacionais) a partir da detecção. É imutável: cada transição devolve nova instância.
  *
  * <p>O construtor canônico só reconstitui o que está persistido (não revalida regras de negócio, para que
  * registros legados continuem legíveis); as regras valem em {@link #registrar} e {@link #atualizar}.
@@ -89,15 +90,14 @@ public record IncidenteSeguranca(
     }
 
     /**
-     * Prazo de comunicação à ANPD e aos titulares: 3 dias úteis após a detecção (Art. 48; RN-LGP-08).
+     * Prazo de comunicação à ANPD e aos titulares: 3 dias úteis após a detecção (Art. 48; RN-LGP-08), excluindo fins de semana e feriados nacionais; feriados estaduais/municipais não são considerados.
      */
     public Instant prazoComunicacao() {
-        // ponytail: considera apenas sábados e domingos; feriados nacionais/locais não são descontados.
         ZonedDateTime prazo = dataDeteccao.atZone(ZoneOffset.UTC);
         int restantes = DIAS_UTEIS_PRAZO_COMUNICACAO;
         while (restantes > 0) {
             prazo = prazo.plusDays(1);
-            if (prazo.getDayOfWeek() != DayOfWeek.SATURDAY && prazo.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            if (FeriadosNacionais.ehDiaUtil(prazo.toLocalDate())) {
                 restantes--;
             }
         }

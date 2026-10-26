@@ -34,6 +34,15 @@ class IncidenteSegurancaTest {
     }
 
     @Test
+    @DisplayName("feriado nacional nao conta como dia util (Tiradentes 21/04 e Sexta-feira da Paixao)")
+    void prazoPulaFeriadosNacionais() {
+        assertThat(detectadoEm("2026-04-20T10:00:00Z").prazoComunicacao())
+                .isEqualTo(Instant.parse("2026-04-24T10:00:00Z"));
+        assertThat(detectadoEm("2026-04-02T10:00:00Z").prazoComunicacao())
+                .isEqualTo(Instant.parse("2026-04-08T10:00:00Z"));
+    }
+
+    @Test
     @DisplayName("prazo so vence sem ANPD notificada e fora do estado encerrado")
     void prazoVencidoSomenteSemNotificacao() {
         IncidenteSeguranca incidente = detectadoEm("2026-06-01T08:00:00Z");

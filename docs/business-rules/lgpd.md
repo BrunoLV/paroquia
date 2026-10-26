@@ -66,7 +66,7 @@ Assegurar a inviolabilidade da intimidade, da honra e da privacidade de fiéis l
 - A identidade e os canais de contato oficiais (e-mail institucional e telefone) do Encarregado de Proteção de Dados (DPO) são públicos e acessíveis a todos os titulares de dados, sem exigência de autenticação prévia, visíveis no rodapé e na página institucional do sistema.
 
 ### RN-LGP-08: Notificação Tempestiva de Incidentes de Segurança (Art. 48)
-- Qualquer evento de segurança que comprometa dados pessoais deve ser registrado formalmente pelo DPO ou pela administração paroquial. Incidentes que acarretem risco relevante aos titulares devem ser comunicados à ANPD e aos titulares afetados no prazo de até 3 (três) dias úteis, contados da detecção (sábados e domingos não contam; feriados não são descontados). O registro expõe o prazo e sinaliza vencimento enquanto a ANPD não foi notificada e o incidente não foi encerrado.
+- Qualquer evento de segurança que comprometa dados pessoais deve ser registrado formalmente pelo DPO ou pela administração paroquial. Incidentes que acarretem risco relevante aos titulares devem ser comunicados à ANPD e aos titulares afetados no prazo de até 3 (três) dias úteis, contados da detecção (sábados, domingos e feriados nacionais não contam, incluindo a Sexta-feira da Paixão; feriados estaduais e municipais não são considerados). O registro expõe o prazo e sinaliza vencimento enquanto a ANPD não foi notificada e o incidente não foi encerrado.
 - A data de detecção não pode anteceder a de ocorrência. O status só avança (`EM_ANALISE` → `CONTIDO` → `NOTIFICADO` → `ENCERRADO`, podendo pular etapas inaplicáveis), `NOTIFICADO` exige a notificação à ANPD registrada e `ENCERRADO` é final.
 
 ### RN-LGP-09: PII Zero em Logs
