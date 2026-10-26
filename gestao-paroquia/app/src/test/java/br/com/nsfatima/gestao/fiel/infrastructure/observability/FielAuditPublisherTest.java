@@ -51,4 +51,34 @@ class FielAuditPublisherTest {
                 .containsEntry("modo", "SOFT_DELETE")
                 .doesNotContainKeys("nome", "cpf", "email", "celular", "endereco");
     }
+
+    @Test
+    void devePublicarCriacaoDeRelacionamentoSemUnidadeTerritorialDeOrigem() {
+        AuditoriaPersistenceService auditoria = org.mockito.Mockito.mock(AuditoriaPersistenceService.class);
+        FielAuditPublisher publisher = new FielAuditPublisher(auditoria);
+        UUID parId = UUID.randomUUID();
+        UUID atorId = UUID.randomUUID();
+
+        publisher.publicarCriacaoRelacionamento(parId, UUID.randomUUID(), atorId, null, "CONJUGE");
+
+        ArgumentCaptor<Map<String, Object>> metadata = ArgumentCaptor.captor();
+        verify(auditoria).log(eq(atorId.toString()), eq("criar"), eq(parId.toString()),
+                eq("success"), metadata.capture());
+        assertThat(metadata.getValue()).containsEntry("tipo", "CONJUGE").doesNotContainKey("organizacaoId");
+    }
+
+    @Test
+    void devePublicarInativacaoDeRelacionamentoSemUnidadeTerritorialDeOrigem() {
+        AuditoriaPersistenceService auditoria = org.mockito.Mockito.mock(AuditoriaPersistenceService.class);
+        FielAuditPublisher publisher = new FielAuditPublisher(auditoria);
+        UUID parId = UUID.randomUUID();
+        UUID atorId = UUID.randomUUID();
+
+        publisher.publicarInativacaoRelacionamento(parId, UUID.randomUUID(), atorId, null);
+
+        ArgumentCaptor<Map<String, Object>> metadata = ArgumentCaptor.captor();
+        verify(auditoria).log(eq(atorId.toString()), eq("cancelar"), eq(parId.toString()),
+                eq("success"), metadata.capture());
+        assertThat(metadata.getValue()).doesNotContainKey("organizacaoId");
+    }
 }
