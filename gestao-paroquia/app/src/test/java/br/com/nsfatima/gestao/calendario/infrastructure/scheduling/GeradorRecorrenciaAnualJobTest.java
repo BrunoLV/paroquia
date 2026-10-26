@@ -77,9 +77,11 @@ class GeradorRecorrenciaAnualJobTest {
 
     private GeradorRecorrenciaAnualJob jobEm(String instanteUtc) {
         RelogioNegocio relogio = new RelogioNegocio(Clock.fixed(Instant.parse(instanteUtc), ZoneOffset.UTC), BRT);
+        MaterializadorOcorrenciaRecorrencia materializador = new MaterializadorOcorrenciaRecorrencia(
+                eventoRepository, eventoLocalRepository, envolvidoRepository, detector, reservaIntegration);
         return new GeradorRecorrenciaAnualJob(recorrenciaRepository, eventoRepository, lockRepository,
-                aprovacaoRepository, eventoLocalRepository, envolvidoRepository, reservaRepository, detector,
-                reservaIntegration, relogio);
+                aprovacaoRepository, eventoLocalRepository, envolvidoRepository, reservaRepository, materializador,
+                relogio);
     }
 
     private EventoEntity eventoBase(String inicioUtc, String fimUtc) {
@@ -246,6 +248,23 @@ class GeradorRecorrenciaAnualJobTest {
                 .anyMatch(e -> e.getInicioUtc().equals(Instant.parse("2026-01-11T01:30:00Z")))
                 .allMatch(e -> e.getInicioUtc().atZone(BRT).getDayOfWeek() == DayOfWeek.SATURDAY
                         && e.getInicioUtc().atZone(BRT).getHour() == 22);
+    }
+
+    @Test
+    @DisplayName("Falha em uma ocorrencia (ex.: reserva tomada por corrida) nao derruba as demais")
+    void falhaEmUmaOcorrenciaNaoDerrubaASerie() {
+        EventoEntity base = eventoBase("2026-01-04T08:00:00Z", "2026-01-04T09:00:00Z");
+        semanal(base, DayOfWeek.SUNDAY);
+        Instant domingoQueFalha = Instant.parse("2026-01-11T08:00:00Z");
+        when(detector.detectarConflitos(eq(domingoQueFalha), any(), any(), any(), any(), any(), any(), any(),
+                any(), any())).thenThrow(new IllegalStateException("reserva tomada por outra requisicao"));
+
+        jobEm("2026-01-01T04:00:00Z").executeForYear(2026);
+
+        assertThat(eventoRepository.count()).isEqualTo(51);
+        assertThat(eventoRepository.findAll()).noneMatch(e -> e.getInicioUtc().equals(domingoQueFalha));
+        assertThat(eventoRepository.findAll())
+                .anyMatch(e -> e.getInicioUtc().equals(Instant.parse("2026-01-18T08:00:00Z")));
     }
 
     @Test

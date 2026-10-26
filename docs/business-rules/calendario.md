@@ -51,7 +51,7 @@ Permitir o planejamento, agendamento e execução de todas as atividades celebra
 
 ### RN-CAL-07: Materialização de Recorrência
 - Criada a série, só a regra afetada é materializada, no ano corrente da paróquia; no 1º de janeiro (01h, fuso da paróquia) a rotina gera o ano novo para todas as séries.
-- Cada ocorrência materializada se comporta como evento criado pela tela: passa pela detecção de conflito, herda locais, ativos patrimoniais e organizações envolvidas do evento-base e cria as reservas de local e de ativo. A ocorrência que conflita com a agenda **não é materializada** (a rotina não tem aprovador) e fica registrada em log; ocorrência pendente de aprovação ou já existente também não é gerada de novo.
+- Cada ocorrência materializada se comporta como evento criado pela tela: passa pela detecção de conflito, herda locais, ativos patrimoniais e organizações envolvidas do evento-base e cria as reservas de local e de ativo. A ocorrência que conflita com a agenda **não é materializada** (a rotina não tem aprovador) e fica registrada em log; ocorrência pendente de aprovação ou já existente também não é gerada de novo. Na rotina anual, cada ocorrência é gravada de forma independente: se uma falhar (por exemplo, o espaço foi tomado por outra requisição no meio da geração), a falha é registrada em log e as demais seguem. Ao criar a série pela tela, o conflito de qualquer ocorrência é erro e a criação inteira é desfeita.
 
 ### RN-CAL-05: Recursos e Equipamentos
 - O evento que precisa de ativos patrimoniais (projetor, microfones, som) os ocupa por **reserva** (ver `reserva.md`), que respeita a disponibilidade do ativo e a manutenção em aberto.

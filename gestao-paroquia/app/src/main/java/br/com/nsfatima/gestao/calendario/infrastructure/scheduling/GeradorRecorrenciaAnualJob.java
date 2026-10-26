@@ -3,18 +3,16 @@ package br.com.nsfatima.gestao.calendario.infrastructure.scheduling;
 import br.com.nsfatima.gestao.aprovacao.domain.model.AprovacaoStatus;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.entity.AprovacaoEntity;
 import br.com.nsfatima.gestao.aprovacao.infrastructure.persistence.repository.AprovacaoJpaRepository;
-import br.com.nsfatima.gestao.calendario.application.service.DetectorConflitoEventoService;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoSolicitacaoInput;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
-import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEnvolvidoEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoRecorrenciaEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.scheduling.MaterializadorOcorrenciaRecorrencia.ModeloOcorrencia;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoEnvolvidoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoRecorrenciaJpaRepository;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.persistence.repository.JobLockJpaRepository;
-import br.com.nsfatima.gestao.reserva.application.usecase.EventoReservaIntegrationService;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
@@ -40,7 +38,8 @@ import java.util.UUID;
  *
  * <p>Uma ocorrência materializada precisa ser tão real quanto o evento criado pela tela: passa pela
  * detecção de conflito de agenda, herda os locais, os ativos patrimoniais e as organizações
- * envolvidas do evento-base e ocupa os locais/ativos por reserva. Como o job não tem um
+ * envolvidas do evento-base e ocupa os locais/ativos por reserva (ver
+ * {@link MaterializadorOcorrenciaRecorrencia}, que dá a cada ocorrência da rotina anual transação própria). Como o job não tem um
  * aprovador à mão, a ocorrência que conflita com a agenda existente <strong>não é materializada</strong>
  * (fica registrada no log como pulada) em vez de nascer ocupando um espaço já tomado.
  *
@@ -59,8 +58,7 @@ public class GeradorRecorrenciaAnualJob {
     private final EventoLocalJpaRepository eventoLocalJpaRepository;
     private final EventoEnvolvidoJpaRepository envolvidoRepository;
     private final ReservaRepository reservaRepository;
-    private final DetectorConflitoEventoService detectorConflito;
-    private final EventoReservaIntegrationService reservaIntegration;
+    private final MaterializadorOcorrenciaRecorrencia materializador;
     private final RelogioNegocio relogio;
 
     public GeradorRecorrenciaAnualJob(
@@ -71,8 +69,7 @@ public class GeradorRecorrenciaAnualJob {
             EventoLocalJpaRepository eventoLocalJpaRepository,
             EventoEnvolvidoJpaRepository envolvidoRepository,
             ReservaRepository reservaRepository,
-            DetectorConflitoEventoService detectorConflito,
-            EventoReservaIntegrationService reservaIntegration,
+            MaterializadorOcorrenciaRecorrencia materializador,
             RelogioNegocio relogio) {
         this.recorrenciaRepository = recorrenciaRepository;
         this.eventoRepository = eventoRepository;
@@ -81,8 +78,7 @@ public class GeradorRecorrenciaAnualJob {
         this.eventoLocalJpaRepository = eventoLocalJpaRepository;
         this.envolvidoRepository = envolvidoRepository;
         this.reservaRepository = reservaRepository;
-        this.detectorConflito = detectorConflito;
-        this.reservaIntegration = reservaIntegration;
+        this.materializador = materializador;
         this.relogio = relogio;
     }
 
@@ -111,7 +107,8 @@ public class GeradorRecorrenciaAnualJob {
 
     /**
      * Gera as instâncias de evento recorrente para um ano específico, percorrendo todas as regras
-     * de recorrência cadastradas.
+     * de recorrência cadastradas. Cada ocorrência é gravada em transação própria: a falha de uma (por
+     * exemplo, reserva tomada por corrida) é registrada em log e as demais seguem.
      *
      * <p>Exemplo de uso: {@code job.executeForYear(2026);}
      *
@@ -121,7 +118,8 @@ public class GeradorRecorrenciaAnualJob {
     public void executeForYear(int year) {
         LOGGER.info("Starting yearly recurrence generation for year {}", year);
         for (EventoRecorrenciaEntity rule : recorrenciaRepository.findAll()) {
-            executeForRule(rule, year);
+            eventoRepository.findById(rule.getEventoBaseId())
+                    .ifPresent(base -> materializarSerie(base, rule, year, true));
         }
         LOGGER.info("Finished yearly recurrence generation for year {}", year);
     }
@@ -129,17 +127,18 @@ public class GeradorRecorrenciaAnualJob {
     /**
      * Gera as ocorrências de uma única regra de recorrência para o ano informado. É o ponto de
      * entrada usado quando uma série acaba de ser criada: apenas a regra afetada é processada, sem
-     * revisitar todas as séries cadastradas.
+     * revisitar todas as séries cadastradas. Roda na transação do chamador (a série ainda não foi
+     * confirmada no banco), de modo que um conflito é erro para o usuário e desfaz a criação inteira.
      *
      * @param rule regra (série) a materializar
      * @param year ano civil, no fuso da paróquia, a gerar
      */
     @Transactional
     public void executeForRule(EventoRecorrenciaEntity rule, int year) {
-        eventoRepository.findById(rule.getEventoBaseId()).ifPresent(base -> materializarSerie(base, rule, year));
+        eventoRepository.findById(rule.getEventoBaseId()).ifPresent(base -> materializarSerie(base, rule, year, false));
     }
 
-    private void materializarSerie(EventoEntity base, EventoRecorrenciaEntity rule, int year) {
+    private void materializarSerie(EventoEntity base, EventoRecorrenciaEntity rule, int year, boolean isolar) {
         List<AprovacaoEntity> aprovacoes = aprovacaoRepository.findByEventoId(base.getId());
         if (baseAguardandoAprovacao(aprovacoes)) {
             LOGGER.debug("Evento base {} com aprovação pendente, pulando materialização de ocorrências",
@@ -159,10 +158,24 @@ public class GeradorRecorrenciaAnualJob {
                 Intervalo ocorrencia = calcularIntervalo(base, data);
                 if (!iniciosExistentes.contains(ocorrencia.inicio())
                         && !ocorrenciaNaoAprovada(aprovacoes, ocorrencia.inicio())
-                        && materializar(modelo, rule, ocorrencia)) {
+                        && materializar(modelo, rule, ocorrencia, isolar)) {
                     iniciosExistentes.add(ocorrencia.inicio());
                 }
             }
+        }
+    }
+
+    /** Devolve {@code true} apenas se a ocorrência foi gravada; com {@code isolar}, o erro é só registrado. */
+    private boolean materializar(ModeloOcorrencia modelo, EventoRecorrenciaEntity rule, Intervalo o, boolean isolar) {
+        if (!isolar) {
+            return materializador.materializar(modelo, rule, o.inicio(), o.fim());
+        }
+        try {
+            return materializador.materializarIsolada(modelo, rule, o.inicio(), o.fim());
+        } catch (RuntimeException e) {
+            LOGGER.warn("Falha ao materializar ocorrência de '{}' em {} na série {}; seguindo com as demais: {}",
+                    modelo.base().getTitulo(), o.inicio(), rule.getId(), e.getMessage());
+            return false;
         }
     }
 
@@ -208,76 +221,6 @@ public class GeradorRecorrenciaAnualJob {
         return new ModeloOcorrencia(base, locais, ativos, envolvidoRepository.findByEventoId(base.getId()));
     }
 
-    /** Materializa a ocorrência e devolve {@code false} quando ela é pulada por conflito de agenda. */
-    private boolean materializar(ModeloOcorrencia modelo, EventoRecorrenciaEntity rule, Intervalo ocorrencia) {
-        EventoEntity base = modelo.base();
-        Instant inicio = ocorrencia.inicio();
-        Instant fim = ocorrencia.fim();
-        var conflitos = detectorConflito.detectarConflitos(inicio, fim, base.getLocalId(), modelo.locais(),
-                modelo.ativos(), base.getCategoria(), null, base.getTipoHorario(), base.getIgrejaVinculoId(),
-                base.getPeriodosList());
-        if (!conflitos.isEmpty()) {
-            LOGGER.warn("Ocorrência de '{}' em {} não materializada: {} conflito(s) de agenda na série {}",
-                    base.getTitulo(), inicio, conflitos.size(), rule.getId());
-            return false;
-        }
-
-        EventoEntity instancia = eventoRepository.save(novaInstancia(base, rule, inicio, fim));
-        copiarLocais(instancia, modelo.locais());
-        copiarEnvolvidos(instancia, modelo.envolvidos());
-        reservaIntegration.criarReservasEvento(instancia.getId(), instancia.getTitulo(), instancia.getLocalId(),
-                modelo.locais(), modelo.ativos(), null, instancia.getOrganizacaoResponsavelId(), inicio, fim,
-                base.getPeriodosList());
-        return true;
-    }
-
-    private EventoEntity novaInstancia(EventoEntity base, EventoRecorrenciaEntity rule, Instant inicio, Instant fim) {
-        EventoEntity instancia = new EventoEntity();
-        instancia.setId(UUID.randomUUID());
-        instancia.setTitulo(base.getTitulo());
-        instancia.setDescricao(base.getDescricao());
-        instancia.setCategoria(base.getCategoria());
-        instancia.setLocalId(base.getLocalId());
-        instancia.setIgrejaVinculoId(base.getIgrejaVinculoId());
-        instancia.setProjetoId(base.getProjetoId());
-        instancia.setOrganizacaoResponsavelId(base.getOrganizacaoResponsavelId());
-        instancia.setStatus(base.getStatus());
-        instancia.setInicioUtc(inicio);
-        instancia.setFimUtc(fim);
-        instancia.setRecorrenciaId(rule.getId());
-        instancia.setTipoHorario(base.getTipoHorario());
-        instancia.setPeriodos(base.getPeriodos());
-        instancia.setFormato(base.getFormato());
-        return instancia;
-    }
-
-    private void copiarLocais(EventoEntity instancia, List<UUID> locais) {
-        if (!locais.isEmpty()) {
-            eventoLocalJpaRepository.saveAll(
-                    locais.stream().map(locId -> new EventoLocalEntity(instancia.getId(), locId)).toList());
-        } else if (instancia.getLocalId() != null) {
-            eventoLocalJpaRepository.save(new EventoLocalEntity(instancia.getId(), instancia.getLocalId()));
-        }
-    }
-
-    private void copiarEnvolvidos(EventoEntity instancia, List<EventoEnvolvidoEntity> envolvidosBase) {
-        if (envolvidosBase.isEmpty()) {
-            return;
-        }
-        envolvidoRepository.saveAll(envolvidosBase.stream().map(origem -> {
-            EventoEnvolvidoEntity copia = new EventoEnvolvidoEntity();
-            copia.setEventoId(instancia.getId());
-            copia.setOrganizacaoId(origem.getOrganizacaoId());
-            copia.setPapelParticipacao(origem.getPapelParticipacao());
-            return copia;
-        }).toList());
-    }
-
     private record Intervalo(Instant inicio, Instant fim) {
-    }
-
-    /** Fotografia do evento-base reaproveitada por todas as ocorrências da série (evita N+1). */
-    private record ModeloOcorrencia(
-            EventoEntity base, List<UUID> locais, List<UUID> ativos, List<EventoEnvolvidoEntity> envolvidos) {
     }
 }
