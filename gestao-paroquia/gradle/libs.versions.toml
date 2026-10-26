@@ -15,7 +15,7 @@ apache-poi = "5.5.1"
 openpdf = "3.0.5"
 checkstyle-tool = "13.8.0"
 pmd-tool = "7.16.0"
-archunit = "1.4.0"
+archunit = "1.4.2"
 testcontainers = "1.20.4"
 
 [libraries]

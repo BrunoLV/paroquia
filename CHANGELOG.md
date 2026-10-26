@@ -8,6 +8,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+### Corrigido
+- **ArchUnit deixava de analisar o código (regras vacuosas):** o ArchUnit 1.4.0 não lê bytecode do Java 25 e importava 0 classes, então todas as regras passavam sem verificar nada (mascarado por `archRule.failOnEmptyShould=false`). Atualizado para ArchUnit 1.4.2 (`libs.versions.toml`) e `failOnEmptyShould=true`; regra sem classes analisadas agora falha.
+- **Pureza do domínio:** a normalização de enums (`EnumRequestNormalizer`) passa para `support.domain` (função pura); `@JsonCreator`/`@JsonValue` saem dos 13 enums de domínio e o vínculo JSON fica em mix-ins `@JacksonMixin` por contexto na camada `api` (desserialização das requisições inalterada); a policy de gerenciamento de usuários do IAM lança `GerenciamentoUsuarioNegadoException` em vez da `AccessDeniedException` do Spring, mapeada para 403/`ACCESS_DENIED` no `SecurityExceptionHandler` (corpo idêntico).
+- **Auditoria manual removida:** casos de uso, mappers e serviço de idempotência não preenchem mais `criadoEmUtc`/`atualizadoEmUtc`/`criadoPor`; os setters de `BaseAuditableEntity` são `protected` e os aliases `setCreatedAt`/`setUpdatedAt` foram removidos. Os construtores de reidratação das entidades mantêm o instante já persistido para o `merge`.
+- **`@Order` dos advices:** segurança 1, contextos 2, validação 3, global `LOWEST_PRECEDENCE` explícito (substitui o `@Order()` vazio).
+
+### Adicionado
+- **Fronteiras arquiteturais protegidas por ArchUnit:** regras de encapsulamento entre contextos (um contexto não acessa `application`/`infrastructure` de outro; `support` é o núcleo compartilhado), de dependência mútua entre contextos e de proibição de chamar setters de auditoria fora das entidades. O legado é congelado com `FreezingArchRule` em `app/src/test/resources/archunit_store`; qualquer violação nova falha o build.
+
 ---
 
 ## [0.12.1] - 2026-10-25
