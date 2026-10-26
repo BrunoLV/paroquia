@@ -125,7 +125,8 @@ public class ClerigoController {
             @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
     public ClerigoResponse criar(@RequestBody @Valid ClerigoRequest request) {
-        return useCase.criar(request, actor.resolveRequired().actor());
+        var context = actor.resolveRequired();
+        return useCase.criar(request, context.actor(), context.role());
     }
 
     @PutMapping("/{id}")
@@ -142,7 +143,8 @@ public class ClerigoController {
     public ClerigoResponse atualizar(
             @Parameter(description = "Identificador único do clérigo") @PathVariable UUID id,
             @RequestBody @Valid ClerigoRequest request) {
-        return useCase.atualizar(id, request, actor.resolveRequired().actor());
+        var context = actor.resolveRequired();
+        return useCase.atualizar(id, request, context.actor(), context.role());
     }
 
     @DeleteMapping("/{id}")

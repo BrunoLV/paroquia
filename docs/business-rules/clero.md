@@ -27,6 +27,8 @@ Assegurar o registro formal do clero paroquial e diocesano, mantendo o históric
 
 ### RN-CLE-02: Encargo Atual
 - Cada mudança de função **encerra o encargo atual** do clérigo e abre um novo, atribuído à unidade territorial sede (a Matriz). O encargo anterior fica no histórico com a data de encerramento.
+- **Provisão é ato de governo:** conferir ou alterar a função de um clérigo (no cadastro ou na edição) cabe somente ao **Pároco** e ao **Bispo Diocesano**; a secretaria e o Admin mantêm apenas os dados cadastrais. Reenviar a mesma função não encerra nem reabre o encargo (o histórico só muda quando a função muda).
+- **Titular único:** só pode haver um Pároco ou Administrador Paroquial ativo na paróquia; para nomear outro é preciso antes encerrar o encargo do titular atual.
 - Inativar o clérigo **encerra os encargos vigentes** e desabilita a conta de acesso que ele tiver.
 
 ### RN-CLE-03: Governo da Paróquia
