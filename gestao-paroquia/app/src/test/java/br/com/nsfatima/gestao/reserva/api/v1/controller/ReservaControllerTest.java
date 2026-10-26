@@ -108,7 +108,7 @@ class ReservaControllerTest {
 
         CriarReservaRequest request = new CriarReservaRequest(
                 TipoItemReserva.LOCAL, UUID.randomUUID(), "Item", Instant.now().plus(1, ChronoUnit.HOURS),
-                Instant.now().plus(2, ChronoUnit.HOURS), 15, "desc", UUID.randomUUID(), null, null);
+                Instant.now().plus(2, ChronoUnit.HOURS), 15, "desc", UUID.randomUUID());
 
         ReservaResponse response = controller().criar(request);
 

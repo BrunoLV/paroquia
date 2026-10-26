@@ -136,9 +136,7 @@ public class ReservaController {
                 request.dataHoraFim(),
                 request.bufferMinutos(),
                 request.descricao(),
-                request.pastoralMovimentoId(),
-                request.eventoId(),
-                request.grupoRecorrenciaId()
+                request.pastoralMovimentoId()
         );
 
         Reserva criada = criarReservaUseCase.executar(comando, ator);
