@@ -8,6 +8,8 @@ import br.com.nsfatima.gestao.projeto.domain.service.ProjetoAgregacaoDomainServi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.ZoneId;
+
 /** Registra Policies puras do contexto de projetos. */
 @Configuration
 public class ProjetoDomainConfig {
@@ -23,7 +25,7 @@ public class ProjetoDomainConfig {
     }
 
     @Bean
-    public ProjetoVincularPolicy projetoVincularPolicy() {
-        return new PeriodoProjetoVincularPolicy();
+    public ProjetoVincularPolicy projetoVincularPolicy(ZoneId outputZoneId) {
+        return new PeriodoProjetoVincularPolicy(outputZoneId);
     }
 }

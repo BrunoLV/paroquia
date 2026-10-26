@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
+import java.time.ZoneId;
+import java.time.Clock;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.domain.exception.RegraEclesialImutavelException;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoCicloLiturgico;
@@ -22,10 +25,13 @@ import static org.mockito.Mockito.mock;
  */
 class LiturgicalGovernanceTest {
 
+    private static final RelogioNegocio RELOGIO = new RelogioNegocio(
+            Clock.systemUTC(), ZoneId.of("America/Sao_Paulo"));
+
     private final ProvisionamentoLiturgicoService service = new ProvisionamentoLiturgicoService(
             mock(AnoLiturgicoRepository.class),
             mock(CicloLiturgicoRepository.class),
-            new MotorLiturgico(),
+            new MotorLiturgico(RELOGIO),
             mock(EventoJpaRepository.class),
             mock(UnidadeTerritorialJpaRepository.class),
             mock(SolenidadeLiturgicaJpaRepository.class));

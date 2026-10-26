@@ -7,12 +7,12 @@ import br.com.nsfatima.gestao.governanca.domain.model.AnoParoquialStatus;
 import br.com.nsfatima.gestao.governanca.domain.repository.AnoParoquialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 /**
  * Orquestra a virada entre anos paroquiais: quando um ano é dado como {@code CONCLUIDO} (pelo job
@@ -27,21 +27,24 @@ public class AnoParoquialRolloverService {
 
     private final AnoParoquialRepository repository;
     private final SucessaoAnoParoquialService sucessaoService;
+    private final RelogioNegocio relogio;
 
     public AnoParoquialRolloverService(
             AnoParoquialRepository repository,
-            SucessaoAnoParoquialService sucessaoService) {
+            SucessaoAnoParoquialService sucessaoService,
+            RelogioNegocio relogio) {
         this.repository = repository;
         this.sucessaoService = sucessaoService;
+        this.relogio = relogio;
     }
 
     /**
      * Rollover automático do Ano Paroquial: executa em 31 de dezembro às 23:59:59.
      */
-    @Scheduled(cron = "59 59 23 31 12 *")
+    @Scheduled(cron = "59 59 23 31 12 *", zone = "${app.timezone.output:America/Sao_Paulo}")
     @Transactional
     public void transicionarAnoAutomaticamente() {
-        int anoCorrente = LocalDate.now().getYear();
+        int anoCorrente = relogio.hoje().getYear();
         LOGGER.info("Iniciando rollover automático do Ano Paroquial para o ano {}", anoCorrente);
         concluirAno(anoCorrente);
     }
