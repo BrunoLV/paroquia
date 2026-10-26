@@ -59,6 +59,7 @@ const detalhe: Ata = {
   conteudo: {
     titulo: 'Reforma do telhado da capela', dataReuniao: '2026-06-01', local: 'Salão paroquial',
     carater: 'ORDINARIA', modalidade: 'PRESENCIAL',
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     presencas: [{ fielId: 'f1', nome: 'Maria da Silva', funcao: 'Secretária', situacao: 'PRESENTE' }],
     totalParticipantes: null, ataAnteriorId: null, aprovacaoAtaAnterior: 'NAO_APLICAVEL', ressalvasAtaAnterior: null,
     itens: [{

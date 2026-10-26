@@ -8,6 +8,7 @@ vi.mock('@/shared/infrastructure/http/client');
 const mockedApiClient = vi.mocked(apiClient);
 
 test('renders Gestão Paróquia heading', async () => {
+  // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
   mockedApiClient.get.mockResolvedValueOnce({ data: null });
 
   await act(async () => {

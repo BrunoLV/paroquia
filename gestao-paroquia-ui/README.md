@@ -59,7 +59,7 @@ npm run lint
 # Formatação (Prettier): checa os arquivos já adotados; use `npm run format -- <caminho>` para adotar mais
 npm run format:check
 
-# Checagem de tipos dos testes (backlog conhecido; não bloqueia o CI)
+# Checagem de tipos dos testes
 npm run typecheck:tests
 
 # Cobertura com piso mínimo (thresholds em vite.config.ts)

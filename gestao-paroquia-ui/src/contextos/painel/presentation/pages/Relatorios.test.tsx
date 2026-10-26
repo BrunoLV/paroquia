@@ -31,6 +31,7 @@ describe('Relatorios Page', () => {
   });
 
   const renderReports = async (user: any = { id: '1', name: 'Admin', roles: ['ADMIN'], organizations: [] }) => {
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockedApiClient.get.mockImplementation((url: string) => {
       if (url === '/autenticacao/meu-perfil') {
         return Promise.resolve({ data: user });
@@ -160,6 +161,7 @@ describe('Relatorios Page', () => {
   });
 
   it('renders error state on API failure', async () => {
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     mockedApiClient.get.mockImplementation((url: string) => {
       if (url === '/autenticacao/meu-perfil') return Promise.resolve({ data: { id: '1', name: 'Admin', roles: ['ADMIN'] } });
       return Promise.reject(new Error('Network Error'));
