@@ -243,7 +243,7 @@ services:
   # 6. pgAdmin 4 - Gerenciador Web do PostgreSQL
   # ----------------------------------------------------------------------------
   pgadmin:
-    image: dpage/pgadmin4:9.1
+    image: dpage/pgadmin4:9.18
     container_name: gestao-pgadmin
     restart: unless-stopped
     networks:
