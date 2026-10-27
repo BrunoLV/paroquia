@@ -306,7 +306,7 @@ services:
   # 8. Grafana - Visualização e Dashboards de Observabilidade (v11)
   # ----------------------------------------------------------------------------
   grafana:
-    image: grafana/grafana:11.5.2
+    image: grafana/grafana:13.2.4
     container_name: gestao-grafana
     restart: unless-stopped
     networks:
