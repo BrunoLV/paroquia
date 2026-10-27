@@ -36,9 +36,9 @@ describe('PortalConsentimentoPage', () => {
 
   it('deve solicitar código OTP e avançar para a etapa de validação', async () => {
     vi.mocked(consentimentoApi.solicitarCodigoConsentimento).mockResolvedValueOnce({
-      emailMascarado: 'b***@teste.com',
+      emailMascarado: '***@***',
       expiraEmSegundos: 600,
-      mensagem: 'Código enviado com sucesso',
+      mensagem: 'Se este CPF estiver cadastrado, um código foi enviado.',
     });
 
     renderComponent();
@@ -54,7 +54,8 @@ describe('PortalConsentimentoPage', () => {
         cpf: '12345678909',
       });
       expect(screen.getByText(/Validação de Posse de E-mail/i)).toBeInTheDocument();
-      expect(screen.getByText(/b\*\*\*@teste\.com/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Se este CPF estiver cadastrado, um código foi enviado/i).length).toBeGreaterThan(0);
+      expect(screen.queryByText(/@teste\.com/i)).not.toBeInTheDocument();
     });
   });
 });

@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "br.com.nsfatima"
-version = "0.12.1"
+version = "0.13.0"
 
 
 checkstyle {
@@ -28,7 +28,7 @@ pmd {
 }
 
 spotbugs {
-    ignoreFailures.set(true)
+    ignoreFailures.set(false)
     excludeFilter.set(file("${rootDir}/config/spotbugs/spotbugs-filter.xml"))
 }
 
@@ -49,12 +49,13 @@ dependencies {
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.cache)
+    implementation(libs.spring.boot.starter.mail)
     implementation(libs.caffeine)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.micrometer.registry.prometheus)
     implementation(libs.springdoc.openapi)
     implementation(libs.spring.boot.starter.flyway)
-    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    implementation(libs.spring.boot.starter.quartz)
     implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql)
     implementation(libs.apache.poi)

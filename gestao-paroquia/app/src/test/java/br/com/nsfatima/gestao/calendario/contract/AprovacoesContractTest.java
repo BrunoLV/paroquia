@@ -73,7 +73,6 @@ class AprovacoesContractTest {
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setMotivoCancelamentoSnapshot("Aprovado pelo pároco.");
         aprovacaoJpaRepository.save(aprovacao);
 

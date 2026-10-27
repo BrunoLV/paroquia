@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import type { ApiHttpError } from '@/shared/infrastructure/http/apiError';
 
 interface ApiErrorItem {
   message?: string;
@@ -15,7 +15,7 @@ interface ApiErrorResponseData {
  */
 export function extractErrorMessage(err: unknown, fallback: string): string {
   if (err && typeof err === 'object' && 'response' in err) {
-    const axiosError = err as AxiosError<ApiErrorResponseData>;
+    const axiosError = err as ApiHttpError<ApiErrorResponseData>;
     const data = axiosError.response?.data;
     if (data) {
       if (Array.isArray(data.errors) && data.errors.length > 0) {

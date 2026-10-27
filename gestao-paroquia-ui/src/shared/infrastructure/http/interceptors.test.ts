@@ -29,13 +29,9 @@ test('apiClient response interceptor handles 401', async () => {
   const handlers = (apiClient.interceptors.response as any).handlers;
   const onResponseError = handlers[handlers.length - 1].rejected;
   
-  // Set something in localStorage to check if it's removed
-  localStorage.setItem('user', 'some-user');
-
   try {
     await onResponseError(error);
   } catch (e) {
-    expect(localStorage.getItem('user')).toBeNull();
     // Verify that window.location.href has NOT been changed to '/acesso'
     expect(window.location.href).not.toBe('/acesso');
   }

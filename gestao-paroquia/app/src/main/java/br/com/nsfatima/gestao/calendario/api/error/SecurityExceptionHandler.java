@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.calendario.api.error;
 
 import br.com.nsfatima.gestao.calendario.domain.exception.OperacaoProibidaException;
 import br.com.nsfatima.gestao.calendario.infrastructure.security.PapelEscopoInvalidoException;
+import br.com.nsfatima.gestao.iam.domain.exception.GerenciamentoUsuarioNegadoException;
 import br.com.nsfatima.gestao.observabilidade.application.service.AuditoriaPersistenceService;
 import br.com.nsfatima.gestao.support.api.v1.error.BaseExceptionHandler;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -61,9 +62,9 @@ public class SecurityExceptionHandler extends BaseExceptionHandler {
                         null)));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AccessDeniedException.class, GerenciamentoUsuarioNegadoException.class})
     public ResponseEntity<ValidationErrorResponse> handleAccessDenied(
-            AccessDeniedException ex,
+            RuntimeException ex,
             HttpServletRequest request) {
         logSecurityDenial(ErrorCodes.ACCESS_DENIED, ex.getMessage(), request);
         return buildValidation(

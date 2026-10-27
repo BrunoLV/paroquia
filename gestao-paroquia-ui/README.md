@@ -25,8 +25,8 @@ Interface administrativa desenvolvida em **React 19** para o sistema de gestão 
 
 ### Pré-requisitos
 
-- **Node.js:** v18 ou superior
-- **npm:** v9 ou superior
+- **Node.js:** v22 (LTS) ou superior — mesma versão do `Dockerfile.ui` e do CI
+- **npm:** v10 ou superior
 
 ### Scripts disponíveis
 
@@ -52,6 +52,18 @@ npm run build
 
 # Executar servidor local de pré-visualização do build de produção
 npm run preview
+
+# Lint (ESLint flat config: typescript-eslint, react-hooks, jsx-a11y, fronteiras DDD)
+npm run lint
+
+# Formatação (Prettier): checa os arquivos já adotados; use `npm run format -- <caminho>` para adotar mais
+npm run format:check
+
+# Checagem de tipos dos testes
+npm run typecheck:tests
+
+# Cobertura com piso mínimo (thresholds em vite.config.ts)
+npm run test:coverage
 ```
 
 ---

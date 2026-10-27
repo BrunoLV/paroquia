@@ -8,6 +8,7 @@ import br.com.nsfatima.gestao.clero.domain.model.Clerigo;
 import br.com.nsfatima.gestao.clero.domain.model.DadosCadastraisClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.EnderecoClerigo;
 import br.com.nsfatima.gestao.clero.domain.model.FuncaoEclesiastica;
+import br.com.nsfatima.gestao.clero.domain.policy.PoliticaProvisaoEncargo;
 import br.com.nsfatima.gestao.clero.infrastructure.observability.ClerigoAuditPublisher;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.EncargoClericalEntity;
@@ -22,6 +23,7 @@ import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.repository.
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,12 +55,19 @@ public class GerenciarClerigoUseCase {
         this.mapper = mapper;
     }
 
+    /**
+     * Cadastra o clérigo. Conferir função (encargo) no cadastro exige alçada de provisão.
+     *
+     * @param papelAtor papel do ator, usado para autorizar a provisão de função
+     * @throws AccessDeniedException se o ator informar função sem ser Pároco ou Bispo Diocesano
+     * @throws IllegalArgumentException se já houver outro Pároco ativo e a função informada for de Pároco
+     */
     @Transactional
-    public ClerigoResponse criar(ClerigoRequest request, String actor) {
+    public ClerigoResponse criar(ClerigoRequest request, String actor, String papelAtor) {
         Clerigo agregado = Clerigo.cadastrar(UUID.randomUUID(), dados(request), actor, Instant.now());
         ClerigoEntity clerigo = mapper.toEntity(agregado);
         clerigos.save(clerigo);
-        atualizarEncargo(clerigo.getId(), request.funcaoAtual());
+        atualizarEncargo(clerigo.getId(), request.funcaoAtual(), papelAtor);
         return resposta(clerigo);
     }
 
@@ -84,13 +93,21 @@ public class GerenciarClerigoUseCase {
         return obter(usuario.getClerigoId());
     }
 
+    /**
+     * Atualiza o cadastro. A função só é tocada se mudou em relação ao encargo atual; mudá-la exige alçada de
+     * provisão, e reenviar a mesma função não encerra nem reabre o encargo.
+     *
+     * @param papelAtor papel do ator, usado para autorizar a mudança de função
+     * @throws AccessDeniedException se a função mudou e o ator não for Pároco ou Bispo Diocesano
+     * @throws IllegalArgumentException se já houver outro Pároco ativo e a função informada for de Pároco
+     */
     @Transactional
-    public ClerigoResponse atualizar(UUID id, ClerigoRequest request, String actor) {
+    public ClerigoResponse atualizar(UUID id, ClerigoRequest request, String actor, String papelAtor) {
         ClerigoEntity clerigo = encontrar(id);
         Clerigo agregado = mapper.toDomain(clerigo);
         agregado.atualizarCadastro(dados(request), actor, Instant.now());
         mapper.aplicar(agregado, clerigo);
-        atualizarEncargo(id, request.funcaoAtual());
+        atualizarEncargo(id, request.funcaoAtual(), papelAtor);
         return resposta(clerigo);
     }
 
@@ -178,12 +195,17 @@ public class GerenciarClerigoUseCase {
                 r.dataOrdenacaoDiaconal(), r.dataOrdenacaoPresbiteral(), r.dataOrdenacaoEpiscopal());
     }
 
-    private void atualizarEncargo(UUID clerigoId, FuncaoEclesiastica funcao) {
+    private void atualizarEncargo(UUID clerigoId, FuncaoEclesiastica funcao, String papelAtor) {
         if (funcao == null) {
             return;
         }
+        List<EncargoClericalEntity> atuais = encargos.findByClerigoIdAndAtualTrue(clerigoId);
+        if (atuais.stream().anyMatch(e -> e.getFuncao() == funcao)) {
+            return;
+        }
+        exigirProvisao(clerigoId, funcao, papelAtor);
         Instant agora = Instant.now();
-        encargos.findByClerigoIdAndAtualTrue(clerigoId).forEach(e -> {
+        atuais.forEach(e -> {
             e.setAtual(false);
             e.setEncerradoEmUtc(agora);
         });
@@ -202,7 +224,22 @@ public class GerenciarClerigoUseCase {
         encargo.setUnidadeTerritorialId(unidadeSede);
         encargo.setFuncao(funcao);
         encargo.setAtual(true);
-        encargo.setCriadoEmUtc(agora);
         encargos.save(encargo);
+    }
+
+    private void exigirProvisao(UUID clerigoId, FuncaoEclesiastica funcao, String papelAtor) {
+        if (!PoliticaProvisaoEncargo.temAlcada(papelAtor)) {
+            throw new AccessDeniedException(
+                    "Apenas o Pároco ou o Bispo Diocesano podem conferir ou alterar a função de um clérigo");
+        }
+        if (PoliticaProvisaoEncargo.exigeTitularUnico(funcao)) {
+            boolean outroTitular = PoliticaProvisaoEncargo.funcoesDeParoco().stream()
+                    .flatMap(f -> encargos.findByFuncaoAndAtualTrue(f).stream())
+                    .anyMatch(e -> !clerigoId.equals(e.getClerigoId()));
+            if (outroTitular) {
+                throw new IllegalArgumentException("Já existe um Pároco (ou Administrador Paroquial) ativo; "
+                        + "encerre o encargo dele antes de nomear outro");
+            }
+        }
     }
 }

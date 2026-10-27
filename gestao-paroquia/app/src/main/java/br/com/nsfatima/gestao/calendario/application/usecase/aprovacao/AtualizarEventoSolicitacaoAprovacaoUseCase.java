@@ -92,7 +92,6 @@ public class AtualizarEventoSolicitacaoAprovacaoUseCase {
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
-        entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(dataOcorrencia);
 
         AprovacaoAcaoPayload payload = buildPayload(eventoId, request, eventoExistente);

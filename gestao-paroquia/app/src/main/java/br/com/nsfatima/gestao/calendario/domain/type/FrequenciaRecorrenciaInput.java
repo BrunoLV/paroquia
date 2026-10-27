@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Frequência de recorrência de um evento conforme recebida em requisições da API,
@@ -24,7 +23,6 @@ public enum FrequenciaRecorrenciaInput {
      * @param rawValue valor textual recebido na requisição
      * @return constante de frequência normalizada
      */
-    @JsonCreator
     public static FrequenciaRecorrenciaInput fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, FrequenciaRecorrenciaInput.class);
     }

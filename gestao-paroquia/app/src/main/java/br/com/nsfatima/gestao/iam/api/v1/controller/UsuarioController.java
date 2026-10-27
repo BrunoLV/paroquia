@@ -224,6 +224,6 @@ public class UsuarioController {
             @Parameter(description = "Identificador único do usuário") @PathVariable UUID id,
             @Parameter(description = "Identificador único do vínculo") @PathVariable UUID vinculoId) {
         authorizationService.requireAdminOrCoordinatorOf(id);
-        removerVinculoUseCase.execute(vinculoId);
+        removerVinculoUseCase.execute(id, vinculoId);
     }
 }

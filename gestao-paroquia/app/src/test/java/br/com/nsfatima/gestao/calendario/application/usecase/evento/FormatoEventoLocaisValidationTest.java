@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.usecase.evento;
 
 import br.com.nsfatima.gestao.calendario.api.v1.dto.evento.CriarEventoRequest;
+import br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService;
+import br.com.nsfatima.gestao.calendario.application.service.EventoPatchAuthorizationService;
 import br.com.nsfatima.gestao.calendario.domain.exception.ViolacaoRegraNegocioException;
 import br.com.nsfatima.gestao.calendario.domain.policy.BloqueioAnoParoquialPolicy;
 import br.com.nsfatima.gestao.calendario.domain.service.EventoDomainService;
@@ -10,22 +12,31 @@ import br.com.nsfatima.gestao.calendario.domain.type.FormatoEvento;
 import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import br.com.nsfatima.gestao.projeto.application.service.ValidadorVinculoProjeto;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FormatoEventoLocaisValidationTest {
+
+    private static final RelogioNegocio RELOGIO = new RelogioNegocio(
+            Clock.fixed(Instant.parse("2026-10-01T12:00:00Z"), ZoneOffset.UTC), ZoneId.of("America/Sao_Paulo"));
 
     @Mock
     private EventoDomainService domainService;
@@ -43,7 +54,10 @@ class FormatoEventoLocaisValidationTest {
     private AnoParoquialJpaRepository anoParoquialRepository;
 
     @Mock
-    private br.com.nsfatima.gestao.calendario.application.service.EventoIdempotencyService idempotencyService;
+    private EventoIdempotencyService idempotencyService;
+
+    @Mock
+    private EventoPatchAuthorizationService authorizationService;
 
     @Test
     @DisplayName("CriarEvento: formato PRESENCIAL sem locais deve lançar ViolacaoRegraNegocioException")
@@ -51,7 +65,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, null,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
 
         when(actorContextResolver.resolveRequired())
@@ -91,7 +106,8 @@ class FormatoEventoLocaisValidationTest {
         CriarEventoUseCase useCase = new CriarEventoUseCase(
                 domainService, null, null, null, idempotencyService, null, null, null,
                 actorContextResolver, null, null, validadorVinculoProjeto,
-                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
         );
 
         when(actorContextResolver.resolveRequired())
@@ -123,5 +139,57 @@ class FormatoEventoLocaisValidationTest {
         assertThatThrownBy(() -> useCase.execute("idemp-2", request))
                 .isInstanceOf(ViolacaoRegraNegocioException.class)
                 .hasMessageContaining("Ao menos um local deve ser informado para eventos presenciais ou híbridos");
+    }
+
+    private CriarEventoRequest requestSemLocais(FormatoEvento formato) {
+        return new CriarEventoRequest("Retiro", "Descricao", null, UUID.randomUUID(), null, null, List.of(), null,
+                Instant.parse("2026-10-15T10:00:00Z"), Instant.parse("2026-10-15T18:00:00Z"),
+                null, null, null, null, null, null, null, TipoHorarioEvento.PERSONALIZADO, formato);
+    }
+
+    @Test
+    @DisplayName("validarCriacao: aplica a mesma validação estrutural do execute, sem tocar na idempotência")
+    void validarCriacaoRejeitaPresencialSemLocais() {
+        CriarEventoUseCase useCase = new CriarEventoUseCase(
+                domainService, null, null, null, idempotencyService, null, null, authorizationService,
+                actorContextResolver, null, null, validadorVinculoProjeto,
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
+        );
+        when(actorContextResolver.resolveRequired())
+                .thenReturn(new EventoActorContext("admin", "PAROCO", "PAROQUIA", null, null, null));
+
+        assertThatThrownBy(() -> useCase.validarCriacao(requestSemLocais(FormatoEvento.PRESENCIAL)))
+                .isInstanceOf(ViolacaoRegraNegocioException.class)
+                .hasMessageContaining("Ao menos um local deve ser informado");
+        verify(idempotencyService, never()).findExisting(any(), any());
+    }
+
+    @Test
+    @DisplayName("validarCriacao: exige justificativa do secretário e confere o escopo de criação do ator")
+    void validarCriacaoExigeJustificativaDoSecretarioEConfereEscopo() {
+        CriarEventoUseCase useCase = new CriarEventoUseCase(
+                domainService, null, null, null, idempotencyService, null, null, authorizationService,
+                actorContextResolver, null, null, validadorVinculoProjeto,
+                bloqueioAnoParoquialPolicy, anoParoquialRepository, null, null, null, null, null, null, null, null,
+                RELOGIO
+        );
+        EventoActorContext secretaria = new EventoActorContext("sec", "SECRETARIA_PAROQUIAL", "PAROQUIA",
+                null, null, null);
+        when(actorContextResolver.resolveRequired()).thenReturn(secretaria);
+
+        assertThatThrownBy(() -> useCase.validarCriacao(requestSemLocais(FormatoEvento.ONLINE)))
+                .isInstanceOf(ViolacaoRegraNegocioException.class)
+                .hasMessageContaining("Justificativa é obrigatória");
+
+        CriarEventoRequest comJustificativa = new CriarEventoRequest("Retiro", "Descricao", null,
+                UUID.randomUUID(), null, null, List.of(), null,
+                Instant.parse("2026-10-15T10:00:00Z"), Instant.parse("2026-10-15T18:00:00Z"),
+                null, "Carga inicial", null, null, null, null, null,
+                TipoHorarioEvento.PERSONALIZADO, FormatoEvento.ONLINE);
+        useCase.validarCriacao(comJustificativa);
+
+        verify(authorizationService).resolveModoRequisicaoCriacao(secretaria,
+                comJustificativa.organizacaoResponsavelId(), null);
     }
 }

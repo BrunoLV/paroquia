@@ -26,12 +26,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -195,6 +197,97 @@ class MembroUseCaseTest {
 
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
                 () -> adicionarUseCase.execute(requestGlobal, "admin"));
+    }
+
+    private void stubFielEOrganizacao(TipoOrganizacao tipo) {
+        FielEntity fiel = new FielEntity();
+        fiel.setId(fielId);
+        OrganizacaoEntity org = new OrganizacaoEntity();
+        org.setId(organizacaoId);
+        org.setTipo(tipo);
+        when(fielRepository.findById(fielId)).thenReturn(Optional.of(fiel));
+        when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.of(org));
+    }
+
+    @Test
+    @DisplayName("Cadastro de membros não confere COORDENADOR (exige promoção pelo Pároco)")
+    void naoAtribuiCoordenadorNoCadastroDeMembros() {
+        stubFielEOrganizacao(TipoOrganizacao.PASTORAL);
+        var comoCoordenador = new MembroRequest(fielId, organizacaoId, "COORDENADOR", LocalDate.now(), null, true);
+
+        assertThatThrownBy(() -> adicionarUseCase.execute(comoCoordenador, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("promoção");
+
+        verify(repository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    @DisplayName("Cadastro de membros não confere vice-coordenação (SECRETARIO_GRUPO), que exige idoneidade")
+    void naoAtribuiViceCoordenadorNoCadastroDeMembros() {
+        stubFielEOrganizacao(TipoOrganizacao.PASTORAL);
+        var comoVice = new MembroRequest(fielId, organizacaoId, "SECRETARIO_GRUPO", LocalDate.now(), null, true);
+
+        assertThatThrownBy(() -> adicionarUseCase.execute(comoVice, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(repository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    @DisplayName("Cadastro de membros não confere papéis de conselho")
+    void naoAtribuiPapelDeConselhoNoCadastroDeMembros() {
+        stubFielEOrganizacao(TipoOrganizacao.CONSELHO);
+        var comoSecretario = new MembroRequest(fielId, organizacaoId, "SECRETARIO_CONSELHO", LocalDate.now(), null,
+                true);
+
+        assertThatThrownBy(() -> adicionarUseCase.execute(comoSecretario, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(repository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    @DisplayName("Atualização não promove membro comum a COORDENADOR")
+    void naoPromoveACoordenadorPelaAtualizacao() {
+        stubFielEOrganizacao(TipoOrganizacao.PASTORAL);
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+        var comoCoordenador = new MembroRequest(fielId, organizacaoId, "COORDENADOR", LocalDate.now(), null, true);
+
+        assertThatThrownBy(() -> updateUseCase.execute(entity.getId(), comoCoordenador, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(repository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    @DisplayName("Atualização de dados de um coordenador que mantém o papel é permitida")
+    void atualizaDadosDeCoordenadorSemMudarPapel() {
+        entity.setPapel("coordenador");
+        entity.setAtivo(true);
+        stubFielEOrganizacao(TipoOrganizacao.PASTORAL);
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+        when(repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
+                .thenReturn(Optional.of(entity));
+        when(repository.save(any(MembroGrupoEntity.class))).thenReturn(entity);
+        var mesmoPapel = new MembroRequest(fielId, organizacaoId, "COORDENADOR", LocalDate.now(), null, true);
+
+        updateUseCase.execute(entity.getId(), mesmoPapel, "secretaria");
+
+        verify(repository).save(entity);
+    }
+
+    @Test
+    @DisplayName("Reativar vínculo de coordenador pelo cadastro de membros é recusado")
+    void naoReativaVinculoDeCoordenador() {
+        entity.setPapel("coordenador");
+        entity.setAtivo(false);
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+
+        assertThatThrownBy(() -> updateUseCase.alternarAtivo(entity.getId(), true, "secretaria"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertFalse(entity.isAtivo());
     }
 
     @Test

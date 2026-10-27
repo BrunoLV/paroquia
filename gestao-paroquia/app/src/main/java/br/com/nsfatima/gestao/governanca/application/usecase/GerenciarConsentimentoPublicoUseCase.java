@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.governanca.application.usecase;
 
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.entity.ClerigoEntity;
 import br.com.nsfatima.gestao.clero.infrastructure.persistence.repository.ClerigoJpaRepository;
+import br.com.nsfatima.gestao.fiel.domain.service.ValidacaoDocumentoCivil;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.governanca.api.v1.dto.ComprovanteConsentimentoResponse;
@@ -15,12 +16,16 @@ import br.com.nsfatima.gestao.governanca.application.service.ServicoEmailNotific
 import br.com.nsfatima.gestao.governanca.application.service.TokenConsentimentoService;
 import br.com.nsfatima.gestao.governanca.domain.model.TipoEventoConsentimento;
 import br.com.nsfatima.gestao.governanca.domain.model.TipoTitularConsentimento;
+import br.com.nsfatima.gestao.governanca.domain.port.EnviadorEmailConsentimento;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.DesafioConsentimentoEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.HistoricoConsentimentoEntity;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.DesafioConsentimentoJpaRepository;
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.HistoricoConsentimentoJpaRepository;
+import br.com.nsfatima.gestao.support.infrastructure.crypto.CpfBlindIndex;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -59,12 +64,26 @@ public class GerenciarConsentimentoPublicoUseCase {
             para marketing econômico de terceiros (Art. 11, § 4º da LGPD).
             """;
 
+    private static final int MAX_PEDIDOS_CODIGO = 3;
+    private static final long JANELA_PEDIDOS_SEGUNDOS = 15L * 60;
+    private static final int MAX_TENTATIVAS_CODIGO = 3;
+    private static final int VALIDADE_CODIGO_SEGUNDOS = 600;
+    private static final long RETENCAO_DESAFIOS_SEGUNDOS = 24L * 3600;
+    private static final String MSG_CODIGO_INVALIDO = "Código de verificação inválido ou expirado.";
+    private static final SolicitarCodigoConsentimentoResponse RESPOSTA_PEDIDO_CODIGO =
+            new SolicitarCodigoConsentimentoResponse(
+                    "***@***", VALIDADE_CODIGO_SEGUNDOS,
+                    "Se este CPF estiver cadastrado em nossa paróquia e possuir e-mail registrado, um código de "
+                            + "verificação foi enviado. Caso não o receba, contate a secretaria paroquial.");
+
     private final FielJpaRepository fielRepository;
     private final ClerigoJpaRepository clerigoRepository;
     private final DesafioConsentimentoJpaRepository desafioRepository;
     private final HistoricoConsentimentoJpaRepository historicoRepository;
     private final ServicoEmailNotificacaoConsentimento emailService;
+    private final EnviadorEmailConsentimento enviadorEmail;
     private final TokenConsentimentoService tokenService;
+    private final ValidacaoDocumentoCivil validacaoDocumento = new ValidacaoDocumentoCivil();
     private final String termoHashPadrao;
 
     public GerenciarConsentimentoPublicoUseCase(
@@ -73,12 +92,14 @@ public class GerenciarConsentimentoPublicoUseCase {
             DesafioConsentimentoJpaRepository desafioRepository,
             HistoricoConsentimentoJpaRepository historicoRepository,
             ServicoEmailNotificacaoConsentimento emailService,
+            EnviadorEmailConsentimento enviadorEmail,
             TokenConsentimentoService tokenService) {
         this.fielRepository = fielRepository;
         this.clerigoRepository = clerigoRepository;
         this.desafioRepository = desafioRepository;
         this.historicoRepository = historicoRepository;
         this.emailService = emailService;
+        this.enviadorEmail = enviadorEmail;
         this.tokenService = tokenService;
         this.termoHashPadrao = calcularHash(TEXTO_TERMO_PADRAO);
     }
@@ -97,82 +118,81 @@ public class GerenciarConsentimentoPublicoUseCase {
             Instant dataHoraConsentimentoUtc
     ) {}
 
+    private record Responsavel(String nome, String cpf) {
+        static final Responsavel AUSENTE = new Responsavel(null, null);
+
+        boolean presente() {
+            return nome != null;
+        }
+    }
+
+    /**
+     * Pede um código OTP (RN-LGP-10). A resposta é sempre a mesma — CPF inexistente, titular sem e-mail,
+     * limite de pedidos excedido ou código enviado —, para que o canal público não permita enumerar titulares.
+     * No máximo {@value #MAX_PEDIDOS_CODIGO} códigos por titular a cada 15 minutos; pedidos excedentes são
+     * descartados em silêncio. O e-mail só é disparado após o commit e a porta de envio é assíncrona, para
+     * não criar diferença de latência entre CPF existente e inexistente.
+     */
     public SolicitarCodigoConsentimentoResponse solicitarCodigo(SolicitarCodigoConsentimentoRequest request) {
-        String cpfLimpo = limparCpf(request.cpf());
-        Optional<TitularEncontrado> titularOpt = buscarTitularPorCpf(cpfLimpo);
-
+        Instant agora = Instant.now();
+        desafioRepository.deleteByCriadoEmUtcBefore(agora.minusSeconds(RETENCAO_DESAFIOS_SEGUNDOS));
+        Optional<TitularEncontrado> titularOpt = buscarTitularPorCpf(limparCpf(request.cpf()))
+                .filter(t -> t.email() != null && !t.email().isBlank());
         if (titularOpt.isEmpty()) {
-            return new SolicitarCodigoConsentimentoResponse(
-                    "***@***", 600,
-                    "Se este CPF estiver cadastrado em nossa paróquia, um código de verificação foi enviado "
-                            + "para o e-mail registrado.");
+            return RESPOSTA_PEDIDO_CODIGO;
         }
-
         TitularEncontrado titular = titularOpt.get();
-        if (titular.email() == null || titular.email().isBlank()) {
-            throw new IllegalArgumentException(
-                    "Cadastro paroquial localizado, mas não há um e-mail registrado. "
-                            + "Por favor, contate a secretaria paroquial para registrar seu e-mail.");
+        desafioRepository.travarPedidos("pedido-codigo:" + titular.tipo() + ":" + titular.id());
+        long pedidosRecentes = desafioRepository.countByTitularTipoAndTitularIdAndCriadoEmUtcAfter(
+                titular.tipo(), titular.id(), agora.minusSeconds(JANELA_PEDIDOS_SEGUNDOS));
+        if (pedidosRecentes >= MAX_PEDIDOS_CODIGO) {
+            return RESPOSTA_PEDIDO_CODIGO;
         }
-
-        desafioRepository.deleteAll(desafioRepository.findByTitularTipoAndTitularId(titular.tipo(), titular.id()));
 
         String codigo = emailService.gerarCodigoNumerico();
-        String codigoHash = emailService.hashCodigo(codigo);
-
         DesafioConsentimentoEntity desafio = new DesafioConsentimentoEntity();
         desafio.setId(UUID.randomUUID());
         desafio.setTitularTipo(titular.tipo());
         desafio.setTitularId(titular.id());
-        desafio.setCodigoHash(codigoHash);
+        desafio.setCodigoHash(emailService.hashCodigo(codigo));
         desafio.setTentativas(0);
-        desafio.setExpiraEmUtc(Instant.now().plusSeconds(600));
+        desafio.setExpiraEmUtc(agora.plusSeconds(VALIDADE_CODIGO_SEGUNDOS));
         desafioRepository.save(desafio);
 
-        emailService.enviarCodigoOtp(titular.email(), codigo);
-
-        return new SolicitarCodigoConsentimentoResponse(
-                emailService.mascararEmail(titular.email()),
-                600,
-                "Código de verificação de 6 dígitos enviado para o e-mail cadastrado.");
+        executarAposCommit(() -> enviadorEmail.enviarCodigoOtp(titular.email(), codigo));
+        return RESPOSTA_PEDIDO_CODIGO;
     }
 
+    /**
+     * Valida o OTP e emite o token de uso único. Toda falha — titular inexistente, sem desafio vigente, código
+     * errado ou tentativas esgotadas — produz a mesma mensagem. O contador de tentativas é persistido mesmo
+     * quando a exceção é lançada ({@code noRollbackFor}); sem isso o limite nunca valeria.
+     */
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
     public ValidarCodigoConsentimentoResponse validarCodigo(ValidarCodigoConsentimentoRequest request) {
-        String cpfLimpo = limparCpf(request.cpf());
-        TitularEncontrado titular = buscarTitularPorCpf(cpfLimpo)
-                .orElseThrow(() -> new IllegalArgumentException("Código de verificação inválido ou expirado."));
-
+        TitularEncontrado titular = buscarTitularPorCpf(limparCpf(request.cpf()))
+                .orElseThrow(() -> new IllegalArgumentException(MSG_CODIGO_INVALIDO));
         DesafioConsentimentoEntity desafio = desafioRepository
-                .findTopByTitularTipoAndTitularIdAndExpiraEmUtcAfterOrderByCriadoEmUtcDesc(
+                .findTopByTitularTipoAndTitularIdAndValidadoEmUtcIsNullAndExpiraEmUtcAfterOrderByCriadoEmUtcDesc(
                         titular.tipo(), titular.id(), Instant.now())
-                .orElseThrow(() -> new IllegalArgumentException("Código de verificação inválido ou expirado."));
+                .orElseThrow(() -> new IllegalArgumentException(MSG_CODIGO_INVALIDO));
 
-        if (desafio.getTentativas() >= 3) {
-            desafioRepository.delete(desafio);
-            throw new IllegalArgumentException(
-                    "Número máximo de tentativas incorretas excedido. Solicite um novo código.");
-        }
-
-        String codigoHashRecebido = emailService.hashCodigo(request.codigo());
-        if (!desafio.getCodigoHash().equals(codigoHashRecebido)) {
+        if (desafio.getTentativas() >= MAX_TENTATIVAS_CODIGO || !codigoConfere(desafio, request.codigo())) {
             desafio.setTentativas(desafio.getTentativas() + 1);
             desafioRepository.save(desafio);
-            throw new IllegalArgumentException(
-                    "Código de verificação incorreto. Tentativa " + desafio.getTentativas() + " de 3.");
+            throw new IllegalArgumentException(MSG_CODIGO_INVALIDO);
         }
 
-        desafioRepository.delete(desafio);
+        desafio.setValidadoEmUtc(Instant.now());
+        desafioRepository.save(desafio);
 
-        String token = tokenService.gerarToken(titular.tipo(), titular.id());
-        boolean isMenor = titular.dataNascimento() != null
-                && Period.between(titular.dataNascimento(), LocalDate.now(ZoneOffset.UTC)).getYears() < 18;
-
+        String token = tokenService.gerarToken(titular.tipo(), titular.id(), desafio.getId());
         return new ValidarCodigoConsentimentoResponse(
                 token,
                 titular.tipo().name(),
                 titular.id(),
                 titular.nome(),
-                isMenor,
+                ehMenor(titular.dataNascimento()),
                 titular.termoAceito(),
                 TERMO_VERSAO_PADRAO,
                 termoHashPadrao,
@@ -185,9 +205,22 @@ public class GerenciarConsentimentoPublicoUseCase {
         );
     }
 
+    /**
+     * Registra a manifestação. O token é de uso único: é consumido atomicamente antes de qualquer alteração e,
+     * se uma validação de negócio falhar, a transação reverte e o token continua utilizável para correção.
+     * Com {@code termoAceito=false} (revogação) as autorizações secundárias são sempre zeradas, ignorando o
+     * que o cliente enviou, e os dados do responsável legal só são exigidos e gravados para menores que aceitam.
+     */
     public ComprovanteConsentimentoResponse manifestar(
             String token, ManifestarConsentimentoRequest request, String ipOrigem, String userAgent) {
         TokenConsentimentoService.TokenPayload payload = tokenService.validarToken(token);
+        if (desafioRepository.consumir(payload.jti(), Instant.now()) == 0) {
+            throw new IllegalArgumentException("Token de sessão de consentimento já utilizado ou inválido.");
+        }
+        boolean aceito = request.termoAceito();
+        boolean usoImagem = aceito && request.usoImagemAutorizado();
+        boolean divulgacao = aceito && request.permitirDivulgacaoAniversario();
+        Responsavel responsavel;
         String nomeTitular;
         String emailTitular;
 
@@ -196,26 +229,14 @@ public class GerenciarConsentimentoPublicoUseCase {
                     .orElseThrow(() -> new IllegalArgumentException("Fiel não encontrado."));
             nomeTitular = fiel.getNome();
             emailTitular = fiel.getEmail();
-
-            boolean isMenor = fiel.getDataNascimento() != null
-                    && Period.between(fiel.getDataNascimento(), LocalDate.now(ZoneOffset.UTC)).getYears() < 18;
-
-            if (isMenor && request.termoAceito()) {
-                if (request.responsavelMenorNome() == null || request.responsavelMenorNome().isBlank()) {
-                    throw new IllegalArgumentException(
-                            "O nome do responsável legal é obrigatório para titulares menores de idade.");
-                }
-                if (request.responsavelMenorCpf() == null || request.responsavelMenorCpf().isBlank()) {
-                    throw new IllegalArgumentException(
-                            "O CPF do responsável legal é obrigatório para titulares menores de idade.");
-                }
-                fiel.setResponsavelMenorNome(request.responsavelMenorNome());
-                fiel.setResponsavelMenorCpf(request.responsavelMenorCpf());
+            responsavel = exigirResponsavelSeMenor(fiel.getDataNascimento(), request);
+            if (responsavel.presente()) {
+                fiel.setResponsavelMenorNome(responsavel.nome());
+                fiel.setResponsavelMenorCpf(responsavel.cpf());
             }
-
-            fiel.setTermoConsentimentoAceito(request.termoAceito());
-            fiel.setUsoImagemAutorizado(request.usoImagemAutorizado());
-            fiel.setPermitirDivulgacaoAniversario(request.permitirDivulgacaoAniversario());
+            fiel.setTermoConsentimentoAceito(aceito);
+            fiel.setUsoImagemAutorizado(usoImagem);
+            fiel.setPermitirDivulgacaoAniversario(divulgacao);
             fiel.setDataHoraConsentimentoUtc(Instant.now());
             fiel.setIpConsentimento(ipOrigem);
             fiel.setVersaoTermoConsentimento(TERMO_VERSAO_PADRAO);
@@ -227,10 +248,10 @@ public class GerenciarConsentimentoPublicoUseCase {
                     .orElseThrow(() -> new IllegalArgumentException("Clérigo não encontrado."));
             nomeTitular = clerigo.getNomeEclesiastico();
             emailTitular = clerigo.getEmail();
-
-            clerigo.setTermoConsentimentoAceito(request.termoAceito());
-            clerigo.setUsoImagemAutorizado(request.usoImagemAutorizado());
-            clerigo.setPermitirDivulgacaoAniversario(request.permitirDivulgacaoAniversario());
+            responsavel = Responsavel.AUSENTE;
+            clerigo.setTermoConsentimentoAceito(aceito);
+            clerigo.setUsoImagemAutorizado(usoImagem);
+            clerigo.setPermitirDivulgacaoAniversario(divulgacao);
             clerigo.setDataHoraConsentimentoUtc(Instant.now());
             clerigo.setIpConsentimento(ipOrigem);
             clerigo.setVersaoTermoConsentimento(TERMO_VERSAO_PADRAO);
@@ -239,30 +260,14 @@ public class GerenciarConsentimentoPublicoUseCase {
             clerigoRepository.save(clerigo);
         }
 
-        TipoEventoConsentimento evento = request.termoAceito()
-                ? TipoEventoConsentimento.CONCESSAO
-                : TipoEventoConsentimento.REVOGACAO;
-
-        HistoricoConsentimentoEntity historico = new HistoricoConsentimentoEntity();
-        historico.setId(UUID.randomUUID());
-        historico.setTitularTipo(payload.titularTipo());
-        historico.setTitularId(payload.titularId());
-        historico.setTipoEvento(evento);
-        historico.setCanal(CANAL_PORTAL);
-        historico.setMetodoAutenticacao(METODO_OTP);
-        historico.setTermoVersao(TERMO_VERSAO_PADRAO);
-        historico.setTermoHash(termoHashPadrao);
-        historico.setTermoAceito(request.termoAceito());
-        historico.setUsoImagemAutorizado(request.usoImagemAutorizado());
-        historico.setPermitirDivulgacaoAniversario(request.permitirDivulgacaoAniversario());
-        historico.setIpOrigem(ipOrigem);
-        historico.setUserAgent(userAgent);
-        historico.setResponsavelMenorNome(request.responsavelMenorNome());
-        historico.setResponsavelMenorCpf(request.responsavelMenorCpf());
-        historicoRepository.save(historico);
+        TipoEventoConsentimento evento = aceito ? TipoEventoConsentimento.CONCESSAO : TipoEventoConsentimento.REVOGACAO;
+        HistoricoConsentimentoEntity historico = registrarHistorico(
+                payload, evento, ipOrigem, userAgent, usoImagem, divulgacao, responsavel);
 
         if (emailTitular != null) {
-            emailService.enviarComprovante(emailTitular, evento.name(), historico.getId().toString());
+            String protocolo = historico.getId().toString();
+            String destinatario = emailTitular;
+            executarAposCommit(() -> enviadorEmail.enviarComprovante(destinatario, evento.name(), protocolo));
         }
 
         return new ComprovanteConsentimentoResponse(
@@ -272,7 +277,7 @@ public class GerenciarConsentimentoPublicoUseCase {
                 Instant.now(),
                 TERMO_VERSAO_PADRAO,
                 termoHashPadrao,
-                request.termoAceito()
+                aceito
                         ? "Consentimento e preferências registradas com sucesso."
                         : "Consentimento revogado com sucesso.");
     }
@@ -289,6 +294,47 @@ public class GerenciarConsentimentoPublicoUseCase {
                 .stream()
                 .map(this::mapHistorico)
                 .toList();
+    }
+
+    private Responsavel exigirResponsavelSeMenor(LocalDate nascimento, ManifestarConsentimentoRequest request) {
+        if (!ehMenor(nascimento) || !request.termoAceito()) {
+            return Responsavel.AUSENTE;
+        }
+        if (request.responsavelMenorNome() == null || request.responsavelMenorNome().isBlank()) {
+            throw new IllegalArgumentException(
+                    "O nome do responsável legal é obrigatório para titulares menores de idade.");
+        }
+        if (request.responsavelMenorCpf() == null || request.responsavelMenorCpf().isBlank()) {
+            throw new IllegalArgumentException(
+                    "O CPF do responsável legal é obrigatório para titulares menores de idade.");
+        }
+        if (!validacaoDocumento.cpfEstritamenteValido(request.responsavelMenorCpf())) {
+            throw new IllegalArgumentException("O CPF do responsável legal informado é inválido.");
+        }
+        return new Responsavel(request.responsavelMenorNome().trim(), limparCpf(request.responsavelMenorCpf()));
+    }
+
+    private HistoricoConsentimentoEntity registrarHistorico(
+            TokenConsentimentoService.TokenPayload payload, TipoEventoConsentimento evento, String ipOrigem,
+            String userAgent, boolean usoImagem, boolean divulgacao, Responsavel responsavel) {
+        HistoricoConsentimentoEntity historico = new HistoricoConsentimentoEntity();
+        historico.setId(UUID.randomUUID());
+        historico.setTitularTipo(payload.titularTipo());
+        historico.setTitularId(payload.titularId());
+        historico.setTipoEvento(evento);
+        historico.setCanal(CANAL_PORTAL);
+        historico.setMetodoAutenticacao(METODO_OTP);
+        historico.setTermoVersao(TERMO_VERSAO_PADRAO);
+        historico.setTermoHash(termoHashPadrao);
+        historico.setTermoAceito(evento == TipoEventoConsentimento.CONCESSAO);
+        historico.setUsoImagemAutorizado(usoImagem);
+        historico.setPermitirDivulgacaoAniversario(divulgacao);
+        historico.setIpOrigem(ipOrigem);
+        historico.setUserAgent(userAgent);
+        historico.setResponsavelMenorNome(responsavel.nome());
+        historico.setResponsavelMenorCpf(responsavel.cpf());
+        historicoRepository.save(historico);
+        return historico;
     }
 
     private HistoricoConsentimentoResponse mapHistorico(HistoricoConsentimentoEntity h) {
@@ -309,44 +355,49 @@ public class GerenciarConsentimentoPublicoUseCase {
                 h.getCriadoEmUtc());
     }
 
+    /**
+     * Localiza o titular pelo blind index (HMAC) do CPF, tanto de fiéis quanto de clérigos: nenhuma varredura
+     * com decifragem em lote é feita no canal público.
+     */
     private Optional<TitularEncontrado> buscarTitularPorCpf(String cpfLimpo) {
-        String cpfHash = calcularHash(cpfLimpo);
-        Optional<FielEntity> fielOpt = fielRepository.findByCpfHashAndAtivoTrue(cpfHash);
-        if (fielOpt.isPresent()) {
-            FielEntity f = fielOpt.get();
-            return Optional.of(new TitularEncontrado(
-                    TipoTitularConsentimento.FIEL,
-                    f.getId(),
-                    f.getNome(),
-                    f.getEmail(),
-                    f.getDataNascimento(),
-                    f.isTermoConsentimentoAceito(),
-                    f.isUsoImagemAutorizado(),
-                    f.isPermitirDivulgacaoAniversario(),
-                    f.getResponsavelMenorNome(),
-                    f.getResponsavelMenorCpf(),
-                    f.getDataHoraConsentimentoUtc()));
+        String cpfHash = CpfBlindIndex.hash(cpfLimpo);
+        Optional<TitularEncontrado> fiel = fielRepository.findByCpfHashAndAtivoTrue(cpfHash)
+                .map(f -> new TitularEncontrado(
+                        TipoTitularConsentimento.FIEL, f.getId(), f.getNome(), f.getEmail(),
+                        f.getDataNascimento(), f.isTermoConsentimentoAceito(), f.isUsoImagemAutorizado(),
+                        f.isPermitirDivulgacaoAniversario(), f.getResponsavelMenorNome(),
+                        f.getResponsavelMenorCpf(), f.getDataHoraConsentimentoUtc()));
+        if (fiel.isPresent()) {
+            return fiel;
         }
+        return clerigoRepository.findByCpfHashAndAtivoTrue(cpfHash)
+                .map(c -> new TitularEncontrado(
+                        TipoTitularConsentimento.CLERIGO, c.getId(), c.getNomeEclesiastico(), c.getEmail(),
+                        c.getDataNascimento(), c.isTermoConsentimentoAceito(), c.isUsoImagemAutorizado(),
+                        c.isPermitirDivulgacaoAniversario(), null, null, c.getDataHoraConsentimentoUtc()));
+    }
 
-        List<ClerigoEntity> clerigos = clerigoRepository.findByAtivoTrueOrderByNomeEclesiasticoAsc();
-        for (ClerigoEntity c : clerigos) {
-            if (c.getCpf() != null && limparCpf(c.getCpf()).equals(cpfLimpo)) {
-                return Optional.of(new TitularEncontrado(
-                        TipoTitularConsentimento.CLERIGO,
-                        c.getId(),
-                        c.getNomeEclesiastico(),
-                        c.getEmail(),
-                        c.getDataNascimento(),
-                        c.isTermoConsentimentoAceito(),
-                        c.isUsoImagemAutorizado(),
-                        c.isPermitirDivulgacaoAniversario(),
-                        null,
-                        null,
-                        c.getDataHoraConsentimentoUtc()));
-            }
+    private boolean codigoConfere(DesafioConsentimentoEntity desafio, String codigoInformado) {
+        byte[] esperado = desafio.getCodigoHash().getBytes(StandardCharsets.UTF_8);
+        byte[] recebido = emailService.hashCodigo(codigoInformado).getBytes(StandardCharsets.UTF_8);
+        return MessageDigest.isEqual(esperado, recebido);
+    }
+
+    private boolean ehMenor(LocalDate nascimento) {
+        return nascimento != null && Period.between(nascimento, LocalDate.now(ZoneOffset.UTC)).getYears() < 18;
+    }
+
+    private void executarAposCommit(Runnable acao) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    acao.run();
+                }
+            });
+        } else {
+            acao.run();
         }
-
-        return Optional.empty();
     }
 
     private String limparCpf(String cpf) {

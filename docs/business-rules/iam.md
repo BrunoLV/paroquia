@@ -61,19 +61,29 @@ O sistema adota estritamente 14 papéis ortogonais distribuídos em 3 camadas hi
 - **Pendência e Notificação de Homologação:** As contas criadas pela Secretaria Paroquial nascem desabilitadas (`enabled = false`). O sistema emite automaticamente uma notificação persistente (`tipo = "USUARIO_APROVACAO_PENDENTE"`) para todos os Párocos e Administradores ativos da paróquia.
 - **Papel Base e Acesso Inicial:** Todo usuário associado a um Fiel leigo nasce com a autoridade `ROLE_FIEL` atribuída. Usuários fiéis que ainda não possuam vínculo organizacional ativo em pastorais/movimentos navegam em escopo paroquial padrão (`PAROQUIA`), garantindo acesso ao dashboard pessoal sem falhas de escopo (`ROLE_SCOPE_INVALID`).
 - **Aprovação Privativa:** A deliberação e habilitação da conta (`PUT /api/v1/usuarios/{id}/aprovar`) é restrita privativamente a `ADMIN`, `PAROCO` e `BISPO_DIOCESANO`.
+- **Remoção de Vínculo:** A remoção (`DELETE /api/v1/usuarios/{id}/membros/{vinculoId}`) só vale para um vínculo que pertença ao fiel do usuário da rota — vínculo alheio é tratado como inexistente — e exige que o ator seja admin/Pároco ou coordenador **da organização daquele vínculo**; coordenar outra organização do mesmo usuário não basta.
+- **Alçada no Vínculo Administrativo:** em `POST /api/v1/usuarios/{id}/membros`, atribuir `COORDENADOR` é privativo do Pároco (ou Bispo) e vincular membros a conselhos cabe ao Pároco ou Admin; ter qualquer papel global (como Secretaria Paroquial) não basta.
 - **Interoperabilidade de Vínculos:** O endpoint de vinculação a grupos (`POST /api/v1/usuarios/{id}/membros`) aceita `organizacaoId` via DTO `AdicionarVinculoRequest`, prevenindo erros de validação Jackson de campo desconhecido.
+
+- **Sem papel, sem acesso:** um usuário autenticado cujo papel não possa ser reconhecido é negado; nunca é tratado por omissão como coordenador ou qualquer outro perfil com privilégio.
 
 ### RN-IAM-06: Pureza do Bounded Context IAM e Segregação de Dados Pastorais
 - As APIs e telas do módulo IAM (`/api/v1/usuarios`, `Configuracoes.tsx`) lidam estritamente com **dados de conta e autenticação** (username, status ativo/inativo, roles, id da conta e vínculo de entidade).
 - **Expurgo de Dados Pastorais e Sacramentais:** Com exceção do `nome` da pessoa física vinculada (usado exclusivamente como rótulo legível de identificação), é **estritamente vedado** expor ou trafegar dados pessoais, civis, de contato ou sacramentais do fiel/clérigo (como telefone, data de nascimento, comunidade/igreja, batismo, primeira comunhão, crisma ou matrimônio) na API de usuários ou na tela de gerenciamento de usuários. Tais atributos pertencem aos Bounded Contexts de `fiel`, `clero` ou `sacramento`.
 
 ### RN-IAM-07: Alçada Exclusiva de Edição e Inativação de Usuários
-- **ADMIN e PAROCO:** São as **únicas autoridades** autorizadas a editar dados de contas de usuários (`PATCH /api/v1/usuarios/{id}`) e alterar seu status operacional de ativação/inativação (`PATCH /api/v1/usuarios-admin/{id}/status`).
+- **ADMIN e PAROCO:** São as **únicas autoridades** autorizadas a editar dados de contas de usuários (`PATCH /api/v1/usuarios/{id}`) e alterar seu status operacional de ativação/inativação (`PATCH /api/v1/usuarios/{id}/status`).
 - **Vedação à Secretaria Paroquial:** A Secretaria Paroquial tem prerrogativa apenas para criação inicial de contas leigas com aprovação pendente. É **terminantemente vedado à Secretaria Paroquial** editar contas existentes, alterar permissões ou inativar/reativar usuários no sistema (tanto via API protegida por `@PreAuthorize("hasAnyRole('ADMIN', 'GLOBAL_ADMIN', 'PAROCO', 'GLOBAL_PAROCO')")` quanto na interface gráfica, onde as ações não são exibidas).
 
 ### RN-IAM-08: Fluxos de Redefinição e Autoatendimento de Senhas
 - **Alteração de Senha por Usuário Autenticado:** Qualquer usuário logado pode alterar sua própria senha através da aba "Minha Senha" no módulo de configurações (`POST /api/v1/autenticacao/alterar-senha`), exigindo validação prévia da senha atual antes de gravar a nova credencial criptografada com BCrypt.
+- **Redefinição Administrativa de Senha:** Redefinir a senha de outro usuário (`POST /api/v1/usuarios/{id}/redefinir-senha`) equivale a assumir a conta dele, por isso a alçada é a mais restrita: `ADMIN` redefine qualquer conta; `PAROCO` redefine apenas contas **sem papel global** (um usuário com papel global — Pároco, Bispo, Vigário, Diácono, Secretaria ou Admin — só tem a senha redefinida pelo `ADMIN`). Coordenadores de pastoral/movimento e demais papéis **não** redefinem senhas, ainda que o alvo seja membro de sua organização.
 - **Solicitação Pública de Redefinição de Acesso:** Usuários não autenticados ou impossibilitados de logar podem registrar uma solicitação pública de redefinição na tela de login (`POST /api/v1/autenticacao/solicitar-reset-senha`), informando seu username ou e-mail. A solicitação fica registrada para liberação controlada pela administração paroquial.
+
+### RN-IAM-09: Política Única de Senha e Proteção contra Tentativas Abusivas
+- **Política Única de Senha:** Toda senha nova — criação administrativa de usuário, troca pelo próprio usuário (RN-IAM-08) e redefinição administrativa — deve ter no mínimo 8 caracteres e no máximo 72 bytes em UTF-8 (limite do BCrypt; acentos ocupam mais de um byte). A mesma regra vale em todos os fluxos; senha em branco é sempre recusada.
+- **Limite de Tentativas de Login:** Após 5 falhas de credencial dentro de 15 minutos para a mesma combinação de endereço de origem e usuário, novas tentativas (inclusive com a senha correta) são recusadas com HTTP 429 e `Retry-After` até a janela expirar. Login bem-sucedido zera o contador. Os limites são configuráveis por paróquia. O endereço de origem considera apenas a conexão direta, salvo proxies reversos explicitamente declarados como confiáveis.
+- **Limite de Pedidos de Redefinição:** A solicitação pública de redefinição aceita no máximo 3 pedidos em 15 minutos por combinação de endereço de origem e usuário (existente ou não, para não revelar contas); excedido, responde 429.
 
 ---
 

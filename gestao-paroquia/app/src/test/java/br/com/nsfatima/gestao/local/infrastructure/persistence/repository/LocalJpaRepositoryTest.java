@@ -1,6 +1,8 @@
 package br.com.nsfatima.gestao.local.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.EventoLocalEntity;
+import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoLocalJpaRepository;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.repository.EventoJpaRepository;
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
 import br.com.nsfatima.gestao.support.infrastructure.configuration.JpaAuditingConfig;
@@ -26,6 +28,9 @@ class LocalJpaRepositoryTest {
 
     @Autowired
     private EventoJpaRepository eventoRepository;
+
+    @Autowired
+    private EventoLocalJpaRepository eventoLocalRepository;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -103,5 +108,32 @@ class LocalJpaRepositoryTest {
         entityManager.flush();
 
         assertTrue(eventoRepository.existsByLocalIdAndFimUtcGreaterThanAndStatusNot(localId, now, "CANCELADO"));
+    }
+
+    @Test
+    void deveConsiderarEventoFuturoVinculadoSomentePelaAssociacaoMultiLocal() {
+        UUID localId = UUID.randomUUID();
+        LocalEntity local = new LocalEntity();
+        local.setId(localId);
+        local.setNome("Salão Anexo");
+        local.setTipo("SALAO_PAROQUIAL");
+        local.setAtivo(true);
+        localRepository.save(local);
+
+        Instant now = Instant.now();
+        EventoEntity evento = new EventoEntity();
+        evento.setId(UUID.randomUUID());
+        evento.setTitulo("Festa Junina");
+        evento.setOrganizacaoResponsavelId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        evento.setInicioUtc(now.plusSeconds(3600));
+        evento.setFimUtc(now.plusSeconds(7200));
+        evento.setStatus("CONFIRMADO");
+        eventoRepository.save(evento);
+        eventoLocalRepository.save(new EventoLocalEntity(evento.getId(), localId));
+        entityManager.flush();
+        entityManager.clear();
+
+        assertTrue(eventoRepository.existsByLocalIdAndFimUtcGreaterThanAndStatusNot(localId, now, "CANCELADO"));
+        assertTrue(eventoRepository.existsByLocalId(localId));
     }
 }

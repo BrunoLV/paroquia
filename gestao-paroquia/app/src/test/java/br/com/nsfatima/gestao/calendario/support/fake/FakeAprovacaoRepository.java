@@ -83,6 +83,15 @@ public class FakeAprovacaoRepository implements AprovacaoJpaRepository {
     }
 
     @Override
+    public Page<AprovacaoEntity> findByFilterDoSolicitante(
+            UUID eventoId, AprovacaoStatus status, String solicitanteId, Pageable pageable) {
+        List<AprovacaoEntity> filtered = findByFilter(eventoId, status, pageable).getContent().stream()
+                .filter(e -> solicitanteId == null || solicitanteId.equals(e.getSolicitanteId()))
+                .toList();
+        return new PageImpl<>(filtered, pageable, filtered.size());
+    }
+
+    @Override
     public boolean existsByEventoIdAndTipoSolicitacaoAndStatus(UUID eventoId, String tipo, AprovacaoStatus status) {
         return storage.stream().anyMatch(e -> e.getEventoId().equals(eventoId)
                 && e.getTipoSolicitacao().equals(tipo)

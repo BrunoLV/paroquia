@@ -5,12 +5,12 @@ import br.com.nsfatima.gestao.governanca.infrastructure.persistence.entity.AnoPa
 import br.com.nsfatima.gestao.governanca.infrastructure.persistence.repository.AnoParoquialJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 
 /**
  * Garante que sempre exista um registro de Ano Paroquial ao subir a aplicação, provisionando o ano civil corrente
@@ -23,9 +23,11 @@ public class AnoParoquialSeeder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnoParoquialSeeder.class);
     private final AnoParoquialJpaRepository repository;
+    private final RelogioNegocio relogio;
 
-    public AnoParoquialSeeder(AnoParoquialJpaRepository repository) {
+    public AnoParoquialSeeder(AnoParoquialJpaRepository repository, RelogioNegocio relogio) {
         this.repository = repository;
+        this.relogio = relogio;
     }
 
     /**
@@ -44,7 +46,7 @@ public class AnoParoquialSeeder {
     @Transactional
     public void semearSeVazio() {
         if (repository.count() == 0) {
-            int anoCorrente = LocalDate.now().getYear();
+            int anoCorrente = relogio.hoje().getYear();
             AnoParoquialEntity entity = new AnoParoquialEntity();
             entity.setAno(anoCorrente);
             entity.setStatus(AnoParoquialStatus.EM_PLANEJAMENTO);

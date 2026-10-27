@@ -36,6 +36,11 @@ public class AtivoPatrimonialRepositoryImpl implements AtivoPatrimonialRepositor
     }
 
     @Override
+    public Optional<AtivoPatrimonial> findByIdComBloqueio(AtivoPatrimonialId id) {
+        return jpaRepository.findByIdComBloqueio(id.value()).map(mapper::toDomain);
+    }
+
+    @Override
     public List<AtivoPatrimonial> findByOrganizacao(UUID organizacaoId) {
         return jpaRepository.findByOrganizacaoIdAndDeletedAtIsNullOrderByNomeAsc(organizacaoId)
                 .stream().map(mapper::toDomain).toList();

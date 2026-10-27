@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.calendario.infrastructure.security;
 
+import br.com.nsfatima.gestao.iam.infrastructure.security.TentativasExcessivasException;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.observabilidade.infrastructure.filter.CorrelationIdFilter;
 import br.com.nsfatima.gestao.support.api.v1.error.ErrorCodes;
@@ -109,7 +110,8 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
 
     /**
      * Trata a falha da autenticação, escrevendo um corpo de erro JSON com o código apropriado ao
-     * tipo de exceção: fonte de autorização indisponível ({@code AUTHZ_SOURCE_UNAVAILABLE}), usuário
+     * tipo de exceção: limite de tentativas excedido ({@code TOO_MANY_REQUESTS}, HTTP 429 com
+     * {@code Retry-After}), fonte de autorização indisponível ({@code AUTHZ_SOURCE_UNAVAILABLE}), usuário
      * com cadastro pendente de aprovação ({@code APROVACAO_OBRIGATORIA}), ou credenciais inválidas
      * ({@code AUTH_INVALID}) como caso genérico.
      *
@@ -123,6 +125,16 @@ public class JsonAuthenticationOutcomeProcessor implements AuthenticationSuccess
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
+        if (exception instanceof TentativasExcessivasException excessivas) {
+            response.setHeader("Retry-After", String.valueOf(excessivas.getAguardar().toSeconds()));
+            writeError(
+                    response,
+                    HttpStatus.TOO_MANY_REQUESTS,
+                    ErrorCodes.TOO_MANY_REQUESTS,
+                    "Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente.");
+            return;
+        }
+
         if (exception instanceof AuthenticationServiceException) {
             writeError(
                     response,

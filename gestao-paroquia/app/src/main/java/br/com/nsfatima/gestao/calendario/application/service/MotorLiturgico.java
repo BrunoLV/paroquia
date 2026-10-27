@@ -5,12 +5,12 @@ import br.com.nsfatima.gestao.calendario.domain.model.SaidaLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
 import br.com.nsfatima.gestao.calendario.domain.model.TipoSolenidade;
 import br.com.nsfatima.gestao.calendario.infrastructure.persistence.entity.SolenidadeLiturgicaEntity;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -19,6 +19,12 @@ import java.util.Map;
 
 @Service
 public class MotorLiturgico {
+
+    private final RelogioNegocio relogio;
+
+    public MotorLiturgico(RelogioNegocio relogio) {
+        this.relogio = relogio;
+    }
 
     /**
      * Calcula a data da Páscoa usando o Algoritmo de Meeus/Jones/Butcher.
@@ -93,7 +99,7 @@ public class MotorLiturgico {
      * Calcula o 1º Domingo do Advento do ano civil anterior (início do anoLiturgico).
      */
     public ZonedDateTime calcularAdventoInicio(int liturgicalYear) {
-        return calcularDataDomingoAdvento(liturgicalYear - 1).atStartOfDay(ZoneOffset.UTC);
+        return calcularDataDomingoAdvento(liturgicalYear - 1).atStartOfDay(relogio.fuso());
     }
 
     /**
@@ -134,9 +140,9 @@ public class MotorLiturgico {
 
     public int resolveAnoLiturgico(Instant eventDate) {
         if (eventDate == null) {
-            return LocalDate.now().getYear();
+            return relogio.hoje().getYear();
         }
-        ZonedDateTime zdt = eventDate.atZone(ZoneOffset.UTC);
+        ZonedDateTime zdt = eventDate.atZone(relogio.fuso());
         int anoCivil = zdt.getYear();
 
         // O Ano Litúrgico começa no 1º Domingo do Advento do ano civil anterior, então uma

@@ -39,7 +39,7 @@ Ao lidar com entidades (em especial Fiéis, Clérigos e Sacramentos), aplique ri
 | Categoria | Definição no Sistema | Exemplos | Requisito Técnico Obrigatório |
 | :--- | :--- | :--- | :--- |
 | **Público / Canônico** | Dados institucionais abertos para diretório/consulta | Nome de ordenação/eclesiástico, grau da ordem, ofício/encargo pastoral, paróquia/diocese | Exposição permitida via DTOs institucionais sem autenticação restritiva. |
-| **Pessoal (PII Civil)** | Dados que identificam o indivíduo civilmente | Nome civil, CPF, RG, e-mail, telefone, endereço, data de nascimento | **Criptografia em repouso (AES-256)**, blind index (SHA-256), mascaramento em logs e RBAC rigoroso. |
+| **Pessoal (PII Civil)** | Dados que identificam o indivíduo civilmente | Nome civil, CPF, RG, e-mail, telefone, endereço, data de nascimento | **Criptografia em repouso (AES-256/GCM)**, blind index (HMAC-SHA256 com pepper), mascaramento em logs e RBAC rigoroso. |
 | **Sensível (Art. 5º, II e Art. 11)** | Convicção religiosa, sacramentos, filiação a organização de caráter religioso | Assentos de batismo, confirmação, matrimônio, ordem, vínculos pastorais, dizimistas | **Criptografia em repouso**, tabelas segregadas, auditoria estrita de leitura e dupla checagem de permissão. |
 
 > **Regra de Paridade Irrevogável:** Clérigos e Fiéis leigos possuem exatamente os mesmos direitos de privacidade. Dados civis de clérigos recebem a mesma criptografia e segregação de DTOs que dados de leigos.
@@ -64,10 +64,10 @@ O sistema cobre ativamente todas as etapas do tratamento de dados pessoais:
 
 ### A. Modelagem e Migrations (Minimização e Anonimização)
 1. **Criptografia Simétrica em Repouso:**
-   - Atributos com PII civil (CPF, RG, telefones, endereço) devem utilizar conversores de entidade JPA (`EncryptedStringConverter`, `EncryptedLocalDateConverter`) baseados em AES-256/CBC/PKCS5Padding com IV aleatório prefixado ao ciphertext.
+   - Atributos com PII civil (CPF, RG, telefones, endereço) devem utilizar conversores de entidade JPA (`EncryptedStringConverter`, `EncryptedLocalDateConverter`) baseados em AES-256/GCM com IV aleatório e prefixo de versão de chave (`v1:`); o formato CBC legado é apenas lido.
    - Chave configurada externamente e normalizada via SHA-256.
 2. **Blind Indexing para Unicidade e Busca:**
-   - O CPF é armazenado também como hash SHA-256 (`cpf_hash`) para viabilizar validação de unicidade e buscas exatas sem decifrar a base.
+   - O CPF é armazenado também como blind index HMAC-SHA256 com pepper próprio (`cpf_hash`, propriedade `app.security.cpf-pepper`) para viabilizar validação de unicidade e buscas exatas sem decifrar a base.
 3. **Identificadores Públicos:**
    - Uso exclusivo de **UUIDv4** como chave primária exposta publicamente. Chaves sequenciais numéricas (`BIGSERIAL`) são proibidas em contratos REST.
 4. **Proibição de Campos Genéricos:**
@@ -110,7 +110,7 @@ O sistema cobre ativamente todas as etapas do tratamento de dados pessoais:
 
 - [ ] **Minimização:** Há apenas campos estritamente necessários para a finalidade pastoral informada?
 - [ ] **Criptografia:** Dados civis (CPF, RG, telefone, endereço) usam conversores JPA criptográficos AES-256?
-- [ ] **Blind Index:** Unicidade de CPF é validada por hash SHA-256 sem decifrar registros em massa?
+- [ ] **Blind Index:** Unicidade de CPF é validada por blind index HMAC-SHA256 (com pepper) sem decifrar registros em massa?
 - [ ] **Isolamento de Log:** Zero PII interpolada em logs; apenas UUIDs opacos?
 - [ ] **DTOs Segregados:** Coordenadores e terceiros recebem projeções sem CPF/endereço civil?
 - [ ] **Paridade Clérigo/Fiel:** Clérigos possuem o mesmo nível de blindagem em seus dados civis?

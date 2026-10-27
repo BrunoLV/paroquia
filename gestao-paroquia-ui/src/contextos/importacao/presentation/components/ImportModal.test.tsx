@@ -54,6 +54,19 @@ describe('ImportModal', () => {
     expect(validateButton.querySelector('[data-testid="CheckIcon"]')).toBeInTheDocument();
   });
 
+  it('offers only the entity types the backend imports (no USUARIO)', async () => {
+    renderModal(<ImportModal open={true} onClose={mockOnClose} />);
+
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /Organizações/i })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('option', { name: /Membros/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /Eventos/i })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: /Usuários/i })).not.toBeInTheDocument();
+  });
+
   it('triggers CSV template download', async () => {
     mockDownloadTemplate.mockResolvedValueOnce(undefined);
     renderModal(<ImportModal open={true} onClose={mockOnClose} />);
@@ -103,7 +116,7 @@ describe('ImportModal', () => {
         { linha: 2, valido: true, mensagemErro: undefined, dados: { nomeCompleto: 'João' } },
       ],
     });
-    mockConfirmarImportacao.mockResolvedValueOnce({ registrosImportados: 1 });
+    mockConfirmarImportacao.mockResolvedValueOnce({ registrosImportados: 1, enviadosParaAprovacao: 0, erros: [] });
 
     renderModal(<ImportModal open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
 
@@ -123,9 +136,45 @@ describe('ImportModal', () => {
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockConfirmarImportacao).toHaveBeenCalledWith('MEMBRO', [{ nomeCompleto: 'João' }]);
+      expect(mockConfirmarImportacao).toHaveBeenCalledWith('MEMBRO', [{ linha: 2, dados: { nomeCompleto: 'João' } }]);
       expect(mockShowSuccess).toHaveBeenCalledWith(expect.stringContaining('1 registro(s) foram cadastrados'));
       expect(mockOnSuccess).toHaveBeenCalled();
     });
+  });
+
+  it('keeps the modal open and lists the rejected lines when the confirmation has partial errors', async () => {
+    mockValidarImportacao.mockResolvedValueOnce({
+      totalLinhas: 2,
+      totalValidos: 2,
+      totalInvalidos: 0,
+      itens: [
+        { linha: 2, valido: true, mensagemErro: undefined, dados: { nome: 'A' } },
+        { linha: 3, valido: true, mensagemErro: undefined, dados: { nome: 'B' } },
+      ],
+    });
+    mockConfirmarImportacao.mockResolvedValueOnce({
+      registrosImportados: 1,
+      enviadosParaAprovacao: 0,
+      erros: [{ linha: 3, mensagem: 'Organização responsável não encontrada.' }],
+    });
+
+    renderModal(<ImportModal open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+
+    const file = new File(['nome\nA\nB'], 'orgs.csv', { type: 'text/csv' });
+    fireEvent.change(screen.getByLabelText('Selecionar Arquivo'), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole('button', { name: /Validar Arquivo/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Avançar para Confirmação/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Avançar para Confirmação/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirmar Importação/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Organização responsável não encontrada.')).toBeInTheDocument();
+    });
+    expect(screen.getByText(/1 linha\(s\) não foram gravadas/)).toBeInTheDocument();
+    expect(mockOnClose).not.toHaveBeenCalled();
+    expect(mockOnSuccess).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: /Confirmar Importação/i })).not.toBeInTheDocument();
   });
 });

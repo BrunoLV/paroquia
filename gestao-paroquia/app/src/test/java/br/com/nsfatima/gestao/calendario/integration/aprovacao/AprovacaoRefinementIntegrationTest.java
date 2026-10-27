@@ -40,7 +40,6 @@ class AprovacaoRefinementIntegrationTest {
         aprovacao.setTipoSolicitacao(TipoSolicitacaoInput.EDICAO_EVENTO.name());
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
 
         // Payload with past date
         AprovacaoAcaoPayload payload = new AprovacaoAcaoPayload(

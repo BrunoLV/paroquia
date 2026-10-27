@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.governanca.application.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import br.com.nsfatima.gestao.governanca.domain.service.MascaraDadosPessoais;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -11,12 +10,12 @@ import java.security.SecureRandom;
 import java.util.HexFormat;
 
 /**
- * Serviço para geração de OTP, mascaramento de e-mail e envio de notificações de consentimento.
+ * Regras do código OTP de consentimento: geração criptograficamente segura, hash para armazenamento e
+ * mascaramento de e-mail. O envio em si pertence à porta {@code EnviadorEmailConsentimento}.
  */
 @Service
 public class ServicoEmailNotificacaoConsentimento {
 
-    private static final Logger log = LogManager.getLogger(ServicoEmailNotificacaoConsentimento.class);
     private static final SecureRandom RANDOM = new SecureRandom();
 
     public String gerarCodigoNumerico() {
@@ -34,29 +33,7 @@ public class ServicoEmailNotificacaoConsentimento {
         }
     }
 
-    private static final String SEPARADOR_EMAIL = "@";
-
     public String mascararEmail(String email) {
-        if (email == null || !email.contains(SEPARADOR_EMAIL)) {
-            return "***@***";
-        }
-        String[] partes = email.split(SEPARADOR_EMAIL, 2);
-        String usuario = partes[0];
-        String dominio = partes[1];
-        if (usuario.length() <= 2) {
-            return usuario.charAt(0) + "***" + SEPARADOR_EMAIL + dominio;
-        }
-        return usuario.charAt(0) + "***" + usuario.charAt(usuario.length() - 1) + SEPARADOR_EMAIL + dominio;
-    }
-
-    public void enviarCodigoOtp(String email, String codigo) {
-        // Em ambiente de produção, este método dispara o envio via SMTP / provedor transacional.
-        // PII Zero em logs: mascaramos o e-mail nos logs operacionais.
-        log.info("Código OTP de consentimento gerado para {}", mascararEmail(email));
-    }
-
-    public void enviarComprovante(String email, String tipoEvento, String protocolo) {
-        log.info("Comprovante de {} enviado para {} (Protocolo: {})",
-                tipoEvento, mascararEmail(email), protocolo);
+        return MascaraDadosPessoais.email(email);
     }
 }

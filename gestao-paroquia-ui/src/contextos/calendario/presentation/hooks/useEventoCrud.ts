@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
+import type { ApiHttpError } from '@/shared/infrastructure/http/apiError';
 import { useAuth } from '@/contextos/iam/presentation/auth/AuthContext';
 import { useNotification } from '@/shared/presentation/context/NotificationContext';
 import apiClient from '@/shared/infrastructure/http/client';
@@ -202,7 +202,7 @@ export const useEventoCrud = (refetchCalendario: () => void) => {
       setIsCreateOpen(false);
       refetchCalendario();
     } catch (err: unknown) {
-      const axiosErr = err as AxiosError<{ conflitos?: ReservaConflitoDetalhe[]; message?: string }>;
+      const axiosErr = err as ApiHttpError<{ conflitos?: ReservaConflitoDetalhe[]; message?: string }>;
       if (axiosErr.response?.status === 409) {
         const conflitos = axiosErr.response?.data?.conflitos || [];
         setConflitoRecursoDetalhes(conflitos);

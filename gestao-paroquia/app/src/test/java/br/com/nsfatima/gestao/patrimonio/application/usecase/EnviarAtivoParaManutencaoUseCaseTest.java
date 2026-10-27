@@ -68,7 +68,8 @@ class EnviarAtivoParaManutencaoUseCaseTest {
     }
 
     private void stubComum() {
-        when(ativoRepository.findById(new AtivoPatrimonialId(ativoId))).thenReturn(Optional.of(ativoDisponivel()));
+        when(ativoRepository.findByIdComBloqueio(new AtivoPatrimonialId(ativoId)))
+                .thenReturn(Optional.of(ativoDisponivel()));
         when(actorContextResolver.resolveRequired())
                 .thenReturn(new EventoActorContext("a", "admin", "CLERO", null, UUID.randomUUID(), null));
         doNothing().when(authorizationService).assertPodeGerirPatrimonio(any(), any());

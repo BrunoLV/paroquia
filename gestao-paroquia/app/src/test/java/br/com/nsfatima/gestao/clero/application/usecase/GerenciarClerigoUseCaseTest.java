@@ -1,7 +1,9 @@
 package br.com.nsfatima.gestao.clero.application.usecase;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 class GerenciarClerigoUseCaseTest {
@@ -57,27 +60,9 @@ class GerenciarClerigoUseCaseTest {
         unidade.setTipo(TipoUnidadeTerritorial.MATRIZ);
         when(unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ)).thenReturn(List.of(unidade));
 
-        ClerigoRequest request = new ClerigoRequest(
-                "João da Silva",
-                "Padre João",
-                LocalDate.of(1980, 1, 1),
-                "BRA",
-                "12345678901",
-                "1234567",
-                null,
-                "padre@igreja.test",
-                "11999998888",
-                true,
-                "1133334444",
-                new EnderecoClerigoDto("08000-000", "Rua da Igreja", "1", null, "Centro", "São Paulo", "SP"),
-                GrauOrdem.PADRE_DIOCESANO,
-                "Diocese de Teste",
-                LocalDate.of(2005, 1, 1),
-                LocalDate.of(2006, 1, 1),
-                null,
-                FuncaoEclesiastica.PAROCO);
+        ClerigoRequest request = requisicao(FuncaoEclesiastica.PAROCO);
 
-        ClerigoResponse response = useCase.criar(request, "admin");
+        ClerigoResponse response = useCase.criar(request, "paroco-user", "paroco");
 
         assertThat(response.nomeCivil()).isEqualTo("João da Silva");
         assertThat(response.nomeEclesiastico()).isEqualTo("Padre João");
@@ -196,5 +181,145 @@ class GerenciarClerigoUseCaseTest {
         var lista = useCase.listarEncargos(clerigoId);
         assertThat(lista).hasSize(1);
         assertThat(lista.get(0).funcao()).isEqualTo(FuncaoEclesiastica.PAROCO);
+    }
+
+    private static ClerigoRequest requisicao(FuncaoEclesiastica funcao) {
+        return new ClerigoRequest(
+                "João da Silva",
+                "Padre João",
+                LocalDate.of(1980, 1, 1),
+                "BRA",
+                "12345678901",
+                "1234567",
+                null,
+                "padre@igreja.test",
+                "11999998888",
+                true,
+                "1133334444",
+                new EnderecoClerigoDto("08000-000", "Rua da Igreja", "1", null, "Centro", "São Paulo", "SP"),
+                GrauOrdem.PADRE_DIOCESANO,
+                "Diocese de Teste",
+                LocalDate.of(2005, 1, 1),
+                LocalDate.of(2006, 1, 1),
+                null,
+                funcao);
+    }
+
+    private ClerigoEntity clerigoAtivo(UUID id) {
+        ClerigoEntity entity = new ClerigoEntity();
+        entity.setId(id);
+        entity.setNomeCivil("João da Silva");
+        entity.setNomeEclesiastico("Padre João");
+        entity.setDataNascimento(LocalDate.of(1980, 1, 1));
+        entity.setPaisOrigem("BRA");
+        entity.setEmail("padre@test.com");
+        entity.setCelular("11999998888");
+        entity.setGrauOrdem(GrauOrdem.PADRE_DIOCESANO);
+        entity.setDioceseIncardinacao("Diocese de Teste");
+        entity.setAtivo(true);
+        return entity;
+    }
+
+    private EncargoClericalEntity encargoAtual(UUID clerigoId, FuncaoEclesiastica funcao) {
+        EncargoClericalEntity encargo = new EncargoClericalEntity();
+        encargo.setId(UUID.randomUUID());
+        encargo.setClerigoId(clerigoId);
+        encargo.setFuncao(funcao);
+        encargo.setAtual(true);
+        return encargo;
+    }
+
+    @Test
+    void secretariaNaoPodeCadastrarClerigoComFuncao() {
+        assertThatThrownBy(() -> useCase.criar(requisicao(FuncaoEclesiastica.PAROCO), "sec", "secretaria-paroquial"))
+                .isInstanceOf(AccessDeniedException.class);
+
+        verify(encargos, never()).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void secretariaPodeCadastrarClerigoSemFuncao() {
+        ClerigoResponse response = useCase.criar(requisicao(null), "sec", "secretaria-paroquial");
+
+        assertThat(response.nomeCivil()).isEqualTo("João da Silva");
+        verify(encargos, never()).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void secretariaNaoPromoveClerigoExistenteAParoco() {
+        UUID id = UUID.randomUUID();
+        when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
+        when(encargos.findByClerigoIdAndAtualTrue(id))
+                .thenReturn(List.of(encargoAtual(id, FuncaoEclesiastica.VIGARIO_PAROQUIAL)));
+
+        assertThatThrownBy(() -> useCase.atualizar(id, requisicao(FuncaoEclesiastica.PAROCO), "sec",
+                "secretaria-paroquial")).isInstanceOf(AccessDeniedException.class);
+
+        verify(encargos, never()).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void secretariaEditaCadastroSemReabrirEncargoQuandoFuncaoNaoMudou() {
+        UUID id = UUID.randomUUID();
+        EncargoClericalEntity atual = encargoAtual(id, FuncaoEclesiastica.PAROCO);
+        when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
+        when(encargos.findByClerigoIdAndAtualTrue(id)).thenReturn(List.of(atual));
+
+        useCase.atualizar(id, requisicao(FuncaoEclesiastica.PAROCO), "sec", "secretaria-paroquial");
+
+        assertThat(atual.isAtual()).isTrue();
+        verify(encargos, never()).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void parocoPromoveClerigoEEncerraEncargoAnterior() {
+        UUID id = UUID.randomUUID();
+        UUID unidadeId = UUID.randomUUID();
+        UnidadeTerritorialEntity unidade = new UnidadeTerritorialEntity();
+        unidade.setId(unidadeId);
+        EncargoClericalEntity anterior = encargoAtual(id, FuncaoEclesiastica.VIGARIO_PAROQUIAL);
+        when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
+        when(encargos.findByClerigoIdAndAtualTrue(id)).thenReturn(List.of(anterior));
+        when(unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ)).thenReturn(List.of(unidade));
+
+        useCase.atualizar(id, requisicao(FuncaoEclesiastica.PAROCO), "paroco", "paroco");
+
+        assertThat(anterior.isAtual()).isFalse();
+        verify(encargos).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void bispoPodeProverFuncao() {
+        UUID id = UUID.randomUUID();
+        UnidadeTerritorialEntity unidade = new UnidadeTerritorialEntity();
+        unidade.setId(UUID.randomUUID());
+        when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
+        when(unidades.findByTipoAndAtivoTrue(TipoUnidadeTerritorial.MATRIZ)).thenReturn(List.of(unidade));
+
+        useCase.atualizar(id, requisicao(FuncaoEclesiastica.VIGARIO_PAROQUIAL), "bispo", "bispo-diocesano");
+
+        verify(encargos).save(any(EncargoClericalEntity.class));
+    }
+
+    @Test
+    void adminNaoProveFuncaoClerical() {
+        assertThatThrownBy(() -> useCase.criar(requisicao(FuncaoEclesiastica.PAROCO), "adm", "admin"))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void naoPermiteDoisParocosAtivos() {
+        UUID id = UUID.randomUUID();
+        UUID outroParoco = UUID.randomUUID();
+        when(clerigos.findById(id)).thenReturn(Optional.of(clerigoAtivo(id)));
+        when(encargos.findByFuncaoAndAtualTrue(any(FuncaoEclesiastica.class))).thenAnswer(inv ->
+                inv.getArgument(0) == FuncaoEclesiastica.PAROCO
+                        ? List.of(encargoAtual(outroParoco, FuncaoEclesiastica.PAROCO)) : List.of());
+
+        assertThatThrownBy(() -> useCase.atualizar(id, requisicao(FuncaoEclesiastica.PAROCO), "paroco", "paroco"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Pároco");
+
+        verify(encargos, never()).save(any(EncargoClericalEntity.class));
     }
 }

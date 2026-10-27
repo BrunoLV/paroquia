@@ -17,14 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.nsfatima.gestao.calendario.application.dto.ConflitoEventoItemDto;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,18 +38,21 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
     private final EventoAuditPublisher auditPublisher;
     private final AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper;
     private final ObjectMapper objectMapper;
+    private final RelogioNegocio relogio;
 
     public CriarEventoSolicitacaoAprovacaoUseCase(
             AprovacaoJpaRepository aprovacaoRepository,
             EventoActorContextResolver actorContextResolver,
             EventoAuditPublisher auditPublisher,
             AprovacaoAcaoPayloadMapper aprovacaoAcaoPayloadMapper,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            RelogioNegocio relogio) {
         this.aprovacaoRepository = aprovacaoRepository;
         this.actorContextResolver = actorContextResolver;
         this.auditPublisher = auditPublisher;
         this.aprovacaoAcaoPayloadMapper = aprovacaoAcaoPayloadMapper;
         this.objectMapper = objectMapper;
+        this.relogio = relogio;
     }
 
     /**
@@ -81,7 +83,6 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
         entity.setSolicitantePapel(context.role());
         entity.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
         entity.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
-        entity.setCriadoEmUtc(Instant.now());
         entity.setDataOcorrenciaUtc(request.inicio());
         entity.setJustificativa(justificativa != null ? justificativa : request.adicionadoExtraJustificativa());
 
@@ -115,24 +116,22 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
             CriarEventoRequest request,
             String idempotencyKey,
             EventoActorContext context) {
-        LocalDate startOfSeries = request.inicio().atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate startOfSeries = relogio.dataDe(request.inicio());
         int year = startOfSeries.getYear();
         LocalDate endOfYear = LocalDate.of(year, 12, 31);
         List<LocalDate> dates = request.regraRecorrencia().gerarDatas(startOfSeries, endOfYear);
 
         Duration duration = Duration.between(request.inicio(), request.fim());
-        Duration timeOfDay = Duration.between(
-                startOfSeries.atStartOfDay().toInstant(ZoneOffset.UTC), request.inicio());
 
         for (LocalDate date : dates) {
             Instant occStart;
             Instant occEnd;
             if (request.tipoHorario() != null && request.tipoHorario().isPredefinido()) {
-                var faixa = request.tipoHorario().calcularIntervalo(date, ZoneId.of("America/Sao_Paulo"));
+                var faixa = request.tipoHorario().calcularIntervalo(date, relogio.fuso());
                 occStart = faixa.inicioUtc();
                 occEnd = faixa.fimUtc();
             } else {
-                occStart = date.atStartOfDay().toInstant(ZoneOffset.UTC).plus(timeOfDay);
+                occStart = relogio.mesmoHorarioNoDia(request.inicio(), date);
                 occEnd = occStart.plus(duration);
             }
 
@@ -145,7 +144,6 @@ public class CriarEventoSolicitacaoAprovacaoUseCase {
             filha.setSolicitantePapel(context.role());
             filha.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(context.organizationType()));
             filha.setAprovadorPapel(AprovadorPapel.PAROCO.storedValue());
-            filha.setCriadoEmUtc(Instant.now());
             filha.setDataOcorrenciaUtc(occStart);
             filha.setJustificativa(mestre.getJustificativa());
 

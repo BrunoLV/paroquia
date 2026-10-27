@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.projeto.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Ciclo de vida de um {@code Projeto} paroquial.
@@ -27,7 +26,6 @@ public enum ProjetoStatus {
      * @param rawValue valor textual recebido na requisição.
      * @return o {@link ProjetoStatus} normalizado correspondente.
      */
-    @JsonCreator
     public static ProjetoStatus fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, ProjetoStatus.class);
     }

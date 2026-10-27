@@ -1,20 +1,16 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
 import br.com.nsfatima.gestao.reserva.application.event.PublicadorReservaDeAtivo;
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService;
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService.ItemRef;
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService.PedidoReserva;
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaOperacaoInvalidaException;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
-import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
-import br.com.nsfatima.gestao.reserva.domain.service.ReservaConflitoService;
-import br.com.nsfatima.gestao.local.domain.model.Local;
-import br.com.nsfatima.gestao.local.domain.repository.LocalRepository;
-import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonial;
-import br.com.nsfatima.gestao.patrimonio.domain.model.AtivoPatrimonialId;
-import br.com.nsfatima.gestao.patrimonio.domain.repository.AtivoPatrimonialRepository;
-import br.com.nsfatima.gestao.calendario.domain.type.TipoHorarioEvento;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +28,11 @@ import java.util.UUID;
 /**
  * Orquestra a integração transacional estrita entre o Módulo de Eventos e o Módulo de Reservas,
  * garantindo atomicidade, sincronização de alocações e cancelamento em cascata.
+ *
+ * <p>É a única porta pela qual um evento ocupa locais e ativos: as reservas nascem {@code CONFIRMADA} (RN-RES-03)
+ * pelo mesmo {@link ReservaCriacaoService} das demais origens, portanto sujeitas a choque de agenda, manutenção
+ * e elegibilidade do item. Solicitante, operador e pastoral são obrigatórios: não se inventa identidade para
+ * uma reserva, pois ela é a trilha de quem ocupou o espaço.</p>
  */
 @Service
 public class EventoReservaIntegrationService {
@@ -39,60 +40,29 @@ public class EventoReservaIntegrationService {
     private static final ZoneId BR_ZONE = ZoneId.of("America/Sao_Paulo");
 
     private final ReservaRepository reservaRepository;
-    private final ReservaConflitoService conflitoService;
+    private final ReservaCriacaoService criacaoService;
     private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
-    private final LocalRepository localRepository;
-    private final AtivoPatrimonialRepository ativoRepository;
 
     public EventoReservaIntegrationService(
             ReservaRepository reservaRepository,
-            ReservaConflitoService conflitoService,
+            ReservaCriacaoService criacaoService,
             PublicadorReservaDeAtivo publicadorReservaDeAtivo
     ) {
-        this(reservaRepository, conflitoService, publicadorReservaDeAtivo, null, null);
-    }
-
-    @Autowired
-    public EventoReservaIntegrationService(
-            ReservaRepository reservaRepository,
-            ReservaConflitoService conflitoService,
-            PublicadorReservaDeAtivo publicadorReservaDeAtivo,
-            @Autowired(required = false) LocalRepository localRepository,
-            @Autowired(required = false) AtivoPatrimonialRepository ativoRepository
-    ) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.conflitoService = Objects.requireNonNull(conflitoService, "ReservaConflitoService é obrigatório.");
+        this.criacaoService = Objects.requireNonNull(criacaoService, "ReservaCriacaoService é obrigatório.");
         this.publicadorReservaDeAtivo =
                 Objects.requireNonNull(publicadorReservaDeAtivo, "PublicadorReservaDeAtivo é obrigatório.");
-        this.localRepository = localRepository;
-        this.ativoRepository = ativoRepository;
     }
 
-    private String resolverNomeLocal(UUID localId) {
-        if (localRepository != null && localId != null) {
-            return localRepository.findById(localId).map(Local::getNome).orElse("Espaço Físico / Sala");
-        }
-        return "Espaço Físico / Sala";
-    }
-
-    private String resolverNomeAtivo(UUID ativoId) {
-        if (ativoRepository != null && ativoId != null) {
-            return ativoRepository.findById(new AtivoPatrimonialId(ativoId))
-                    .map(AtivoPatrimonial::getNome)
-                    .orElse("Ativo Patrimonial");
-        }
-        return "Ativo Patrimonial";
-    }
-
-    /** Notifica o contexto de patrimônio para recalcular o status RESERVADO de cada ativo tocado. */
-    private void publicarAtivosTocados(Collection<Reserva> reservas) {
-        Set<UUID> ativoIds = new LinkedHashSet<>();
-        for (Reserva r : reservas) {
-            if (r.getTipoItem() == TipoItemReserva.ATIVO) {
-                ativoIds.add(r.getItemId());
-            }
-        }
-        ativoIds.forEach(publicadorReservaDeAtivo::publicarParaAtivo);
+    /** Dados do evento necessários para nomear e atribuir as reservas dele derivadas. */
+    private record ContextoEvento(
+            UUID eventoId,
+            String titulo,
+            UUID responsavelId,
+            UUID pastoralId,
+            List<TipoHorarioEvento> periodos,
+            LocalDate data
+    ) {
     }
 
     @Transactional
@@ -100,18 +70,10 @@ public class EventoReservaIntegrationService {
             UUID eventoId,
             String eventoTitulo,
             UUID localId,
+            List<UUID> localIds,
             List<UUID> ativoIds,
             UUID solicitanteId,
             UUID pastoralId,
-            Instant inicio,
-            Instant fim
-    ) {
-        return criarReservasEvento(eventoId, eventoTitulo, localId,
-                localId != null ? List.of(localId) : List.of(),
-                ativoIds, solicitanteId, pastoralId, inicio, fim);
-    }
-
-    private List<IntervaloReserva> calcularIntervalosReservas(
             Instant inicio,
             Instant fim,
             List<TipoHorarioEvento> periodos
@@ -119,6 +81,154 @@ public class EventoReservaIntegrationService {
         if (inicio == null || fim == null) {
             return List.of();
         }
+        ContextoEvento contexto = new ContextoEvento(
+                eventoId, eventoTitulo, solicitanteId, pastoralId, periodos, inicio.atZone(BR_ZONE).toLocalDate());
+        List<IntervaloReserva> intervalos = calcularIntervalosReservas(inicio, fim, periodos);
+
+        List<PedidoReserva> pedidos = new ArrayList<>();
+        for (IntervaloReserva intervalo : intervalos) {
+            for (ItemRef item : itensDoEvento(localId, localIds, ativoIds)) {
+                pedidos.add(pedidoDoEvento(contexto, item, intervalo));
+            }
+        }
+        return pedidos.isEmpty() ? List.of() : criacaoService.criarTodas(pedidos);
+    }
+
+    @Transactional
+    public void atualizarReservasEvento(
+            UUID eventoId,
+            String eventoTitulo,
+            UUID localId,
+            List<UUID> localIds,
+            List<UUID> ativoIds,
+            UUID operadorId,
+            UUID pastoralId,
+            Instant inicio,
+            Instant fim,
+            List<TipoHorarioEvento> periodos
+    ) {
+        if (eventoId == null || inicio == null || fim == null) {
+            return;
+        }
+        ContextoEvento contexto = new ContextoEvento(
+                eventoId, eventoTitulo, operadorId, pastoralId, periodos, inicio.atZone(BR_ZONE).toLocalDate());
+        List<ItemRef> itens = itensDoEvento(localId, localIds, ativoIds);
+        List<Reserva> existentes = reservaRepository.findByEventoId(eventoId);
+        List<IntervaloReserva> intervalos = calcularIntervalosReservas(inicio, fim, periodos);
+        Instant agora = Instant.now();
+        Set<UUID> ativosCancelados = new LinkedHashSet<>();
+
+        criacaoService.bloquearItens(itens);
+
+        for (Reserva r : existentes) {
+            boolean mantido = itens.contains(new ItemRef(r.getTipoItem(), r.getItemId()));
+            if (!mantido && r.getStatus().admiteCancelamento()) {
+                cancelar(r, exigirOperador(operadorId), "Item desvinculado na edição do evento.", agora);
+                registrarSeAtivo(r, ativosCancelados);
+            }
+        }
+
+        for (ItemRef item : itens) {
+            List<Reserva> editaveis = existentes.stream()
+                    .filter(r -> r.getTipoItem() == item.tipoItem() && r.getItemId().equals(item.itemId())
+                            && r.getStatus().admiteCancelamento())
+                    .toList();
+            for (int i = 0; i < intervalos.size(); i++) {
+                if (i < editaveis.size()) {
+                    criacaoService.reagendar(editaveis.get(i), intervalos.get(i), agora);
+                } else {
+                    criacaoService.criar(pedidoDoEvento(contexto, item, intervalos.get(i)));
+                }
+            }
+            for (int i = intervalos.size(); i < editaveis.size(); i++) {
+                Reserva sobra = editaveis.get(i);
+                cancelar(sobra, exigirOperador(operadorId), "Turno removido na edição do evento.", agora);
+                registrarSeAtivo(sobra, ativosCancelados);
+            }
+        }
+        ativosCancelados.forEach(publicadorReservaDeAtivo::publicarParaAtivo);
+    }
+
+    @Transactional
+    public void cancelarReservasEventoEmCascata(UUID eventoId, String eventoTitulo, UUID operadorId) {
+        if (eventoId == null) {
+            return;
+        }
+        List<Reserva> reservas = reservaRepository.findByEventoId(eventoId);
+        Instant agora = Instant.now();
+        String motivo = "Cancelamento automático decorrente do cancelamento do evento: "
+                + (eventoTitulo != null ? eventoTitulo : "");
+
+        Set<UUID> ativosTocados = new LinkedHashSet<>();
+        for (Reserva r : reservas) {
+            if (r.getStatus().admiteCancelamento()) {
+                cancelar(r, exigirOperador(operadorId), motivo, agora);
+                registrarSeAtivo(r, ativosTocados);
+            }
+        }
+        ativosTocados.forEach(publicadorReservaDeAtivo::publicarParaAtivo);
+    }
+
+    private void cancelar(Reserva reserva, UUID operadorId, String motivo, Instant agora) {
+        reserva.cancelar(operadorId, motivo, false, agora);
+        reservaRepository.save(reserva);
+    }
+
+    private void registrarSeAtivo(Reserva reserva, Collection<UUID> ativos) {
+        if (reserva.getTipoItem() == TipoItemReserva.ATIVO) {
+            ativos.add(reserva.getItemId());
+        }
+    }
+
+    private UUID exigirOperador(UUID operadorId) {
+        if (operadorId == null) {
+            throw new ReservaOperacaoInvalidaException("A integração com o evento exige o operador identificado.");
+        }
+        return operadorId;
+    }
+
+    private List<ItemRef> itensDoEvento(UUID localId, List<UUID> localIds, List<UUID> ativoIds) {
+        Set<UUID> locais = new LinkedHashSet<>();
+        if (localIds != null) {
+            locais.addAll(localIds);
+        }
+        locais.add(localId);
+        locais.remove(null);
+        Set<UUID> ativos = new LinkedHashSet<>();
+        if (ativoIds != null) {
+            ativos.addAll(ativoIds);
+        }
+        ativos.remove(null);
+
+        List<ItemRef> itens = new ArrayList<>();
+        locais.forEach(id -> itens.add(new ItemRef(TipoItemReserva.LOCAL, id)));
+        ativos.forEach(id -> itens.add(new ItemRef(TipoItemReserva.ATIVO, id)));
+        return itens;
+    }
+
+    private PedidoReserva pedidoDoEvento(ContextoEvento ctx, ItemRef item, IntervaloReserva intervalo) {
+        String destino = item.tipoItem() == TipoItemReserva.LOCAL
+                ? " vinculada ao evento: "
+                : " de ativo para o evento: ";
+        return new PedidoReserva(
+                item.tipoItem(),
+                item.itemId(),
+                null,
+                intervalo,
+                "Reserva automática" + sufixoTurno(intervalo, ctx) + destino + ctx.titulo(),
+                ctx.responsavelId(),
+                ctx.pastoralId(),
+                ctx.eventoId(),
+                null,
+                StatusReserva.CONFIRMADA
+        );
+    }
+
+    private List<IntervaloReserva> calcularIntervalosReservas(
+            Instant inicio,
+            Instant fim,
+            List<TipoHorarioEvento> periodos
+    ) {
         if (periodos != null && !periodos.isEmpty()) {
             List<TipoHorarioEvento> turnos = periodos.stream()
                     .filter(Objects::nonNull)
@@ -138,13 +248,13 @@ public class EventoReservaIntegrationService {
         return List.of(IntervaloReserva.de(inicio, fim));
     }
 
-    private String extrairSufixoTurno(IntervaloReserva intervalo, List<TipoHorarioEvento> periodos, LocalDate data) {
-        if (periodos == null || periodos.isEmpty() || data == null || intervalo == null) {
+    private String sufixoTurno(IntervaloReserva intervalo, ContextoEvento ctx) {
+        if (ctx.periodos() == null || ctx.periodos().isEmpty() || ctx.data() == null) {
             return "";
         }
-        for (TipoHorarioEvento turno : periodos) {
+        for (TipoHorarioEvento turno : ctx.periodos()) {
             if (turno != null && turno.isPredefinido()) {
-                var faixa = turno.calcularIntervalo(data, BR_ZONE);
+                var faixa = turno.calcularIntervalo(ctx.data(), BR_ZONE);
                 if (faixa.inicioUtc().equals(intervalo.dataHoraInicio())
                         && faixa.fimUtc().equals(intervalo.dataHoraFim())) {
                     return " (" + turno.getDescricao() + ")";
@@ -152,348 +262,5 @@ public class EventoReservaIntegrationService {
             }
         }
         return "";
-    }
-
-    @Transactional
-    public List<Reserva> criarReservasEvento(
-            UUID eventoId,
-            String eventoTitulo,
-            UUID localId,
-            List<UUID> localIds,
-            List<UUID> ativoIds,
-            UUID solicitanteId,
-            UUID pastoralId,
-            Instant inicio,
-            Instant fim
-    ) {
-        return criarReservasEvento(
-                eventoId, eventoTitulo, localId, localIds, ativoIds, solicitanteId, pastoralId, inicio, fim, null);
-    }
-
-    @Transactional
-    public List<Reserva> criarReservasEvento(
-            UUID eventoId,
-            String eventoTitulo,
-            UUID localId,
-            List<UUID> localIds,
-            List<UUID> ativoIds,
-            UUID solicitanteId,
-            UUID pastoralId,
-            Instant inicio,
-            Instant fim,
-            List<TipoHorarioEvento> periodos
-    ) {
-        if (inicio == null || fim == null) {
-            return List.of();
-        }
-
-        List<IntervaloReserva> intervalos = calcularIntervalosReservas(inicio, fim, periodos);
-        List<Reserva> reservasParaSalvar = new ArrayList<>();
-        Instant agora = Instant.now();
-
-        Set<UUID> todosLocais = new LinkedHashSet<>();
-        if (localIds != null) {
-            todosLocais.addAll(localIds);
-        }
-        if (localId != null) {
-            todosLocais.add(localId);
-        }
-
-        LocalDate dataEvento = inicio.atZone(BR_ZONE).toLocalDate();
-
-        for (IntervaloReserva intervalo : intervalos) {
-            String sufixoTurno = extrairSufixoTurno(intervalo, periodos, dataEvento);
-
-            // 1. Locais
-            for (UUID locId : todosLocais) {
-                if (locId == null) {
-                    continue;
-                }
-                conflitoService.validarDisponibilidadeComLock(
-                        TipoItemReserva.LOCAL,
-                        locId,
-                        resolverNomeLocal(locId),
-                        intervalo,
-                        null
-                );
-
-                reservasParaSalvar.add(Reserva.criar(
-                        ReservaId.gerar(),
-                        TipoItemReserva.LOCAL,
-                        locId,
-                        intervalo,
-                        "Reserva automática" + sufixoTurno + " vinculada ao evento: " + eventoTitulo,
-                        solicitanteId != null ? solicitanteId : UUID.randomUUID(),
-                        pastoralId != null ? pastoralId : UUID.randomUUID(),
-                        eventoId,
-                        null,
-                        StatusReserva.CONFIRMADA,
-                        agora
-                ));
-            }
-
-            // 2. Ativos
-            if (ativoIds != null) {
-                for (UUID ativoId : ativoIds) {
-                    if (ativoId == null) {
-                        continue;
-                    }
-                    conflitoService.validarDisponibilidadeComLock(
-                            TipoItemReserva.ATIVO,
-                            ativoId,
-                            resolverNomeAtivo(ativoId),
-                            intervalo,
-                            null
-                    );
-
-                    reservasParaSalvar.add(Reserva.criar(
-                            ReservaId.gerar(),
-                            TipoItemReserva.ATIVO,
-                            ativoId,
-                            intervalo,
-                            "Reserva automática" + sufixoTurno + " de ativo para o evento: " + eventoTitulo,
-                            solicitanteId != null ? solicitanteId : UUID.randomUUID(),
-                            pastoralId != null ? pastoralId : UUID.randomUUID(),
-                            eventoId,
-                            null,
-                            StatusReserva.CONFIRMADA,
-                            agora
-                    ));
-                }
-            }
-        }
-
-        if (reservasParaSalvar.isEmpty()) {
-            return List.of();
-        }
-        List<Reserva> salvas = reservaRepository.saveAll(reservasParaSalvar);
-        publicarAtivosTocados(salvas);
-        return salvas;
-    }
-
-    @Transactional
-    public void atualizarReservasEvento(
-            UUID eventoId,
-            String eventoTitulo,
-            UUID localId,
-            List<UUID> ativoIds,
-            UUID operadorId,
-            UUID pastoralId,
-            Instant inicio,
-            Instant fim
-    ) {
-        atualizarReservasEvento(eventoId, eventoTitulo, localId,
-                localId != null ? List.of(localId) : List.of(),
-                ativoIds, operadorId, pastoralId, inicio, fim);
-    }
-
-    @Transactional
-    public void atualizarReservasEvento(
-            UUID eventoId,
-            String eventoTitulo,
-            UUID localId,
-            List<UUID> localIds,
-            List<UUID> ativoIds,
-            UUID operadorId,
-            UUID pastoralId,
-            Instant inicio,
-            Instant fim
-    ) {
-        atualizarReservasEvento(
-                eventoId, eventoTitulo, localId, localIds, ativoIds, operadorId, pastoralId, inicio, fim, null);
-    }
-
-    @Transactional
-    public void atualizarReservasEvento(
-            UUID eventoId,
-            String eventoTitulo,
-            UUID localId,
-            List<UUID> localIds,
-            List<UUID> ativoIds,
-            UUID operadorId,
-            UUID pastoralId,
-            Instant inicio,
-            Instant fim,
-            List<TipoHorarioEvento> periodos
-    ) {
-        if (eventoId == null || inicio == null || fim == null) {
-            return;
-        }
-
-        List<Reserva> reservasExistentes = reservaRepository.findByEventoId(eventoId);
-        List<IntervaloReserva> novosIntervalos = calcularIntervalosReservas(inicio, fim, periodos);
-        Instant agora = Instant.now();
-        Set<UUID> ativosTocados = new LinkedHashSet<>();
-
-        Set<UUID> todosLocais = new LinkedHashSet<>();
-        if (localIds != null) {
-            todosLocais.addAll(localIds);
-        }
-        if (localId != null) {
-            todosLocais.add(localId);
-        }
-
-        // Cancelar reservas de itens desvinculados
-        for (Reserva r : reservasExistentes) {
-            boolean manterItem = false;
-            if (r.getTipoItem() == TipoItemReserva.LOCAL && todosLocais.contains(r.getItemId())) {
-                manterItem = true;
-            } else if (r.getTipoItem() == TipoItemReserva.ATIVO
-                    && ativoIds != null && ativoIds.contains(r.getItemId())) {
-                manterItem = true;
-            }
-
-            if (!manterItem && r.getStatus().ocupaAgenda()) {
-                r.cancelar(operadorId != null ? operadorId : UUID.randomUUID(),
-                        "Item desvinculado na edição do evento.", false, agora);
-                reservaRepository.save(r);
-                if (r.getTipoItem() == TipoItemReserva.ATIVO) {
-                    ativosTocados.add(r.getItemId());
-                }
-            }
-        }
-
-        LocalDate dataEvento = inicio.atZone(BR_ZONE).toLocalDate();
-
-        // Alinhar reservas de locais com os novos intervalos
-        for (UUID locId : todosLocais) {
-            if (locId == null) {
-                continue;
-            }
-            List<Reserva> ativasDoItem = reservasExistentes.stream()
-                    .filter(r -> r.getTipoItem() == TipoItemReserva.LOCAL
-                            && Objects.equals(r.getItemId(), locId)
-                            && r.getStatus().ocupaAgenda())
-                    .toList();
-
-            for (int i = 0; i < novosIntervalos.size(); i++) {
-                IntervaloReserva intervalo = novosIntervalos.get(i);
-                String sufixoTurno = extrairSufixoTurno(intervalo, periodos, dataEvento);
-                if (i < ativasDoItem.size()) {
-                    Reserva r = ativasDoItem.get(i);
-                    conflitoService.validarDisponibilidadeComLock(
-                            TipoItemReserva.LOCAL,
-                            locId,
-                            resolverNomeLocal(locId),
-                            intervalo,
-                            r.getId().value()
-                    );
-                    r.atualizarIntervalo(intervalo, agora);
-                    reservaRepository.save(r);
-                } else {
-                    conflitoService.validarDisponibilidadeComLock(
-                            TipoItemReserva.LOCAL,
-                            locId,
-                            resolverNomeLocal(locId),
-                            intervalo,
-                            null
-                    );
-                    Reserva nova = Reserva.criar(
-                            ReservaId.gerar(),
-                            TipoItemReserva.LOCAL,
-                            locId,
-                            intervalo,
-                            "Reserva vinculada ao evento" + sufixoTurno + ": " + eventoTitulo,
-                            operadorId != null ? operadorId : UUID.randomUUID(),
-                            pastoralId != null ? pastoralId : UUID.randomUUID(),
-                            eventoId,
-                            null,
-                            StatusReserva.CONFIRMADA,
-                            agora
-                    );
-                    reservaRepository.save(nova);
-                }
-            }
-
-            for (int i = novosIntervalos.size(); i < ativasDoItem.size(); i++) {
-                Reserva r = ativasDoItem.get(i);
-                r.cancelar(operadorId != null ? operadorId : UUID.randomUUID(),
-                        "Turno de local removido na edição do evento.", false, agora);
-                reservaRepository.save(r);
-            }
-        }
-
-        // Alinhar reservas de ativos com os novos intervalos
-        if (ativoIds != null) {
-            for (UUID ativoId : ativoIds) {
-                if (ativoId == null) {
-                    continue;
-                }
-                List<Reserva> ativasDoItem = reservasExistentes.stream()
-                        .filter(r -> r.getTipoItem() == TipoItemReserva.ATIVO
-                                && Objects.equals(r.getItemId(), ativoId)
-                                && r.getStatus().ocupaAgenda())
-                        .toList();
-
-                for (int i = 0; i < novosIntervalos.size(); i++) {
-                    IntervaloReserva intervalo = novosIntervalos.get(i);
-                    String sufixoTurno = extrairSufixoTurno(intervalo, periodos, dataEvento);
-                    if (i < ativasDoItem.size()) {
-                        Reserva r = ativasDoItem.get(i);
-                        conflitoService.validarDisponibilidadeComLock(
-                                TipoItemReserva.ATIVO,
-                                ativoId,
-                                resolverNomeAtivo(ativoId),
-                                intervalo,
-                                r.getId().value()
-                        );
-                        r.atualizarIntervalo(intervalo, agora);
-                        reservaRepository.save(r);
-                    } else {
-                        conflitoService.validarDisponibilidadeComLock(
-                                TipoItemReserva.ATIVO,
-                                ativoId,
-                                resolverNomeAtivo(ativoId),
-                                intervalo,
-                                null
-                        );
-                        Reserva nova = Reserva.criar(
-                                ReservaId.gerar(),
-                                TipoItemReserva.ATIVO,
-                                ativoId,
-                                intervalo,
-                                "Reserva de ativo vinculada ao evento" + sufixoTurno + ": " + eventoTitulo,
-                                operadorId != null ? operadorId : UUID.randomUUID(),
-                                pastoralId != null ? pastoralId : UUID.randomUUID(),
-                                eventoId,
-                                null,
-                                StatusReserva.CONFIRMADA,
-                                agora
-                        );
-                        reservaRepository.save(nova);
-                    }
-                }
-
-                for (int i = novosIntervalos.size(); i < ativasDoItem.size(); i++) {
-                    Reserva r = ativasDoItem.get(i);
-                    r.cancelar(operadorId != null ? operadorId : UUID.randomUUID(),
-                            "Turno de ativo removido na edição do evento.", false, agora);
-                    reservaRepository.save(r);
-                }
-
-                ativosTocados.add(ativoId);
-            }
-        }
-
-        ativosTocados.forEach(publicadorReservaDeAtivo::publicarParaAtivo);
-    }
-
-    @Transactional
-    public void cancelarReservasEventoEmCascata(UUID eventoId, String eventoTitulo, UUID operadorId) {
-        if (eventoId == null) {
-            return;
-        }
-        List<Reserva> reservas = reservaRepository.findByEventoId(eventoId);
-        Instant agora = Instant.now();
-        String motivo = "Cancelamento automático decorrente do cancelamento do evento: "
-                + (eventoTitulo != null ? eventoTitulo : "");
-
-        for (Reserva r : reservas) {
-            if (r.getStatus().ocupaAgenda()) {
-                r.cancelar(operadorId != null ? operadorId : UUID.randomUUID(), motivo, false, agora);
-                reservaRepository.save(r);
-            }
-        }
-        publicarAtivosTocados(reservas);
     }
 }

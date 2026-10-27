@@ -275,7 +275,7 @@ export const useCadastroEventoForm = ({
     // cada render do pai (Calendario.tsx faz `.filter()` inline, sem memo), e reagir a eles
     // aqui reexecutaria o reset acima a cada re-render — apagando o formulário, por
     // exemplo, assim que um erro de validação disparasse um setState no componente pai.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open, initialDate, initialEvent, reset]);
 
   // Seleciona organização/igreja/local padrão só quando a lista chega e o campo ainda está

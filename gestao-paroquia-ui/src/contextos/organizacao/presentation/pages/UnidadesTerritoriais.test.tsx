@@ -97,6 +97,7 @@ describe('UnidadesTerritoriais Page (Governo & Território)', () => {
       organizations: [],
     };
 
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     vi.mocked(unidadesApi.getUnidadesTerritoriais).mockResolvedValue(mockUnidadesData);
     vi.mocked(governoApi.getGovernoEclesiastico).mockResolvedValue(mockGovernoData);
     vi.mocked(governoApi.getDioceses).mockResolvedValue([]);

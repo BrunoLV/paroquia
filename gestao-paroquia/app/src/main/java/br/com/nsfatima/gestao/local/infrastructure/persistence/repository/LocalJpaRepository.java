@@ -1,7 +1,11 @@
 package br.com.nsfatima.gestao.local.infrastructure.persistence.repository;
 
 import br.com.nsfatima.gestao.local.infrastructure.persistence.entity.LocalEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,18 @@ public interface LocalJpaRepository extends JpaRepository<LocalEntity, UUID> {
      * @return o Local encontrado, ou {@link Optional#empty()} se não existir ou se estiver excluído
      */
     Optional<LocalEntity> findByIdAndDeletedAtIsNull(UUID id);
+
+    /**
+     * Busca o local não excluído com bloqueio de escrita na linha. Serializa pedidos de reserva concorrentes
+     * do mesmo espaço: quem obtém o bloqueio primeiro consulta os conflitos e grava antes do próximo.
+     * Exige transação ativa.
+     *
+     * @param id identificador do local
+     * @return o Local bloqueado, ou {@link Optional#empty()} se não existir ou estiver excluído
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT l FROM LocalEntity l WHERE l.id = :id AND l.deletedAt IS NULL")
+    Optional<LocalEntity> findByIdComBloqueio(@Param("id") UUID id);
 
     /**
      * Retorna todos os locais não excluídos.

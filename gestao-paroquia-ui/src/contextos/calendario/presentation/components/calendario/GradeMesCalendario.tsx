@@ -262,7 +262,7 @@ export const GradeMesCalendario = ({
                     variant="caption"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDaySelect ? onDaySelect(date) : onDayClick(date);
+                      (onDaySelect ?? onDayClick)(date);
                     }}
                     sx={{
                       display: 'block',

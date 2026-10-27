@@ -43,7 +43,7 @@ import java.util.List;
  * Ordem 3 (via {@link Order}) garante que handlers mais específicos de outros advices rodem antes.
  */
 @RestControllerAdvice
-@Order(3)
+@Order(2)
 public class DomainExceptionHandler extends BaseExceptionHandler {
 
     public DomainExceptionHandler(AuditoriaPersistenceService auditLogPersistenceService) {

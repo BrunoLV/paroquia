@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaPapelMembroComum;
 import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
@@ -50,7 +51,8 @@ public class AtualizarMembroUseCase {
 
     /**
      * Atualiza os dados do vínculo, revalidando existência de Fiel/organização e a unicidade de vínculo
-     * ativo (o próprio registro sendo editado é excluído dessa checagem).
+     * ativo (o próprio registro sendo editado é excluído dessa checagem). Papéis de liderança ou de conselho
+     * só se mantêm quando o papel e a organização não mudam; conferi-los exige a promoção pelo Pároco.
      *
      * @param id      identificador do vínculo a atualizar
      * @param request novos dados do vínculo
@@ -76,6 +78,12 @@ public class AtualizarMembroUseCase {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
         PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
+        boolean mantemPapelEOrganizacao = papel == PapelOrganizacional.fromStoredValue(entity.getPapel())
+                && request.organizacaoId().equals(entity.getOrganizacaoId());
+        boolean reativando = Boolean.TRUE.equals(request.ativo()) && !entity.isAtivo();
+        if (!mantemPapelEOrganizacao || reativando) {
+            PoliticaPapelMembroComum.exigirComum(papel);
+        }
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(existing -> {
@@ -107,6 +115,7 @@ public class AtualizarMembroUseCase {
 
     /**
      * Ativa ou desativa o vínculo, sem alterar os demais dados cadastrais (fiel, organização, papel etc.).
+     * Reativar um vínculo de liderança ou de conselho equivale a conferir o papel de novo e é recusado.
      *
      * @param id     identificador do vínculo
      * @param ativo  novo estado desejado ({@code true} para ativar, {@code false} para desativar)
@@ -118,6 +127,9 @@ public class AtualizarMembroUseCase {
         MembroGrupoEntity entity = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Membro não encontrado: " + id));
         MembroGrupo membro = membroGrupoMapper.toDomain(entity);
+        if (ativo && !entity.isAtivo()) {
+            PoliticaPapelMembroComum.exigirComum(PapelOrganizacional.fromStoredValue(entity.getPapel()));
+        }
         if (ativo) {
             membro.ativar();
         } else {

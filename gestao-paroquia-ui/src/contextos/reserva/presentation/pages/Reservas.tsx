@@ -23,12 +23,12 @@ import {
   obterMetricasReservas,
   registrarDevolucaoAtivo,
   registrarRetiradaAtivo,
+  finalizarUsoLocal,
   rejeitarReserva,
 } from '@/contextos/reserva/infrastructure/http/reservas';
 import { getLocais } from '@/contextos/local/infrastructure/http/locais';
 import { getAtivos } from '@/contextos/patrimonio/infrastructure/http/ativos';
 import { getOrganizacoes } from '@/contextos/organizacao/infrastructure/http/organizacoes';
-import { listEventos } from '@/contextos/calendario/infrastructure/http/eventos';
 import {
   CriarReservaPayload,
   CriarReservaRecorrentePayload,
@@ -93,19 +93,6 @@ const Reservas: FC = () => {
   const orgsQuery = useQuery({
     queryKey: ['organizacoes'],
     queryFn: getOrganizacoes,
-  });
-
-  const eventosQuery = useQuery({
-    queryKey: ['eventos-futuros'],
-    queryFn: () => {
-      const now = new Date();
-      const nextYear = new Date();
-      nextYear.setFullYear(now.getFullYear() + 1);
-      return listEventos({
-        dataInicio: now.toISOString(),
-        dataFim: nextYear.toISOString(),
-      });
-    },
   });
 
   // Mutations
@@ -185,6 +172,18 @@ const Reservas: FC = () => {
     },
   });
 
+  const finalizarUsoMutation = useMutation({
+    mutationFn: (id: string) => finalizarUsoLocal(id),
+    onSuccess: () => {
+      cliente.invalidateQueries({ queryKey: ['reservas'] });
+      cliente.invalidateQueries({ queryKey: ['reservas-metricas'] });
+      showSuccess('Uso do local finalizado com sucesso!');
+    },
+    onError: (err: unknown) => {
+      showError(extractErrorMessage(err, 'Erro ao finalizar o uso do local.'));
+    },
+  });
+
   const devolverMutation = useMutation({
     mutationFn: ({ id, checkAvarias }: { id: string; checkAvarias: string }) =>
       registrarDevolucaoAtivo(id, { checkAvarias }),
@@ -212,7 +211,6 @@ const Reservas: FC = () => {
         bufferMinutos: data.bufferMinutos,
         descricao: data.descricao,
         pastoralMovimentoId: data.pastoralMovimentoId,
-        eventoId: data.eventoId || null,
         tipoRecorrencia: data.tipoRecorrencia,
         quantidadeOcorrencias: data.quantidadeOcorrencias,
       });
@@ -225,7 +223,6 @@ const Reservas: FC = () => {
         bufferMinutos: data.bufferMinutos,
         descricao: data.descricao,
         pastoralMovimentoId: data.pastoralMovimentoId,
-        eventoId: data.eventoId || null,
       });
     }
   };
@@ -360,6 +357,7 @@ const Reservas: FC = () => {
           }}
           onRetirar={(r) => retirarMutation.mutate(r.id)}
           onDevolver={(r) => setDevolucaoReservaAlvo(r)}
+          onFinalizarUso={(r) => finalizarUsoMutation.mutate(r.id)}
         />
       ) : (
         <Paper sx={{ p: 2 }}>
@@ -381,7 +379,6 @@ const Reservas: FC = () => {
         locais={locaisQuery.data ?? []}
         ativos={ativosQuery.data ?? []}
         pastorais={orgsQuery.data ?? []}
-        eventos={eventosQuery.data ?? []}
         preselectedTipo={preselectedTipo}
         preselectedItemId={preselectedItemId}
       />

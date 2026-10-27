@@ -3,7 +3,6 @@ package br.com.nsfatima.gestao.membro.application.usecase;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
 import br.com.nsfatima.gestao.iam.application.usecase.CriarUsuarioUseCase;
-import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -43,7 +42,6 @@ class PromoverACoordenadorUseCaseTest {
     private OrganizacaoJpaRepository organizacaoRepository;
     private UsuarioJpaRepository usuarioRepository;
     private CriarUsuarioUseCase createUsuarioUseCase;
-    private PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private PromoverACoordenadorUseCase useCase;
 
     private UUID fielId;
@@ -57,9 +55,8 @@ class PromoverACoordenadorUseCaseTest {
         organizacaoRepository = mock(OrganizacaoJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
         createUsuarioUseCase = mock(CriarUsuarioUseCase.class);
-        papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         useCase = new PromoverACoordenadorUseCase(membroRepository, fielRepository, organizacaoRepository,
-                usuarioRepository, createUsuarioUseCase, papelGlobalAuthorizationService, new MembroGrupoMapper());
+                usuarioRepository, createUsuarioUseCase, new MembroGrupoMapper());
 
         fielId = UUID.randomUUID();
         organizacaoId = UUID.randomUUID();
@@ -95,11 +92,11 @@ class PromoverACoordenadorUseCaseTest {
         SecurityContextHolder.clearContext();
     }
 
-    private void authenticateAsGlobal(boolean isGlobal) {
+    private void authenticateWith(String authority) {
         var principal = new UsuarioDetails(actorId, "actor", "pass", true, "", List.of());
         SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(principal, null, List.of()));
-        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)).thenReturn(isGlobal);
+                new UsernamePasswordAuthenticationToken(principal, null,
+                        List.of(new SimpleGrantedAuthority(authority))));
     }
 
     private void authenticateAsParoco() {
@@ -116,7 +113,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveCriarUsuarioQuandoFielNaoTemUsuarioPrevio() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.empty());
         UUID novoUsuarioId = UUID.randomUUID();
         when(createUsuarioUseCase.execute("maria.coord", "senhaForte123", fielId)).thenReturn(novoUsuarioId);
@@ -140,7 +137,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveReutilizarUsuarioExistenteSemDuplicar() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         UUID usuarioExistenteId = UUID.randomUUID();
         var usuarioExistente = new UsuarioEntity();
         usuarioExistente.setId(usuarioExistenteId);
@@ -156,7 +153,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveAtualizarPapelDoVinculoSemCopiarALiderancaNaOrganizacao() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         var usuarioExistente = new UsuarioEntity();
         when(usuarioRepository.findByFielId(fielId)).thenReturn(Optional.of(usuarioExistente));
 
@@ -170,7 +167,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveLancarExcecaoQuandoFielNaoEhMembroAtivo() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
                 .thenReturn(Optional.empty());
 
@@ -181,7 +178,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveLancarExcecaoQuandoFielNaoEncontrado() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         when(fielRepository.findById(fielId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(request()))
@@ -191,7 +188,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveLancarExcecaoQuandoOrganizacaoNaoEncontrada() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         when(organizacaoRepository.findById(organizacaoId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(request()))
@@ -201,7 +198,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveLancarExcecaoQuandoPapelInvalido() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         var request = new PromoverACoordenadorRequest(fielId, organizacaoId, "PAPEL_INEXISTENTE", "x", "y");
 
         assertThatThrownBy(() -> useCase.execute(request))
@@ -211,7 +208,7 @@ class PromoverACoordenadorUseCaseTest {
 
     @Test
     void deveRejeitarPapelGlobalViaMembroGrupo() {
-        authenticateAsGlobal(true);
+        authenticateAsParoco();
         var request = new PromoverACoordenadorRequest(fielId, organizacaoId, "PAROCO", "x", "y");
 
         assertThatThrownBy(() -> useCase.execute(request))
@@ -220,8 +217,8 @@ class PromoverACoordenadorUseCaseTest {
     }
 
     @Test
-    void devePropagarNegacaoDeAutorizacao() {
-        authenticateAsGlobal(false);
+    void deveNegarQuandoAtorSemAlcadaDeParoco() {
+        authenticateWith("ROLE_COORDENADOR");
 
         assertThatThrownBy(() -> useCase.execute(request()))
                 .isInstanceOf(AccessDeniedException.class);
@@ -234,11 +231,56 @@ class PromoverACoordenadorUseCaseTest {
                 new UsernamePasswordAuthenticationToken(principal, null,
                         List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
                                 new SimpleGrantedAuthority("ROLE_GLOBAL_ADMIN"))));
-        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId)).thenReturn(true);
 
         assertThatThrownBy(() -> useCase.execute(request()))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("Apenas o Pároco possui provisão canônica");
+    }
+
+    @Test
+    void deveNegarQuandoAtorEhSecretariaParoquialMesmoComPapelGlobal() {
+        authenticateWith("ROLE_SECRETARIA_PAROQUIAL");
+
+        assertThatThrownBy(() -> useCase.execute(request()))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Apenas o Pároco possui provisão canônica");
+        verify(membroRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    void deveRecusarViceCoordenadorSemIdoneidade() {
+        authenticateAsParoco();
+        MembroGrupoEntity semIdoneidade = new MembroGrupoEntity();
+        semIdoneidade.setId(UUID.randomUUID());
+        semIdoneidade.setFielId(fielId);
+        semIdoneidade.setOrganizacaoId(organizacaoId);
+        semIdoneidade.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        semIdoneidade.setPapel("VOLUNTARIO");
+        semIdoneidade.setAtivo(true);
+        when(membroRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId))
+                .thenReturn(Optional.of(semIdoneidade));
+        var comoVice = new PromoverACoordenadorRequest(fielId, organizacaoId, "SECRETARIO_GRUPO", "x", "y");
+
+        assertThatThrownBy(() -> useCase.execute(comoVice))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("idoneidade");
+    }
+
+    @Test
+    void deveRecusarSegundoCoordenadorAtivoNaMesmaOrganizacao() {
+        authenticateAsParoco();
+        MembroGrupoEntity outro = new MembroGrupoEntity();
+        outro.setId(UUID.randomUUID());
+        outro.setFielId(UUID.randomUUID());
+        outro.setOrganizacaoId(organizacaoId);
+        outro.setPapel("coordenador");
+        outro.setAtivo(true);
+        when(membroRepository.findByOrganizacaoIdAndAtivoTrue(organizacaoId)).thenReturn(List.of(outro));
+
+        assertThatThrownBy(() -> useCase.execute(request()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("coordenador ativo");
+        verify(membroRepository, never()).save(any(MembroGrupoEntity.class));
     }
 
     @Test

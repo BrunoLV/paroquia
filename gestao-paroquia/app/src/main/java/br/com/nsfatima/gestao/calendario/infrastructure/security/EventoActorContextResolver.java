@@ -51,8 +51,8 @@ public class EventoActorContextResolver {
      * administrador, procura entre seus vínculos organizacionais o primeiro cujo papel seja
      * permitido pela {@link AuthorizationPolicy} para o tipo de organização do vínculo; (3) caso o
      * principal não seja {@code UsuarioDetails}, tenta inferir papel e tipo de organização a partir
-     * das {@code GrantedAuthority} no formato {@code ROLE_<TIPO>_<PAPEL>}; (4) por fim, como
-     * fallback, assume um papel padrão de coordenador pastoral local.
+     * das {@code GrantedAuthority} no formato {@code ROLE_<TIPO>_<PAPEL>}; (4) por fim, nega o
+     * acesso: um principal sem papel reconhecido nunca recebe privilégio por omissão.
      *
      * @return o contexto do ator resolvido (ator, papel, tipo e id de organização, usuário e vínculo)
      * @throws org.springframework.security.access.AccessDeniedException se não houver autenticação,
@@ -254,13 +254,7 @@ public class EventoActorContextResolver {
             }
         }
 
-        return new EventoActorContext(
-                authentication.getName(),
-                PapelOrganizacional.COORDENADOR.storedValue(),
-                TipoOrganizacao.PASTORAL.name(),
-                null,
-                UUID.fromString("00000000-0000-0000-0000-000000000001"),
-                null);
+        throw new AccessDeniedException("Nenhum papel reconhecido para o usuário autenticado");
     }
 
     private boolean aceitaPapel(String tipoOrganizacaoBruto, String papelBruto) {

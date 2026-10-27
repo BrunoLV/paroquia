@@ -266,6 +266,80 @@ class DecidirSolicitacaoAprovacaoUseCaseTest {
         verify(actorContextResolver, never()).resolveRequired();
     }
 
+    @Test
+    @DisplayName("Decisão com status de sistema (PENDENTE/FALHA_EXECUCAO) é recusada sem tocar na aprovação")
+    void deveRecusarStatusQueNaoSejaDecisaoFinal() {
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.PENDENTE, "obs")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.FALHA_EXECUCAO, "obs")))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(aprovacaoJpaRepository, never()).findById(any());
+    }
+
+    @Test
+    @DisplayName("Reprovação sem parecer é recusada (RN-APR-02) e a solicitação continua PENDENTE")
+    void deveExigirParecerNaReprovacao() {
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.REPROVADA, "  ")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("parecer");
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.REPROVADA, null)))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(entity.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
+    }
+
+    @Test
+    @DisplayName("Aprovar com payload ilegível falha fechado em vez de pular a checagem de prazo")
+    void deveFalharFechadoAoAprovarComPayloadIlegivel() {
+        entity.setActionPayloadJson("{quebrado");
+        when(aprovacaoJpaRepository.findById(aprovacaoId)).thenReturn(Optional.of(entity));
+        when(aprovacaoAcaoPayloadMapper.toPayload("{quebrado")).thenThrow(new IllegalArgumentException("json"));
+
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "ok")))
+                .isInstanceOf(ViolacaoRegraNegocioException.class);
+
+        assertThat(entity.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
+    }
+
+    @Test
+    @DisplayName("Reprovar com payload ilegível continua possível, pois nenhuma ação é executada")
+    void devePermitirReprovarComPayloadIlegivel() {
+        entity.setActionPayloadJson("{quebrado");
+        stubBasicApproval();
+        when(aprovacaoAcaoPayloadMapper.toPayload("{quebrado")).thenThrow(new IllegalArgumentException("json"));
+        when(strategy.supports(TipoSolicitacaoInput.CRIACAO_EVENTO)).thenReturn(true);
+
+        DecisaoAprovacaoResponse response = useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.REPROVADA, "Sem espaço"));
+
+        assertThat(response.status()).isEqualTo("REPROVADA");
+    }
+
+    @Test
+    @DisplayName("Aprovar sem conseguir verificar conflitos de recursos falha fechado")
+    void deveFalharFechadoQuandoDeteccaoDeConflitoQuebra() {
+        entity.setActionPayloadJson("{\"x\":1}");
+        stubBasicApproval();
+        Instant futuro = Instant.now().plusSeconds(86_400);
+        when(aprovacaoAcaoPayloadMapper.toPayload("{\"x\":1}")).thenReturn(new AprovacaoAcaoPayload(
+                "idemp", null, "Título", "desc", null, UUID.randomUUID(), null, futuro, futuro.plusSeconds(3600),
+                null, null, null, null, List.of(), null, UUID.randomUUID(), null, null, List.of(), null));
+        when(detectorConflitoEventoService.detectarConflitos(any(), any(), any(), any(), any(), any(), any(), any(),
+                any(), any())).thenThrow(new IllegalStateException("banco indisponível"));
+
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "ok")))
+                .isInstanceOf(ViolacaoRegraNegocioException.class);
+
+        assertThat(entity.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
+    }
+
     // ---- Séries recorrentes (master/filhas) ----
 
     @Test
@@ -478,28 +552,21 @@ class DecidirSolicitacaoAprovacaoUseCaseTest {
     }
 
     @Test
-    @DisplayName("Enriquecimento de payload da filha deve ignorar silenciosamente falha de interpretação do payload do pai")
-    void deveIgnorarFalhaDeInterpretacaoDoPayloadDoPai() {
+    @DisplayName("Aprovar ocorrência filha com payload ilegível falha fechado em vez de seguir com dados incompletos")
+    void deveFalharFechadoQuandoPayloadDaFilhaEIlegivel() {
         UUID paiId = UUID.randomUUID();
         entity.setAprovacaoPaiId(paiId);
         entity.setActionPayloadJson("payload-invalido");
-        stubBasicApproval();
-        when(strategy.supports(TipoSolicitacaoInput.CRIACAO_EVENTO)).thenReturn(true);
-        when(strategy.execute(any(), any())).thenReturn(
-                new DecisaoAprovacaoResponse.ActionExecution("EXECUTED", UUID.randomUUID(), "CONFIRMADO", null));
-
-        AprovacaoEntity pai = new AprovacaoEntity();
-        pai.setId(paiId);
-        pai.setActionPayloadJson("{\"pai\":true}");
-
-        when(aprovacaoJpaRepository.findById(paiId)).thenReturn(Optional.of(pai));
+        when(aprovacaoJpaRepository.findById(aprovacaoId)).thenReturn(Optional.of(entity));
         when(aprovacaoAcaoPayloadMapper.toPayload("payload-invalido"))
                 .thenThrow(new IllegalArgumentException("payload malformado"));
-        when(aprovacaoJpaRepository.findByAprovacaoPaiIdOrderByDataOcorrenciaUtcAsc(paiId)).thenReturn(List.of());
 
-        useCase.decidir(aprovacaoId, new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "obs"));
+        assertThatThrownBy(() -> useCase.decidir(aprovacaoId,
+                new DecidirAprovacaoRequest(AprovacaoStatus.APROVADA, "obs")))
+                .isInstanceOf(ViolacaoRegraNegocioException.class);
 
-        assertThat(entity.getActionPayloadJson()).isEqualTo("payload-invalido");
+        assertThat(entity.getStatus()).isEqualTo(AprovacaoStatus.PENDENTE);
+        verify(strategy, never()).execute(any(), any());
     }
 
     @Test

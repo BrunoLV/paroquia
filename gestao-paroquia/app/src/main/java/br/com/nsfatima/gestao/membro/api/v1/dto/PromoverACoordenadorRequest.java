@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.membro.api.v1.dto;
 
+import br.com.nsfatima.gestao.iam.api.v1.validation.SenhaValidaValidator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,4 +20,10 @@ public record PromoverACoordenadorRequest(
         String username,
         String password
 ) {
+
+    @JsonIgnore
+    @AssertTrue(message = "A senha deve possuir no mínimo 8 caracteres e no máximo 72 bytes")
+    public boolean isPasswordValida() {
+        return password == null || SenhaValidaValidator.atende(password);
+    }
 }

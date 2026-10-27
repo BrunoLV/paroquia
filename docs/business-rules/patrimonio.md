@@ -39,6 +39,8 @@ Prover inventário fidedigno dos bens móveis (equipamentos eletrônicos, mobili
 ### RN-PAT-04: Manutenção Bloqueia a Agenda
 - Só um bem `DISPONIVEL` é enviado para manutenção, por período determinado. O envio é **recusado** se houver reservas pendentes ou confirmadas no intervalo (que precisam ser canceladas antes) ou se já houver manutenção em aberto.
 - Enquanto a manutenção está em aberto, a janela bloqueia novas reservas do bem e a consulta de disponibilidade a considera.
+- O envio para manutenção e a criação de reservas do mesmo bem são serializados pelo bloqueio da linha do bem: uma reserva não é criada sobre um período em que a manutenção está sendo registrada, e vice-versa. O envio grava o histórico de manutenção e o status do bem de forma atômica, para que `EM_MANUTENCAO` nunca fique ausente de uma manutenção em aberto.
+- Só um bem marcado como reservável, e não excluído, pode ser reservado (ver `reserva.md`).
 - Concluir a manutenção registra a data real de fim (não anterior ao início), devolve o bem a `DISPONIVEL` e dispara o recálculo de `RESERVADO`.
 
 ### RN-PAT-05: Exclusão Lógica (Desincorporação)

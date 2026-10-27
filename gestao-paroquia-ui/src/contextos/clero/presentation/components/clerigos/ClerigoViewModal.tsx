@@ -76,14 +76,15 @@ export const ClerigoViewModal: React.FC<ClerigoViewModalProps> = ({
   onEdit,
   onInativar,
 }) => {
-  if (!clerigo) return null;
-
   const clerigoId = clerigo?.clerigoId;
+  // Hook antes do retorno antecipado (rules-of-hooks); `enabled` já cobre clérigo ausente.
   const { data: historicoConsentimentos, isLoading: loadingHistorico } = useQuery({
     queryKey: ['historico-consentimento', 'CLERIGO', clerigoId],
     queryFn: () => listarHistoricoConsentimento('CLERIGO', clerigoId!),
     enabled: Boolean(open && clerigoId),
   });
+
+  if (!clerigo) return null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

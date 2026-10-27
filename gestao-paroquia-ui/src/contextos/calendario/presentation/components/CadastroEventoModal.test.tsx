@@ -44,6 +44,7 @@ describe('CadastroEventoModal', () => {
     jest.clearAllMocks();
     mockShowError.mockClear();
     mockedUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Pároco', roles: ['PAROCO'], organizations: [] }
     });
   });
@@ -83,6 +84,7 @@ describe('CadastroEventoModal', () => {
         id: '2', 
         name: 'Member', 
         roles: ['COORDENADOR'], 
+        // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
         organizations: [{ id: 'org-2', nome: 'Pastoral B' }] 
       }
     });
@@ -442,6 +444,7 @@ describe('CadastroEventoModal', () => {
 
   it('renders decisao pastoral switch when user is PAROCO', () => {
     mockedUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '1', name: 'Paroco User', roles: ['PAROCO', 'ROLE_CLERO_PAROCO'], organizations: [] }
     });
 
@@ -451,6 +454,7 @@ describe('CadastroEventoModal', () => {
 
   it('does not render decisao pastoral switch when user is NOT PAROCO', () => {
     mockedUseAuth.mockReturnValue({
+      // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
       user: { id: '2', name: 'Pastoral User', roles: ['COORDENADOR'], organizations: [] }
     });
 

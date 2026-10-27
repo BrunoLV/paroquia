@@ -1,5 +1,8 @@
 package br.com.nsfatima.gestao.calendario.application.service;
 
+import java.time.ZoneId;
+import java.time.Clock;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import br.com.nsfatima.gestao.calendario.domain.model.CorLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.model.SaidaLiturgica;
 import br.com.nsfatima.gestao.calendario.domain.model.MarcoLiturgico;
@@ -18,7 +21,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 class MotorLiturgicoTest {
 
-    private final MotorLiturgico engine = new MotorLiturgico();
+    private static final RelogioNegocio RELOGIO = new RelogioNegocio(
+            Clock.systemUTC(), ZoneId.of("America/Sao_Paulo"));
+
+    private final MotorLiturgico engine = new MotorLiturgico(RELOGIO);
 
     @Test
     @DisplayName("Deve calcular a data da Páscoa corretamente usando algoritmo Meeus/Jones/Butcher")
@@ -108,5 +114,12 @@ class MotorLiturgicoTest {
         assertThat(marcos.get("PASCOA").data()).isEqualTo(LocalDate.of(2026, 4, 5));
         assertThat(marcos.get("QUARTA_CINZAS").data()).isEqualTo(LocalDate.of(2026, 2, 18));
         assertThat(marcos.get("QUARTA_CINZAS").corLiturgica()).isEqualTo(CorLiturgica.ROXO);
+    }
+
+    @Test
+    void anoLiturgicoVirapelaMeiaNoiteDeBrasiliaDoAdvento() {
+        // 1º domingo do Advento de 2026 = 29/11. Sábado 28/11 22h BRT (01h UTC de 29/11) ainda é o ano antigo.
+        assertThat(engine.resolveAnoLiturgico(Instant.parse("2026-11-29T01:00:00Z"))).isEqualTo(2026);
+        assertThat(engine.resolveAnoLiturgico(Instant.parse("2026-11-29T04:00:00Z"))).isEqualTo(2027);
     }
 }

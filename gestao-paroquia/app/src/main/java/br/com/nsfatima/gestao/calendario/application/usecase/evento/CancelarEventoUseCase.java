@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -217,7 +216,6 @@ public class CancelarEventoUseCase {
         aprovacao.setTipoSolicitacao(TipoSolicitacaoInput.CANCELAMENTO.name());
         aprovacao.setAprovadorPapel(AprovadorPapel.PAROCO);
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(actorContext.usuarioId().toString());
         aprovacao.setSolicitantePapel(actorContext.role());
         aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.fromStoredValue(actorContext.organizationType()));

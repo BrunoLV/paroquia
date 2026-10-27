@@ -88,8 +88,8 @@ public class SeedDataSqlIntegrityTest {
 
     @Test
     void seedDataSqlShouldExecuteWithoutErrorsAndPopulateTables() throws Exception {
-        assertEquals(36, flyway.info().applied().length,
-                "O esquema deve conter as 36 migrações Flyway versionadas");
+        assertEquals(40, flyway.info().applied().length,
+                "O esquema deve conter as 40 migrações Flyway versionadas (V040-V042 adicionadas pela adequação LGPD)");
 
         Path seedFilePath = Path.of("../docker/seed-data.sql");
         assertTrue(Files.exists(seedFilePath), "seed-data.sql file must exist in docker directory");

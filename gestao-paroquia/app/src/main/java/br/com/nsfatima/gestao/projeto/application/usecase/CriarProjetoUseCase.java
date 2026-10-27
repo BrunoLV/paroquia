@@ -16,12 +16,11 @@ import br.com.nsfatima.gestao.projeto.infrastructure.persistence.entity.ProjetoS
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.mapper.ProjetoMapper;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoEventoJpaRepository;
 import br.com.nsfatima.gestao.projeto.infrastructure.persistence.repository.ProjetoSolicitacaoAprovacaoJpaRepository;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 /**
@@ -49,6 +48,7 @@ public class CriarProjetoUseCase {
     private final AnoParoquialJpaRepository anoParoquialRepository;
     private final ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository;
     private final ObjectMapper objectMapper;
+    private final RelogioNegocio relogio;
 
     public CriarProjetoUseCase(
             ProjetoEventoJpaRepository repository,
@@ -58,7 +58,8 @@ public class CriarProjetoUseCase {
             ProjetoAuthorizationService authorizationService,
             AnoParoquialJpaRepository anoParoquialRepository,
             ProjetoSolicitacaoAprovacaoJpaRepository aprovacaoRepository,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            RelogioNegocio relogio) {
         this.repository = repository;
         this.mapper = mapper;
         this.auditPublisher = auditPublisher;
@@ -67,6 +68,7 @@ public class CriarProjetoUseCase {
         this.anoParoquialRepository = anoParoquialRepository;
         this.aprovacaoRepository = aprovacaoRepository;
         this.objectMapper = objectMapper;
+        this.relogio = relogio;
     }
 
     /**
@@ -86,7 +88,7 @@ public class CriarProjetoUseCase {
             throw new IllegalArgumentException("Data de fim do projeto não pode ser anterior à data de início");
         }
 
-        int startYear = request.inicio().atZone(ZoneOffset.UTC).getYear();
+        int startYear = relogio.anoDe(request.inicio());
         var anoParoquialOpt = anoParoquialRepository.findByAno(startYear);
 
         boolean isLocked = false;
@@ -112,7 +114,6 @@ public class CriarProjetoUseCase {
                 throw new RuntimeException("Error serializing project request", e);
             }
             aprovacao.setCancelarEventosVinculados(false);
-            aprovacao.setCriadoEmUtc(Instant.now());
 
             ProjetoSolicitacaoAprovacaoEntity savedAprovacao = aprovacaoRepository.save(aprovacao);
             auditPublisher.publish(actorContext.actor(),

@@ -4,6 +4,7 @@ import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpa
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroRequest;
 import br.com.nsfatima.gestao.membro.api.v1.dto.MembroResponse;
 import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaPapelMembroComum;
 import br.com.nsfatima.gestao.membro.infrastructure.observability.MembroAuditPublisher;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
@@ -52,7 +53,8 @@ public class AdicionarMembroUseCase {
     }
 
     /**
-     * Cria o vínculo Fiel-organização, validando a existência de ambas as partes e a ausência de vínculo ativo
+     * Cria o vínculo Fiel-organização apenas com papel de participação comum (liderança e conselho exigem
+     * promoção pelo Pároco), validando a existência de ambas as partes e a ausência de vínculo ativo
      * prévio antes de persistir. Sincroniza o campo de liderança da organização quando o papel atribuído for
      * de coordenação (FR5), resolvendo o nome de exibição diretamente do {@code Fiel}.
      *
@@ -60,7 +62,7 @@ public class AdicionarMembroUseCase {
      * @param actor   identificador do agente executando a ação, usado para auditoria
      * @return o vínculo criado, com dados de exibição resolvidos
      * @throws IllegalArgumentException se o Fiel ou a organização não existirem, se o papel informado for
-     *                                  inválido, ou se já houver vínculo ativo entre eles
+     *                                  inválido ou de liderança/conselho, ou se já houver vínculo ativo entre eles
      */
     @Transactional
     public MembroResponse execute(MembroRequest request, String actor) {
@@ -76,6 +78,7 @@ public class AdicionarMembroUseCase {
             throw new IllegalArgumentException("Papel inválido: " + request.papel());
         }
         PapeisPorTipoOrganizacao.exigir(organizacao.getTipo(), papel);
+        PoliticaPapelMembroComum.exigirComum(papel);
 
         repository.findByFielIdAndOrganizacaoIdAndAtivoTrue(request.fielId(), request.organizacaoId())
                 .ifPresent(m -> {

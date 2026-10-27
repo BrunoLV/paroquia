@@ -61,7 +61,6 @@ public class GerenciarAjusteCadastralUseCase {
         solicitacao.setEnderecoCidade(request.endereco().cidade());
         solicitacao.setEnderecoEstado(request.endereco().estado());
         solicitacao.setStatus(STATUS_PENDENTE);
-        solicitacao.setCriadoEmUtc(Instant.now());
 
         var salva = ajustes.save(solicitacao);
         auditoria.publicarSolicitacaoAjuste(

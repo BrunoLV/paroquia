@@ -52,7 +52,6 @@ class CancelEventoAprovacaoExecutionFailureIntegrationTest {
         aprovacao.setTipoSolicitacao("CANCELAMENTO");
         aprovacao.setAprovadorPapel("paroco");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setMotivoCancelamentoSnapshot("Tentativa com evento nao confirmado");
         aprovacaoJpaRepository.save(aprovacao);
 

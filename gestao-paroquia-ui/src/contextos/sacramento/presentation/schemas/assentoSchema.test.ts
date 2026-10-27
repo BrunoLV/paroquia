@@ -54,6 +54,7 @@ describe('paraTeorPayload', () => {
 
 describe('assentoParaForm', () => {
   it('preserva ids e vínculos tardios ao reabrir o rascunho', () => {
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     const assento = {
       id: 'a1', tipo: 'BATISMO', status: 'DRAFT', visibilidade: 'COMUM', dataLavratura: '2026-01-01', livro: '7',
       folha: null, termo: null, paroquiaCustodiante: null, dataCelebracao: '2026-03-01T10:00:00',

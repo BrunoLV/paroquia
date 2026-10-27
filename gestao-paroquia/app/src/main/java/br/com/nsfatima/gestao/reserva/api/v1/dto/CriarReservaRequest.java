@@ -7,6 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Pedido público de reserva. Não carrega vínculo com evento nem série recorrente: esses vínculos são
+ * estabelecidos apenas pela integração com eventos e pelo endpoint recorrente, nunca pelo cliente, pois
+ * conferiam confirmação automática da reserva.
+ */
 public record CriarReservaRequest(
         @NotNull(message = "O tipo do item (LOCAL ou ATIVO) é obrigatório.")
         TipoItemReserva tipoItem,
@@ -28,9 +33,5 @@ public record CriarReservaRequest(
         String descricao,
 
         @NotNull(message = "A pastoral/movimento solicitante é obrigatória.")
-        UUID pastoralMovimentoId,
-
-        UUID eventoId,
-
-        UUID grupoRecorrenciaId
+        UUID pastoralMovimentoId
 ) {}

@@ -166,7 +166,6 @@ class ApproveUpdateEventoIntegrationTest {
         aprovacao.setEventoId(eventoId);
         aprovacao.setTipoSolicitacao("EDICAO_EVENTO");
         aprovacao.setStatus(AprovacaoStatus.PENDENTE);
-        aprovacao.setCriadoEmUtc(Instant.now());
         aprovacao.setSolicitanteId(UUID.randomUUID().toString());
         aprovacao.setSolicitantePapel("coordenador");
         aprovacao.setSolicitanteTipoOrganizacao(TipoOrganizacao.PASTORAL);

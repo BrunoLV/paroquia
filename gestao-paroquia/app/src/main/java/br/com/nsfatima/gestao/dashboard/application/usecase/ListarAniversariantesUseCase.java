@@ -4,14 +4,16 @@ import br.com.nsfatima.gestao.dashboard.api.v1.dto.AniversarianteDTO;
 import br.com.nsfatima.gestao.dashboard.domain.model.PeriodoDashboard;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
+import br.com.nsfatima.gestao.support.domain.time.RelogioNegocio;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.MonthDay;
-import java.time.ZoneOffset;
+import java.time.Year;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +25,8 @@ import java.util.stream.IntStream;
  * ativos em memória (o conversor descriptografa transparente na leitura) e compara o dia/mês.
  * O resultado é cacheado para não pagar essa varredura a cada abertura da tela.
  *
- * <p>Só entram fiéis ativos que autorizaram a divulgação do aniversário, e o DTO carrega apenas
+ * <p>O dia é o civil do fuso da paróquia. Quem nasceu em 29/02 comemora em 28/02 nos anos não
+ * bissextos. Só entram fiéis ativos que autorizaram a divulgação do aniversário, e o DTO carrega apenas
  * primeiro nome + dia + mês — nunca ano ou data completa (regras duras de LGPD).
  *
  * <p>ponytail: varredura O(n) com descriptografia por cache-miss; se a base de fiéis crescer
@@ -32,13 +35,20 @@ import java.util.stream.IntStream;
 @Service
 public class ListarAniversariantesUseCase {
 
-    /** Cache compartilhado (expiração de 10 min via {@code CacheConfig}); ver ponytail acima. */
+    /**
+     * Cache compartilhado (expiração de 10 min via {@code CacheConfig}); a chave inclui o dia de negócio
+     * para que o resultado de ontem não seja servido após a virada do dia em Brasília.
+     */
     static final String CACHE = "dashboardAniversariantes";
 
-    private final FielJpaRepository fielRepository;
+    private static final MonthDay VINTE_E_NOVE_DE_FEVEREIRO = MonthDay.of(2, 29);
 
-    public ListarAniversariantesUseCase(FielJpaRepository fielRepository) {
+    private final FielJpaRepository fielRepository;
+    private final RelogioNegocio relogio;
+
+    public ListarAniversariantesUseCase(FielJpaRepository fielRepository, RelogioNegocio relogio) {
         this.fielRepository = fielRepository;
+        this.relogio = relogio;
     }
 
     /**
@@ -48,7 +58,7 @@ public class ListarAniversariantesUseCase {
      *     {@code MES} (mês vigente); {@code null} equivale a {@code SEMANA}
      * @return aniversariantes ordenados por mês e dia
      */
-    @Cacheable(cacheNames = CACHE, key = "#periodo")
+    @Cacheable(cacheNames = CACHE, key = "#periodo + '@' + @relogioNegocio.hoje()")
     @Transactional(readOnly = true)
     public List<AniversarianteDTO> execute(PeriodoDashboard periodo) {
         Set<MonthDay> alvo = diasAlvo(periodo == null ? PeriodoDashboard.SEMANA : periodo);
@@ -63,8 +73,8 @@ public class ListarAniversariantesUseCase {
     }
 
     private Set<MonthDay> diasAlvo(PeriodoDashboard periodo) {
-        LocalDate hoje = LocalDate.now(ZoneOffset.UTC);
-        return switch (periodo) {
+        LocalDate hoje = relogio.hoje();
+        Set<MonthDay> dias = switch (periodo) {
             case HOJE -> Set.of(MonthDay.from(hoje));
             case SEMANA -> IntStream.range(0, 7)
                     .mapToObj(d -> MonthDay.from(hoje.plusDays(d)))
@@ -73,6 +83,30 @@ public class ListarAniversariantesUseCase {
                     .mapToObj(d -> MonthDay.of(hoje.getMonthValue(), d))
                     .collect(Collectors.toSet());
         };
+        return comNascidosEmBissexto(dias, periodo, hoje);
+    }
+
+    /**
+     * Quem nasceu em 29/02 comemora em 28/02 nos anos não bissextos. A regra considera o ano de cada
+     * dia da janela (uma semana de 25/02 a 03/03 de 2027 inclui 28/02 sem bissexto), e não só o ano
+     * corrente.
+     */
+    private Set<MonthDay> comNascidosEmBissexto(Set<MonthDay> dias, PeriodoDashboard periodo, LocalDate hoje) {
+        boolean janelaContem28DeFevereiroSemBissexto = switch (periodo) {
+            case HOJE -> dia28DeFevereiroSemBissexto(hoje);
+            case SEMANA -> IntStream.range(0, 7).anyMatch(d -> dia28DeFevereiroSemBissexto(hoje.plusDays(d)));
+            case MES -> hoje.getMonthValue() == 2 && !Year.isLeap(hoje.getYear());
+        };
+        if (!janelaContem28DeFevereiroSemBissexto) {
+            return dias;
+        }
+        Set<MonthDay> ampliado = new HashSet<>(dias);
+        ampliado.add(VINTE_E_NOVE_DE_FEVEREIRO);
+        return ampliado;
+    }
+
+    private boolean dia28DeFevereiroSemBissexto(LocalDate dia) {
+        return dia.getMonthValue() == 2 && dia.getDayOfMonth() == 28 && !Year.isLeap(dia.getYear());
     }
 
     private AniversarianteDTO paraDto(FielEntity fiel) {

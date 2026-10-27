@@ -1,10 +1,10 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.entity.UsuarioEntity;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
 import br.com.nsfatima.gestao.organizacao.domain.model.TipoOrganizacao;
@@ -22,6 +22,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,6 @@ class AdicionarVinculoUseCaseTest {
 
     private MembroGrupoJpaRepository vinculoRepository;
     private UsuarioJpaRepository usuarioRepository;
-    private PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private AdicionarVinculoUseCase useCase;
     private SecurityContext originalContext;
 
@@ -55,11 +55,12 @@ class AdicionarVinculoUseCaseTest {
     void setUp() {
         vinculoRepository = mock(MembroGrupoJpaRepository.class);
         usuarioRepository = mock(UsuarioJpaRepository.class);
-        papelGlobalAuthorizationService = mock(PapelGlobalAuthorizationService.class);
         unidadeTerritorialRepository = mock(UnidadeTerritorialJpaRepository.class);
         organizacaoRepository = mock(OrganizacaoJpaRepository.class);
         useCase = new AdicionarVinculoUseCase(vinculoRepository, usuarioRepository, unidadeTerritorialRepository,
-                papelGlobalAuthorizationService, organizacaoRepository);
+                organizacaoRepository, new MembroGrupoMapper());
+        when(vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(any(UUID.class), any(UUID.class)))
+                .thenReturn(Optional.of(membroComIdoneidadeCompleta()));
         originalContext = SecurityContextHolder.getContext();
 
         var defaultIgreja = new UnidadeTerritorialEntity();
@@ -67,6 +68,26 @@ class AdicionarVinculoUseCaseTest {
         defaultIgreja.setTipo(TipoUnidadeTerritorial.MATRIZ);
         defaultIgreja.setNome("Matriz Default");
         when(unidadeTerritorialRepository.findById(any(UUID.class))).thenReturn(Optional.of(defaultIgreja));
+    }
+
+    private static MembroGrupoEntity membroBasico() {
+        MembroGrupoEntity membro = new MembroGrupoEntity();
+        membro.setId(UUID.randomUUID());
+        membro.setFielId(UUID.randomUUID());
+        membro.setOrganizacaoId(UUID.randomUUID());
+        membro.setTipoOrganizacao(TipoOrganizacao.PASTORAL);
+        return membro;
+    }
+
+    private static MembroGrupoEntity membroComIdoneidadeCompleta() {
+        MembroGrupoEntity membro = membroBasico();
+        membro.setPapel(PapelOrganizacional.VOLUNTARIO.name());
+        membro.setAtivo(true);
+        membro.setFormacaoConcluidaEm(LocalDate.of(2025, 1, 1));
+        membro.setVivenciaSacramentalAtestadaEm(LocalDate.of(2025, 1, 1));
+        membro.setTermoProtecaoMenoresEm(LocalDate.of(2025, 1, 1));
+        membro.setEnviadoEm(LocalDate.of(2025, 1, 1));
+        return membro;
     }
 
     @AfterEach
@@ -168,7 +189,6 @@ class AdicionarVinculoUseCaseTest {
     @Test
     void deveNegarCoordenadorDefinicaoQuandoNaoParoco() {
         mockAuthentication("ROLE_ADMIN", "ROLE_GLOBAL_ADMIN");
-        when(papelGlobalAuthorizationService.isGlobalByUsuarioId(any())).thenReturn(true);
 
         UUID usuarioId = UUID.randomUUID();
         UUID organizacaoId = UUID.randomUUID();
@@ -179,6 +199,88 @@ class AdicionarVinculoUseCaseTest {
                         organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID())
 
         );
+    }
+
+    @Test
+    void deveNegarCoordenadorParaSecretariaParoquialMesmoComPapelGlobal() {
+        mockAuthentication("ROLE_SECRETARIA_PAROQUIAL");
+        UUID usuarioId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+
+        assertThrows(AccessDeniedException.class, () -> useCase.execute(usuarioId,
+                UUID.randomUUID(), TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID()));
+        verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    void deveNegarPapelDeConselhoParaSecretariaParoquial() {
+        mockAuthentication("ROLE_SECRETARIA_PAROQUIAL");
+        UUID usuarioId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+
+        assertThrows(AccessDeniedException.class, () -> useCase.execute(usuarioId,
+                UUID.randomUUID(), TipoOrganizacao.CONSELHO, PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL, null));
+        verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    void devePermitirPapelDeConselhoParaParoco() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        when(vinculoRepository.save(any(MembroGrupoEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertDoesNotThrow(() -> useCase.execute(usuarioId,
+                UUID.randomUUID(), TipoOrganizacao.CONSELHO, PapelOrganizacional.MEMBRO_CONSELHO_PASTORAL, null));
+    }
+
+    @Test
+    void deveRecusarCoordenadorSemIdoneidade() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        MembroGrupoEntity semIdoneidade = membroBasico();
+        semIdoneidade.setPapel(PapelOrganizacional.VOLUNTARIO.name());
+        when(vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(any(UUID.class), eq(organizacaoId)))
+                .thenReturn(Optional.of(semIdoneidade));
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID()));
+
+        assertTrue(ex.getMessage().contains("idoneidade"));
+        verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    void deveRecusarViceCoordenadorSemIdoneidade() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        MembroGrupoEntity semIdoneidade = membroBasico();
+        semIdoneidade.setPapel(PapelOrganizacional.VOLUNTARIO.name());
+        when(vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(any(UUID.class), eq(organizacaoId)))
+                .thenReturn(Optional.of(semIdoneidade));
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.SECRETARIO_GRUPO, UUID.randomUUID()));
+
+        assertTrue(ex.getMessage().contains("idoneidade"));
+        verify(vinculoRepository, never()).save(any(MembroGrupoEntity.class));
+    }
+
+    @Test
+    void deveRecusarCoordenadorParaFielSemVinculoPrevioNaOrganizacao() {
+        mockAuthentication("ROLE_CLERO_PAROCO");
+        UUID usuarioId = UUID.randomUUID();
+        UUID organizacaoId = UUID.randomUUID();
+        mockUsuarioComFiel(usuarioId);
+        when(vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(any(UUID.class), eq(organizacaoId)))
+                .thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> useCase.execute(usuarioId,
+                organizacaoId, TipoOrganizacao.PASTORAL, PapelOrganizacional.COORDENADOR, UUID.randomUUID()));
     }
 
     @Test

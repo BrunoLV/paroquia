@@ -68,3 +68,25 @@ export const cancelarProjeto = async (
   });
   return response.data;
 };
+
+/** Indicadores de execução dos eventos vinculados ao projeto (GET /projetos/{id}/resumo). */
+export interface ProjetoResumo {
+  statusExecucao: { totalEventos: number; eventosRealizados: number; eventosPendentes: number };
+  mapaColaboracao: { envolvidos: string[] };
+  saudeTemporal: { percentualTempoDecorrido: number; emRisco: boolean };
+}
+
+/** Lista os projetos visíveis ao usuário autenticado. */
+export const listarProjetos = async (): Promise<Projeto[]> =>
+  (await apiClient.get<Projeto[]>('/projetos')).data ?? [];
+
+/** Resumo de execução, saúde temporal e colaboração de um projeto (alimenta o painel de detalhes). */
+export const obterResumoProjeto = async (id: string): Promise<ProjetoResumo> =>
+  (await apiClient.get<ProjetoResumo>(`/projetos/${id}/resumo`)).data;
+
+/**
+ * Cria (`id` nulo) ou edita um projeto. A criação passa pelo fluxo de aprovação no backend,
+ * por isso a resposta pode ser uma solicitação e não o projeto efetivado.
+ */
+export const salvarProjeto = (id: string | null, payload: Record<string, unknown>) =>
+  id ? apiClient.patch(`/projetos/${id}`, payload) : apiClient.post('/projetos', payload);

@@ -129,16 +129,17 @@ public interface EventoConsultaJpaRepository {
     List<String> findInvolvedOrganizationNames(@Param("projetoId") UUID projetoId);
 
     /**
-     * Busca todos os eventos cujo início ocorre dentro do período informado, ordenados por
-     * início ascendente.
+     * Busca os eventos não cancelados cujo início ocorre dentro do período informado, ordenados
+     * por início ascendente. Evento cancelado não ocupa a agenda e não entra nas métricas do painel.
      *
      * @param inicioUtc limite inferior (inclusive) do início do evento
      * @param fimUtc limite superior (inclusive) do início do evento
-     * @return eventos com início dentro do período informado, ordenados cronologicamente
+     * @return eventos não cancelados com início dentro do período, ordenados cronologicamente
      */
     @Query("""
             select distinct e from EventoEntity e
             where e.inicioUtc >= :inicioUtc and e.inicioUtc <= :fimUtc
+              and e.status != 'CANCELADO'
             order by e.inicioUtc asc
             """)
     List<EventoEntity> findAllInPeriod(

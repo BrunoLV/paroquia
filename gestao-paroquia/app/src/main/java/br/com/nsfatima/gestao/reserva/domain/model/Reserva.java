@@ -1,6 +1,9 @@
 package br.com.nsfatima.gestao.reserva.domain.model;
 
+import br.com.nsfatima.gestao.reserva.domain.exception.ReservaTransicaoInvalidaException;
+
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,6 +14,9 @@ import java.util.UUID;
  * garantindo atomicidade, invariantes de transição de estado e integridade de auditoria.
  */
 public class Reserva implements Serializable {
+
+    /** Antecedência do início até a qual um pedido pendente pode ser analisado (RN-RES-05). */
+    public static final Duration ANTECEDENCIA_ANALISE = Duration.ofHours(48);
 
     private final ReservaId id;
     private final TipoItemReserva tipoItem;
@@ -123,7 +129,7 @@ public class Reserva implements Serializable {
     public void aprovar(UUID aprovadorId, Instant agora) {
         Objects.requireNonNull(aprovadorId, "Identificador do aprovador é obrigatório.");
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser aprovadas. Status atual: " + this.status);
         }
         this.status = StatusReserva.CONFIRMADA;
@@ -142,7 +148,7 @@ public class Reserva implements Serializable {
             throw new IllegalArgumentException("O motivo da rejeição não pode ser vazio.");
         }
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser rejeitadas. Status atual: " + this.status);
         }
         this.status = StatusReserva.CANCELADA;
@@ -152,7 +158,8 @@ public class Reserva implements Serializable {
     }
 
     /**
-     * Cancelamento de reserva confirmada ou pendente.
+     * Cancelamento de reserva confirmada ou pendente. Um bem já retirado está sob custódia e só sai dela
+     * pela devolução, portanto {@code RETIRADO} não é cancelável.
      * Administradores e Pároco exigem justificativa textual mínima de 15 caracteres.
      */
     public void cancelar(UUID operadorId, String motivo, boolean isAdminOuParoco, Instant agora) {
@@ -166,11 +173,8 @@ public class Reserva implements Serializable {
         if (motivoFormatado.isBlank()) {
             throw new IllegalArgumentException("O motivo do cancelamento não pode ser vazio.");
         }
-        boolean estadoFinal = this.status == StatusReserva.CANCELADA
-                || this.status == StatusReserva.FINALIZADA
-                || this.status == StatusReserva.EXPIRADA;
-        if (estadoFinal) {
-            throw new IllegalStateException("A reserva não pode ser cancelada no estado: " + this.status);
+        if (!this.status.admiteCancelamento()) {
+            throw new ReservaTransicaoInvalidaException("A reserva não pode ser cancelada no estado: " + this.status);
         }
         this.status = StatusReserva.CANCELADA;
         this.canceladoPorId = operadorId;
@@ -184,11 +188,11 @@ public class Reserva implements Serializable {
     public void registrarRetirada(UUID operadorId, Instant agora) {
         Objects.requireNonNull(operadorId, "Identificador do operador de saída é obrigatório.");
         if (this.tipoItem != TipoItemReserva.ATIVO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Registro de saída física é aplicável exclusivamente a bens patrimoniais móveis (ATIVO).");
         }
         if (this.status != StatusReserva.CONFIRMADA) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas CONFIRMADAS podem ter saída registrada. Status atual: " + this.status);
         }
         this.status = StatusReserva.RETIRADO;
@@ -201,11 +205,11 @@ public class Reserva implements Serializable {
     public void registrarDevolucao(UUID operadorId, String checkAvarias, Instant agora) {
         Objects.requireNonNull(operadorId, "Identificador do operador de devolução é obrigatório.");
         if (this.tipoItem != TipoItemReserva.ATIVO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Registro de devolução com avarias é aplicável exclusivamente a bens patrimoniais móveis (ATIVO).");
         }
         if (this.status != StatusReserva.RETIRADO) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status RETIRADO podem ser devolvidas. Status atual: " + this.status);
         }
         Objects.requireNonNull(checkAvarias, "O relatório de conferência de avarias (check_avarias) é obrigatório.");
@@ -222,23 +226,42 @@ public class Reserva implements Serializable {
      * Finalização de uso direto de local físico.
      */
     public void finalizarUsoLocal(Instant agora) {
+        Objects.requireNonNull(agora, "Instante da finalização é obrigatório.");
         if (this.tipoItem != TipoItemReserva.LOCAL) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas locais podem ser finalizados diretamente sem checklist de devolução.");
         }
         if (this.status != StatusReserva.CONFIRMADA) {
-            throw new IllegalStateException("Apenas reservas confirmadas podem ser finalizadas.");
+            throw new ReservaTransicaoInvalidaException("Apenas reservas confirmadas podem ser finalizadas.");
+        }
+        if (agora.isBefore(this.intervalo.dataHoraInicio())) {
+            throw new ReservaTransicaoInvalidaException("O uso do local só pode ser finalizado depois de iniciado.");
         }
         this.status = StatusReserva.FINALIZADA;
-        this.updatedAt = agora != null ? agora : Instant.now();
+        this.updatedAt = agora;
     }
 
     /**
-     * Expiração preventiva (TTL 48h antes do início).
+     * Instante em que o pedido pendente deixa de poder ser analisado: 48 horas antes do início ou, quando o
+     * pedido foi feito com menos antecedência que isso, o próprio início. Assim um pedido tardio não expira
+     * no instante em que nasce, antes que alguém possa analisá-lo.
+     */
+    public Instant prazoDeAnalise() {
+        Instant limite = intervalo.dataHoraInicio().minus(ANTECEDENCIA_ANALISE);
+        return createdAt.isAfter(limite) ? intervalo.dataHoraInicio() : limite;
+    }
+
+    /** Verdadeiro quando a reserva ainda está pendente e o prazo de análise já se esgotou. */
+    public boolean analiseVencida(Instant agora) {
+        return status == StatusReserva.PENDENTE && !agora.isBefore(prazoDeAnalise());
+    }
+
+    /**
+     * Expiração de pedido pendente cujo prazo de análise venceu (RN-RES-05).
      */
     public void expirar(Instant agora) {
         if (this.status != StatusReserva.PENDENTE) {
-            throw new IllegalStateException(
+            throw new ReservaTransicaoInvalidaException(
                     "Apenas reservas com status PENDENTE podem ser expiradas. Status atual: " + this.status);
         }
         this.status = StatusReserva.EXPIRADA;

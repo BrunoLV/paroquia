@@ -5,6 +5,7 @@ import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoEncontradaExcep
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
 import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
+import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService.UsuarioActor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,15 @@ import java.util.UUID;
 public class RegistrarRetiradaAtivoUseCase {
 
     private final ReservaRepository reservaRepository;
+    private final ReservaAuthorizationService authorizationService;
     private final PublicadorReservaDeAtivo publicadorReservaDeAtivo;
 
     public RegistrarRetiradaAtivoUseCase(ReservaRepository reservaRepository,
+                                        ReservaAuthorizationService authorizationService,
                                         PublicadorReservaDeAtivo publicadorReservaDeAtivo) {
         this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
+        this.authorizationService = Objects.requireNonNull(authorizationService,
+                "ReservaAuthorizationService é obrigatório.");
         this.publicadorReservaDeAtivo = Objects.requireNonNull(publicadorReservaDeAtivo,
                 "PublicadorReservaDeAtivo é obrigatório.");
     }
@@ -34,6 +39,7 @@ public class RegistrarRetiradaAtivoUseCase {
         Reserva reserva = reservaRepository.findById(new ReservaId(reservaId))
                 .orElseThrow(() -> new ReservaNaoEncontradaException(reservaId));
 
+        authorizationService.validarAutorizacaoCustodia(operador, reserva);
         reserva.registrarRetirada(operador.id(), Instant.now());
         Reserva salva = reservaRepository.save(reserva);
         publicadorReservaDeAtivo.publicarSeForAtivo(salva);

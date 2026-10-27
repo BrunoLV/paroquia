@@ -1,7 +1,6 @@
 package br.com.nsfatima.gestao.governanca.domain.model;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Estados do ciclo de vida de governança de um Ano Paroquial, que gatilha o quanto o calendário anual pode ainda
@@ -32,7 +31,6 @@ public enum AnoParoquialStatus {
      * @return o {@link AnoParoquialStatus} correspondente
      * @throws IllegalArgumentException se o valor não corresponder a nenhum status conhecido
      */
-    @JsonCreator
     public static AnoParoquialStatus fromJson(String rawValue) {
         return EnumRequestNormalizer.normalize(rawValue, AnoParoquialStatus.class);
     }

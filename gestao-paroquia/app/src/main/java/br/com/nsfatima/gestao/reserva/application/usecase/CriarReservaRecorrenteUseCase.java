@@ -1,17 +1,16 @@
 package br.com.nsfatima.gestao.reserva.application.usecase;
 
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService;
+import br.com.nsfatima.gestao.reserva.application.service.ReservaCriacaoService.PedidoReserva;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaConflitoException.ConflitoDetalhe;
 import br.com.nsfatima.gestao.reserva.domain.exception.ReservaNaoAutorizadaException;
 import br.com.nsfatima.gestao.reserva.domain.model.IntervaloReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.Reserva;
-import br.com.nsfatima.gestao.reserva.domain.model.ReservaId;
 import br.com.nsfatima.gestao.reserva.domain.model.StatusReserva;
 import br.com.nsfatima.gestao.reserva.domain.model.TipoItemReserva;
-import br.com.nsfatima.gestao.reserva.domain.repository.ReservaRepository;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService;
 import br.com.nsfatima.gestao.reserva.domain.service.ReservaAuthorizationService.UsuarioActor;
-import br.com.nsfatima.gestao.reserva.domain.service.ReservaConflitoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +20,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Série de reservas recorrentes de um mesmo item (RN-RES-07). Cada ocorrência passa pelas mesmas validações de
+ * uma reserva avulsa. Ocorrências são gravadas à medida que são aceitas, de modo que uma ocorrência da série
+ * também conflita com as anteriores; se houver choques e o chamador não pediu para descartá-los, a transação
+ * inteira é desfeita e o conflito é informado.
+ */
 @Service
 public class CriarReservaRecorrenteUseCase {
 
-    private final ReservaRepository reservaRepository;
-    private final ReservaConflitoService conflitoService;
+    private final ReservaCriacaoService criacaoService;
     private final ReservaAuthorizationService authorizationService;
 
     public CriarReservaRecorrenteUseCase(
-            ReservaRepository reservaRepository,
-            ReservaConflitoService conflitoService,
+            ReservaCriacaoService criacaoService,
             ReservaAuthorizationService authorizationService
     ) {
-        this.reservaRepository = Objects.requireNonNull(reservaRepository, "ReservaRepository é obrigatório.");
-        this.conflitoService = Objects.requireNonNull(conflitoService, "ReservaConflitoService é obrigatório.");
+        this.criacaoService = Objects.requireNonNull(criacaoService, "ReservaCriacaoService é obrigatório.");
         this.authorizationService = Objects.requireNonNull(authorizationService,
                 "ReservaAuthorizationService é obrigatório.");
     }
@@ -78,48 +80,30 @@ public class CriarReservaRecorrenteUseCase {
         int buffer = comando.bufferMinutos() != null ? comando.bufferMinutos() : IntervaloReserva.BUFFER_PADRAO_MINUTOS;
         StatusReserva statusInicial = authorizationService.determinarStatusInicial(
                 solicitante, comando.pastoralMovimentoId());
-        Instant agora = Instant.now();
 
-        List<Reserva> candidatas = new ArrayList<>();
+        List<Reserva> criadas = new ArrayList<>();
         List<ConflitoDetalhe> conflitosTotais = new ArrayList<>();
 
         for (OcorrenciaHorario ocorrencia : comando.ocorrencias()) {
-            IntervaloReserva intervalo = new IntervaloReserva(
-                    ocorrencia.dataHoraInicio(), ocorrencia.dataHoraFim(), buffer);
-            List<Reserva> choques = conflitoService.buscarColisoesComLock(
+            PedidoReserva pedido = new PedidoReserva(
                     comando.tipoItem(),
                     comando.itemId(),
-                    intervalo,
-                    null
+                    comando.itemNome(),
+                    new IntervaloReserva(ocorrencia.dataHoraInicio(), ocorrencia.dataHoraFim(), buffer),
+                    comando.descricao(),
+                    solicitante.id(),
+                    comando.pastoralMovimentoId(),
+                    null,
+                    grupoId,
+                    statusInicial
             );
+            List<ConflitoDetalhe> impedimentos = new ArrayList<>(criacaoService.conflitosDeAgenda(pedido));
+            criacaoService.janelaDeManutencao(pedido).ifPresent(impedimentos::add);
 
-            if (!choques.isEmpty()) {
-                for (Reserva choque : choques) {
-                    conflitosTotais.add(new ConflitoDetalhe(
-                            comando.itemId(),
-                            comando.itemNome() != null ? comando.itemNome() : "Item " + comando.itemId(),
-                            comando.tipoItem(),
-                            choque.getIntervalo().dataHoraInicio(),
-                            choque.getIntervalo().fimComBuffer(),
-                            choque.getSolicitanteId(),
-                            "Responsável",
-                            choque.getDescricao()
-                    ));
-                }
+            if (impedimentos.isEmpty()) {
+                criadas.add(criacaoService.registrar(pedido));
             } else {
-                candidatas.add(Reserva.criar(
-                        ReservaId.gerar(),
-                        comando.tipoItem(),
-                        comando.itemId(),
-                        intervalo,
-                        comando.descricao(),
-                        solicitante.id(),
-                        comando.pastoralMovimentoId(),
-                        null,
-                        grupoId,
-                        statusInicial,
-                        agora
-                ));
+                conflitosTotais.addAll(impedimentos);
             }
         }
 
@@ -130,7 +114,6 @@ public class CriarReservaRecorrenteUseCase {
             );
         }
 
-        List<Reserva> salvas = candidatas.isEmpty() ? List.of() : reservaRepository.saveAll(candidatas);
-        return new ResultadoRecorrencia(grupoId, salvas, conflitosTotais);
+        return new ResultadoRecorrencia(grupoId, criadas, conflitosTotais);
     }
 }

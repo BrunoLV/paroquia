@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,7 +38,6 @@ class LegacyEnumSentinelContractTest {
         legacyObservation.setUsuarioId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         legacyObservation.setTipo("ANOTACAO_LEGADA");
         legacyObservation.setConteudo("Valor legado desconhecido");
-        legacyObservation.setCriadoEmUtc(Instant.now());
         legacyObservation.setRemovida(false);
         observacaoEventoJpaRepository.save(legacyObservation);
 

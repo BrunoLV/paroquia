@@ -1,5 +1,6 @@
 package br.com.nsfatima.gestao.iam.application.service;
 
+import br.com.nsfatima.gestao.iam.domain.model.PapelGlobal;
 import br.com.nsfatima.gestao.iam.domain.policy.UsuarioGerenciamentoAutorizacaoPolicy;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
 import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
@@ -49,10 +50,7 @@ public class UsuarioAuthorizationService {
      *                               se o ator for coordenador mas não compartilhar organização com o alvo
      */
     public void requireAdminOrCoordinatorOf(UUID targetUserId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Não autenticado");
-        }
+        Authentication auth = autenticado();
 
         if (isAdmin(auth)) {
             return;
@@ -93,10 +91,7 @@ public class UsuarioAuthorizationService {
      *                               coordenador ativo daquela organização
      */
     public void requireAdminOrCoordinatorOfOrganization(UUID organizationId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Não autenticado");
-        }
+        Authentication auth = autenticado();
 
         if (isAdmin(auth)) {
             return;
@@ -114,6 +109,45 @@ public class UsuarioAuthorizationService {
                 .anyMatch(m -> policy.isCoordinatorRole(m.getPapel()));
 
         policy.assertECoordenadorDaOrganizacao(isCoordinator);
+    }
+
+    /**
+     * Garante que o ator autenticado pode redefinir a senha do usuário-alvo. Diferente de
+     * {@link #requireAdminOrCoordinatorOf(UUID)}, a redefinição equivale a assumir a conta do alvo, então a
+     * coordenação nunca basta: só o admin global (qualquer alvo) ou o Pároco (alvo sem papel global).
+     *
+     * @param targetUserId identificador do usuário cuja senha será redefinida
+     * @throws AccessDeniedException se não houver autenticação ou o ator não tiver alçada sobre o alvo
+     */
+    public void requirePodeRedefinirSenhaDe(UUID targetUserId) {
+        Authentication auth = autenticado();
+        boolean atorEAdmin = isAdminGlobal(auth);
+        boolean atorEParoco = hasAuthority(auth, "ROLE_PAROCO", "ROLE_CLERO_PAROCO", "ROLE_GLOBAL_PAROCO");
+        boolean alvoPossuiPapelGlobal = !atorEAdmin
+                && papelGlobalAuthorizationService.isGlobalByUsuarioId(targetUserId);
+        policy.assertPodeRedefinirSenha(atorEAdmin, atorEParoco, alvoPossuiPapelGlobal);
+    }
+
+    private static Authentication autenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("Não autenticado");
+        }
+        return auth;
+    }
+
+    private boolean isAdminGlobal(Authentication auth) {
+        if (hasAuthority(auth, "ROLE_ADMIN", "ROLE_GLOBAL_ADMIN")) {
+            return true;
+        }
+        UUID actorId = getActorId(auth);
+        UUID fielId = actorId == null ? null : resolveFielId(actorId);
+        return papelGlobalAuthorizationService.papeisGlobaisDe(fielId).contains(PapelGlobal.ADMIN);
+    }
+
+    private static boolean hasAuthority(Authentication auth, String... authorities) {
+        List<String> aceitas = List.of(authorities);
+        return auth.getAuthorities().stream().anyMatch(a -> aceitas.contains(a.getAuthority()));
     }
 
     private boolean isAdmin(Authentication auth) {

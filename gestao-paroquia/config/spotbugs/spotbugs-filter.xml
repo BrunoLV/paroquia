@@ -30,4 +30,51 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
         <!-- Evita conflito com blocos try-with-resources do Java moderno compilados no bytecode -->
     </Match>
+
+    <!-- 4. DOMÍNIO RICO: construtores de agregados validam invariantes lançando exceção por design
+         (objeto inválido nunca existe); o risco de "finalizer attack" do CT_CONSTRUCTOR_THROW não se aplica. -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW" />
+    </Match>
+
+    <!-- 5. BASELINE (SpotBugs passou a ser bloqueante): achados legados congelados por classe+padrão.
+         Qualquer achado NOVO, ou de outro padrão nestas classes, falha o build. Remova a entrada ao corrigir. -->
+    <Match>
+        <!-- Exportadores Excel/PDF/PPTX engolem falhas de renderização do logo/marca d'água de propósito (best effort). -->
+        <Or>
+            <Class name="br.com.nsfatima.gestao.calendario.infrastructure.export.ExportadorCalendarioExcel"/>
+            <Class name="br.com.nsfatima.gestao.calendario.infrastructure.export.ExportadorCalendarioPptx"/>
+            <Class name="~br\.com\.nsfatima\.gestao\.calendario\.infrastructure\.export\.ExportadorCalendarioPdf.*"/>
+        </Or>
+        <Bug pattern="DE_MIGHT_IGNORE,REC_CATCH_EXCEPTION"/>
+    </Match>
+    <Match>
+        <Class name="br.com.nsfatima.gestao.calendario.application.usecase.configuracao.ObterLogoParoquiaUseCase"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+    <Match>
+        <!-- Detalhes do usuário mantém a entidade/lista de papéis como campo não serializável; sessão é por cookie/servidor. -->
+        <Class name="br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails"/>
+        <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+    <Match>
+        <!-- DÉBITO REAL: nulo passado a parâmetro não-nulo do publisher de auditoria; corrigir no módulo fiel. -->
+        <Class name="br.com.nsfatima.gestao.fiel.application.usecase.GerenciarRelacionamentoFamiliarUseCase"/>
+        <Bug pattern="NP_NULL_PARAM_DEREF"/>
+    </Match>
+    <Match>
+        <!-- DÉBITO REAL: correlation id vindo do header da requisição é devolvido no header da resposta; validar/sanitizar. -->
+        <Class name="br.com.nsfatima.gestao.observabilidade.infrastructure.filter.CorrelationIdFilter"/>
+        <Bug pattern="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER"/>
+    </Match>
+    <Match>
+        <!-- Suporte de teste monta corpo JSON com "\n" literal; irrelevante fora de String.format de produção. -->
+        <Class name="br.com.nsfatima.gestao.calendario.support.SecurityTestSupport"/>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
+    <Match>
+        <!-- Migração interna de dados LGPD (V041): itera sobre tabela/coluna de lista estática interna. -->
+        <Class name="br.com.nsfatima.gestao.support.infrastructure.crypto.MigracaoCifraPiiLegadaLgpd"/>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
+    </Match>
 </FindBugsFilter>

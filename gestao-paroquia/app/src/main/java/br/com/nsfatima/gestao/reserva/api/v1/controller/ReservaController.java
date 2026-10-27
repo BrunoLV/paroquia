@@ -21,6 +21,7 @@ import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrente
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaRecorrenteUseCase.ResultadoRecorrencia;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.CriarReservaUseCase.ComandoCriarReserva;
+import br.com.nsfatima.gestao.reserva.application.usecase.FinalizarUsoLocalUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ListarReservasUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ObterDisponibilidadeItemUseCase;
 import br.com.nsfatima.gestao.reserva.application.usecase.ObterMetricasReservasUseCase;
@@ -78,6 +79,7 @@ public class ReservaController {
     private final CancelarReservaUseCase cancelarReservaUseCase;
     private final RegistrarRetiradaAtivoUseCase registrarRetiradaAtivoUseCase;
     private final RegistrarDevolucaoAtivoUseCase registrarDevolucaoAtivoUseCase;
+    private final FinalizarUsoLocalUseCase finalizarUsoLocalUseCase;
     private final ListarReservasUseCase listarReservasUseCase;
     private final BuscarReservaPorIdUseCase buscarReservaPorIdUseCase;
     private final ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase;
@@ -93,6 +95,7 @@ public class ReservaController {
             CancelarReservaUseCase cancelarReservaUseCase,
             RegistrarRetiradaAtivoUseCase registrarRetiradaAtivoUseCase,
             RegistrarDevolucaoAtivoUseCase registrarDevolucaoAtivoUseCase,
+            FinalizarUsoLocalUseCase finalizarUsoLocalUseCase,
             ListarReservasUseCase listarReservasUseCase,
             BuscarReservaPorIdUseCase buscarReservaPorIdUseCase,
             ObterDisponibilidadeItemUseCase obterDisponibilidadeItemUseCase,
@@ -107,6 +110,7 @@ public class ReservaController {
         this.cancelarReservaUseCase = cancelarReservaUseCase;
         this.registrarRetiradaAtivoUseCase = registrarRetiradaAtivoUseCase;
         this.registrarDevolucaoAtivoUseCase = registrarDevolucaoAtivoUseCase;
+        this.finalizarUsoLocalUseCase = finalizarUsoLocalUseCase;
         this.listarReservasUseCase = listarReservasUseCase;
         this.buscarReservaPorIdUseCase = buscarReservaPorIdUseCase;
         this.obterDisponibilidadeItemUseCase = obterDisponibilidadeItemUseCase;
@@ -136,9 +140,7 @@ public class ReservaController {
                 request.dataHoraFim(),
                 request.bufferMinutos(),
                 request.descricao(),
-                request.pastoralMovimentoId(),
-                request.eventoId(),
-                request.grupoRecorrenciaId()
+                request.pastoralMovimentoId()
         );
 
         Reserva criada = criarReservaUseCase.executar(comando, ator);
@@ -306,6 +308,22 @@ public class ReservaController {
         UsuarioActor ator = securityAdapter.obterAtorAutenticado();
         Reserva devolvida = registrarDevolucaoAtivoUseCase.executar(id, request.checkAvarias(), ator);
         return ReservaResponse.de(enriquecedorReservaService.enriquecer(devolvida));
+    }
+
+    @PatchMapping("/{id}/finalizar")
+    @PreAuthorize(AUTHENTICATED)
+    @Operation(summary = "Finaliza o uso de um local reservado, sem conferência de avarias (RN-RES-06)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Uso do local finalizado", content = @Content(schema = @Schema(implementation = ReservaResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Reserva não é de local, não está confirmada ou o uso ainda não começou"),
+            @ApiResponse(responseCode = "403", description = "Usuário sem permissão para finalizar o uso"),
+            @ApiResponse(responseCode = "404", description = "Reserva não encontrada")
+    })
+    public ReservaResponse finalizarUso(
+            @Parameter(description = "ID único da reserva de local") @PathVariable UUID id) {
+        UsuarioActor ator = securityAdapter.obterAtorAutenticado();
+        Reserva finalizada = finalizarUsoLocalUseCase.executar(id, ator);
+        return ReservaResponse.de(enriquecedorReservaService.enriquecer(finalizada));
     }
 
     @GetMapping("/disponibilidade")

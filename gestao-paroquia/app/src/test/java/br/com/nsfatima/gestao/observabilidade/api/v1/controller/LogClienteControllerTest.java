@@ -74,4 +74,23 @@ class LogClienteControllerTest {
                         .content("{\"logs\": []}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("Deve neutralizar quebras de linha e controles para impedir forja de entradas de log")
+    void deveNeutralizarLogForging() {
+        LogClienteDTO forjado = new LogClienteDTO(
+                "INFO\nERROR",
+                "login ok\r\n2026-01-01 [UI_CLIENT] corrId=x user=admin msg=falso",
+                "/rota\nforjada",
+                "Comp\u0000onente",
+                "linha1\nlinha2\tcom\u001b[31mcor",
+                Instant.now()
+        );
+
+        assertThat(forjado.nivel()).isEqualTo("INFO");
+        assertThat(forjado.mensagem()).doesNotContain("\n", "\r").contains("login ok");
+        assertThat(forjado.rota()).doesNotContain("\n");
+        assertThat(forjado.componente()).doesNotContain("\u0000");
+        assertThat(forjado.detalhes()).doesNotContain("\n", "\t", "\u001b").contains("linha1").contains("linha2");
+    }
 }

@@ -105,6 +105,7 @@ describe('useDynamicFavicon', () => {
 
     it('deve registrar listener de mudança de esquema de cores e aplicar favicon adequado via REST', () => {
       vi.spyOn(useConfigHook, 'useConfiguracaoParoquia').mockReturnValue({
+        // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
         configuracao: {
           id: '1',
           nome: 'Paróquia Teste',

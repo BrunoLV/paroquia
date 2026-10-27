@@ -144,11 +144,8 @@ test('normalizes the root login response used by the API session contract', asyn
   });
 
   expect(screen.getByTestId('user')).toHaveTextContent('coordenadora');
-  expect(JSON.parse(localStorage.getItem('user') ?? '{}')).toMatchObject({
-    id: 'usuario-42',
-    username: 'coordenadora',
-    roles: ['ROLE_COORDENADOR'],
-  });
+  // PII do usuário não é persistida no navegador (LGPD): sessão só em memória.
+  expect(localStorage.getItem('user')).toBeNull();
 });
 
 test('keeps the UI unauthenticated when login is rejected', async () => {
@@ -185,7 +182,7 @@ test('clears the local session even when the server logout request fails', async
     );
   });
 
-  expect(localStorage.getItem('user')).not.toBeNull();
+  expect(screen.getByTestId('user')).not.toHaveTextContent('none');
 
   await act(async () => {
     screen.getByText('Logout').click();

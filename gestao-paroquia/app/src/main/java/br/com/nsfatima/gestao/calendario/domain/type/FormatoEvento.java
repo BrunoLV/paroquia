@@ -1,8 +1,6 @@
 package br.com.nsfatima.gestao.calendario.domain.type;
 
-import br.com.nsfatima.gestao.calendario.api.v1.dto.support.EnumRequestNormalizer;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import br.com.nsfatima.gestao.support.domain.EnumRequestNormalizer;
 
 /**
  * Formato de realização do evento no calendário paroquial.
@@ -23,7 +21,6 @@ public enum FormatoEvento {
         return descricao;
     }
 
-    @JsonCreator
     public static FormatoEvento fromValue(String value) {
         if (value == null || value.isBlank()) {
             return PRESENCIAL;
@@ -31,7 +28,6 @@ public enum FormatoEvento {
         return EnumRequestNormalizer.normalize(value, FormatoEvento.class);
     }
 
-    @JsonValue
     public String toValue() {
         return name();
     }

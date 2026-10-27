@@ -57,7 +57,6 @@ class CancelEventoHistoricalLinksPreservationIntegrationTest {
         preexistente.setUsuarioId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
         preexistente.setTipo("GERAL");
         preexistente.setConteudo("Observacao preexistente");
-        preexistente.setCriadoEmUtc(Instant.now());
         observacaoEventoJpaRepository.save(preexistente);
 
         EventoEnvolvidoEntity envolvido = new EventoEnvolvidoEntity();

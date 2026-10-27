@@ -1,11 +1,14 @@
 package br.com.nsfatima.gestao.organizacao.application.usecase;
 
-import br.com.nsfatima.gestao.iam.application.service.PapelGlobalAuthorizationService;
 import br.com.nsfatima.gestao.iam.infrastructure.persistence.repository.UsuarioJpaRepository;
-import br.com.nsfatima.gestao.iam.infrastructure.security.UsuarioDetails;
+import br.com.nsfatima.gestao.membro.domain.model.IdoneidadeAgente;
+import br.com.nsfatima.gestao.membro.domain.model.MembroGrupo;
+import br.com.nsfatima.gestao.membro.domain.policy.PoliticaIdoneidadeFuncao;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.entity.MembroGrupoEntity;
+import br.com.nsfatima.gestao.membro.infrastructure.persistence.mapper.MembroGrupoMapper;
 import br.com.nsfatima.gestao.membro.infrastructure.persistence.repository.MembroGrupoJpaRepository;
 import br.com.nsfatima.gestao.organizacao.domain.model.PapelOrganizacional;
+import br.com.nsfatima.gestao.organizacao.domain.model.SetorPastoral;
 import br.com.nsfatima.gestao.organizacao.domain.model.SubtipoConselho;
 import br.com.nsfatima.gestao.organizacao.domain.policy.PapeisPorTipoOrganizacao;
 import br.com.nsfatima.gestao.organizacao.infrastructure.persistence.entity.OrganizacaoEntity;
@@ -20,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,8 +33,9 @@ import java.util.UUID;
  * aplicando as regras de negócio que protegem a integridade da hierarquia organizacional:
  * <ul>
  *   <li>pastorais e movimentos exigem uma igreja de vínculo (Matriz/Comunidade) explícita;</li>
- *   <li>definir a liderança de um conselho (CONSELHO_PASTORAL/CONSELHO_ECONOMICO/CPP/CPC) exige que quem
- *       executa a ação seja ADMIN ou PAROCO;</li>
+ *   <li>vincular membros a um conselho exige que quem executa a ação seja ADMIN ou PAROCO;</li>
+ *   <li>atribuir a coordenação exige o PAROCO (ou BISPO); coordenação e vice-coordenação (secretário de grupo)
+ *       exigem a idoneidade do Fiel (RN-MEM-04), que já deve ser membro ativo da organização;</li>
  *   <li>definir o PAROCO do CLERO exige que quem executa a ação seja ADMIN;</li>
  *   <li>vínculos duplicados (mesma combinação fiel/organização/papel/igreja) são reativados em vez de
  *       duplicados;</li>
@@ -48,17 +54,17 @@ public class AdicionarVinculoUseCase {
     private final MembroGrupoJpaRepository vinculoRepository;
     private final UsuarioJpaRepository usuarioRepository;
     private final UnidadeTerritorialJpaRepository unidadeTerritorialRepository;
-    private final PapelGlobalAuthorizationService papelGlobalAuthorizationService;
     private final OrganizacaoJpaRepository organizacaoRepository;
+    private final MembroGrupoMapper membroGrupoMapper;
 
     public AdicionarVinculoUseCase(
             MembroGrupoJpaRepository vinculoRepository,
             UsuarioJpaRepository usuarioRepository,
             UnidadeTerritorialJpaRepository unidadeTerritorialRepository,
-            PapelGlobalAuthorizationService papelGlobalAuthorizationService,
-            OrganizacaoJpaRepository organizacaoRepository) {
+            OrganizacaoJpaRepository organizacaoRepository,
+            MembroGrupoMapper membroGrupoMapper) {
         this.organizacaoRepository = organizacaoRepository;
-        this.papelGlobalAuthorizationService = papelGlobalAuthorizationService;
+        this.membroGrupoMapper = membroGrupoMapper;
         this.vinculoRepository = vinculoRepository;
         this.usuarioRepository = usuarioRepository;
         this.unidadeTerritorialRepository = unidadeTerritorialRepository;
@@ -122,23 +128,20 @@ public class AdicionarVinculoUseCase {
                         || "ROLE_GLOBAL_BISPO_DIOCESANO".equals(a.getAuthority()));
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a ->
                 "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_GLOBAL_ADMIN".equals(a.getAuthority()));
-        UUID actorId = auth.getPrincipal() instanceof UsuarioDetails details ? details.getUsuarioId() : null;
-        boolean isGlobal = isAdmin || isParoco
-                || (actorId != null && papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId));
 
-        if (papel == PapelOrganizacional.COORDENADOR
-                && !isParoco
-                && (isAdmin || actorId == null || !papelGlobalAuthorizationService.isGlobalByUsuarioId(actorId))) {
+        if (papel == PapelOrganizacional.COORDENADOR && !isParoco) {
             throw new AccessDeniedException(
                     "Apenas o Pároco possui provisão canônica para definir coordenador");
         }
 
         // Regra de hierarquia: vinculação a CONSELHO só pode ser definida por PAROCO ou ADMIN
-        if (tipo == TipoOrganizacao.CONSELHO) {
-            if (!isGlobal) {
-                throw new AccessDeniedException(
-                        "Apenas o Pároco ou Admin podem definir membros e secretários do Conselho");
-            }
+        if (tipo == TipoOrganizacao.CONSELHO && !isParoco && !isAdmin) {
+            throw new AccessDeniedException(
+                    "Apenas o Pároco ou Admin podem definir membros e secretários do Conselho");
+        }
+
+        if (papel.exigeIdoneidadeDeCoordenacao()) {
+            exigirIdoneidade(fielId, organizacaoId);
         }
 
         // Nota: a regra "PAROCO do CLERO só pode ser definido por ADMIN" deixou de se aplicar aqui — CLERO
@@ -211,6 +214,24 @@ public class AdicionarVinculoUseCase {
         entity.setAtivo(true);
 
         return vinculoRepository.save(entity).getId();
+    }
+
+    /**
+     * A coordenação exige idoneidade comprovada (RN-MEM-04): o Fiel precisa já ser membro ativo da organização,
+     * pois é no vínculo que a formação, a vivência sacramental, o termo de proteção e o envio ficam registrados.
+     */
+    private void exigirIdoneidade(UUID fielId, UUID organizacaoId) {
+        IdoneidadeAgente idoneidade = vinculoRepository.findByFielIdAndOrganizacaoIdAndAtivoTrue(fielId, organizacaoId)
+                .map(membroGrupoMapper::toDomain)
+                .map(MembroGrupo::getIdoneidade)
+                .orElse(IdoneidadeAgente.vazia());
+        SetorPastoral setor = organizacaoRepository.findById(organizacaoId)
+                .map(OrganizacaoEntity::getSetorPastoral)
+                .orElse(null);
+        List<String> pendencias = PoliticaIdoneidadeFuncao.pendencias(true, setor, idoneidade, LocalDate.now());
+        if (!pendencias.isEmpty()) {
+            throw new IllegalArgumentException("Agente sem idoneidade para a função: " + String.join(" ", pendencias));
+        }
     }
 
     private SubtipoConselho subtipoDe(UUID organizacaoId) {

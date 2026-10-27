@@ -84,13 +84,13 @@ public class UsuarioAdminService {
      *
      * @param id             identificador do usuário alvo
      * @param newRawPassword nova senha em texto puro, criptografada antes da persistência
-     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global nem
-     *                                                                    coordenador de uma organização do usuário-alvo
+     * @throws org.springframework.security.access.AccessDeniedException se o ator não for admin global, ou
+     *                                                                    Pároco sobre um alvo sem papel global
      * @throws br.com.nsfatima.gestao.iam.domain.exception.UsuarioNaoEncontradoException se o usuário não existir
      */
     @Transactional
     public void redefinirSenha(UUID id, String newRawPassword) {
-        authorizationService.requireAdminOrCoordinatorOf(id);
+        authorizationService.requirePodeRedefinirSenhaDe(id);
 
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException(id));

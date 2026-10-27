@@ -67,6 +67,19 @@ public record AprovacaoResponse(
         @Schema(description = "Total de ocorrências filhas associadas a esta aprovação mestre")
         Integer totalOcorrenciasFilhas) {
 
+    /**
+     * Cópia sem o detalhamento técnico da falha (nomes de classe e causa), que é diagnóstico para quem decide
+     * e opera a aprovação e não deve chegar a quem apenas propôs a solicitação.
+     *
+     * @return resposta equivalente com {@code detalheErroExecucao} nulo
+     */
+    public AprovacaoResponse semDetalheTecnico() {
+        return new AprovacaoResponse(id, eventoId, tipoSolicitacao, status, aprovadorPapel, criadoEmUtc,
+                decididoEmUtc, solicitanteId, aprovadorId, mensagemErroExecucao, tipoFalhaExecucao, null,
+                actionPayloadJson, aprovacaoPaiId, conflitosJson, dataOcorrenciaUtc, justificativa,
+                totalOcorrenciasFilhas);
+    }
+
     public AprovacaoResponse(
             UUID id,
             UUID eventoId,

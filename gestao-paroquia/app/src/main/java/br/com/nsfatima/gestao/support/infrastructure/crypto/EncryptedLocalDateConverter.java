@@ -26,28 +26,19 @@ public class EncryptedLocalDateConverter implements AttributeConverter<LocalDate
     }
 
     /**
-     * Decifra o valor lido do banco e o converte de volta para {@link LocalDate}. Caso a
-     * decifragem falhe, tenta interpretar o dado bruto como uma data ISO-8601 em texto claro — isso
-     * garante compatibilidade com registros gravados antes da adoção da cifragem (migração
-     * gradual), retornando {@code null} apenas se ambas as tentativas falharem.
+     * Decifra o valor lido do banco e o converte de volta para {@link LocalDate}. Valores com forma de
+     * ciphertext que não podem ser decifrados lançam exceção (nunca viram {@code null} silencioso); valores
+     * sem essa forma são datas ISO-8601 em claro anteriores à cifragem.
      *
      * @param dbData valor bruto lido da coluna do banco
-     * @return data decifrada, data lida em texto claro (fallback de compatibilidade), ou {@code null}
-     *         se o dado estiver em branco ou não puder ser interpretado por nenhuma das duas vias
+     * @return data decifrada, ou {@code null} se o dado estiver em branco
+     * @throws IllegalStateException se o ciphertext não puder ser decifrado
      */
     @Override
     public LocalDate convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isBlank()) {
             return null;
         }
-        try {
-            return LocalDate.parse(CryptoUtils.decrypt(dbData));
-        } catch (Exception e) {
-            try {
-                return LocalDate.parse(dbData);
-            } catch (Exception ex) {
-                return null;
-            }
-        }
+        return LocalDate.parse(CryptoUtils.pareceCifrado(dbData) ? CryptoUtils.decrypt(dbData) : dbData);
     }
 }

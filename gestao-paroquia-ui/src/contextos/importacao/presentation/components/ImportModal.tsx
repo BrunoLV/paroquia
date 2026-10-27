@@ -17,6 +17,7 @@ import {useQueryClient} from '@tanstack/react-query';
 import {
     confirmarImportacao,
     downloadTemplate,
+    ImportacaoConfirmacaoResultado,
     ImportacaoValidacaoResultado,
     validarImportacao
 } from '@/contextos/importacao/infrastructure/http/importacao';
@@ -26,13 +27,13 @@ interface ImportModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  defaultEntity?: 'MEMBRO' | 'USUARIO' | 'ORGANIZACAO' | 'EVENTO';
+  defaultEntity?: 'MEMBRO' | 'ORGANIZACAO' | 'EVENTO';
 }
 
 type EntidadeImportacao = NonNullable<ImportModalProps['defaultEntity']>;
 
 const isEntidadeImportacao = (value: string): value is EntidadeImportacao => (
-  value === 'MEMBRO' || value === 'USUARIO' || value === 'ORGANIZACAO' || value === 'EVENTO'
+  value === 'MEMBRO' || value === 'ORGANIZACAO' || value === 'EVENTO'
 );
 
 const STEPS = ['Upload e Template', 'Pré-visualização e Validação', 'Confirmação'];
@@ -52,6 +53,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   const [isValidating, setIsValidating] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [validationResult, setValidationResult] = useState<ImportacaoValidacaoResultado | null>(null);
+  const [confirmacao, setConfirmacao] = useState<ImportacaoConfirmacaoResultado | null>(null);
   const [importPage, setImportPage] = useState(0);
   const [importRowsPerPage, setImportRowsPerPage] = useState(10);
 
@@ -59,6 +61,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     setActiveStep(0);
     setSelectedFile(null);
     setValidationResult(null);
+    setConfirmacao(null);
     setIsValidating(false);
     setIsConfirming(false);
   };
@@ -109,14 +112,23 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
     setIsConfirming(true);
     try {
-      const validItems = validationResult.itens.filter(i => i.valido).map(i => i.dados);
-      const res = await confirmarImportacao(entityType, validItems);
+      const itens = validationResult.itens.filter(i => i.valido).map(i => ({ linha: i.linha, dados: i.dados }));
+      const res = await confirmarImportacao(entityType, itens);
       queryClient.invalidateQueries();
-      showSuccess(`Sucesso! ${res.registrosImportados} registro(s) foram cadastrados no sistema.`);
-      if (onSuccess) onSuccess();
+      if (onSuccess && (res.registrosImportados > 0 || res.enviadosParaAprovacao > 0)) onSuccess();
+      if (res.erros.length > 0) {
+        setConfirmacao(res);
+        setImportPage(0);
+        showError(`${res.registrosImportados} registro(s) cadastrados; ${res.erros.length} linha(s) não foram gravadas.`);
+        return;
+      }
+      const aprovacao = res.enviadosParaAprovacao > 0
+        ? ` ${res.enviadosParaAprovacao} aguardam aprovação.`
+        : '';
+      showSuccess(`Sucesso! ${res.registrosImportados} registro(s) foram cadastrados no sistema.${aprovacao}`);
       handleCloseModal();
     } catch (err) {
-      showError('Erro ao efetivar a importação dos registros.');
+      showError(extractErrorMessage(err, 'Erro ao efetivar a importação dos registros.'));
     } finally {
       setIsConfirming(false);
     }
@@ -148,7 +160,6 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                 onChange={(e) => isEntidadeImportacao(e.target.value) && setEntityType(e.target.value)}
               >
                 <MenuItem value="MEMBRO">Membros / Féis Leigos</MenuItem>
-                <MenuItem value="USUARIO">Usuários do Sistema</MenuItem>
                 <MenuItem value="ORGANIZACAO">Organizações / Pastorais</MenuItem>
                 <MenuItem value="EVENTO">Eventos Paroquiais</MenuItem>
               </SearchableSelect>
@@ -240,7 +251,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </Stack>
         )}
 
-        {activeStep === 2 && validationResult && (
+        {activeStep === 2 && validationResult && !confirmacao && (
           <Box sx={{ textAlign: 'center', py: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
               Pronto para efetivar a gravação!
@@ -250,11 +261,54 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             </Typography>
           </Box>
         )}
+
+        {activeStep === 2 && confirmacao && (
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
+            <Alert severity="warning">
+              {`${confirmacao.registrosImportados} registro(s) cadastrados`}
+              {confirmacao.enviadosParaAprovacao > 0 && `, ${confirmacao.enviadosParaAprovacao} aguardando aprovação`}
+              {`; ${confirmacao.erros.length} linha(s) não foram gravadas. Corrija-as na planilha e envie-as novamente.`}
+            </Alert>
+            <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', maxHeight: 320 }}>
+              <Table size="small" stickyHeader>
+                <TableHead sx={{ backgroundColor: 'action.hover' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600 }}>Linha</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Motivo</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {confirmacao.erros
+                    .slice(importPage * importRowsPerPage, importPage * importRowsPerPage + importRowsPerPage)
+                    .map((erro) => (
+                      <TableRow key={erro.linha}>
+                        <TableCell>{erro.linha}</TableCell>
+                        <TableCell>{erro.mensagem}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+                <SearchableTablePagination colSpan={2}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={confirmacao.erros.length}
+                  rowsPerPage={importRowsPerPage}
+                  page={importPage}
+                  onPageChange={(_, newPage) => setImportPage(newPage)}
+                  onRowsPerPageChange={(e) => {
+                    setImportRowsPerPage(parseInt(e.target.value, 10));
+                    setImportPage(0);
+                  }}
+                  labelRowsPerPage="Linhas por página:"
+                  labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `mais de ${to}`}`}
+                />
+              </Table>
+            </TableContainer>
+          </Stack>
+        )}
       </DialogContent>
 
       <DialogActions>
         <ActionButton title="Cancelar" icon={<CloseIcon />} onClick={handleCloseModal} color="secondary" />
-        {activeStep > 0 && (
+        {activeStep > 0 && !confirmacao && (
           <ActionButton title="Voltar" icon={<ArrowBackIcon />} onClick={() => setActiveStep(activeStep - 1)} color="secondary" />
         )}
         {activeStep === 0 && (
@@ -275,7 +329,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             disabled={validationResult?.totalValidos === 0}
           />
         )}
-        {activeStep === 2 && (
+        {activeStep === 2 && !confirmacao && (
           <ActionButton
             title="Confirmar Importação"
             icon={isConfirming ? <CircularProgress size={24} /> : <UploadIcon />}

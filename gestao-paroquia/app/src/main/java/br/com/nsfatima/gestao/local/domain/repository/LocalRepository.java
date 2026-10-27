@@ -44,8 +44,8 @@ public interface LocalRepository {
     List<Local> findByOrganizacaoId(UUID organizacaoId);
 
     /**
-     * Verifica se o Local possui algum Evento associado, para dar suporte à decisão de bloquear uma
-     * eventual remoção física que quebraria referências históricas.
+     * Verifica se o Local possui algum Evento associado (diretamente ou pela associação com múltiplos
+     * locais), preservando as referências históricas. A exclusão do local é sempre lógica.
      *
      * @param id ID do local
      * @return {@code true} se existir ao menos um Evento referenciando este local
@@ -62,11 +62,11 @@ public interface LocalRepository {
     boolean hasFutureEvents(UUID id);
 
     /**
-     * Remove fisicamente o registro de um Local. Não é usada pelo fluxo padrão de negócio (que
-     * desativa logicamente via {@code LocalService.excluir}) — capacidade de infraestrutura para
-     * cenários administrativos/de dados que exigem remoção definitiva.
+     * Verifica se o Local tem reservas pendentes ou confirmadas que ainda não terminaram, que também
+     * impedem a inativação ou a exclusão lógica: quem reservou o espaço precisa ser avisado antes.
      *
-     * @param id ID do local a ser removido
+     * @param id ID do local
+     * @return {@code true} se houver reservas futuras ou em andamento
      */
-    void delete(UUID id);
+    boolean hasFutureReservas(UUID id);
 }

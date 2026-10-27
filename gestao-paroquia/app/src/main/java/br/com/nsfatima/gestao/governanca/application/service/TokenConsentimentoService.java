@@ -13,7 +13,9 @@ import java.util.Base64;
 import java.util.UUID;
 
 /**
- * Emissor e validador de tokens efêmeros de sessão de consentimento (HMAC-SHA256).
+ * Emissor e validador de tokens efêmeros de sessão de consentimento (HMAC-SHA256). O token carrega o
+ * identificador do desafio OTP validado ({@code jti}); o caso de uso o consome uma única vez, de modo que um
+ * token interceptado ou reenviado não possa registrar uma segunda manifestação.
  */
 @Service
 public class TokenConsentimentoService {
@@ -21,19 +23,28 @@ public class TokenConsentimentoService {
     private static final String HMAC_ALGO = "HmacSHA256";
     private static final long DURACAO_MINUTOS = 15;
     private static final String SEPARADOR = ":";
+    private static final int TAMANHO_MINIMO_SEGREDO = 32;
 
     private final byte[] secretKey;
 
-    public record TokenPayload(TipoTitularConsentimento titularTipo, UUID titularId) {}
+    public record TokenPayload(TipoTitularConsentimento titularTipo, UUID titularId, UUID jti) {}
 
-    public TokenConsentimentoService(
-            @Value("${app.security.consent-secret:paroquia-consent-jwt-secret-key-lgpd-2026}") String secret) {
+    /**
+     * O segredo é obrigatório e sem valor padrão: um default público no código permitiria forjar
+     * tokens HMAC de consentimento. Ausência ou segredo curto derrubam o boot.
+     */
+    public TokenConsentimentoService(@Value("${app.security.consent-secret:}") String secret) {
+        if (secret == null || secret.isBlank() || secret.length() < TAMANHO_MINIMO_SEGREDO) {
+            throw new IllegalStateException(
+                    "APP_CONSENT_SECRET (app.security.consent-secret) é obrigatório e deve ter ao menos "
+                            + TAMANHO_MINIMO_SEGREDO + " caracteres.");
+        }
         this.secretKey = secret.getBytes(StandardCharsets.UTF_8);
     }
 
-    public String gerarToken(TipoTitularConsentimento titularTipo, UUID titularId) {
+    public String gerarToken(TipoTitularConsentimento titularTipo, UUID titularId, UUID jti) {
         long expiraEm = Instant.now().plusSeconds(DURACAO_MINUTOS * 60).toEpochMilli();
-        String dados = titularTipo.name() + SEPARADOR + titularId + SEPARADOR + expiraEm;
+        String dados = titularTipo.name() + SEPARADOR + titularId + SEPARADOR + expiraEm + SEPARADOR + jti;
         String assinatura = assinar(dados);
         String payloadBase64 = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(dados.getBytes(StandardCharsets.UTF_8));
@@ -61,7 +72,7 @@ public class TokenConsentimentoService {
             throw new IllegalArgumentException("Assinatura do token de consentimento inválida.");
         }
         String[] campos = dados.split(SEPARADOR);
-        if (campos.length != 3) {
+        if (campos.length != 4) {
             throw new IllegalArgumentException("Campos do token corrompidos.");
         }
         long expiraEm = Long.parseLong(campos[2]);
@@ -70,7 +81,7 @@ public class TokenConsentimentoService {
         }
         TipoTitularConsentimento tipo = TipoTitularConsentimento.valueOf(campos[0]);
         UUID titularId = UUID.fromString(campos[1]);
-        return new TokenPayload(tipo, titularId);
+        return new TokenPayload(tipo, titularId, UUID.fromString(campos[3]));
     }
 
     private String assinar(String dados) {

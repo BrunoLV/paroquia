@@ -71,4 +71,14 @@ public enum PapelOrganizacional {
     public boolean isCoordenacao() {
         return this == COORDENADOR;
     }
+
+    /**
+     * Indica se o papel integra a coordenação e, portanto, exige idoneidade de coordenação (RN-MEM-04):
+     * o coordenador e o vice-coordenador, que usa o papel de secretário de grupo.
+     *
+     * @return {@code true} para {@link #COORDENADOR} e {@link #SECRETARIO_GRUPO}
+     */
+    public boolean exigeIdoneidadeDeCoordenacao() {
+        return this == COORDENADOR || this == SECRETARIO_GRUPO;
+    }
 }

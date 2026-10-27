@@ -2,6 +2,7 @@ package br.com.nsfatima.gestao.fiel.application.usecase;
 
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielResponse;
 import br.com.nsfatima.gestao.fiel.api.v1.dto.FielContatoResponse;
+import br.com.nsfatima.gestao.fiel.api.v1.dto.FielNomeResponse;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.entity.FielEntity;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.mapper.FielMapper;
 import br.com.nsfatima.gestao.fiel.infrastructure.persistence.repository.FielJpaRepository;
@@ -56,6 +57,22 @@ public class ListarFieisUseCase {
     public List<FielContatoResponse> executeContatoNoGrupo(UUID grupoId) {
         return fieisDoGrupo(grupoId).stream()
                 .map(fielMapper::toContatoResponse)
+                .toList();
+    }
+
+    /** Retorna somente identificador e nome de todos os fiéis ativos, para papéis consultivos. */
+    @Transactional(readOnly = true)
+    public List<FielNomeResponse> executeNomes() {
+        return fielRepository.findByAtivoTrue().stream()
+                .map(fielMapper::toNomeResponse)
+                .toList();
+    }
+
+    /** Retorna somente identificador e nome dos fiéis com vínculo ativo na organização. */
+    @Transactional(readOnly = true)
+    public List<FielNomeResponse> executeNomesNoGrupo(UUID grupoId) {
+        return fieisDoGrupo(grupoId).stream()
+                .map(fielMapper::toNomeResponse)
                 .toList();
     }
 

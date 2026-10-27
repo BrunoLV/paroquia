@@ -54,6 +54,7 @@ describe('Fieis API Client', () => {
   });
 
   test('createFiel should post new fiel data', async () => {
+    // @ts-expect-error fixture parcial: o teste só preenche os campos que exercita
     const payload: CreateFielPayload = {
       nome: 'João Maria',
       cpf: '12345678900',

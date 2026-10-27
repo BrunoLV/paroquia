@@ -38,6 +38,24 @@ public class DesafioConsentimentoEntity extends BaseAuditableEntity {
     @Column(name = "expira_em_utc", nullable = false)
     private Instant expiraEmUtc;
 
+    @Column(name = "validado_em_utc")
+    private Instant validadoEmUtc;
+
+    @Column(name = "consumido_em_utc")
+    private Instant consumidoEmUtc;
+
+    public Instant getValidadoEmUtc() {
+        return validadoEmUtc;
+    }
+
+    public void setValidadoEmUtc(Instant validadoEmUtc) {
+        this.validadoEmUtc = validadoEmUtc;
+    }
+
+    public Instant getConsumidoEmUtc() {
+        return consumidoEmUtc;
+    }
+
     public UUID getId() {
         return id;
     }

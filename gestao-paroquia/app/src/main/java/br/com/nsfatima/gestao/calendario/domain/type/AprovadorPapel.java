@@ -5,12 +5,16 @@ import java.util.Locale;
 /**
  * Papel que qualifica quem pode decidir formalmente uma solicitação de aprovação de evento
  * (ver {@code ValidarAprovacaoUseCase}/{@code AprovacaoObrigatoriaException}).
- * Em estrita conformidade com o Direito Canônico (Cân. 515 §1), o Pároco detém a alçada
- * decisória exclusiva. Conselhos e coordenações propõem e solicitam, mas não decidem.
+ * Em conformidade com o Direito Canônico (Cân. 515 §1), o Pároco detém a alçada decisória ordinária,
+ * e o Bispo Diocesano, como autoridade superior, a mesma alçada. Conselhos e coordenações propõem e
+ * solicitam, mas não decidem.
  */
 public enum AprovadorPapel {
-    /** Pároco (ou Bispo Diocesano) — único aprovador formal com alçada canônica para decisão final. */
-    PAROCO("paroco", "Pároco");
+    /** Pároco — aprovador formal com alçada canônica ordinária para decisão final. */
+    PAROCO("paroco", "Pároco"),
+
+    /** Bispo Diocesano — autoridade superior, com a mesma alçada decisória do Pároco sobre a paróquia. */
+    BISPO_DIOCESANO("bispo-diocesano", "Bispo Diocesano");
 
     private final String storedCode;
     private final String descricao;

@@ -61,7 +61,6 @@ public class GerenciarAjusteClericalUseCase {
         entity.setTelefoneFixo(request.telefoneFixo());
         entity.setEndereco(request.endereco());
         entity.setStatus(STATUS_PENDENTE);
-        entity.setCriadoEmUtc(Instant.now());
 
         ajustes.save(entity);
         auditoria.publicarSolicitacaoAjuste(entity.getId(), clerigo.getId(), usuarioId);
