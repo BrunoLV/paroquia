@@ -369,7 +369,7 @@ services:
   # 10. Promtail - Coleta e Envio de Logs para o Loki
   # ----------------------------------------------------------------------------
   promtail:
-    image: grafana/promtail:3.2.1
+    image: grafana/promtail:3.6.8
     container_name: gestao-promtail
     restart: unless-stopped
     # Permanece root: descobrir containers via /var/run/docker.sock exige acesso ao socket (equivalente a
