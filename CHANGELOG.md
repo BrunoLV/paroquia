@@ -8,6 +8,8 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-26
+
 ### Adicionado
 - `PATCH /api/v1/reservas/{id}/finalizar` e ação "Finalizar Uso" na tela de reservas (RN-RES-06).
 - **Fronteiras arquiteturais protegidas por ArchUnit:** regras de encapsulamento entre contextos (um contexto não acessa `application`/`infrastructure` de outro; `support` é o núcleo compartilhado), de dependência mútua entre contextos e de proibição de chamar setters de auditoria fora das entidades. O legado é congelado com `FreezingArchRule` em `app/src/test/resources/archunit_store`; qualquer violação nova falha o build.
