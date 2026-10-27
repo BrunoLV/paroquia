@@ -341,7 +341,7 @@ services:
   # 9. Loki - Agregação e Armazenamento de Logs (v3 LTS)
   # ----------------------------------------------------------------------------
   loki:
-    image: grafana/loki:3.2.1
+    image: grafana/loki:3.7.9
     container_name: gestao-loki
     restart: unless-stopped
     networks:
