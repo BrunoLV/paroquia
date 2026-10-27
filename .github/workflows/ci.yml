@@ -121,12 +121,16 @@ jobs:
           - imagem: api
             context: .
             dockerfile: Dockerfile.api
+            build-contexts: ""
           - imagem: ui
             context: gestao-paroquia-ui
             dockerfile: Dockerfile.ui
+            build-contexts: |
+              nginxconf=./docker/nginx
           - imagem: builder
             context: gestao-paroquia
             dockerfile: Dockerfile.builder
+            build-contexts: ""
 
     steps:
       - name: Checkout
@@ -141,6 +145,7 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: false
+          build-contexts: ${{ matrix.build-contexts }}
           cache-from: type=gha,scope=${{ matrix.imagem }}
           cache-to: type=gha,mode=max,scope=${{ matrix.imagem }}
 
