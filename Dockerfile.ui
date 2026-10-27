@@ -43,7 +43,7 @@ COPY . .
 RUN npm run build
 
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS runtime
 
 LABEL org.opencontainers.image.title="Paróquia UI" \
       org.opencontainers.image.description="Frontend React estático servido por nginx" \
